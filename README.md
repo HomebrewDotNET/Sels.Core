@@ -26,21 +26,21 @@ Code for serializing and deserializing data
 ### Variable
 Helper classes for managing variables
 
-## Extenions
-Mostly static classes containing extensions methods.
+## Extensions
+Mostly static classes containing extension methods.
 ### ExecutionExtensions
 Extension methods for for executing code
 ### GeneralExtenions
 Basic extension methods
-### IoExtenions
+### IoExtensions
 Extension methods for performing io operations
-### LoggingExtenions
+### LoggingExtensions
 Extension methods the ILogger interface
-### ObjectExtenions
+### ObjectExtensions
 Extension methods for various System classes
-### ReflectionExtenions
+### ReflectionExtensions
 Extension methods for helping with reflection
-### SerializationExtenions
+### SerializationExtensions
 Extension methods for serializing and deserializing data
 
 ## Developer Notes
