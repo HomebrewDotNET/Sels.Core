@@ -28,7 +28,7 @@ namespace Sels.Core.Extensions.Serialization.Xml
 
         public static T DeserializeFromXml<T>(this string value)
         {
-            using (var stream = new MemoryStream(value.To64ByteArray()))
+            using (var stream = new MemoryStream(value.GetBytes<UTF8Encoding>()))
             {
                 using (var reader = new StreamReader(stream))
                 {

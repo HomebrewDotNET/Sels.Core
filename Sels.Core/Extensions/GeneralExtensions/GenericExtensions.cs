@@ -112,45 +112,5 @@ namespace Sels.Core.Extensions.General.Generic
         }
         #endregion
         #endregion
-
-        #region GetBytes
-        public static byte[] GetBytes(this object sourceObject)
-        {
-            sourceObject.ValidateVariable(nameof(sourceObject));
-
-            BinaryFormatter formatter = new BinaryFormatter();
-            using (var stream = new MemoryStream())
-            {
-                formatter.Serialize(stream, sourceObject);
-                return stream.ToArray();
-            }
-        }
-
-        public static byte[] GetBytes(this string sourceString)
-        {
-            return sourceString.GetBytes<UTF8Encoding>();
-        }
-
-        public static byte[] GetBytes<TEncoding>(this string sourceString) where TEncoding : Encoding, new()
-        {
-            var encoding = new TEncoding();
-            return encoding.GetBytes(sourceString);
-        }
-
-        public static byte[] GetBytes(this double source)
-        {
-            return BitConverter.GetBytes(source);
-        }
-
-        public static byte[] GetBytes(this bool source)
-        {
-            return BitConverter.GetBytes(source);
-        }
-
-        public static byte[] GetBytes(this char source)
-        {
-            return BitConverter.GetBytes(source);
-        }
-        #endregion
     }
 }

@@ -17,16 +17,7 @@ namespace Sels.Core.Extensions.Object.String
             return string.Format(value, parameters);
         }
 
-        public static byte[] ToByteArray(this string value)
-        {
-            return Encoding.UTF8.GetBytes(value);
-        }
-
-        public static byte[] To64ByteArray(this string value)
-        {
-            return Convert.FromBase64String(value);
-        }
-
+        #region Contains
         public static bool Contains(this string value, params char[] chars)
         {
             value.ValidateVariable(nameof(value));
@@ -34,7 +25,7 @@ namespace Sels.Core.Extensions.Object.String
 
             var stringChars = value.ToCharArray();
 
-            foreach(var stringChar in stringChars)
+            foreach (var stringChar in stringChars)
             {
                 if (chars.Contains(stringChar))
                 {
@@ -94,6 +85,8 @@ namespace Sels.Core.Extensions.Object.String
 
             return true;
         }
+        #endregion
+
 
         #region FileSystem
         private const char _defaultFileSystemReplaceChar = '_';

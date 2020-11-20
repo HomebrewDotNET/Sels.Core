@@ -32,7 +32,7 @@ namespace Sels.Core.Extensions.Serialization.Bson
 
         public static T DeserializeFromBson<T>(this string value)
         {
-            using (var stream = new MemoryStream(value.To64ByteArray()))
+            using (var stream = new MemoryStream(value.GetBytes<UTF8Encoding>()))
             {
                 using (var reader = new BsonDataReader(stream))
                 {

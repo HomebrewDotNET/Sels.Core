@@ -1,6 +1,10 @@
-﻿using Sels.Core.Extensions.General.Validation;
+﻿using Sels.Core.Extensions.General.Generic;
+using Sels.Core.Extensions.General.Validation;
+using Sels.Core.Extensions.Object.Byte;
+using Sels.Core.Extensions.Object.String;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -16,7 +20,9 @@ namespace Sels.Core.Extensions.GeneralExtensions
 
             using(var hash = HashAlgorithm.Create(hashType.Name))
             {
-                return hash.ComputeHash(sourceObject.GetBytes());
+                var hashedBytes = hash.ComputeHash(sourceObject.GetBytes());
+
+                return hashedBytes.Select(x => x.ToString("x2")).Join(string.Empty);
             }
         }
     }
