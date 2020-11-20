@@ -74,7 +74,7 @@ namespace Sels.Core.Extensions.General.Validation
         #endregion
 
         #region FileSystem Validation
-        public static void ValidateVariable(this FileSystemInfo value, string parameterName)
+        public static void ValidateIfExists(this FileSystemInfo value, string parameterName)
         {
             if (!value.HasValue())
             {

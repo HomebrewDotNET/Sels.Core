@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Extensions.Execution;
 using Sels.Core.Extensions.Execution.Linq;
+using Sels.Core.Extensions.General.Generic;
 using Sels.Core.Extensions.General.Validation;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,31 @@ namespace Sels.Core.Extensions.Io.FileSystem
             return false;
         }
 
+        public static bool CreateIfNotExistAndValidate(this FileInfo file, string parameterName)
+        {
+            return file.CreateIfNotExistAndValidate(string.Empty);
+        }
+
+        public static bool CreateIfNotExistAndValidate(this FileInfo file, object content, string parameterName)
+        {
+            file.ValidateVariable(parameterName);
+
+            if (!file.Exists)
+            {
+                using (var stream = File.CreateText(file.FullName))
+                {
+                    if (content.HasValue())
+                    {
+                        stream.Write(content);
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         #region Io Operations
         public static string Read(this FileInfo file)
         {
@@ -49,7 +75,7 @@ namespace Sels.Core.Extensions.Io.FileSystem
         public static FileInfo CopyTo(this FileInfo file, DirectoryInfo destinationDirectory, bool overwrite = false)
         {
             file.ValidateVariable(nameof(file));
-            destinationDirectory.EnsureExistsAndValidate(nameof(destinationDirectory));
+            destinationDirectory.CreateIfNotExistAndValidate(nameof(destinationDirectory));
 
             var newFileName = Path.Combine(destinationDirectory.FullName, file.Name);
 
@@ -59,14 +85,18 @@ namespace Sels.Core.Extensions.Io.FileSystem
         #endregion
 
         #region Directory
-        public static void EnsureExistsAndValidate(this DirectoryInfo directory, string parameterName)
+        public static bool CreateIfNotExistAndValidate(this DirectoryInfo directory, string parameterName)
         {
-            if(directory != null && !directory.Exists)
+            directory.ValidateIfExists(parameterName);
+
+            if (directory != null && !directory.Exists)
             {
                 directory.Create();
+
+                return true;
             }
 
-            directory.ValidateVariable(parameterName);
+            return false;
         }
 
         public static bool IsEmpty(this DirectoryInfo directory)
@@ -86,7 +116,7 @@ namespace Sels.Core.Extensions.Io.FileSystem
         public static DirectoryInfo CopyTo(this DirectoryInfo directory, DirectoryInfo destinationDirectory, bool overwrite = false)
         {
             directory.ValidateVariable(nameof(directory));
-            destinationDirectory.EnsureExistsAndValidate(nameof(destinationDirectory));
+            destinationDirectory.CreateIfNotExistAndValidate(nameof(destinationDirectory));
 
             var newDirectory = destinationDirectory.CreateSubdirectory(directory.Name);
 
@@ -99,7 +129,7 @@ namespace Sels.Core.Extensions.Io.FileSystem
         public static DirectoryInfo CopyContentTo(this DirectoryInfo directory, DirectoryInfo destinationDirectory, bool overwrite = false)
         {
             directory.ValidateVariable(nameof(directory));
-            destinationDirectory.EnsureExistsAndValidate(nameof(destinationDirectory));
+            destinationDirectory.CreateIfNotExistAndValidate(nameof(destinationDirectory));
 
             directory.GetDirectories().Execute(x => x.CopyTo(destinationDirectory, overwrite));
             directory.GetFiles().Execute(x => x.CopyTo(destinationDirectory, overwrite));

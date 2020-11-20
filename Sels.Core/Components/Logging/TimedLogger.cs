@@ -50,25 +50,30 @@ namespace Sels.Core.Components.Logging
 
         private void Log(string message)
         {
-            _loggers.LogMessage(_logLevel, message);
+            Log(x => message);
         }
 
         public void Log(Func<TimeSpan, string> messageFunc, Exception exception = null)
+        {
+            Log(_logLevel, messageFunc, exception);         
+        }
+
+        public void Log(LogLevel level, Func<TimeSpan, string> messageFunc, Exception exception = null)
         {
             if (_stopWatch.HasValue())
             {
                 messageFunc.ValidateVariable(nameof(messageFunc));
 
-                if(exception != null)
+                if (exception != null)
                 {
-                    _loggers.LogException(_logLevel, messageFunc(_stopWatch.Elapsed), exception);
+                    _loggers.LogException(level, messageFunc(_stopWatch.Elapsed), exception);
                 }
                 else
                 {
-                    _loggers.LogMessage(_logLevel, messageFunc(_stopWatch.Elapsed));
+                    _loggers.LogMessage(level, messageFunc(_stopWatch.Elapsed));
                 }
-                
-            }           
+
+            }
         }
 
         public void Dispose()
