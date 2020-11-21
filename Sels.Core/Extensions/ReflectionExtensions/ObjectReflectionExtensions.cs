@@ -13,23 +13,19 @@ namespace Sels.Core.Extensions.Reflection.Object
 {
     public static class ObjectReflectionExtensions
     {
-        public static PropertyInfo[] GetProperties(this object value)
-        {
-            return value.GetType().GetProperties();
-        }
-
+        #region Delegates
         public static Delegate CreateDelegateForMethod(this object value, string methodName)
         {
             methodName.ValidateVariable(nameof(methodName));
             value.ValidateVariable(nameof(value));
 
-            var objectType =value.GetType();
+            var objectType = value.GetType();
 
             var method = objectType.GetTypeInfo().GetDeclaredMethod(methodName);
 
             if (method.HasValue())
             {
-                return  method.CreateDelegate(method.GetAsDelegateType(), value);
+                return method.CreateDelegate(method.GetAsDelegateType(), value);
             }
 
             throw new ArgumentException($"No method with name {methodName} found on type {objectType}");
@@ -46,7 +42,7 @@ namespace Sels.Core.Extensions.Reflection.Object
 
             if (method.HasValue())
             {
-                return (T) method.CreateDelegate(typeof(T), value);
+                return (T)method.CreateDelegate(typeof(T), value);
             }
 
             throw new ArgumentException($"No method with name {methodName} found on type {objectType}");
@@ -54,12 +50,33 @@ namespace Sels.Core.Extensions.Reflection.Object
 
         public static T Invoke<T>(this Delegate delegateFunction, params object[] parameters)
         {
-            return (T) delegateFunction.DynamicInvoke(parameters);
+            return (T)delegateFunction.DynamicInvoke(parameters);
         }
 
         public static void Invoke(this Delegate delegateFunction, params object[] parameters)
         {
             delegateFunction.DynamicInvoke(parameters);
         }
+        #endregion
+
+        #region Properties
+        public static PropertyInfo[] GetProperties(this object value)
+        {
+            return value.GetType().GetProperties();
+        }
+
+        public static bool AreEqual(this PropertyInfo property, PropertyInfo propertyToCompare)
+        {
+            property.ValidateVariable(nameof(property));
+            propertyToCompare.ValidateVariable(nameof(propertyToCompare));
+
+            if(property.Equals(propertyToCompare) || property.Name.Equals(propertyToCompare.Name))
+            {
+                return true;
+            }
+
+            return false;
+        }
+        #endregion
     }
 }

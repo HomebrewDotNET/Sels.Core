@@ -1,7 +1,10 @@
 ﻿using Sels.Core.Extensions.General.Generic;
+using Sels.Core.Extensions.General.Validation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Sels.Core.Extensions.Object.ItemContainer
@@ -144,6 +147,137 @@ namespace Sels.Core.Extensions.Object.ItemContainer
             return hasDeleted;
         }
         #endregion
+        #endregion
+        #endregion
+
+        #region Dictionary
+        public static void Merge<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, Dictionary<TKey, List<TItem>> dictionaryToMerge)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            dictionaryToMerge.ValidateVariable(nameof(dictionaryToMerge));
+
+            foreach(var pair in dictionaryToMerge)
+            {
+                dictionary.AddValues(pair.Key, pair.Value);
+            }
+        }
+
+        #region AddValue
+        public static void AddValue<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+            item.ValidateVariable(nameof(item));
+
+            if (dictionary.ContainsKey(key))
+            {
+                var newList = new List<TItem>(dictionary[key]);
+                newList.Add(item);
+                dictionary[key] = newList;
+            }
+            else
+            {
+                var newList = new List<TItem>();
+                newList.Add(item);
+                dictionary.Add(key, newList);
+            }
+        }
+
+        public static void AddValue<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+            item.ValidateVariable(nameof(item));
+
+            if (dictionary.ContainsKey(key))
+            {
+                dictionary[key].Add(item);
+            }
+            else
+            {
+                var newList = new List<TItem>();
+                newList.Add(item);
+                dictionary.Add(key, newList);
+            }
+        }
+
+        public static void AddValues<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, IEnumerable<TItem> items)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+            items.ValidateVariable(nameof(items));
+
+            if (dictionary.ContainsKey(key))
+            {
+                var newList = new List<TItem>(dictionary[key]);
+                newList.AddRange(items);
+                dictionary[key] = newList;
+            }
+            else
+            {
+                dictionary.Add(key, items);
+            }
+        }
+
+        public static void AddValues<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, IEnumerable<TItem> items)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+            items.ValidateVariable(nameof(items));
+
+            if (dictionary.ContainsKey(key))
+            {
+                dictionary[key].AddRange(items);
+            }
+            else
+            {
+                dictionary.Add(key, new List<TItem>(items));
+            }
+        }
+        #endregion
+
+        #region ContainsItem
+        public static bool ContainsItem<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+            item.ValidateVariable(nameof(item));
+
+            if (dictionary.ContainsKey(key))
+            {
+                return dictionary[key].Contains(item);
+            }
+
+            return false;
+        }
+
+        public static bool ContainsItem<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+            item.ValidateVariable(nameof(item));
+
+            if (dictionary.ContainsKey(key))
+            {
+                return dictionary[key].Contains(item);
+            }
+
+            return false;
+        }
+
+        public static bool ContainsItem<TKey, TItem>(this Dictionary<TKey, Collection<TItem>> dictionary, TKey key, TItem item)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+            item.ValidateVariable(nameof(item));
+
+            if (dictionary.ContainsKey(key))
+            {
+                return dictionary[key].Contains(item);
+            }
+
+            return false;
+        }
         #endregion
         #endregion
     }
