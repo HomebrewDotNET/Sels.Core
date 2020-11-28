@@ -65,6 +65,16 @@ namespace Sels.Core.Extensions.Reflection.Object
             return value.GetType().GetProperties();
         }
 
+        public static PropertyInfo[] GetProperties(this object value, BindingFlags bindingFlags)
+        {
+            return value.GetType().GetProperties(bindingFlags);
+        }
+
+        public static PropertyInfo[] GetPublicProperties(this object value)
+        {
+            return value.GetProperties(BindingFlags.Public | BindingFlags.Static);
+        }
+
         public static bool AreEqual(this PropertyInfo property, PropertyInfo propertyToCompare)
         {
             property.ValidateVariable(nameof(property));

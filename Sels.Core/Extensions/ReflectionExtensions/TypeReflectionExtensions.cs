@@ -38,6 +38,11 @@ namespace Sels.Core.Extensions.Reflection.Types
             return !type.IsValueType || Nullable.GetUnderlyingType(type) != null;
         }
 
+        public static bool IsString(this Type type)
+        {
+            return type.Equals(typeof(string));
+        }
+
         public static Type GetItemTypeFromContainer(this Type containerType)
         {
             containerType.ValidateVariable(x => x.IsItemContainer(), () => $"{nameof(containerType)} must be an item container like IEnumerable, Array, Dictionary");
