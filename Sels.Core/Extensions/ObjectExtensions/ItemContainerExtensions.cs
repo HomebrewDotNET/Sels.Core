@@ -163,11 +163,24 @@ namespace Sels.Core.Extensions.Object.ItemContainer
         }
 
         #region AddValue
+        public static void AddValue<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+
+            if (dictionary.ContainsKey(key))
+            {
+                dictionary[key] = value;
+            }
+            else
+            {
+                dictionary.Add(key, value);
+            }
+        }
         public static void AddValue<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
         {
             dictionary.ValidateVariable(nameof(dictionary));
             key.ValidateVariable(nameof(key));
-            item.ValidateVariable(nameof(item));
 
             if (dictionary.ContainsKey(key))
             {
@@ -187,7 +200,6 @@ namespace Sels.Core.Extensions.Object.ItemContainer
         {
             dictionary.ValidateVariable(nameof(dictionary));
             key.ValidateVariable(nameof(key));
-            item.ValidateVariable(nameof(item));
 
             if (dictionary.ContainsKey(key))
             {
@@ -234,6 +246,34 @@ namespace Sels.Core.Extensions.Object.ItemContainer
                 dictionary.Add(key, new List<TItem>(items));
             }
         }
+        #endregion
+
+        #region TryGetOrSet
+        public static TValue TryGetOrSet<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+
+            if (dictionary.ContainsKey(key))
+            {
+                value = dictionary[key];
+            }
+            else
+            {
+                dictionary.Add(key, value);
+            }
+
+            return value;
+        }
+
+        public static TValue TryGetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+
+            return dictionary.TryGetOrSet(key, default);
+        }
+
         #endregion
 
         #region ContainsItem

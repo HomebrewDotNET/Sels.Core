@@ -3,6 +3,7 @@ using Sels.Core.Extensions.General.Validation;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
@@ -33,10 +34,17 @@ namespace Sels.Core.Extensions.General.Generic
         {
             if (value != null)
             {
-                foreach (var item in value)
-                {
-                    return true;
-                }
+                return value.Any();
+            }
+
+            return false;
+        }
+
+        public static bool HasValue<T>(this IEnumerable<T> value, Func<T, bool> condition)
+        {
+            if (value != null)
+            {
+                return value.Any(condition);
             }
 
             return false;

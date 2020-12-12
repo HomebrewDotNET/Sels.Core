@@ -50,12 +50,36 @@ namespace Sels.Core.Extensions.Reflection.Object
 
         public static T Invoke<T>(this Delegate delegateFunction, params object[] parameters)
         {
+            delegateFunction.ValidateVariable(nameof(delegateFunction));
+
             return (T)delegateFunction.DynamicInvoke(parameters);
         }
 
         public static void Invoke(this Delegate delegateFunction, params object[] parameters)
         {
+            delegateFunction.ValidateVariable(nameof(delegateFunction));
+
             delegateFunction.DynamicInvoke(parameters);
+        }
+
+        public static T InvokeOrDefault<T>(this Delegate delegateFunction, params object[] parameters)
+        {
+            if(delegateFunction != null)
+            {
+                return delegateFunction.Invoke<T>(parameters);
+            }
+            else
+            {
+                return default;
+            }
+        }
+
+        public static void InvokeOrDefault(this Delegate delegateFunction, params object[] parameters)
+        {
+            if (delegateFunction != null)
+            {
+                delegateFunction.Invoke(parameters);
+            }
         }
         #endregion
 
@@ -86,6 +110,60 @@ namespace Sels.Core.Extensions.Reflection.Object
             }
 
             return false;
+        }
+
+        public static T GetValue<T>(this PropertyInfo property, object sourceObject)
+        {
+            property.ValidateVariable(nameof(property));
+            sourceObject.ValidateVariable(nameof(sourceObject));
+
+            return (T)property.GetValue(sourceObject);
+        }
+
+        public static bool CanAssign<T>(this PropertyInfo property)
+        {
+            property.ValidateVariable(nameof(property));
+            var typeToCheck = typeof(T);
+            var propertyType = property.PropertyType;
+
+            return propertyType.IsAssignableFrom(typeToCheck);
+        }
+
+        public static bool TryGetPropertyInfo(this object sourceObject, string propertyName, out PropertyInfo property)
+        {
+            sourceObject.ValidateVariable(nameof(sourceObject));
+            propertyName.ValidateVariable(nameof(propertyName));
+
+            property = sourceObject.GetType().GetProperty(propertyName);
+
+            return property != null;
+        }
+
+        public static PropertyInfo GetPropertyInfo(this object sourceObject, string propertyName)
+        {
+            sourceObject.ValidateVariable(nameof(sourceObject));
+            propertyName.ValidateVariable(nameof(propertyName));
+
+            if(sourceObject.TryGetPropertyInfo(propertyName, out var property))
+            {
+                return property;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Could not find property <{propertyName}> on object <{sourceObject.GetType()}>");
+            }
+        }
+
+        public static void SetDefault(this PropertyInfo property, object sourceObject)
+        {
+            property.ValidateVariable(nameof(property));
+            sourceObject.ValidateVariable(nameof(sourceObject));
+
+            var propertyType = property.PropertyType;
+
+            var defaultValue = propertyType.GetDefaultValue();
+
+            property.SetValue(sourceObject, defaultValue);
         }
         #endregion
     }

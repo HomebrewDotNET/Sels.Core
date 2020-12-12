@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.Core.Extensions.ReflectionExtensions
+namespace Sels.Core.Extensions.Reflection.Delegates
 {
     public static class DelegateReflectionExtensions
     {

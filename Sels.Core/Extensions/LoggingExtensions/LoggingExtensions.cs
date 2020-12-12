@@ -355,22 +355,22 @@ namespace Sels.Core.Extensions.Logging
         #region Timed Logger
         public static TimedLogger CreateTimedLogger(this ILogger logger, LogLevel logLevel, string beginMessage, Func<TimeSpan, string> endMessageFunc)
         {
-            return new TimedLogger(logger, logLevel, () => beginMessage, endMessageFunc);
+            return new StopWatchTimedLogger(logger, logLevel, () => beginMessage, endMessageFunc);
         }
 
         public static TimedLogger CreateTimedLogger(this IEnumerable<ILogger> loggers, LogLevel logLevel, string beginMessage, Func<TimeSpan, string> endMessageFunc)
         {
-            return new TimedLogger(loggers, logLevel, () => beginMessage, endMessageFunc);
+            return new StopWatchTimedLogger(loggers, logLevel, () => beginMessage, endMessageFunc);
         }
 
         public static TimedLogger CreateTimedLogger(this ILogger logger, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc)
         {
-            return new TimedLogger(logger, logLevel, beginMessageFunc, endMessageFunc);
+            return new StopWatchTimedLogger(logger, logLevel, beginMessageFunc, endMessageFunc);
         }
 
         public static TimedLogger CreateTimedLogger(this IEnumerable<ILogger> loggers, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc)
         {
-            return new TimedLogger(loggers, logLevel, beginMessageFunc, endMessageFunc);
+            return new StopWatchTimedLogger(loggers, logLevel, beginMessageFunc, endMessageFunc);
         }
         #endregion
     }

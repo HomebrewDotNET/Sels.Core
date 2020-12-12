@@ -66,6 +66,45 @@ namespace Sels.Core.Components.Caching
             _setCase = setCase;
         }
 
+        public ValueCache(object lockObject, T value, Func<T> valueInitializer)
+        {
+            valueInitializer.ValidateVariable(nameof(valueInitializer));
+
+            _threadLock = lockObject ?? new object();
+            _valueInitializer = valueInitializer;
+            Set(value);
+        }
+
+        public ValueCache(object lockObject, Func<T> valueInitializer)
+        {
+
+            valueInitializer.ValidateVariable(nameof(valueInitializer));
+
+            _threadLock = lockObject ?? new object();
+            _valueInitializer = valueInitializer;
+        }
+
+        public ValueCache(object lockObject, T value, Predicate<T> setCase, Func<T> valueInitializer)
+        {
+            valueInitializer.ValidateVariable(nameof(valueInitializer));
+            setCase.ValidateVariable(nameof(setCase));
+
+            _threadLock = lockObject ?? new object();
+            _valueInitializer = valueInitializer;
+            _setCase = setCase;
+            Set(value);
+        }
+
+        public ValueCache(object lockObject, Predicate<T> setCase, Func<T> valueInitializer)
+        {
+            valueInitializer.ValidateVariable(nameof(valueInitializer));
+            setCase.ValidateVariable(nameof(setCase));
+
+            _threadLock = lockObject ?? new object();
+            _valueInitializer = valueInitializer;
+            _setCase = setCase;
+        }
+
 
         public void Set(T value)
         {

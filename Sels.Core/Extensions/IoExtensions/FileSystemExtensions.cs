@@ -87,7 +87,8 @@ namespace Sels.Core.Extensions.Io.FileSystem
         #region Directory
         public static bool CreateIfNotExistAndValidate(this DirectoryInfo directory, string parameterName)
         {
-            directory.ValidateIfExists(parameterName);
+            directory.ValidateVariable(nameof(directory));
+            parameterName.ValidateVariable(nameof(parameterName));
 
             if (directory != null && !directory.Exists)
             {

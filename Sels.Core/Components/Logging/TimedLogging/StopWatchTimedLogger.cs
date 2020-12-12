@@ -11,7 +11,7 @@ using System.Text;
 
 namespace Sels.Core.Components.Logging
 {
-    public class TimedLogger : IDisposable
+    public class StopWatchTimedLogger : TimedLogger
     {
         // Fields
         private readonly LogLevel _logLevel;
@@ -25,12 +25,12 @@ namespace Sels.Core.Components.Logging
         // Delegates
         private readonly Func<TimeSpan, string> _endMessageFunc;
 
-        public TimedLogger(ILogger logger, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc) : this(logger.ItemToArrayOrDefault(), logLevel, beginMessageFunc, endMessageFunc)
+        public StopWatchTimedLogger(ILogger logger, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc) : this(logger.ItemToArrayOrDefault(), logLevel, beginMessageFunc, endMessageFunc)
         {
 
         }
 
-        public TimedLogger(IEnumerable<ILogger> loggers, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc)
+        public StopWatchTimedLogger(IEnumerable<ILogger> loggers, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc)
         {
             beginMessageFunc.ValidateVariable(nameof(beginMessageFunc));
             endMessageFunc.ValidateVariable(nameof(endMessageFunc));
@@ -50,49 +50,34 @@ namespace Sels.Core.Components.Logging
 
         private void Log(string message)
         {
-            Log(x => message);
+            _loggers.LogMessage(_logLevel, message);
         }
 
-        public void Log(Func<TimeSpan, string> messageFunc, Exception exception = null)
+        public override void Log(Action<TimeSpan, IEnumerable<ILogger>> loggingAction)
         {
-            Log(_logLevel, messageFunc, exception);         
+            loggingAction.ValidateVariable(nameof(loggingAction));
+
+            loggingAction(_stopWatch.Elapsed, _loggers);
         }
 
-        public void Log(LogLevel level, Func<TimeSpan, string> messageFunc, Exception exception = null)
+        public override void Dispose()
         {
-            if (_stopWatch.HasValue())
-            {
-                messageFunc.ValidateVariable(nameof(messageFunc));
-
-                if (exception != null)
-                {
-                    _loggers.LogException(level, messageFunc(_stopWatch.Elapsed), exception);
-                }
-                else
-                {
-                    _loggers.LogMessage(level, messageFunc(_stopWatch.Elapsed));
-                }
-
-            }
+            EndLog((x, y) => y.LogMessage(_logLevel, _endMessageFunc(x)));
         }
 
-        public void Dispose()
-        {
-            EndLog(_endMessageFunc);
-        }
-
-        public void EndLog(Func<TimeSpan, string> endMessageFunc, Exception exception = null)
+        public override void EndLog(Action<TimeSpan, IEnumerable<ILogger>> loggingAction)
         {
             try
             {
                 lock (_threadLock)
                 {
-                    if (!_isDisposed && endMessageFunc.HasValue())
+                    if (!_isDisposed)
                     {
                         if (_stopWatch.HasValue())
                         {
                             _stopWatch.Stop();
-                            Log(endMessageFunc, exception);
+
+                            Log(loggingAction);
                         }
 
                         _isDisposed = true;

@@ -65,6 +65,18 @@ namespace Sels.Core.Extensions.Reflection.Types
             throw new NotSupportedException($"Could not extract underlying item type from type {containerType}");
         }
 
+        public static object GetDefaultValue(this Type type)
+        {
+            type.ValidateVariable(nameof(type));
+
+            if (type.IsValueType)
+            {
+                return type.Construct();
+            }
+
+            return null;
+        }
+
         #region Property Finder
         public static PropertyInfo FindProperty(this Type type, string propertyName)
         {
@@ -88,6 +100,44 @@ namespace Sels.Core.Extensions.Reflection.Types
         public static Type GetAsDelegateType(this MethodInfo method)
         {
             return Expression.GetDelegateType(method.GetDelegateTypes());
+        }
+        #endregion
+
+        #region Construction
+        public static T Construct<T>(this Type type)
+        {
+            type.ValidateVariable(nameof(type));
+
+            var instance = Activator.CreateInstance(type);
+
+            return (T)instance;
+        }
+
+        public static T Construct<T>(this Type type, params object[] parameters)
+        {
+            type.ValidateVariable(nameof(type));
+
+            var instance = Activator.CreateInstance(type, parameters);
+
+            return (T)instance;
+        }
+
+        public static object Construct(this Type type)
+        {
+            type.ValidateVariable(nameof(type));
+
+            var instance = Activator.CreateInstance(type);
+
+            return instance;
+        }
+
+        public static object Construct(this Type type, params object[] parameters)
+        {
+            type.ValidateVariable(nameof(type));
+
+            var instance = Activator.CreateInstance(type, parameters);
+
+            return instance;
         }
         #endregion
     }
