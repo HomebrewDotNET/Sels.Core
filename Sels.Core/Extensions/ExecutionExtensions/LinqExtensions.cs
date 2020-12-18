@@ -158,6 +158,48 @@ namespace Sels.Core.Extensions.Execution.Linq
         }
         #endregion
 
+        #region ExecuteOrDefault
+        public static void ExecuteOrDefault(this Action action)
+        {
+            if (action.HasValue())
+            {
+                action();
+            }
+        }
+        public static void ExecuteOrDefault<T>(this Action<T> action, T item)
+        {
+            if (action.HasValue())
+            {
+                action(item);
+            }          
+        }
+        #endregion
+
+        #region ExecuteOrDefault
+        public static void ForceExecuteOrDefault(this Action action)
+        {
+            try
+            {
+                if (action.HasValue())
+                {
+                    action();
+                }
+            }
+            catch { }           
+        }
+        public static void ForceExecuteOrDefault<T>(this Action<T> action, T item)
+        {
+            try
+            {
+                if (action.HasValue())
+                {
+                    action(item);
+                }
+            }
+            catch { }           
+        }
+        #endregion
+
         #endregion
 
         #region ValueChecker

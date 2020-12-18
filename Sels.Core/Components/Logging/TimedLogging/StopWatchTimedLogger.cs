@@ -50,14 +50,20 @@ namespace Sels.Core.Components.Logging
 
         private void Log(string message)
         {
-            _loggers.LogMessage(_logLevel, message);
+            if (_loggers.HasValue())
+            {
+                _loggers.LogMessage(_logLevel, message);
+            }            
         }
 
         public override void Log(Action<TimeSpan, IEnumerable<ILogger>> loggingAction)
         {
             loggingAction.ValidateVariable(nameof(loggingAction));
 
-            loggingAction(_stopWatch.Elapsed, _loggers);
+            if(_stopWatch.HasValue() && _loggers.HasValue())
+            {
+                loggingAction(_stopWatch.Elapsed, _loggers);
+            }            
         }
 
         public override void Dispose()

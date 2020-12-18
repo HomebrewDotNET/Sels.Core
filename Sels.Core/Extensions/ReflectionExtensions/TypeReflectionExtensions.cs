@@ -25,7 +25,7 @@ namespace Sels.Core.Extensions.Reflection.Types
 
         public static bool IsTypedEnumerable(this Type type)
         {
-            return type.IsArray || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+            return type.IsArray || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) || type.GetInterfaces().Any(x => x.IsTypedEnumerable());
         }
 
         public static bool IsDictionary(this Type type)

@@ -19,7 +19,7 @@ namespace Sels.Core.Extensions.General.Generic
 
 
         #region HasValue
-        public static bool HasValue<T>(this T value)
+        public static bool HasValue(this object value)
         {
             return !value.IsDefault();
         }
