@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Extensions.General.Generic;
+using Sels.Core.Extensions.General.Validation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -238,6 +239,55 @@ namespace Sels.Core.Extensions.Execution.Linq
 
             return value;
         }
+        #endregion
+
+        #region IfContains
+        public static void IfContains<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key,  Action<TValue> action)
+        {
+            action.ValidateVariable(nameof(action));
+
+            if(dictionary.HasValue() && key != null)
+            {
+                if (dictionary.ContainsKey(key))
+                {
+                    action(dictionary[key]);
+                }
+            }
+        }
+        #endregion
+
+        #region Select
+        public static TSelect[] SelectOrDefault<T, TSelect>(this T[] items, Func<T, TSelect> select)
+        {
+            
+            if (items.HasValue())
+            {
+                var list = new List<TSelect>();
+
+                foreach(var item in items)
+                {
+                    list.Add(select(item));
+                }
+
+                return list.ToArray();
+            }
+            else
+            {
+                return default;
+            }            
+        }
+
+        public static IEnumerable<TSelect> SelectOrDefault<T, TSelect>(this IEnumerable<T> items, Func<T, TSelect> select)
+        {
+            if (items.HasValue())
+            {
+                foreach (var item in items)
+                {
+                    yield return select(item);
+                }
+            }
+        }
+
         #endregion
     }
 }

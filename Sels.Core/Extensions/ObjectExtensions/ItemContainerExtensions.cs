@@ -177,7 +177,7 @@ namespace Sels.Core.Extensions.Object.ItemContainer
                 dictionary.Add(key, value);
             }
         }
-        public static void AddValue<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
+        public static void AddValueToCollection<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
         {
             dictionary.ValidateVariable(nameof(dictionary));
             key.ValidateVariable(nameof(key));
@@ -196,7 +196,7 @@ namespace Sels.Core.Extensions.Object.ItemContainer
             }
         }
 
-        public static void AddValue<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
+        public static void AddValueToList<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
         {
             dictionary.ValidateVariable(nameof(dictionary));
             key.ValidateVariable(nameof(key));

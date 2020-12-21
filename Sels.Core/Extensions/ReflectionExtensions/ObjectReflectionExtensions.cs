@@ -81,6 +81,28 @@ namespace Sels.Core.Extensions.Reflection.Object
                 delegateFunction.Invoke(parameters);
             }
         }
+
+        public static IEnumerable<T> InvokeOrDefault<T>(this IEnumerable<Delegate> delegates, params object[] parameters)
+        {
+            if (delegates.HasValue())
+            {
+                foreach(var delegateFunc in delegates)
+                {
+                    yield return delegateFunc.InvokeOrDefault<T>(parameters);
+                }
+            }
+        }
+
+        public static void InvokeOrDefault(this IEnumerable<Delegate> delegates, params object[] parameters)
+        {
+            if (delegates.HasValue())
+            {
+                foreach (var delegateFunc in delegates)
+                {
+                    delegateFunc.InvokeOrDefault(parameters);
+                }
+            }
+        }
         #endregion
 
         #region Properties
