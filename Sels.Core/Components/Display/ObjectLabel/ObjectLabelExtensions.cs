@@ -25,6 +25,11 @@ namespace Sels.Core.Components.Display.ObjectLabel
             return type.GetLabel(LabelFormat.UpperCaseToWords);
         }
 
+        public static string GetPropertyLabel(this object source, string propertyName)
+        {
+            return source.GetPropertyLabel(propertyName);
+        }
+
         public static string GetLabel(this PropertyInfo property, LabelFormat format)
         {
             property.ValidateVariable(nameof(property));
@@ -55,6 +60,16 @@ namespace Sels.Core.Components.Display.ObjectLabel
             {
                 return format.FormatLabel(type.Name);
             }
+        }
+
+        public static string GetPropertyLabel(this object source, string propertyName, LabelFormat format)
+        {
+            source.ValidateVariable(nameof(source));
+            propertyName.ValidateVariable(nameof(propertyName));
+
+            var property = source.GetPropertyInfo(propertyName);
+
+            return property.GetLabel(format);
         }
 
         private static string FormatLabel(this LabelFormat format, string label)
