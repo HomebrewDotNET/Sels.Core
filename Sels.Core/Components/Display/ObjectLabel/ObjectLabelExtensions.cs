@@ -9,9 +9,9 @@ using System.Text.RegularExpressions;
 using Sels.Core.Extensions.Object.ItemContainer;
 using Sels.Core.Extensions.Object.String;
 
-namespace Sels.Core.Components.Display.PropertyLabel
+namespace Sels.Core.Components.Display.ObjectLabel
 {
-    public static class PropertyLabelExtensions
+    public static class ObjectLabelExtensions
     {
         private const string UpperCaseSplitRegex = @"(?<!^)(?=[A-Z])";
 
@@ -29,7 +29,7 @@ namespace Sels.Core.Components.Display.PropertyLabel
         {
             property.ValidateVariable(nameof(property));
 
-            var labelAttribute = property.GetAttributeOrDefault<PropertyLabel>();
+            var labelAttribute = property.GetAttributeOrDefault<ObjectLabel>();
 
             if (labelAttribute.HasValue())
             {
@@ -45,7 +45,7 @@ namespace Sels.Core.Components.Display.PropertyLabel
         {
             type.ValidateVariable(nameof(type));
 
-            var labelAttribute = type.GetAttributeOrDefault<PropertyLabel>();
+            var labelAttribute = type.GetAttributeOrDefault<ObjectLabel>();
 
             if (labelAttribute.HasValue())
             {

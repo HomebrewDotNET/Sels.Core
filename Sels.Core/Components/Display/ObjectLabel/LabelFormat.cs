@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.Core.Components.Display.PropertyLabel
+namespace Sels.Core.Components.Display.ObjectLabel
 {
     public enum LabelFormat
     {

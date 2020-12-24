@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.Core.Components.Display.PropertyLabel
+namespace Sels.Core.Components.Display.ObjectLabel
 {
-    public class PropertyLabel : Attribute
+    public class ObjectLabel : Attribute
     {
         public string Label { get; }
-        public PropertyLabel(string label)
+        public ObjectLabel(string label)
         {
             Label = label;    
         }
