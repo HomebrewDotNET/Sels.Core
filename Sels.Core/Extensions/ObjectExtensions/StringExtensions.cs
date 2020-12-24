@@ -11,6 +11,7 @@ namespace Sels.Core.Extensions.Object.String
     public static class StringExtensions
     {
         private const string StringTab = "\t";
+        private const string StringSpace = " ";
 
         public static string FormatString(this string value, params object[] parameters)
         {
@@ -160,6 +161,11 @@ namespace Sels.Core.Extensions.Object.String
         public static string JoinTab(this IEnumerable<string> values)
         {
             return values.Join(StringTab);
+        }
+
+        public static string JoinSpace(this IEnumerable<string> values)
+        {
+            return values.Join(StringSpace);
         }
 
         public static string JoinStrings(params string[] strings)

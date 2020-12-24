@@ -13,6 +13,32 @@ namespace Sels.Core.Extensions.Reflection.Object
 {
     public static class ObjectReflectionExtensions
     {
+        #region Attributes
+        public static T GetAttribute<T>(this object source) where T : Attribute
+        {
+            source.ValidateVariable(nameof(source));
+
+            var attribute = source.GetAttributeOrDefault<T>();
+
+            if (!attribute.HasValue())
+            {
+                throw new InvalidOperationException($"Attribute {typeof(T)} was not present on object {source.GetType()}");
+            }
+
+            return attribute;
+        }
+
+        public static T GetAttributeOrDefault<T>(this object source) where T : Attribute
+        {
+            source.ValidateVariable(nameof(source));
+
+            var sourceType = source.GetType();
+
+            return sourceType.GetCustomAttribute<T>();
+        }
+
+        #endregion
+
         #region Delegates
         public static Delegate CreateDelegateForMethod(this object value, string methodName)
         {
