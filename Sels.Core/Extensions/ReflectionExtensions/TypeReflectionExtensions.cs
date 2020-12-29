@@ -15,17 +15,17 @@ namespace Sels.Core.Extensions.Reflection.Types
     {
         public static bool IsItemContainer(this Type type)
         {
-            return type.IsArray || type.IsEnumerable() || type.IsTypedEnumerable();
+            return !type.IsValueType && type.IsArray || type.IsEnumerable() || type.IsTypedEnumerable();
         }
 
         public static bool IsEnumerable(this Type type)
         {
-            return type.IsArray || typeof(IEnumerable).IsAssignableFrom(type);
+            return !type.IsValueType && type.IsArray || typeof(IEnumerable).IsAssignableFrom(type);
         }
 
         public static bool IsTypedEnumerable(this Type type)
         {
-            return type.IsArray || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) || type.GetInterfaces().Any(x => x.IsTypedEnumerable());
+            return !type.IsValueType && type.IsArray || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) || type.GetInterfaces().Any(x => x.IsTypedEnumerable());
         }
 
         public static bool IsDictionary(this Type type)
@@ -88,6 +88,27 @@ namespace Sels.Core.Extensions.Reflection.Types
             property = type.GetProperties().Where(x => x.Name.Equals(propertyName)).FirstOrDefault();
 
             return property != null;
+        }
+
+        public static PropertyInfo FindProperty(this object source, string propertyName)
+        {
+            if (source.HasValue())
+            {
+                return source.GetType().FindProperty(propertyName);
+            }
+
+            return null;
+        }
+
+        public static bool TryFindProperty(this object source, string propertyName, out PropertyInfo property)
+        {
+            property = null;
+            if (source.HasValue())
+            {
+                return source.GetType().TryFindProperty(propertyName, out property);
+            }
+
+            return false;
         }
 
         public static Type[] GetDelegateTypes(this MethodInfo method)

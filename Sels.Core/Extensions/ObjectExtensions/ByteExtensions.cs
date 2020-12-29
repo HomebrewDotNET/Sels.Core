@@ -14,6 +14,13 @@ namespace Sels.Core.Extensions.Object.Byte
             return Convert.ToBase64String(item);
         }
 
+        public static string ToString<TEncoding>(this byte[] item) where TEncoding : Encoding, new()
+        {
+            var encoding = new TEncoding();
+
+            return encoding.GetString(item);
+        }
+
         #region GetBytes
         public static byte[] GetBytes(this object sourceObject)
         {
@@ -30,6 +37,11 @@ namespace Sels.Core.Extensions.Object.Byte
         public static byte[] GetBytes(this string sourceString)
         {
             return sourceString.GetBytes<UTF8Encoding>();
+        }
+
+        public static byte[] GetBytesFromBase64(this string sourceString)
+        {
+            return Convert.FromBase64String(sourceString);
         }
 
         public static byte[] GetBytes<TEncoding>(this string sourceString) where TEncoding : Encoding, new()

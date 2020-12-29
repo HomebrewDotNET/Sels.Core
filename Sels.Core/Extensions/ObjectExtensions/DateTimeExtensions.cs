@@ -28,6 +28,26 @@ namespace Sels.Core.Extensions.Object.Time
 
             return Math.Abs(years);
         }
+
+        public static bool IsToday(this DateTime date)
+        {
+            return date.IsSameDay(DateTime.Now);
+        }
+
+        public static bool IsSameDay(this DateTime date, DateTime otherDate)
+        {
+            return (date.DayOfYear == otherDate.DayOfYear) && (date.Year == otherDate.Year);
+        }
+
+        public static bool IsInPast(this DateTime date)
+        {
+            return date < DateTime.Now;
+        }
+
+        public static bool IsInFuture(this DateTime date)
+        {
+            return date > DateTime.Now;
+        }
         #endregion
 
         #region Timespan

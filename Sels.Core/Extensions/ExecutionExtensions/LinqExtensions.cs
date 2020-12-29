@@ -3,6 +3,7 @@ using Sels.Core.Extensions.General.Validation;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sels.Core.Extensions.Execution.Linq
 {
@@ -32,6 +33,19 @@ namespace Sels.Core.Extensions.Execution.Linq
                     action(item);
                 }
             }          
+
+            return items;
+        }
+
+        public static async Task<IEnumerable<T>> ExecuteAsync<T>(this IEnumerable<T> items, Func<T, Task> action)
+        {
+            if (items.HasValue())
+            {
+                foreach (var item in items)
+                {
+                    await action(item);
+                }
+            }
 
             return items;
         }
@@ -258,8 +272,7 @@ namespace Sels.Core.Extensions.Execution.Linq
 
         #region Select
         public static TSelect[] SelectOrDefault<T, TSelect>(this T[] items, Func<T, TSelect> select)
-        {
-            
+        {         
             if (items.HasValue())
             {
                 var list = new List<TSelect>();
@@ -284,6 +297,20 @@ namespace Sels.Core.Extensions.Execution.Linq
                 foreach (var item in items)
                 {
                     yield return select(item);
+                }
+            }
+        }
+
+        public static IEnumerable<TItem> SelectCollection<T, TItem>(this IEnumerable<T> items, Func<T, IEnumerable<TItem>> select)
+        {
+            if (items.HasValue())
+            {
+                foreach (var item in items)
+                {
+                    foreach(var collectionItem in select(item))
+                    {
+                        yield return collectionItem;
+                    }
                 }
             }
         }

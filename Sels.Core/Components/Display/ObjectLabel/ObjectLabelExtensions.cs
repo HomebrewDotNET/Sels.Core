@@ -14,7 +14,10 @@ namespace Sels.Core.Components.Display.ObjectLabel
     public static class ObjectLabelExtensions
     {
         private const string UpperCaseSplitRegex = @"(?<!^)(?=[A-Z])";
-
+        public static string GetLabel(this object source)
+        {
+            return source.GetLabel(LabelFormat.UpperCaseToWords);
+        }
         public static string GetLabel(this PropertyInfo property)
         {
             return property.GetLabel(LabelFormat.UpperCaseToWords);
@@ -27,7 +30,14 @@ namespace Sels.Core.Components.Display.ObjectLabel
 
         public static string GetPropertyLabel(this object source, string propertyName)
         {
-            return source.GetPropertyLabel(propertyName);
+            return source.GetPropertyLabel(propertyName, LabelFormat.UpperCaseToWords);
+        }
+
+        public static string GetLabel(this object source, LabelFormat format)
+        {
+            source.ValidateVariable(nameof(source));
+
+            return source.GetType().GetLabel(format);
         }
 
         public static string GetLabel(this PropertyInfo property, LabelFormat format)

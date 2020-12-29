@@ -1,11 +1,15 @@
 ﻿using Sels.Core.Components.Backup;
 using Sels.Core.Components.Console;
+using Sels.Core.Components.Filtering.ObjectFilter;
 using Sels.Core.Components.RecurrentAction;
 using Sels.Core.Extensions.Execution.Linq;
 using Sels.Core.Extensions.Io.FileSystem;
+using Sels.Core.TestTool.Filter;
 using Sels.Core.TestTool.RecurrentActions;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Sels.Core.TestTool
@@ -14,7 +18,7 @@ namespace Sels.Core.TestTool
     {
         static void Main(string[] args)
         {
-            ConsoleHelper.Run(() => DoBackUpStuff(5));
+            ConsoleHelper.Run(FilterTest);
         }
 
         private static void DoRecurrentStuff()
@@ -64,6 +68,41 @@ namespace Sels.Core.TestTool
             var restoredBackUp = backUpManager.RestoreEarliestBackup(new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory));
 
             Console.WriteLine($"Content from restored back up: {restoredBackUp.BackedupFile.Read()}");
+        }
+
+        private static void FilterTest()
+        {
+            var personFilter = new ObjectFilter<Person, Person>();
+
+            var persons = new List<Person>()
+            {
+                new Person()
+                {
+                    FirstName = "Jens",
+                    LastName = "Sels"
+                },
+                new Person()
+                {
+                    FirstName = "Lynn",
+                    LastName = "Laridon"
+                }
+            };
+
+            var filterPerson = new Person()
+            {
+                FirstName = "jens"
+            };
+
+            var filteredPersons = personFilter.Filter(filterPerson, persons);
+
+            Console.WriteLine($"Filter was: {nameof(Person.FirstName)}: {filterPerson.FirstName}, {nameof(Person.LastName)}: {filterPerson.LastName}");
+
+            Console.WriteLine($"Persons: {persons.Count}, Filtered: {filteredPersons.Count()}");
+
+            foreach(var filteredPerson in filteredPersons)
+            {
+                Console.WriteLine($"{filteredPerson.FirstName} {filteredPerson.LastName} remained after filtering");
+            }
         }
     }
 }

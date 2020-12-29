@@ -4,6 +4,7 @@ using Sels.Core.Extensions.General.Generic;
 using Sels.Core.Extensions.General.Validation;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -31,7 +32,7 @@ namespace Sels.Core.Extensions.Io.FileSystem
 
         public static bool CreateIfNotExistAndValidate(this FileInfo file, string parameterName)
         {
-            return file.CreateIfNotExistAndValidate(string.Empty);
+            return file.CreateIfNotExistAndValidate(parameterName);
         }
 
         public static bool CreateIfNotExistAndValidate(this FileInfo file, object content, string parameterName)
@@ -52,6 +53,25 @@ namespace Sels.Core.Extensions.Io.FileSystem
             }
 
             return false;
+        }
+
+        public static string GetExtensionName(this FileInfo file)
+        {
+            if(file != null && file.Exists)
+            {
+                return file.Extension.TrimStart('.');
+            }
+
+            return string.Empty;
+        }
+
+        public static void OpenWithWindowsExplorer(this FileInfo file)
+        {
+            if (file != null && file.Exists)
+            {
+                Process.Start("explorer.exe", file.FullName);
+            }
+
         }
 
         #region Io Operations
@@ -81,6 +101,17 @@ namespace Sels.Core.Extensions.Io.FileSystem
 
             return file.CopyTo(newFileName, overwrite);
         }
+
+        public static FileInfo CopyTo(this FileInfo file, DirectoryInfo destinationDirectory, string fileName, bool overwrite = false)
+        {
+            file.ValidateVariable(nameof(file));
+            destinationDirectory.CreateIfNotExistAndValidate(nameof(destinationDirectory));
+            fileName.ValidateVariable(nameof(fileName));
+
+            var newFileName = Path.Combine(destinationDirectory.FullName, fileName);
+
+            return file.CopyTo(newFileName, overwrite);
+        }
         #endregion
         #endregion
 
@@ -100,11 +131,34 @@ namespace Sels.Core.Extensions.Io.FileSystem
             return false;
         }
 
+        public static void CreateIfNotExist(this DirectoryInfo directory)
+        {
+            directory.ValidateVariable(nameof(directory));
+
+            if (!directory.Exists)
+            {
+                directory.Create();
+            }
+        }
+
         public static bool IsEmpty(this DirectoryInfo directory)
         {
             directory.ValidateVariable(nameof(directory));
 
             return directory.GetDirectories().Length == 0 && directory.GetFiles().Length == 0;
+        }
+
+        public static bool DeleteIfEmpty(this DirectoryInfo directory)
+        {
+            directory.ValidateVariable(nameof(directory));
+
+            if (directory.IsEmpty())
+            {
+                directory.Delete();
+                return true;
+            }
+
+            return false;
         }
 
         #region Copying 
