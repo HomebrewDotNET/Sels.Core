@@ -12,6 +12,7 @@ namespace Sels.Core.Extensions.Object.String
     {
         private const string StringTab = "\t";
         private const string StringSpace = " ";
+        private const string NoStringSpace = "";
 
         public static string FormatString(this string value, params object[] parameters)
         {
@@ -143,57 +144,62 @@ namespace Sels.Core.Extensions.Object.String
         #region Join
         private const char DefaultJoinValue = ',';
 
-        public static string Join(this IEnumerable<string> values, string joinValue)
+        public static string JoinString<T>(this IEnumerable<T> values, string joinValue)
         {
             return string.Join(joinValue, values);
         }
 
-        public static string Join(this IEnumerable<string> values)
+        public static string JoinString<T>(this IEnumerable<T> values)
         {
-            return values.Join(DefaultJoinValue.ToString());
+            return values.JoinString(DefaultJoinValue.ToString());
         }
 
-        public static string JoinNewLine(this IEnumerable<string> values)
+        public static string JoinStringNewLine<T>(this IEnumerable<T> values)
         {
-            return values.Join(Environment.NewLine);
+            return values.JoinString(Environment.NewLine);
         }
 
-        public static string JoinTab(this IEnumerable<string> values)
+        public static string JoinStringTab<T>(this IEnumerable<T> values)
         {
-            return values.Join(StringTab);
+            return values.JoinString(StringTab);
         }
 
-        public static string JoinSpace(this IEnumerable<string> values)
+        public static string JoinStringSpace<T>(this IEnumerable<T> values)
         {
-            return values.Join(StringSpace);
+            return values.JoinString(StringSpace);
         }
 
-        public static string JoinStrings(params string[] strings)
+        public static string JoinStringNoSpace<T>(this IEnumerable<T> values)
         {
-            strings.ValidateVariable(nameof(strings));
+            return values.JoinString(NoStringSpace);
+        }
 
-            return strings.Join();
+        public static string JoinStrings(params object[] values)
+        {
+            values.ValidateVariable(nameof(values));
+
+            return values.JoinString();
         }
 
         public static string JoinStrings(string joinValue, params string[] strings)
         {
             strings.ValidateVariable(nameof(strings));
 
-            return strings.Join(joinValue);
+            return strings.JoinString(joinValue);
         }
 
         public static string JoinStringsNewLine(params string[] strings)
         {
             strings.ValidateVariable(nameof(strings));
 
-            return strings.JoinNewLine();
+            return strings.JoinStringNewLine();
         }
 
         public static string JoinStringsTab(params string[] strings)
         {
             strings.ValidateVariable(nameof(strings));
 
-            return strings.JoinTab();
+            return strings.JoinStringTab();
         }
 
         #endregion

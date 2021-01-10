@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Sels.Core.Excel.Extensions;
 
 namespace Sels.Core.TestTool
 {
@@ -18,7 +19,7 @@ namespace Sels.Core.TestTool
     {
         static void Main(string[] args)
         {
-            ConsoleHelper.Run(FilterTest);
+            ConsoleHelper.Run(ExcelTest);
         }
 
         private static void DoRecurrentStuff()
@@ -102,6 +103,27 @@ namespace Sels.Core.TestTool
             foreach(var filteredPerson in filteredPersons)
             {
                 Console.WriteLine($"{filteredPerson.FirstName} {filteredPerson.LastName} remained after filtering");
+            }
+        }
+
+        private static void ExcelTest()
+        {
+            var list = new List<uint>()
+            {
+                1,
+                27,
+                126,
+                8952,
+                10000,
+                731
+            };
+
+            foreach(var number in list)
+            {
+                var column = number.ToCellReference();
+                var converted = column.ToCellIndex();
+
+                Console.WriteLine($"Index {number} translates to column {column}. With reconverted value as {converted}");
             }
         }
     }

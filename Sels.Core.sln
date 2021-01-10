@@ -9,10 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.TestTool", "Sels.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{488304DF-398B-41FC-B85F-99910195277E}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sels.Core.Unity", "Sels.Core.Unity\Sels.Core.Unity.csproj", "{4EC40D85-FD7F-4365-A811-8B57938DB08C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Unity", "Sels.Core.Unity\Sels.Core.Unity.csproj", "{4EC40D85-FD7F-4365-A811-8B57938DB08C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Excel", "Sels.Core.Excel\Sels.Core.Excel.csproj", "{4CC68328-4DC7-489B-B602-ED488D948F68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +35,10 @@ Global
 		{4EC40D85-FD7F-4365-A811-8B57938DB08C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EC40D85-FD7F-4365-A811-8B57938DB08C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EC40D85-FD7F-4365-A811-8B57938DB08C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CC68328-4DC7-489B-B602-ED488D948F68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CC68328-4DC7-489B-B602-ED488D948F68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CC68328-4DC7-489B-B602-ED488D948F68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CC68328-4DC7-489B-B602-ED488D948F68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

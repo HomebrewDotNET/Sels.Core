@@ -165,7 +165,7 @@ namespace Sels.Core.Extensions.Logging
                 {
                     if (logger.HasValue() && logger.IsEnabled(level) & objects.HasValue() && serializer.HasValue())
                     {
-                        logger.Log(level, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinNewLine());
+                        logger.Log(level, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine());
                     }
                 }
                 catch { }
@@ -180,7 +180,7 @@ namespace Sels.Core.Extensions.Logging
                 {
                     if (logger.HasValue() && logger.IsEnabled(level))
                     {
-                        logger.Log(level, StringExtensions.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinNewLine()));
+                        logger.Log(level, StringExtensions.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
                     }
                 }
                 catch { }
@@ -195,7 +195,7 @@ namespace Sels.Core.Extensions.Logging
                 {
                     if (logger.HasValue() && logger.IsEnabled(level))
                     {
-                        logger.Log(level, exception, StringExtensions.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinNewLine()));
+                        logger.Log(level, exception, StringExtensions.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
                     }
                 }
                 catch { }
@@ -210,7 +210,7 @@ namespace Sels.Core.Extensions.Logging
                 {
                     if (logger.HasValue() && logger.IsEnabled(level))
                     {
-                        logger.Log(level, StringExtensions.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinNewLine()));
+                        logger.Log(level, StringExtensions.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
                     }
                 }
                 catch { }
@@ -225,7 +225,7 @@ namespace Sels.Core.Extensions.Logging
                 {
                     if (logger.HasValue() && logger.IsEnabled(level))
                     {
-                        logger.Log(level, exception, StringExtensions.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinNewLine()));
+                        logger.Log(level, exception, StringExtensions.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
                     }
                 }
                 catch { }

@@ -13,6 +13,14 @@ namespace Sels.Core.Extensions.Reflection.Types
 {
     public static class TypeReflectionExtensions
     {
+        private static readonly HashSet<Type> _numericTypes = new HashSet<Type>
+        {
+            typeof(int),  typeof(double),  typeof(decimal),
+            typeof(long), typeof(short),   typeof(sbyte),
+            typeof(byte), typeof(ulong),   typeof(ushort),
+            typeof(uint), typeof(float)
+        };
+
         public static bool IsItemContainer(this Type type)
         {
             return !type.IsValueType && type.IsArray || type.IsEnumerable() || type.IsTypedEnumerable();
@@ -41,6 +49,11 @@ namespace Sels.Core.Extensions.Reflection.Types
         public static bool IsString(this Type type)
         {
             return type.Equals(typeof(string));
+        }
+
+        public static bool IsNumeric(this Type type)
+        {
+            return _numericTypes.Contains(Nullable.GetUnderlyingType(type) ?? type);
         }
 
         public static Type GetItemTypeFromContainer(this Type containerType)

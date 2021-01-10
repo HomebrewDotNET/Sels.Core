@@ -32,7 +32,29 @@ namespace Sels.Core.Extensions.Execution.Linq
                 {
                     action(item);
                 }
-            }          
+            }
+
+            return items;
+        }
+
+        public static IEnumerable<T> Execute<T>(this IEnumerable<T> items, Action<T> action, Action<T, Exception> exceptionHandler)
+        {
+            if (items.HasValue())
+            {
+
+                foreach (var item in items)
+                {
+                    try
+                    {
+                        action(item);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptionHandler(item, ex);
+                        throw;
+                    }
+                }
+            }
 
             return items;
         }
@@ -59,7 +81,7 @@ namespace Sels.Core.Extensions.Execution.Linq
                     action.ForceExecute(item);
                 }
             }
-            
+
             return items;
         }
 
@@ -80,7 +102,7 @@ namespace Sels.Core.Extensions.Execution.Linq
 
                 }
             }
-            
+
             return items;
         }
 
@@ -99,7 +121,7 @@ namespace Sels.Core.Extensions.Execution.Linq
                     catch { }
                 }
             }
-            
+
             return newItems;
         }
 
@@ -186,7 +208,7 @@ namespace Sels.Core.Extensions.Execution.Linq
             if (action.HasValue())
             {
                 action(item);
-            }          
+            }
         }
         #endregion
 
@@ -200,7 +222,7 @@ namespace Sels.Core.Extensions.Execution.Linq
                     action();
                 }
             }
-            catch { }           
+            catch { }
         }
         public static void ForceExecuteOrDefault<T>(this Action<T> action, T item)
         {
@@ -211,7 +233,7 @@ namespace Sels.Core.Extensions.Execution.Linq
                     action(item);
                 }
             }
-            catch { }           
+            catch { }
         }
         #endregion
 
@@ -256,11 +278,11 @@ namespace Sels.Core.Extensions.Execution.Linq
         #endregion
 
         #region IfContains
-        public static void IfContains<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key,  Action<TValue> action)
+        public static void IfContains<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Action<TValue> action)
         {
             action.ValidateVariable(nameof(action));
 
-            if(dictionary.HasValue() && key != null)
+            if (dictionary.HasValue() && key != null)
             {
                 if (dictionary.ContainsKey(key))
                 {
@@ -272,12 +294,12 @@ namespace Sels.Core.Extensions.Execution.Linq
 
         #region Select
         public static TSelect[] SelectOrDefault<T, TSelect>(this T[] items, Func<T, TSelect> select)
-        {         
+        {
             if (items.HasValue())
             {
                 var list = new List<TSelect>();
 
-                foreach(var item in items)
+                foreach (var item in items)
                 {
                     list.Add(select(item));
                 }
@@ -287,7 +309,7 @@ namespace Sels.Core.Extensions.Execution.Linq
             else
             {
                 return default;
-            }            
+            }
         }
 
         public static IEnumerable<TSelect> SelectOrDefault<T, TSelect>(this IEnumerable<T> items, Func<T, TSelect> select)
@@ -307,7 +329,7 @@ namespace Sels.Core.Extensions.Execution.Linq
             {
                 foreach (var item in items)
                 {
-                    foreach(var collectionItem in select(item))
+                    foreach (var collectionItem in select(item))
                     {
                         yield return collectionItem;
                     }

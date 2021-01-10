@@ -87,7 +87,7 @@ namespace Sels.Core.Components.Display.ObjectLabel
             switch (format)
             {
                 case LabelFormat.UpperCaseToWords:
-                    return Regex.Split(label, UpperCaseSplitRegex).JoinSpace();
+                    return Regex.Split(label, UpperCaseSplitRegex).JoinStringSpace();
                 default:
                     return label;
 

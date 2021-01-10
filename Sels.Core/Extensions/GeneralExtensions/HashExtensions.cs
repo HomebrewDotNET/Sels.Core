@@ -22,7 +22,7 @@ namespace Sels.Core.Extensions.GeneralExtensions
             {
                 var hashedBytes = hash.ComputeHash(sourceObject.GetBytes());
 
-                return hashedBytes.Select(x => x.ToString("x2")).Join(string.Empty);
+                return hashedBytes.Select(x => x.ToString("x2")).JoinString(string.Empty);
             }
         }
     }

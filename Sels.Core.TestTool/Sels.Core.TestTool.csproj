@@ -10,6 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Sels.Core.Excel\Sels.Core.Excel.csproj" />
+    <ProjectReference Include="..\Sels.Core.Unity\Sels.Core.Unity.csproj" />
     <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
   </ItemGroup>
 

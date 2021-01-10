@@ -88,5 +88,17 @@ namespace Sels.Core.Extensions.General.Math
 
             return sum ?? 0;
         }
+
+        public static int CalculateSquared(this int value, int squareValue, int square)
+        {
+            while(square > 0)
+            {
+                value *= squareValue;
+
+                square--;
+            }
+
+            return value;
+        }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions.General.Math;
 using Sels.Core.Extensions.General.Validation;
+using Sels.Core.Extensions.Object.Number;
+using Sels.Core.Extensions.Object.String;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -119,6 +122,58 @@ namespace Sels.Core.Extensions.General.Generic
             return false;
         }
         #endregion
+        #endregion
+
+        #region AlphaNumeric
+        public static string ToAlphaNumericString(this int value, int width, int offset = 0)
+        {
+            return value.ToAlphaNumericString(width, offset);
+        }
+        public static string ToAlphaNumericString(this uint value, int width, int offset = 0)
+        {
+            var builder = new StringBuilder();
+            var convertedWidth = width.ToUInt32();
+
+            while (value > 0)
+            {
+                char referenceChar;
+                if (value <= width)
+                {
+                    referenceChar = (char) ('A' + value- offset);
+
+                    value = 0;
+                }
+                else
+                {
+                    referenceChar = (char)('A' + (value % width)- offset);
+
+                    value /= convertedWidth;
+                }
+
+                builder.Insert(0, referenceChar);
+            }
+
+            return builder.ToString();
+        }
+
+        public static uint ToStringFromAlphaNumeric(this string value, int width, int offset = 0)
+        {
+            var chars = value.ToCharArray().Where(x => char.IsLetter(x)).ToArray();
+            int cellIndex = 0;
+
+            for(int i = chars.Length; i > 0; i--)
+            {
+                // Add offset because 1 = A
+                var actualCharValue = chars[i-1] - 'A' + offset;
+
+                var multiplier = chars.Length-i;
+
+                cellIndex += actualCharValue.CalculateSquared(width, multiplier);
+            }
+
+            return cellIndex.ToUInt32();
+        }
+
         #endregion
     }
 }
