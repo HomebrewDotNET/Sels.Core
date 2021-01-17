@@ -20,5 +20,10 @@ namespace Sels.Core.Excel.Export.Definitions.Tables
             ColumnCellType = columnCellType;
             ValueGetter = valueGetter;
         }
+
+        public object GetValue(TResource resource)
+        {
+            return ValueGetter(resource);
+        }
     }
 }

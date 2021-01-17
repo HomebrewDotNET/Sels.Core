@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Sels.Core.Extensions.Object.String
 {
@@ -17,6 +18,11 @@ namespace Sels.Core.Extensions.Object.String
         public static string FormatString(this string value, params object[] parameters)
         {
             return string.Format(value, parameters);
+        }
+
+        public static string GetWithoutDigits(this string value)
+        {
+            return Regex.Replace(value, @"\d", "");
         }
 
         #region Contains

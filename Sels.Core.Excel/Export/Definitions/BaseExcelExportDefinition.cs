@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Extensions.General.Generic;
 using Sels.Core.Extensions.General.Validation;
+using Sels.Core.Extensions.Reflection.Types;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,27 +9,50 @@ namespace Sels.Core.Excel.Export.Definitions
 {
     public abstract class BaseExcelExportDefinition
     {
-        public string WorksheetName { get; }
+        // Fields
+
+        // Properties
         public object ResourceIdentifier { get; }
+        public SeekMode SeekMode { get; }
 
-        public BaseExcelExportDefinition(string worksheetName, object resourceIdentifier = null)
+        public BaseExcelExportDefinition(SeekMode seekmode, object resourceIdentifier = null)
         {
-            worksheetName.ValidateVariable(nameof(worksheetName));
             ResourceIdentifier = resourceIdentifier;
-
-            WorksheetName = worksheetName;
+            SeekMode = seekmode;
         }
 
-        public bool CanRunWithResource(string resourceIdentifier, object resource)
+        public bool CanRunWithResource(object resourceIdentifier, object resource)
         {
             // If resource identifier is supplied on definition it must match with the incoming resource identifier
-            if (ResourceIdentifier != null || !ResourceIdentifier.Equals(resourceIdentifier)) return false;
+            if (ResourceIdentifier != null && !ResourceIdentifier.Equals(resourceIdentifier)) return false;
 
             // Check if resource is not null and can be assigned from the resource type
-            return resource.HasValue() && ResourceType.IsAssignableFrom(resource.GetType());
+            var hasItems = resource.HasValue();
+            var canBeAssigned = false;
+            if(resource != null)
+            {
+                var resourceType = resource.GetType();
+                canBeAssigned = ResourceType.IsAssignableFrom(resourceType);
+            }
+             
+            return hasItems && canBeAssigned;
+        }
+
+        protected CellType GetCellTypeFromType(Type type)
+        {
+            type.ValidateVariable(nameof(type));
+
+            if (type.IsNumeric())
+            {
+                return CellType.Numeric;
+            }
+
+            return CellType.String;
         }
 
         // Abstractions
         public abstract Type ResourceType { get; }
+
+        public abstract void Export(ExcelCursor cursor, object resource);
     }
 }

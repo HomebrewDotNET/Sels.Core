@@ -144,7 +144,12 @@ namespace Sels.Core.Extensions.Reflection.Object
 
         public static PropertyInfo[] GetPublicProperties(this object value)
         {
-            return value.GetProperties(BindingFlags.Public | BindingFlags.Static);
+            return value.GetProperties(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public);
+        }
+
+        public static PropertyInfo[] GetPublicProperties(this Type type)
+        {
+            return type.GetProperties(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public);
         }
 
         public static bool AreEqual(this PropertyInfo property, PropertyInfo propertyToCompare)

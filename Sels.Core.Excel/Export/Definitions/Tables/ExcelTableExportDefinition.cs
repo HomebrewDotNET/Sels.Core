@@ -1,7 +1,12 @@
-﻿using Sels.Core.Extensions.General.Validation;
+﻿using Sels.Core.Components.Display.ObjectLabel;
+using Sels.Core.Extensions.General.Generic;
+using Sels.Core.Extensions.General.Validation;
+using Sels.Core.Extensions.Object.Number;
+using Sels.Core.Extensions.Reflection.Object;
 using Sels.Core.Extensions.Reflection.Types;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Sels.Core.Excel.Export.Definitions.Tables
@@ -13,24 +18,48 @@ namespace Sels.Core.Excel.Export.Definitions.Tables
 
         // Properties
         public bool GenerateHeaders { get; }
-        public int StartRow { get; set; }
 
-        public override Type ResourceType => typeof(TResource);
+        public override Type ResourceType => typeof(IEnumerable<TResource>);
 
-        public ExcelTableExportDefinition(string worksheetName, bool generateHeaders = true, int startRow = 1, object resourceIdentifier = null) : base(worksheetName, resourceIdentifier)
+        public ExcelTableExportDefinition(SeekMode seekmode, bool generateHeaders = true, object resourceIdentifier = null) : base(seekmode, resourceIdentifier)
         {
-            startRow.ValidateVariable(x => x >= 1, () => $"{nameof(startRow)} must be larger or equal to 1");
-
             GenerateHeaders = generateHeaders;
-            StartRow = startRow;
         }
 
         #region Setup
+        public ExcelTableExportDefinition<TResource> AutoGenerate()
+        {
+            return AutoGenerate(typeof(TResource));
+        }
+
+        public ExcelTableExportDefinition<TResource> AutoGenerate(Type type)
+        {
+            var properties = type.GetPublicProperties();
+            var primitiveProperties = properties.Where(x => x.PropertyType.IsString() || (x.PropertyType.IsPrimitive && !x.PropertyType.IsEnumerable()));
+            var complexProperties = properties.Where(x => !x.PropertyType.IsString() && (!x.PropertyType.IsPrimitive && !x.PropertyType.IsEnumerable()));
+
+            foreach (var property in primitiveProperties)
+            {
+                var header = property.GetLabel();
+                var valueGetter = new Func<TResource, object>(x => property.GetValue(x));
+                var cellType = GetCellTypeFromType(property.PropertyType);
+
+                AddColumn(header, valueGetter, cellType);
+            }
+
+            foreach (var property in complexProperties)
+            {
+                AutoGenerate(property.PropertyType);
+            }
+
+            return this;
+        }
+
         public ExcelTableExportDefinition<TResource> AddColumn<TResult>(Func<TResource, TResult> valueGetter)
         {
             valueGetter.ValidateVariable(nameof(valueGetter));
 
-            CellType columnCellType = typeof(TResult).IsNumeric() ? CellType.Numeric : CellType.String;
+            CellType columnCellType = GetCellTypeFromType(typeof(TResult));
 
             return AddColumn(string.Empty, x => valueGetter(x), columnCellType);
         }
@@ -39,7 +68,7 @@ namespace Sels.Core.Excel.Export.Definitions.Tables
         {
             valueGetter.ValidateVariable(nameof(valueGetter));
 
-            CellType columnCellType = typeof(TResult).IsNumeric() ? CellType.Numeric : CellType.String;
+            CellType columnCellType = GetCellTypeFromType(typeof(TResult));
 
             return AddColumn(header, x => valueGetter(x), columnCellType);
         }
@@ -58,6 +87,59 @@ namespace Sels.Core.Excel.Export.Definitions.Tables
             _columnDefinitions.Add(new ExcelTableColumnDefinition<TResource>(header, valueGetter, columnCellType));
 
             return this;
+        }
+        #endregion
+
+        #region Export
+        public override void Export(ExcelCursor cursor, object resource)
+        {
+            cursor.ValidateVariable(nameof(cursor));
+            resource.ValidateVariable(x => resource is IEnumerable<TResource>, () => $"{nameof(resource)} must be of type {typeof(TResource)}");
+
+            Export(cursor, cursor.CurrentRow, cursor.CurrentColumn, (IEnumerable<TResource>) resource);
+        }
+
+        private void Export(ExcelCursor cursor, uint startRow, uint startColumn, IEnumerable<TResource> resource)
+        {
+            if(resource.HasValue() && _columnDefinitions.HasValue())
+            {
+                if (GenerateHeaders)
+                {
+                    CreateHeaders(cursor, startColumn);
+                }
+
+                foreach (var item in resource)
+                {
+                    foreach(var column in _columnDefinitions)
+                    {
+                        var cellValue = column.GetValue(item);
+                        var cellType = column.ColumnCellType;
+
+                        cursor.SetValue(cellValue.ToString(), cellType);
+
+                        cursor.MoveToNext();
+                    }
+
+                    cursor.MoveDown(startColumn);
+                }
+
+                // Set end position after table
+                cursor.MoveTo(startRow, startColumn + _columnDefinitions.Count.ToUInt32());
+            }
+        }
+
+        private void CreateHeaders(ExcelCursor cursor, uint startColumn)
+        {
+            foreach(var column in _columnDefinitions)
+            {
+                var cellValue = column.Header;
+
+                cursor.SetValue(cellValue, CellType.String);
+
+                cursor.MoveToNext();
+            }
+
+            cursor.MoveDown(startColumn);
         }
         #endregion
     }

@@ -320,5 +320,55 @@ namespace Sels.Core.Extensions.Object.ItemContainer
         }
         #endregion
         #endregion
+
+        #region Grid
+        public static int GetColumnLength<T>(this IEnumerable<IEnumerable<T>> table)
+        {
+            var biggestLength = 0;
+            foreach (var row in table)
+            {
+                var rowCount = row.Count();
+
+                if (rowCount > biggestLength)
+                {
+                    biggestLength = rowCount;
+                }
+            }
+
+            return biggestLength;
+        }
+
+        public static int GetColumnLength<T>(this List<List<T>> table)
+        {
+            var biggestLength = 0;
+            foreach (var row in table)
+            {
+                var rowCount = row.Count;
+
+                if (rowCount > biggestLength)
+                {
+                    biggestLength = rowCount;
+                }
+            }
+
+            return biggestLength;
+        }
+
+        public static T[,] ToGrid<T>(this List<List<T>> table)
+        {
+            var columnLength = table.GetColumnLength();
+            var grid = new T[table.Count(), columnLength];
+
+            for (int i = 0; i < table.Count(); i++)
+            {
+                for (int j = 0; j < columnLength; j++)
+                {
+                    grid[i, j] = table[i][j];
+                }
+            }
+
+            return grid;
+        }
+        #endregion
     }
 }

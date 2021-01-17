@@ -292,6 +292,28 @@ namespace Sels.Core.Extensions.Execution.Linq
         }
         #endregion
 
+        #region IfBool
+        public static void IfTrue(this bool boolean, Action action)
+        {
+            action.ValidateVariable(nameof(action));
+
+            if (boolean)
+            {
+                action();
+            }
+        }
+
+        public static void IfFalse(this bool boolean, Action action)
+        {
+            action.ValidateVariable(nameof(action));
+
+            if (!boolean)
+            {
+                action();
+            }
+        }
+        #endregion
+
         #region Select
         public static TSelect[] SelectOrDefault<T, TSelect>(this T[] items, Func<T, TSelect> select)
         {

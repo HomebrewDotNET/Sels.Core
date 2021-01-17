@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Sels.Core.TestTool.Filter
 {
-    public class Person
+    public class FilterPerson
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
