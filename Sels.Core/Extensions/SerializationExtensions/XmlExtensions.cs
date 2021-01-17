@@ -14,21 +14,18 @@ namespace Sels.Core.Extensions.Serialization.Xml
     {
         public static string SerializeAsXml<T>(this T value)
         {
-            using (var stream = new MemoryStream())
+            using (var writer = new StringWriter())
             {
-                using (var writer = new StreamWriter(stream))
-                {
-                    var serializer = new XmlSerializer(typeof(T));
-                    serializer.Serialize(writer, value);
+                var serializer = new XmlSerializer(typeof(T));
+                serializer.Serialize(writer, value);
 
-                    return stream.ToArray().ToBase64String();
-                }
+                return writer.ToString();
             }
         }
 
         public static T DeserializeFromXml<T>(this string value)
         {
-            using (var stream = new MemoryStream(value.GetBytesFromBase64()))
+            using (var stream = new MemoryStream(value.GetBytes<UTF8Encoding>()))
             {
                 using (var reader = new StreamReader(stream))
                 {
