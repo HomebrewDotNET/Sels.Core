@@ -147,7 +147,7 @@ namespace Sels.Core.Excel
         #endregion
 
         #region Set
-        public void SetValue(string value, CellType type)
+        public void SetValue(string value, CellType type, CellFormula cellFormula = null)
         {
             var row = _worksheet.CreateRowIfNotExistsAtIndex(CurrentRow);
             var cell = row.GetCellAtIndex(CurrentColumn);            
@@ -163,6 +163,11 @@ namespace Sels.Core.Excel
 
             cell.CellValue = new CellValue(value);
             cell.DataType = type.ToCellValueType();
+
+            if (cellFormula != null)
+            {
+                cell.CellFormula = cellFormula;
+            }
         }
         #endregion
     }

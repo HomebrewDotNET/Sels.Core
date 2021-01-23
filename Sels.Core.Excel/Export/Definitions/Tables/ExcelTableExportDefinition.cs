@@ -1,4 +1,5 @@
-﻿using Sels.Core.Components.Display.ObjectLabel;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Sels.Core.Components.Display.ObjectLabel;
 using Sels.Core.Extensions.General.Generic;
 using Sels.Core.Extensions.General.Validation;
 using Sels.Core.Extensions.Object.Number;
@@ -55,38 +56,46 @@ namespace Sels.Core.Excel.Export.Definitions.Tables
             return this;
         }
 
-        public ExcelTableExportDefinition<TResource> AddColumn<TResult>(Func<TResource, TResult> valueGetter)
+        public ExcelTableExportDefinition<TResource> AddColumn<TResult>(Func<TResource, TResult> valueGetter, Func<TResource, CellFormula> formulaGetter = null)
         {
             valueGetter.ValidateVariable(nameof(valueGetter));
 
             CellType columnCellType = GetCellTypeFromType(typeof(TResult));
 
-            return AddColumn(string.Empty, x => valueGetter(x), columnCellType);
+            return AddColumn(string.Empty, x => valueGetter(x), columnCellType, formulaGetter);
         }
 
-        public ExcelTableExportDefinition<TResource> AddColumn<TResult>(string header, Func<TResource, TResult> valueGetter)
+        public ExcelTableExportDefinition<TResource> AddColumn<TResult>(string header, Func<TResource, TResult> valueGetter, Func<TResource, CellFormula> formulaGetter = null)
         {
             valueGetter.ValidateVariable(nameof(valueGetter));
 
             CellType columnCellType = GetCellTypeFromType(typeof(TResult));
 
-            return AddColumn(header, x => valueGetter(x), columnCellType);
+            return AddColumn(header, x => valueGetter(x), columnCellType, formulaGetter);
         }
 
-        public ExcelTableExportDefinition<TResource> AddColumn(Func<TResource, object> valueGetter, CellType columnCellType)
+        public ExcelTableExportDefinition<TResource> AddColumn(Func<TResource, object> valueGetter, CellType columnCellType, Func<TResource, CellFormula> formulaGetter = null)
         {
             valueGetter.ValidateVariable(nameof(valueGetter));
 
-            return AddColumn(string.Empty, valueGetter, columnCellType);
+            return AddColumn(string.Empty, valueGetter, columnCellType, formulaGetter);
         }
 
-        public ExcelTableExportDefinition<TResource> AddColumn(string header, Func<TResource, object> valueGetter, CellType columnCellType)
+        public ExcelTableExportDefinition<TResource> AddColumn(string header, Func<TResource, object> valueGetter, CellType columnCellType, Func<TResource, CellFormula> formulaGetter = null)
         {
             valueGetter.ValidateVariable(nameof(valueGetter));
 
-            _columnDefinitions.Add(new ExcelTableColumnDefinition<TResource>(header, valueGetter, columnCellType));
+            _columnDefinitions.Add(new ExcelTableColumnDefinition<TResource>(header, valueGetter, columnCellType, formulaGetter));
 
             return this;
+        }
+
+        public ExcelTableExportDefinition<TResource> AddHyperlinkColumn(string header, Func<TResource, object> valueGetter, Func<TResource, string> hyperlinkGetter)
+        {
+            valueGetter.ValidateVariable(nameof(valueGetter));
+            hyperlinkGetter.ValidateVariable(nameof(hyperlinkGetter));
+
+            return AddColumn(header, valueGetter, CellType.String, x => ExcelHelper.GetHyperlinkCellFormula(hyperlinkGetter(x), valueGetter(x).ToString()));
         }
         #endregion
 
@@ -113,9 +122,10 @@ namespace Sels.Core.Excel.Export.Definitions.Tables
                     foreach(var column in _columnDefinitions)
                     {
                         var cellValue = column.GetValue(item);
+                        var cellFormula = column.GetCellFormula(item);
                         var cellType = column.ColumnCellType;
 
-                        cursor.SetValue(cellValue.ToString(), cellType);
+                        cursor.SetValue(cellValue.ToString(), cellType, cellFormula);
 
                         cursor.MoveToNext();
                     }
