@@ -1,11 +1,10 @@
 ﻿using Newtonsoft.Json;
-using Sels.Core.Extensions.Serialization.Xml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Sels.Core.Extensions.Serialization.Json
+namespace Sels.Core.Extensions.Serialization
 {
     public static class JsonExtentions
     {
@@ -30,7 +29,12 @@ namespace Sels.Core.Extensions.Serialization.Json
 
         public static T DeserializeFromJson<T>(this string value)
         {
-            return JsonConvert.DeserializeObject<T>(value);
+            var settings = new JsonSerializerSettings
+            {
+                ObjectCreationHandling = ObjectCreationHandling.Replace
+            };
+
+            return JsonConvert.DeserializeObject<T>(value, settings);
         }
 
         public static IEnumerable<string> SerializeObjectsAsJson<T>(this IEnumerable<T> values)

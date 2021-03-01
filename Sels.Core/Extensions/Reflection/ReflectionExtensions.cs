@@ -1,6 +1,5 @@
-﻿using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
-using Sels.Core.Extensions.Reflection.Types;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +8,49 @@ using System.Reflection;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 
-namespace Sels.Core.Extensions.Reflection.Object
+namespace Sels.Core.Extensions.Reflection
 {
-    public static class ObjectReflectionExtensions
+    public static class ReflectionExtensions
     {
+        public static string GetTypeName(this object value)
+        {
+            return value.GetType().ToString();
+        }
+
+        public static bool IsDefault<T>(this T value)
+        {
+            return EqualityComparer<T>.Default.Equals(value, default);
+        }
+
         #region Attributes
         public static T GetAttribute<T>(this object source) where T : Attribute
+        {
+            source.ValidateVariable(nameof(source));
+
+            var attribute = source.GetAttributeOrDefault<T>();
+
+            if (!attribute.HasValue())
+            {
+                throw new InvalidOperationException($"Attribute {typeof(T)} was not present on object {source.GetType()}");
+            }
+
+            return attribute;
+        }
+        public static T GetAttribute<T>(this Enum source) where T : Attribute
+        {
+            source.ValidateVariable(nameof(source));
+
+            var attribute = source.GetAttributeOrDefault<T>();
+
+            if (!attribute.HasValue())
+            {
+                throw new InvalidOperationException($"Attribute {typeof(T)} was not present on object {source.GetType()}");
+            }
+
+            return attribute;
+        }
+
+        public static T GetAttribute<T>(this MemberInfo source) where T : Attribute
         {
             source.ValidateVariable(nameof(source));
 
@@ -35,6 +71,24 @@ namespace Sels.Core.Extensions.Reflection.Object
             var sourceType = source.GetType();
 
             return sourceType.GetCustomAttribute<T>();
+        }
+
+        public static T GetAttributeOrDefault<T>(this MemberInfo source) where T : Attribute
+        {
+            source.ValidateVariable(nameof(source));
+
+            return source.GetCustomAttribute<T>();
+        }
+
+        public static T GetAttributeOrDefault<T>(this Enum source) where T : Attribute
+        {
+            source.ValidateVariable(nameof(source));
+
+            var sourceType = source.GetType();
+
+            var enumMember = sourceType.GetMember(source.ToString());
+
+            return enumMember[0].GetCustomAttribute<T>();
         }
 
         #endregion
@@ -192,6 +246,16 @@ namespace Sels.Core.Extensions.Reflection.Object
             return property != null;
         }
 
+        public static bool TryGetPropertyInfo(this Type sourceType, string propertyName, out PropertyInfo property)
+        {
+            sourceType.ValidateVariable(nameof(sourceType));
+            propertyName.ValidateVariable(nameof(propertyName));
+
+            property = sourceType.GetProperty(propertyName);
+
+            return property != null;
+        }
+
         public static PropertyInfo GetPropertyInfo(this object sourceObject, string propertyName)
         {
             sourceObject.ValidateVariable(nameof(sourceObject));
@@ -204,6 +268,21 @@ namespace Sels.Core.Extensions.Reflection.Object
             else
             {
                 throw new InvalidOperationException($"Could not find property <{propertyName}> on object <{sourceObject.GetType()}>");
+            }
+        }
+
+        public static PropertyInfo GetPropertyInfo(this Type sourceType, string propertyName)
+        {
+            sourceType.ValidateVariable(nameof(sourceType));
+            propertyName.ValidateVariable(nameof(propertyName));
+
+            if (sourceType.TryGetPropertyInfo(propertyName, out var property))
+            {
+                return property;
+            }
+            else
+            {
+                throw new InvalidOperationException($"Could not find property <{propertyName}> on type <{sourceType}>");
             }
         }
 

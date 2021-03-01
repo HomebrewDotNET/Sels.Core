@@ -1,4 +1,4 @@
-﻿using Sels.Core.Extensions.Serialization.Xml;
+﻿using Sels.Core.Extensions.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Text;

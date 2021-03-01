@@ -1,12 +1,12 @@
-﻿using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace Sels.Core.Extensions.Reflection.Expressions
+namespace Sels.Core.Extensions.Reflection
 {
     public static class ExpressionReflectionExtenions
     {

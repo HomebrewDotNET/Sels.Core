@@ -1,11 +1,11 @@
-﻿using Sels.Core.Extensions.General.Generic;
+﻿using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Sels.Core.Extensions.General.Math
+namespace Sels.Core.Extensions
 {
     public static class MathExtensions
     {

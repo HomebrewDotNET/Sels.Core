@@ -5,14 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Sels.Core.Extensions.Object;
-using Sels.Core.Extensions.Execution;
 using Sels.Core.Components.Backup.Exceptions;
-using Sels.Core.Extensions.General.Validation;
-using Sels.Core.Extensions.Io.FileSystem;
-using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.Execution.Linq;
-using Sels.Core.Extensions.Object.Time;
+using Sels.Core.Extensions.Io;
 
 namespace Sels.Core.Components.Backup
 {

@@ -1,5 +1,4 @@
-﻿using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
+﻿using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,9 +6,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Sels.Core.Extensions.Object.ItemContainer
+namespace Sels.Core.Extensions
 {
-    public static class ItemContainerExtensions
+    public static class CollectionExtensions
     {
         private static Random _random = new Random();
 
@@ -254,16 +253,24 @@ namespace Sels.Core.Extensions.Object.ItemContainer
             dictionary.ValidateVariable(nameof(dictionary));
             key.ValidateVariable(nameof(key));
 
+            return dictionary.TryGetOrSet(key, () => value);
+        }
+
+        public static TValue TryGetOrSet<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TValue> valueFunc)
+        {
+            dictionary.ValidateVariable(nameof(dictionary));
+            key.ValidateVariable(nameof(key));
+
             if (dictionary.ContainsKey(key))
             {
-                value = dictionary[key];
+                return dictionary[key];
             }
             else
             {
+                var value = valueFunc();
                 dictionary.Add(key, value);
+                return value;
             }
-
-            return value;
         }
 
         public static TValue TryGetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key)
@@ -271,7 +278,7 @@ namespace Sels.Core.Extensions.Object.ItemContainer
             dictionary.ValidateVariable(nameof(dictionary));
             key.ValidateVariable(nameof(key));
 
-            return dictionary.TryGetOrSet(key, default);
+            return dictionary.TryGetOrSet(key, default(TValue));
         }
 
         #endregion
@@ -368,6 +375,83 @@ namespace Sels.Core.Extensions.Object.ItemContainer
             }
 
             return grid;
+        }
+        #endregion
+
+        #region Manipulation
+        public static T[] ItemToArray<T>(this T value)
+        {
+            value.ValidateVariable(nameof(value));
+
+            return new T[] { value };
+        }
+
+        public static T[] ItemToArrayOrDefault<T>(this T value)
+        {
+            if (value.HasValue())
+            {
+                return new T[] { value };
+            }
+
+            return new T[0];
+        }
+
+        public static IList<T> UpdateFirst<T>(this IList<T> source, Func<T, T> valueUpdater)
+        {
+            valueUpdater.ValidateVariable(nameof(valueUpdater));
+
+            var oldValue = source.FirstOrDefault();
+
+            if (oldValue != null)
+            {
+                var newValue = valueUpdater(oldValue);
+
+                source.Remove(oldValue);
+                source.Insert(0, newValue);
+            }
+
+            return source;
+        }
+
+        public static ICollection<T> UpdateLast<T>(this ICollection<T> source, Func<T, T> valueUpdater)
+        {
+            valueUpdater.ValidateVariable(nameof(valueUpdater));
+
+            var oldValue = source.LastOrDefault();
+
+            if(oldValue != null)
+            {
+                var newValue = valueUpdater(oldValue);
+
+                source.Remove(oldValue);
+                source.Add(newValue);
+            }
+
+            return source;
+        }
+
+        public static ICollection<T> RemoveLast<T>(this ICollection<T> source)
+        {
+            var oldValue = source.LastOrDefault();
+
+            if (oldValue != null)
+            {
+                source.Remove(oldValue);
+            }
+
+            return source;
+        }
+
+        public static ICollection<T> RemoveFirst<T>(this ICollection<T> source)
+        {
+            var oldValue = source.FirstOrDefault();
+
+            if (oldValue != null)
+            {
+                source.Remove(oldValue);
+            }
+
+            return source;
         }
         #endregion
     }

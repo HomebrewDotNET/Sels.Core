@@ -2,8 +2,7 @@
 using Sels.Core.Components.Console;
 using Sels.Core.Components.Filtering.ObjectFilter;
 using Sels.Core.Components.RecurrentAction;
-using Sels.Core.Extensions.Execution.Linq;
-using Sels.Core.Extensions.Io.FileSystem;
+using Sels.Core.Extensions;
 using Sels.Core.TestTool.Filter;
 using Sels.Core.TestTool.RecurrentActions;
 using System;
@@ -17,6 +16,7 @@ using Sels.Core.Excel.Export.Definitions;
 using Sels.Core.Excel;
 using Sels.Core.TestTool.ExportEntities;
 using Sels.Core.Excel.Export.Definitions.Tables;
+using Sels.Core.Extensions.Io;
 
 namespace Sels.Core.TestTool
 {

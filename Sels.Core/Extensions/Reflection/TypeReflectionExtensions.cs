@@ -1,5 +1,4 @@
-﻿using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
+﻿using Sels.Core.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Sels.Core.Extensions.Reflection.Types
+namespace Sels.Core.Extensions.Reflection
 {
     public static class TypeReflectionExtensions
     {
@@ -33,7 +32,7 @@ namespace Sels.Core.Extensions.Reflection.Types
 
         public static bool IsTypedEnumerable(this Type type)
         {
-            return !type.IsValueType && type.IsArray || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>)) || type.GetInterfaces().Any(x => x.IsTypedEnumerable());
+            return !type.IsValueType && type.IsArray || type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)); ;
         }
 
         public static bool IsDictionary(this Type type)

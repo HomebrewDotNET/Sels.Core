@@ -1,12 +1,11 @@
-﻿using Sels.Core.Extensions.General.Generic;
+﻿using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
-using Sels.Core.Extensions.Reflection.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Sels.Core.Extensions.General.Validation
+namespace Sels.Core.Extensions
 {
     public static class ArgumentValidationExtensions
     {

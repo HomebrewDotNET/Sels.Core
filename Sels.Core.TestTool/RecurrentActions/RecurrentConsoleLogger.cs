@@ -8,8 +8,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Timers;
-using Sels.Core.Extensions.Object.ItemContainer;
-using Sels.Core.Extensions.Object.String;
 
 namespace Sels.Core.TestTool.RecurrentActions
 {

@@ -1,9 +1,4 @@
 ﻿using Sels.Core.Extensions;
-using Sels.Core.Extensions.Execution;
-using Sels.Core.Extensions.Execution.Linq;
-using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
-using Sels.Core.Extensions.Object.String;
 using System;
 using System.Collections.Generic;
 using System.IO;

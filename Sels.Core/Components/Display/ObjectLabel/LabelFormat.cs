@@ -6,7 +6,7 @@ namespace Sels.Core.Components.Display.ObjectLabel
 {
     public enum LabelFormat
     {
-        Default,
+        None,
         UpperCaseToWords
     }
 }

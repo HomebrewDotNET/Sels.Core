@@ -5,10 +5,6 @@ using FileIo = System.IO.File;
 using System.Text;
 using System.IO;
 using Sels.Core.Extensions.Io;
-using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.Io.FileSystem;
-using Sels.Core.Extensions.General.Validation;
-
 namespace Sels.Core.Components.Backup
 {
     public abstract class Backup

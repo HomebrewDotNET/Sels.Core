@@ -1,11 +1,10 @@
-﻿using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
+﻿using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Extensions.Execution.Linq
+namespace Sels.Core.Extensions
 {
     public static class LinqExtensions
     {
@@ -239,44 +238,6 @@ namespace Sels.Core.Extensions.Execution.Linq
 
         #endregion
 
-        #region ValueChecker
-        public static void IfHasNoValue<T>(this T value, Action action)
-        {
-            if (!value.HasValue())
-            {
-                action();
-            }
-        }
-
-        public static void IfHasNoValue<T>(this T value, Predicate<T> requiredValueChecker, Action action)
-        {
-            if (!requiredValueChecker(value))
-            {
-                action();
-            }
-        }
-
-        public static T IfHasNoValue<T>(this T value, Func<T> func)
-        {
-            if (!value.HasValue())
-            {
-                return func();
-            }
-
-            return value;
-        }
-
-        public static T IfHasNoValue<T>(this T value, Predicate<T> requiredValueChecker, Func<T> func)
-        {
-            if (!requiredValueChecker(value))
-            {
-                return func();
-            }
-
-            return value;
-        }
-        #endregion
-
         #region IfContains
         public static void IfContains<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Action<TValue> action)
         {
@@ -311,6 +272,82 @@ namespace Sels.Core.Extensions.Execution.Linq
             {
                 action();
             }
+        }
+        #endregion
+
+        #region IfHasValue
+        public static void IfHasValue<T>(this T value, Action action)
+        {
+            if (value.HasValue())
+            {
+                action();
+            }
+        }
+
+        public static void IfHasValue<T>(this T value, Predicate<T> requiredValueChecker, Action action)
+        {
+            if (requiredValueChecker(value))
+            {
+                action();
+            }
+        }
+
+        public static T IfHasValue<T>(this T value, Func<T> func)
+        {
+            if (value.HasValue())
+            {
+                return func();
+            }
+
+            return value;
+        }
+
+        public static T IfHasValue<T>(this T value, Predicate<T> requiredValueChecker, Func<T> func)
+        {
+            if (requiredValueChecker(value))
+            {
+                return func();
+            }
+
+            return value;
+        }
+        #endregion
+
+        #region IfHasNoValue
+        public static void IfHasNoValue<T>(this T value, Action action)
+        {
+            if (!value.HasValue())
+            {
+                action();
+            }
+        }
+
+        public static void IfHasNoValue<T>(this T value, Predicate<T> requiredValueChecker, Action action)
+        {
+            if (!requiredValueChecker(value))
+            {
+                action();
+            }
+        }
+
+        public static T IfHasNoValue<T>(this T value, Func<T> func)
+        {
+            if (!value.HasValue())
+            {
+                return func();
+            }
+
+            return value;
+        }
+
+        public static T IfHasNoValue<T>(this T value, Predicate<T> requiredValueChecker, Func<T> func)
+        {
+            if (!requiredValueChecker(value))
+            {
+                return func();
+            }
+
+            return value;
         }
         #endregion
 

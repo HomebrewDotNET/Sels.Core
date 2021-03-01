@@ -5,9 +5,8 @@ using System.IO;
 using System.Text;
 using FileIo = System.IO.File;
 using Sels.Core.Components.Backup.Exceptions;
-using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
-using Sels.Core.Extensions.Io.FileSystem;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Io;
 
 namespace Sels.Core.Components.Backup
 {

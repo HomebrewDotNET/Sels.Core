@@ -1,8 +1,5 @@
-﻿using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
-using Sels.Core.Extensions.Object.ItemContainer;
-using Sels.Core.Extensions.Reflection.Expressions;
-using Sels.Core.Extensions.Reflection.Object;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;

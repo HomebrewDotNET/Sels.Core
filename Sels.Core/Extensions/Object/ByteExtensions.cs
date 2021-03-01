@@ -1,11 +1,11 @@
-﻿using Sels.Core.Extensions.General.Validation;
+﻿using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace Sels.Core.Extensions.Object.Byte
+namespace Sels.Core.Extensions
 {
     public static class ByteExtensions
     {

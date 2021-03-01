@@ -1,25 +1,40 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Extensions.General.Math;
-using Sels.Core.Extensions.General.Validation;
-using Sels.Core.Extensions.Object.Number;
-using Sels.Core.Extensions.Object.String;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Text;
 
-namespace Sels.Core.Extensions.General.Generic
+namespace Sels.Core.Extensions
 {
     public static class GenericExtensions
     {
-        public static bool IsDefault<T>(this T value)
+        #region Transforming and casting
+        public static T Cast<T>(object value) where T : class
         {
-            return EqualityComparer<T>.Default.Equals(value, default);
+            return (T)Convert.ChangeType(value, typeof(T));
         }
+        #endregion
 
+        #region Hashing
+        public static string GenerateHash<THash>(object sourceObject) where THash : HashAlgorithm
+        {
+            sourceObject.ValidateVariable(nameof(sourceObject));
+            var hashType = typeof(THash);
+            hashType.ValidateVariable(x => !x.Equals(typeof(HashAlgorithm)), () => $"Please use an implementation of {typeof(HashAlgorithm)}");
 
+            using (var hash = HashAlgorithm.Create(hashType.Name))
+            {
+                var hashedBytes = hash.ComputeHash(sourceObject.GetBytes());
+
+                return hashedBytes.Select(x => x.ToString("x2")).JoinString(string.Empty);
+            }
+        }
+        #endregion
 
         #region HasValue
         public static bool HasValue(this object value)

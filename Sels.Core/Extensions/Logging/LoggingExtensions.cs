@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Components.Logging;
 using Sels.Core.Components.Serialization;
-using Sels.Core.Extensions.Execution;
-using Sels.Core.Extensions.Execution.Linq;
-using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.Object.String;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Serialization;
 using System;
 using System.Collections.Generic;

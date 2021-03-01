@@ -3,9 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 using Sels.Core.Excel.Export.Definitions;
 using Sels.Core.Excel.Export.Definitions.Tables;
 using Sels.Core.Excel.Extensions;
-using Sels.Core.Extensions.Execution.Linq;
-using Sels.Core.Extensions.General.Validation;
-using Sels.Core.Extensions.Object.ItemContainer;
+using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,62 +56,75 @@ namespace Sels.Core.Excel.Export
         #region Export
         public void Export(string excelFileName, bool clearWorksheet = true, params (object Identifier, object Resource)[] resourceBundles)
         {
-            var spreadsheet = File.Exists(excelFileName) ? SpreadsheetDocument.Open(excelFileName, true) : SpreadsheetDocument.Create(excelFileName, SpreadsheetDocumentType.Workbook);
+            var isExistingFile = File.Exists(excelFileName);
+            var spreadsheet = isExistingFile ? SpreadsheetDocument.Open(excelFileName, true) : SpreadsheetDocument.Create(excelFileName, SpreadsheetDocumentType.Workbook);
 
-            using (spreadsheet)
+            try
             {
-                foreach (var exportDefinition in _exportDefinitions)
+                using (spreadsheet)
                 {
-                    var worksheetName = exportDefinition.Key;
-                    var exporters = exportDefinition.Value;
-
-                    // Initialize worksheet
-                    var worksheet = spreadsheet.GetOrCreateWorksheet(worksheetName);
-
-                    clearWorksheet.IfTrue(() => worksheet.ClearRows());
-
-                    // Create cursor for worksheet
-                    var cursor = new ExcelCursor(worksheet);
-
-                    // Loop over export definitions and execute export for each valid resource
-                    foreach (var exporter in exporters)
+                    foreach (var exportDefinition in _exportDefinitions)
                     {
-                        foreach (var resourceBundle in resourceBundles)
+                        var worksheetName = exportDefinition.Key;
+                        var exporters = exportDefinition.Value;
+
+                        // Initialize worksheet
+                        var worksheet = spreadsheet.GetOrCreateWorksheet(worksheetName);
+
+                        clearWorksheet.IfTrue(() => worksheet.ClearRows());
+
+                        // Create cursor for worksheet
+                        var cursor = new ExcelCursor(worksheet);
+
+                        // Loop over export definitions and execute export for each valid resource
+                        foreach (var exporter in exporters)
                         {
-                            // Begin export
-                            if (exporter.CanRunWithResource(resourceBundle.Identifier, resourceBundle.Resource))
+                            foreach (var resourceBundle in resourceBundles)
                             {
-                                var currentRow = cursor.CurrentRow;
-                                var currentColumn = cursor.CurrentColumn;
-
-                                // Seek start position in worksheet
-                                switch (exporter.SeekMode)
+                                // Begin export
+                                if (exporter.CanRunWithResource(resourceBundle.Identifier, resourceBundle.Resource))
                                 {
-                                    case SeekMode.NewColumn:
-                                        cursor.SeekNextFreeColumn();
-                                        break;
-                                    case SeekMode.NewRow:
-                                        cursor.SeekNextFreeRow();
-                                        break;
-                                    case SeekMode.NewColumnOnCurrentRow:
-                                        cursor.SeekNextFreeColumnAfterCurrentRow();
-                                        break;
-                                    case SeekMode.NewRowOnCurrentColumn:
-                                        cursor.SeekNextFreeRowAfterCurrentColumn();
-                                        break;
-                                    default:
-                                        throw new NotImplementedException($"SeekMode {exporter.SeekMode} not implemented");
-                                }
+                                    var currentRow = cursor.CurrentRow;
+                                    var currentColumn = cursor.CurrentColumn;
 
-                                // Export resource to worksheet
-                                exporter.Export(cursor, resourceBundle.Resource);
+                                    // Seek start position in worksheet
+                                    switch (exporter.SeekMode)
+                                    {
+                                        case SeekMode.NewColumn:
+                                            cursor.SeekNextFreeColumn();
+                                            break;
+                                        case SeekMode.NewRow:
+                                            cursor.SeekNextFreeRow();
+                                            break;
+                                        case SeekMode.NewColumnOnCurrentRow:
+                                            cursor.SeekNextFreeColumnAfterCurrentRow();
+                                            break;
+                                        case SeekMode.NewRowOnCurrentColumn:
+                                            cursor.SeekNextFreeRowAfterCurrentColumn();
+                                            break;
+                                        default:
+                                            throw new NotImplementedException($"SeekMode {exporter.SeekMode} not implemented");
+                                    }
+
+                                    // Export resource to worksheet
+                                    exporter.Export(cursor, resourceBundle.Resource);
+                                }
                             }
                         }
                     }
+
+                    spreadsheet.Save();
+                }
+            }
+            catch (Exception)
+            {
+                if (!isExistingFile)
+                {
+                    File.Delete(excelFileName);
                 }
 
-                spreadsheet.Save();
-            }            
+                throw;
+            }
         }
         #endregion
     }

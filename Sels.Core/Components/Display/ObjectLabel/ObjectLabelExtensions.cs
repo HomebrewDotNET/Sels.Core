@@ -1,45 +1,33 @@
-﻿using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
-using Sels.Core.Extensions.Reflection.Object;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using Sels.Core.Extensions.Object.ItemContainer;
-using Sels.Core.Extensions.Object.String;
 
 namespace Sels.Core.Components.Display.ObjectLabel
 {
     public static class ObjectLabelExtensions
     {
+        // Constants
+        private const LabelFormat DefaultFormat = LabelFormat.UpperCaseToWords;
         private const string UpperCaseSplitRegex = @"(?<!^)(?=[A-Z])";
+
         public static string GetLabel(this object source)
         {
-            return source.GetLabel(LabelFormat.UpperCaseToWords);
+            return source.GetLabel(DefaultFormat);
         }
-        public static string GetLabel(this PropertyInfo property)
-        {
-            return property.GetLabel(LabelFormat.UpperCaseToWords);
-        }
-
-        public static string GetLabel(this Type type)
-        {
-            return type.GetLabel(LabelFormat.UpperCaseToWords);
-        }
-
-        public static string GetPropertyLabel(this object source, string propertyName)
-        {
-            return source.GetPropertyLabel(propertyName, LabelFormat.UpperCaseToWords);
-        }
-
         public static string GetLabel(this object source, LabelFormat format)
         {
             source.ValidateVariable(nameof(source));
 
             return source.GetType().GetLabel(format);
         }
-
+        public static string GetLabel(this PropertyInfo property)
+        {
+            return property.GetLabel(DefaultFormat);
+        }
         public static string GetLabel(this PropertyInfo property, LabelFormat format)
         {
             property.ValidateVariable(nameof(property));
@@ -55,7 +43,10 @@ namespace Sels.Core.Components.Display.ObjectLabel
                 return format.FormatLabel(property.Name);
             }
         }
-
+        public static string GetLabel(this Type type)
+        {
+            return type.GetLabel(DefaultFormat);
+        }
         public static string GetLabel(this Type type, LabelFormat format)
         {
             type.ValidateVariable(nameof(type));
@@ -71,7 +62,32 @@ namespace Sels.Core.Components.Display.ObjectLabel
                 return format.FormatLabel(type.Name);
             }
         }
+        public static string GetLabel(this Enum enumValue)
+        {
+            enumValue.ValidateVariable(nameof(enumValue));
 
+            return enumValue.GetLabel(DefaultFormat);
+        }
+        public static string GetLabel(this Enum enumValue, LabelFormat format)
+        {
+            enumValue.ValidateVariable(nameof(enumValue));
+
+            var labelAttribute = enumValue.GetAttributeOrDefault<ObjectLabel>();
+
+            if (labelAttribute.HasValue())
+            {
+                return labelAttribute.Label;
+            }
+            else
+            {
+                return format.FormatLabel(enumValue.ToString());
+            }
+        }
+
+        public static string GetPropertyLabel(this object source, string propertyName)
+        {
+            return source.GetPropertyLabel(propertyName, DefaultFormat);
+        }
         public static string GetPropertyLabel(this object source, string propertyName, LabelFormat format)
         {
             source.ValidateVariable(nameof(source));
@@ -81,6 +97,21 @@ namespace Sels.Core.Components.Display.ObjectLabel
 
             return property.GetLabel(format);
         }
+
+        public static string GetPropertyLabel(this Type source, string propertyName)
+        {
+            return source.GetPropertyLabel(propertyName, DefaultFormat);
+        }
+        public static string GetPropertyLabel(this Type source, string propertyName, LabelFormat format)
+        {
+            source.ValidateVariable(nameof(source));
+            propertyName.ValidateVariable(nameof(propertyName));
+
+            var property = source.GetPropertyInfo(propertyName);
+
+            return property.GetLabel(format);
+        }
+
 
         private static string FormatLabel(this LabelFormat format, string label)
         {

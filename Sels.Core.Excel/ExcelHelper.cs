@@ -1,7 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Spreadsheet;
-using Sels.Core.Extensions.General.Validation;
-using Sels.Core.Extensions.Object.String;
+using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;

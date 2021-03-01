@@ -1,5 +1,4 @@
-﻿using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
+﻿using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Sels.Core.Extensions.Object.String
+namespace Sels.Core.Extensions
 {
     public static class StringExtensions
     {
@@ -94,7 +93,6 @@ namespace Sels.Core.Extensions.Object.String
             return true;
         }
         #endregion
-
 
         #region FileSystem
         private const char _defaultFileSystemReplaceChar = '_';

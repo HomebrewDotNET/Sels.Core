@@ -1,18 +1,15 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
-using Sels.Core.Extensions.Execution.Linq;
-using Sels.Core.Extensions.Object;
-using Sels.Core.Extensions.Object.Byte;
-using Sels.Core.Extensions.Object.String;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
-using Sels.Core.Extensions.Reflection.Types;
+using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Sels.Core.Extensions.Serialization.Bson
+namespace Sels.Core.Extensions.Serialization
 {
     public static class BsonExtensions
     {

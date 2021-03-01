@@ -1,14 +1,11 @@
-﻿using Sels.Core.Extensions.Execution;
-using Sels.Core.Extensions.Execution.Linq;
-using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
+﻿using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Sels.Core.Extensions.Io.FileSystem
+namespace Sels.Core.Extensions.Io
 {
     public static class FileSystemExtensions
     {
@@ -65,6 +62,16 @@ namespace Sels.Core.Extensions.Io.FileSystem
             return string.Empty;
         }
 
+        public static string GetNameWithoutExtension(this FileInfo file)
+        {
+            if (file != null && file.Exists)
+            {
+                return Path.GetFileNameWithoutExtension(file.Name);
+            }
+
+            return string.Empty;
+        }
+
         public static void OpenWithWindowsExplorer(this FileInfo file)
         {
             if (file != null && file.Exists)
@@ -73,6 +80,30 @@ namespace Sels.Core.Extensions.Io.FileSystem
             }
 
         }
+
+        #region Backup
+        private const string DefaultBackupFormat = "{0}.Backup";
+
+        public static FileInfo Backup(this FileInfo file, string backupFormat = DefaultBackupFormat)
+        {
+            file.ValidateVariable(nameof(file));
+
+            var newName = backupFormat.FormatString(file.GetNameWithoutExtension());
+            var fullNewName = Path.Combine(file.Directory.FullName, newName + file.Extension);
+
+            var counter = 0;
+            while (File.Exists(fullNewName))
+            {
+                var numberedNewName = $"{newName}.{counter}";
+
+                fullNewName = Path.Combine(file.Directory.FullName, numberedNewName + file.Extension);
+
+                counter++;
+            }
+
+            return file.CopyTo(fullNewName);
+        }
+        #endregion
 
         #region Io Operations
         public static string Read(this FileInfo file)
@@ -159,6 +190,14 @@ namespace Sels.Core.Extensions.Io.FileSystem
             }
 
             return false;
+        }
+
+        public static void Clear(this DirectoryInfo directory)
+        {
+            directory.ValidateVariable(nameof(directory));
+
+            directory.GetFiles().Execute(x => x.Delete());
+            directory.GetDirectories().Execute(x => x.Clear());
         }
 
         #region Copying 

@@ -1,12 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using Sels.Core.Extensions.Execution.Linq;
-using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
-using Sels.Core.Extensions.Object.ItemContainer;
-using Sels.Core.Extensions.Object.Number;
-using Sels.Core.Extensions.Object.String;
+using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

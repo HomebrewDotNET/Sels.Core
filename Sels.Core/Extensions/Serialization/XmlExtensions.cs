@@ -1,6 +1,6 @@
-﻿using Sels.Core.Extensions.Object;
-using Sels.Core.Extensions.Object.Byte;
-using Sels.Core.Extensions.Object.String;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace Sels.Core.Extensions.Serialization.Xml
+namespace Sels.Core.Extensions.Serialization
 {
     public static class XmlExtensions
     {

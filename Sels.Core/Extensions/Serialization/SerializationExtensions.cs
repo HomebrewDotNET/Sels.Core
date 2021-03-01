@@ -1,7 +1,4 @@
 ﻿using Sels.Core.Components.Serialization;
-using Sels.Core.Extensions.Serialization.Bson;
-using Sels.Core.Extensions.Serialization.Json;
-using Sels.Core.Extensions.Serialization.Xml;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;

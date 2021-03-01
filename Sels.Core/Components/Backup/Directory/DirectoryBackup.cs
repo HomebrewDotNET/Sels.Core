@@ -1,8 +1,8 @@
 ﻿using Sels.Core.Components.Backup.Exceptions;
-using Sels.Core.Extensions.General.Generic;
-using Sels.Core.Extensions.General.Validation;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Io;
-using Sels.Core.Extensions.Io.FileSystem;
+using Sels.Core.Extensions.Io;
 using System;
 using System.Collections.Generic;
 using System.IO;
