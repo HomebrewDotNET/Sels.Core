@@ -5,9 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Sels.Core.Extensions
+namespace Sels.Core.Extensions.Calculation
 {
-    public static class MathExtensions
+    public static class CalculationExtensions
     {
         public static double GetMinimum(this IEnumerable<double> list)
         {

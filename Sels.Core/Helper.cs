@@ -82,5 +82,38 @@ namespace Sels.Core
             }
         }
         #endregion
+
+        #region String
+        public static class Strings
+        {
+            public static string JoinStrings(params object[] values)
+            {
+                values.ValidateVariable(nameof(values));
+
+                return values.JoinString();
+            }
+
+            public static string JoinStrings(string joinValue, params string[] strings)
+            {
+                strings.ValidateVariable(nameof(strings));
+
+                return strings.JoinString(joinValue);
+            }
+
+            public static string JoinStringsNewLine(params string[] strings)
+            {
+                strings.ValidateVariable(nameof(strings));
+
+                return strings.JoinStringNewLine();
+            }
+
+            public static string JoinStringsTab(params string[] strings)
+            {
+                strings.ValidateVariable(nameof(strings));
+
+                return strings.JoinStringTab();
+            }
+        }
+        #endregion
     }
 }

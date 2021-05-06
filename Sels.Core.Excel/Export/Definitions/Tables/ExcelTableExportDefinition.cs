@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using Sels.Core.Components.Display.ObjectLabel;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Sels.Core.Excel.Export.Definitions.Tables
 
         public override Type ResourceType => typeof(IEnumerable<TResource>);
 
-        public ExcelTableExportDefinition(SeekMode seekmode, bool generateHeaders = true, object resourceIdentifier = null) : base(seekmode, resourceIdentifier)
+        public ExcelTableExportDefinition(Action<ExcelCursor> setStartPositionAction, bool generateHeaders = true, object resourceIdentifier = null) : base(setStartPositionAction, resourceIdentifier)
         {
             GenerateHeaders = generateHeaders;
         }

@@ -359,43 +359,10 @@ namespace Sels.Core.Extensions
             }
 
             return biggestLength;
-        }
-
-        public static T[,] ToGrid<T>(this List<List<T>> table)
-        {
-            var columnLength = table.GetColumnLength();
-            var grid = new T[table.Count(), columnLength];
-
-            for (int i = 0; i < table.Count(); i++)
-            {
-                for (int j = 0; j < columnLength; j++)
-                {
-                    grid[i, j] = table[i][j];
-                }
-            }
-
-            return grid;
-        }
+        }        
         #endregion
 
         #region Manipulation
-        public static T[] ItemToArray<T>(this T value)
-        {
-            value.ValidateVariable(nameof(value));
-
-            return new T[] { value };
-        }
-
-        public static T[] ItemToArrayOrDefault<T>(this T value)
-        {
-            if (value.HasValue())
-            {
-                return new T[] { value };
-            }
-
-            return new T[0];
-        }
-
         public static IList<T> UpdateFirst<T>(this IList<T> source, Func<T, T> valueUpdater)
         {
             valueUpdater.ValidateVariable(nameof(valueUpdater));
@@ -419,7 +386,7 @@ namespace Sels.Core.Extensions
 
             var oldValue = source.LastOrDefault();
 
-            if(oldValue != null)
+            if (oldValue != null)
             {
                 var newValue = valueUpdater(oldValue);
 

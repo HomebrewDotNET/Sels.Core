@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Sels.Core.Components.Backup.Exceptions;
-using Sels.Core.Extensions.Io;
+using Sels.Core.Extensions.Linq;
 
 namespace Sels.Core.Components.Backup
 {

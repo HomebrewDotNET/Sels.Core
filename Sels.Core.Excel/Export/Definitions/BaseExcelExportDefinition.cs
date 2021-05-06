@@ -6,18 +6,16 @@ using System.Text;
 
 namespace Sels.Core.Excel.Export.Definitions
 {
-    public abstract class BaseExcelExportDefinition
+    public abstract class BaseExcelExportDefinition : BaseExcelDefinition
     {
         // Fields
 
         // Properties
-        public object ResourceIdentifier { get; }
-        public SeekMode SeekMode { get; }
 
-        public BaseExcelExportDefinition(SeekMode seekmode, object resourceIdentifier = null)
+
+        public BaseExcelExportDefinition(Action<ExcelCursor> setStartPositionAction, object resourceIdentifier = null) : base(setStartPositionAction, resourceIdentifier)
         {
-            ResourceIdentifier = resourceIdentifier;
-            SeekMode = seekmode;
+
         }
 
         public bool CanRunWithResource(object resourceIdentifier, object resource)

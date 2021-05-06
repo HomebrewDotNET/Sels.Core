@@ -2,6 +2,8 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;

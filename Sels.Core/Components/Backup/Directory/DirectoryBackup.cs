@@ -1,7 +1,5 @@
 ﻿using Sels.Core.Components.Backup.Exceptions;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions;
-using Sels.Core.Extensions.Io;
 using Sels.Core.Extensions.Io;
 using System;
 using System.Collections.Generic;

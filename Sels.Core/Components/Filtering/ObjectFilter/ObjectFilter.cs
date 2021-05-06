@@ -1,10 +1,4 @@
 ﻿using Sels.Core.Extensions;
-using Sels.Core.Extensions;
-using Sels.Core.Extensions;
-using Sels.Core.Extensions;
-using Sels.Core.Extensions;
-using Sels.Core.Extensions.Reflection;
-using Sels.Core.Extensions.Reflection;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
@@ -60,7 +54,7 @@ namespace Sels.Core.Components.Filtering.ObjectFilter
         }
 
         /// <summary>
-        /// Create a explicit mapping for 2 properties if there property types aren't assignable from each other
+        /// Create a explicit mapping for 2 properties if their property types aren't assignable from each other
         /// </summary>
         /// <typeparam name="TFilterValue">Filter property type</typeparam>
         /// <typeparam name="TObjectValue">Object property type</typeparam>
@@ -94,7 +88,7 @@ namespace Sels.Core.Components.Filtering.ObjectFilter
             if (filterObject.HasValue())
             {
                 var filteredObjects = new List<TObject>();
-                // Give all mappings not present in explicit mappings
+                // Get all mappings not present in explicit mappings
                 var propertyMappings = _propertyMappings.Where(x => !_explicitFilters.Any(y => x.Key == y.Key.FilterProperty));
 
                 foreach(var toBeFilteredObject in objects)
@@ -114,7 +108,7 @@ namespace Sels.Core.Components.Filtering.ObjectFilter
                                 break;
                             }
                         }
-                        catch(Exception ex) { }                      
+                        catch { }                      
                     }
 
                     if (!isFiltered)
@@ -146,7 +140,7 @@ namespace Sels.Core.Components.Filtering.ObjectFilter
                                     break;
                                 }
                             }
-                            catch (Exception ex) { }
+                            catch { }
                         }
                     }
 

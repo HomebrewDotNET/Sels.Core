@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;

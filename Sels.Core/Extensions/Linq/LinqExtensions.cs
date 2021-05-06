@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Extensions
+namespace Sels.Core.Extensions.Linq
 {
     public static class LinqExtensions
     {
@@ -378,20 +378,6 @@ namespace Sels.Core.Extensions
                 foreach (var item in items)
                 {
                     yield return select(item);
-                }
-            }
-        }
-
-        public static IEnumerable<TItem> SelectCollection<T, TItem>(this IEnumerable<T> items, Func<T, IEnumerable<TItem>> select)
-        {
-            if (items.HasValue())
-            {
-                foreach (var item in items)
-                {
-                    foreach (var collectionItem in select(item))
-                    {
-                        yield return collectionItem;
-                    }
                 }
             }
         }

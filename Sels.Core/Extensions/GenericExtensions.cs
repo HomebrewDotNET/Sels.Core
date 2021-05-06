@@ -8,38 +8,26 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.CSharp;
 
 namespace Sels.Core.Extensions
 {
     public static class GenericExtensions
     {
-        #region Transforming and casting
-        public static T Cast<T>(object value) where T : class
-        {
-            return (T)Convert.ChangeType(value, typeof(T));
-        }
-        #endregion
-
-        #region Hashing
-        public static string GenerateHash<THash>(object sourceObject) where THash : HashAlgorithm
-        {
-            sourceObject.ValidateVariable(nameof(sourceObject));
-            var hashType = typeof(THash);
-            hashType.ValidateVariable(x => !x.Equals(typeof(HashAlgorithm)), () => $"Please use an implementation of {typeof(HashAlgorithm)}");
-
-            using (var hash = HashAlgorithm.Create(hashType.Name))
-            {
-                var hashedBytes = hash.ComputeHash(sourceObject.GetBytes());
-
-                return hashedBytes.Select(x => x.ToString("x2")).JoinString(string.Empty);
-            }
-        }
-        #endregion
-
         #region HasValue
+        /// <summary>
+        /// Calls HasValue using dynamic. Checks if the object contains information worth processing. Returns false when objects have default types, are empty collections, are empty or whitespace strings, ...
+        /// </summary>
+        public static bool CheckUnknownHasValue(this object value)
+        {
+            if(value == null) { return false; }
+
+            return ((dynamic)value).HasValue();
+        }
+
         public static bool HasValue(this object value)
         {
-            return !value.IsDefault();
+            return value != null;
         }
 
         public static bool HasValue(this string value)
@@ -137,58 +125,6 @@ namespace Sels.Core.Extensions
             return false;
         }
         #endregion
-        #endregion
-
-        #region AlphaNumeric
-        public static string ToAlphaNumericString(this int value, int width, int offset = 0)
-        {
-            return value.ToAlphaNumericString(width, offset);
-        }
-        public static string ToAlphaNumericString(this uint value, int width, int offset = 0)
-        {
-            var builder = new StringBuilder();
-            var convertedWidth = width.ToUInt32();
-
-            while (value > 0)
-            {
-                char referenceChar;
-                if (value <= width)
-                {
-                    referenceChar = (char) ('A' + value- offset);
-
-                    value = 0;
-                }
-                else
-                {
-                    referenceChar = (char)('A' + (value % width)- offset);
-
-                    value /= convertedWidth;
-                }
-
-                builder.Insert(0, referenceChar);
-            }
-
-            return builder.ToString();
-        }
-
-        public static uint ToStringFromAlphaNumeric(this string value, int width, int offset = 0)
-        {
-            var chars = value.ToCharArray().Where(x => char.IsLetter(x)).ToArray();
-            int cellIndex = 0;
-
-            for(int i = chars.Length; i > 0; i--)
-            {
-                // Add offset because 1 = A
-                var actualCharValue = chars[i-1] - 'A' + offset;
-
-                var multiplier = chars.Length-i;
-
-                cellIndex += actualCharValue.CalculateSquared(width, multiplier);
-            }
-
-            return cellIndex.ToUInt32();
-        }
-
-        #endregion
+        #endregion        
     }
 }
