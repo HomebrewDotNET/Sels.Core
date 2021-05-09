@@ -24,6 +24,11 @@ namespace Sels.Core.Extensions
             return Regex.Replace(value, @"\d", "");
         }
 
+        public static bool IsNullOrEmpty(this string value)
+        {
+            return string.IsNullOrEmpty(value);
+        }
+
         #region Contains
         public static bool Contains(this string value, params char[] chars)
         {
@@ -125,6 +130,28 @@ namespace Sels.Core.Extensions
         public static string JoinStringNoSpace<T>(this IEnumerable<T> values)
         {
             return values.JoinString(NoStringSpace);
+        }
+        #endregion
+
+        #region Split
+        public static string TrySplitFirstOrDefault(this string source, object splitValue, out string splitResult, StringSplitOptions splitOption = StringSplitOptions.None)
+        {
+            splitValue.ValidateVariable(nameof(splitValue));
+
+            splitResult = null;
+
+            if (source.HasValue())
+            {
+                var split = source.Split(splitValue.ToString(), splitOption);
+
+                if(split.Length > 1)
+                {
+                    splitResult = split.Skip(1).JoinString(splitValue.ToString());
+                    return split[0];
+                }
+            }
+
+            return source;
         }
         #endregion
     }

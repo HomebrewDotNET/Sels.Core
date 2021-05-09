@@ -17,6 +17,7 @@
   <ItemGroup>
     <Folder Include="Components\Execution\" />
     <Folder Include="Components\Newtonsoft\" />
+    <Folder Include="Components\Parameters\Exceptions\" />
     <Folder Include="Delegates\" />
   </ItemGroup>
 

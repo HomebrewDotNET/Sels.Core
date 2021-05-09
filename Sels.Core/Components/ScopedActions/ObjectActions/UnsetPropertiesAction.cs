@@ -27,7 +27,7 @@ namespace Sels.Core.Components.ScopedActions.ObjectActions
                 {
                     var propertyValue = property.GetValue(bundle.Source);
 
-                    bundle.PropertyValues.AddValue(property, propertyValue);
+                    bundle.PropertyValues.AddOrUpdate(property, propertyValue);
 
                     property.SetDefault(bundle.Source);
                 }

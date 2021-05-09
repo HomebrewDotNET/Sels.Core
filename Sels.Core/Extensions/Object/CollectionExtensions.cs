@@ -162,7 +162,7 @@ namespace Sels.Core.Extensions
         }
 
         #region AddValue
-        public static void AddValue<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        public static void AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             dictionary.ValidateVariable(nameof(dictionary));
             key.ValidateVariable(nameof(key));

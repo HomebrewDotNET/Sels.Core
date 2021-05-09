@@ -50,7 +50,7 @@ namespace Sels.Core.Components.Filtering.ObjectFilter
 
             var propertyType = typeof(T);
 
-            _filters.AddValue(propertyType, filter);
+            _filters.AddOrUpdate(propertyType, filter);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Sels.Core.Components.Filtering.ObjectFilter
             var filterProperty = filterPropertyExpression.ExtractProperty(nameof(filterPropertyExpression));
             var objectProperty = objectPropertyExpression.ExtractProperty(nameof(objectPropertyExpression));
 
-            _explicitFilters.AddValue((filterProperty, objectProperty), filter);
+            _explicitFilters.AddOrUpdate((filterProperty, objectProperty), filter);
         }
 
         private void CreateExplicitMap(PropertyInfo filterProperty, PropertyInfo objectProperty)
@@ -78,7 +78,7 @@ namespace Sels.Core.Components.Filtering.ObjectFilter
                 throw new NotSupportedException($"Filter type must be assignable from object type");
             }
 
-            _propertyMappings.AddValue(filterProperty, objectProperty);
+            _propertyMappings.AddOrUpdate(filterProperty, objectProperty);
         }
         #endregion
 
