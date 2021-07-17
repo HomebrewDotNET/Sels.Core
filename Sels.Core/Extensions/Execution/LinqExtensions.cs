@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Extensions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -381,7 +382,90 @@ namespace Sels.Core.Extensions.Linq
                 }
             }
         }
+        #endregion
 
+        #region Modify 
+        /// <summary>
+        /// Modifies item in array using modifier if condition is true
+        /// </summary>
+        public static T[] ModifyItemIf<T>(this T[] source, Predicate<T> condition, Func<T,T> modifier)
+        {
+            condition.ValidateVariable(nameof(condition));
+            modifier.ValidateVariable(nameof(modifier));
+
+            if (source.HasValue())
+            {
+                for(int i = 0; i < source.Length; i++)
+                {
+                    var item = source[i];
+
+                    if (condition(item))
+                    {
+                        source[i] = modifier(item);
+                    }
+                }
+            }
+
+            return source;
+        }
+
+        /// <summary>
+        /// Modifies item in collection using modifier if condition is true
+        /// </summary>
+        public static IEnumerable<T> ModifyItemIf<T>(this IEnumerable<T> source, Predicate<T> condition, Func<T, T> modifier)
+        {
+            condition.ValidateVariable(nameof(condition));
+            modifier.ValidateVariable(nameof(modifier));
+
+            if (source.HasValue())
+            {
+                foreach(var item in source)
+                {
+                    if (condition(item))
+                    {
+                        yield return modifier(item);
+                    }
+                    else
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns modified object from modifier if confition is true, otherwise return item.
+        /// </summary>
+        public static T ModifyIf<T>(this T item, Predicate<T> condition, Func<T, T> modifier)
+        {
+            condition.ValidateVariable(nameof(condition));
+            modifier.ValidateVariable(nameof(modifier));
+
+            if (condition(item))
+            {
+                return modifier(item);
+            }
+
+            return item;
+        }
+        #endregion
+
+        #region Enumerate
+        /// <summary>
+        /// Yield return any object in <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">Collection to get items from</param>
+        /// <returns>Objects in <paramref name="source"/></returns>
+        public static IEnumerable<object> Enumerate(this IEnumerable source)
+        {
+            if(source != null)
+            {
+                foreach(var item in source)
+                {
+                    yield return item;
+                }
+            }
+        }
         #endregion
     }
 }

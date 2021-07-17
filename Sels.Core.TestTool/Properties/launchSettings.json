@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Sels.Core.TestTool": {
+      "commandName": "Project"
+    },
+    "WSL 2": {
+      "commandName": "WSL2",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "distributionName": "Ubuntu"
+    }
+  }
+}

@@ -7,7 +7,7 @@ namespace Sels.Core.Components.Serialization.Providers
 {
     public class XmlProvider : ISerializationProvider
     {
-        public T Deserialize<T>(string value)
+        public T Deserialize<T>(string value) where T : new()
         {
             return value.DeserializeFromXml<T>();
         }

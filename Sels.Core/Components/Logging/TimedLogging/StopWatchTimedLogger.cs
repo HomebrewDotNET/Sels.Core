@@ -24,7 +24,7 @@ namespace Sels.Core.Components.Logging
         // Delegates
         private readonly Func<TimeSpan, string> _endMessageFunc;
 
-        public StopWatchTimedLogger(ILogger logger, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc) : this(logger.ToArrayOrDefault(), logLevel, beginMessageFunc, endMessageFunc)
+        public StopWatchTimedLogger(ILogger logger, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc) : this(logger.AsArrayOrDefault(), logLevel, beginMessageFunc, endMessageFunc)
         {
 
         }

@@ -1,4 +1,5 @@
-﻿using Sels.Core.Extensions;
+﻿using Sels.Core;
+using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,14 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Sels.Core.Extensions
+namespace System
 {
     public static class StringExtensions
     {
-        private const string StringTab = "\t";
-        private const string StringSpace = " ";
-        private const string NoStringSpace = "";
-
         public static string FormatString(this string value, params object[] parameters)
         {
             return string.Format(value, parameters);
@@ -27,6 +24,33 @@ namespace Sels.Core.Extensions
         public static bool IsNullOrEmpty(this string value)
         {
             return string.IsNullOrEmpty(value);
+        }
+
+        /// <summary>
+        /// Escapes all <paramref name="stringsToEscape"/> in <paramref name="source"/> by prefixing <paramref name="escapeString"/> to each <paramref name="stringsToEscape"/>.
+        /// </summary>
+        /// <param name="source">String to escape string in</param>
+        /// <param name="escapeString">String to prefix in front of <paramref name="stringsToEscape"/></param>
+        /// <param name="stringsToEscape">Array with strings to escape</param>
+        /// <returns><paramref name="source"/> with string escaped</returns>
+        public static string EscapeStrings(this string source, string escapeString, params string[] stringsToEscape)
+        {
+            escapeString.ValidateArgument(nameof(escapeString));
+            stringsToEscape.ValidateArgumentNotNullOrEmpty(nameof(stringsToEscape));
+
+            if (source.HasValue())
+            {
+                var builder = new StringBuilder(source);
+
+                foreach(var stringToEscape in stringsToEscape)
+                {
+                    builder.Replace(stringToEscape, escapeString + stringToEscape);
+                }
+
+                return builder.ToString();
+            }
+
+            return source;
         }
 
         #region Contains
@@ -100,16 +124,15 @@ namespace Sels.Core.Extensions
         #endregion
 
         #region Join
-        private const char DefaultJoinValue = ',';
 
         public static string JoinString<T>(this IEnumerable<T> values, string joinValue)
         {
-            return string.Join(joinValue, values);
+            return values.HasValue() ? string.Join(joinValue, values) : string.Empty;
         }
 
         public static string JoinString<T>(this IEnumerable<T> values)
         {
-            return values.JoinString(DefaultJoinValue.ToString());
+            return values.JoinString(Constants.Strings.Comma);
         }
 
         public static string JoinStringNewLine<T>(this IEnumerable<T> values)
@@ -119,17 +142,17 @@ namespace Sels.Core.Extensions
 
         public static string JoinStringTab<T>(this IEnumerable<T> values)
         {
-            return values.JoinString(StringTab);
+            return values.JoinString(Constants.Strings.Tab);
         }
 
         public static string JoinStringSpace<T>(this IEnumerable<T> values)
         {
-            return values.JoinString(StringSpace);
+            return values.JoinString(Constants.Strings.Space);
         }
 
         public static string JoinStringNoSpace<T>(this IEnumerable<T> values)
         {
-            return values.JoinString(NoStringSpace);
+            return values.JoinString(string.Empty);
         }
         #endregion
 
@@ -152,6 +175,31 @@ namespace Sels.Core.Extensions
             }
 
             return source;
+        }
+
+        public static string[] SplitStringOnNewLine(this string source)
+        {
+            return source.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+        }
+        #endregion
+
+        #region Builder
+        public static StringBuilder AppendSpace(this StringBuilder builder)
+        {
+            builder.ValidateVariable(nameof(builder));
+
+            builder.Append(Constants.Strings.Space);
+
+            return builder;
+        }
+
+        public static StringBuilder AppendTab(this StringBuilder builder)
+        {
+            builder.ValidateVariable(nameof(builder));
+
+            builder.Append(Constants.Strings.Tab);
+
+            return builder;
         }
         #endregion
     }

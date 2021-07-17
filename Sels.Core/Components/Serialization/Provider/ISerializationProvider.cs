@@ -8,6 +8,6 @@ namespace Sels.Core.Components.Serialization
     {
         string Serialize<T>(T value);
 
-        T Deserialize<T>(string value);
+        T Deserialize<T>(string value) where T : new();
     }
 }

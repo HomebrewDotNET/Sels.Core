@@ -75,34 +75,92 @@ namespace Sels.Core.Extensions.Conversion
         }
 
         #region Xml
-        public static string SerializeAsXml<T>(this T value)
-        {
-            using (var writer = new StringWriter())
-            {
-                var serializer = new XmlSerializer(typeof(T));
-                serializer.Serialize(writer, value);
+        private static char[] _validXmlStartTokens = new char[] { '<' };
 
-                return writer.ToString();
-            }
+        /// <summary>
+        /// Checks if <paramref name="value"/> start with a valid xml token.
+        /// </summary>
+        /// <param name="value">Value to check</param>
+        /// <returns>Boolean indicating if <paramref name="value"/> starts with a valid xml token</returns>
+        public static bool IsXml(this string value)
+        {
+            return value != null && value.Length > 0 && _validXmlStartTokens.Any(x => x.Equals(value[0]));
         }
 
-        public static T DeserializeFromXml<T>(this string value)
+        /// <summary>
+        /// Serializes <paramref name="value"/> to a Xml string.
+        /// </summary>
+        /// <param name="value">Object to serialize</param>
+        /// <returns>Xml string</returns>
+        public static string SerializeAsXml(this object value)
         {
-            using (var stream = new MemoryStream(value.GetBytes<UTF8Encoding>()))
+            if(value != null)
             {
-                using (var reader = new StreamReader(stream))
+                using (var writer = new StringWriter())
                 {
-                    var serializer = new XmlSerializer(typeof(T));
-                    return (T)serializer.Deserialize(reader);
+                    var serializer = new XmlSerializer(value.GetType());
+                    serializer.Serialize(writer, value);
+
+                    return writer.ToString();
                 }
             }
+
+            return string.Empty;
         }
 
+        /// <summary>
+        /// Deserializes the Xml string <paramref name="value"/> to an object of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of object to deserialize to</typeparam>
+        /// <param name="value">Xml string to deserialize</param>
+        /// <returns>Deserialized Xml string</returns>
+        public static T DeserializeFromXml<T>(this string value)
+        {
+            return value.DeserializeFromXml(typeof(T)).As<T>();
+        }
+
+        /// <summary>
+        /// Deserializes the Xml string <paramref name="value"/> to an object of type <paramref name="type"/>.
+        /// </summary>
+        /// <param name="value">Xml string to deserialize</param>
+        /// <param name="type">Type of object to deserialize to</param>
+        /// <returns>Deserialized Xml string</returns>
+        public static object DeserializeFromXml(this string value, Type type)
+        {
+            type.ValidateArgument(nameof(type));
+
+            if (value.HasValue())
+            {
+                using (var stream = new MemoryStream(value.GetBytes<UTF8Encoding>()))
+                {
+                    using (var reader = new StreamReader(stream))
+                    {
+                        var serializer = new XmlSerializer(type);
+                        return serializer.Deserialize(reader);
+                    }
+                }
+            }
+
+            return type.GetDefaultValue();
+        }
+
+        /// <summary>
+        /// Serializes all objects in <paramref name="values"/> to Xml strings.
+        /// </summary>
+        /// <typeparam name="T">Type of object to serialize</typeparam>
+        /// <param name="values">List of objects to serialize</param>
+        /// <returns>List containing the serialized Xml strings</returns>
         public static IEnumerable<string> SerializeObjectsAsXml<T>(this IEnumerable<T> values)
         {
             return values.Select(x => x.SerializeAsXml());
         }
 
+        /// <summary>
+        /// Deserializes all Xml strings in <paramref name="values"/> to objects of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of object to deserialize to</typeparam>
+        /// <param name="values">List of Xml strings to deserialize</param>
+        /// <returns>List containing all the deserialized Xml strings</returns>
         public static IEnumerable<T> DeserializeObjectsFromXml<T>(this IEnumerable<string> values)
         {
             return values.Select(x => x.DeserializeFromXml<T>());
@@ -110,6 +168,24 @@ namespace Sels.Core.Extensions.Conversion
         #endregion
 
         #region Json
+        private static char[] _validJsonStartTokens = new char[] { '{', '[' };
+
+        /// <summary>
+        /// Checks if <paramref name="value"/> start with a valid json token.
+        /// </summary>
+        /// <param name="value">Value to check</param>
+        /// <returns>Boolean indicating if <paramref name="value"/> starts with a valid json token</returns>
+        public static bool IsJson(this string value)
+        {
+            return value != null && value.Length > 0 && _validJsonStartTokens.Any(x => x.Equals(value[0]));
+        }
+
+        /// <summary>
+        /// Clones <paramref name="value"/> using Json.
+        /// </summary>
+        /// <typeparam name="T">Object of type to clone</typeparam>
+        /// <param name="value">Object to clone</param>
+        /// <returns>Cloned object</returns>
         public static T DeepCloneWithJson<T>(this T value)
         {
             if (value != null)
@@ -124,29 +200,65 @@ namespace Sels.Core.Extensions.Conversion
             }
         }
 
-        public static string SerializeAsJson<T>(this T value)
+        /// <summary>
+        /// Serializes <paramref name="value"/> to a Json string.
+        /// </summary>
+        /// <param name="value">Object to serialize</param>
+        /// <returns>Json string</returns>
+        public static string SerializeAsJson(this object value)
         {
             return JsonConvert.SerializeObject(value);
         }
 
+        /// <summary>
+        /// Deserializes the Json string <paramref name="value"/> to an object of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of object to deserialize to</typeparam>
+        /// <param name="value">Json string to deserialize</param>
+        /// <returns>Deserialized Json string</returns>
         public static T DeserializeFromJson<T>(this string value)
         {
+            return value.DeserializeFromJson(typeof(T)).As<T>();
+        }
+
+        /// <summary>
+        /// Deserializes the Json string <paramref name="value"/> to an object of type <paramref name="type"/>.
+        /// </summary>
+        /// <param name="value">Json string to deserialize</param>
+        /// <param name="type">Type of object to deserialize to</param>
+        /// <returns>Deserialized Json string</returns>
+        public static object DeserializeFromJson(this string value, Type type)
+        {
+            type.ValidateArgument(nameof(type));
+
             var settings = new JsonSerializerSettings
             {
                 ObjectCreationHandling = ObjectCreationHandling.Replace
             };
 
-            return JsonConvert.DeserializeObject<T>(value, settings);
+            return JsonConvert.DeserializeObject(value, type, settings);
         }
 
-        public static IEnumerable<string> SerializeObjectsAsJson<T>(this IEnumerable<T> values)
+        /// <summary>
+        /// Serializes all objects in <paramref name="values"/> to Json strings.
+        /// </summary>
+        /// <typeparam name="T">Type of object to serialize</typeparam>
+        /// <param name="values">List of objects to serialize</param>
+        /// <returns>List containing the serialized Json strings</returns>
+        public static List<string> SerializeObjectsAsJson<T>(this IEnumerable<T> values)
         {
-            return values.Select(x => x.SerializeAsJson());
+            return values.Select(x => x.SerializeAsJson()).ToList();
         }
 
-        public static IEnumerable<T> DeserializeObjectsFromJson<T>(this IEnumerable<string> values)
+        /// <summary>
+        /// Deserializes all Json strings in <paramref name="values"/> to objects of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of object to deserialize to</typeparam>
+        /// <param name="values">List of Json strings to deserialize</param>
+        /// <returns>List containing all the deserialized Json strings</returns>
+        public static List<T> DeserializeObjectsFromJson<T>(this IEnumerable<string> values)
         {
-            return values.Select(x => x.DeserializeFromJson<T>());
+            return values.Select(x => x.DeserializeFromJson<T>()).ToList();
         }
         #endregion
 

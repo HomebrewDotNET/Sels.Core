@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using Sels.Core.Extensions;
 using System.IO;
+using System.Diagnostics;
 
 namespace Sels.Core
 {
@@ -112,6 +113,61 @@ namespace Sels.Core
                 strings.ValidateVariable(nameof(strings));
 
                 return strings.JoinStringTab();
+            }
+        }
+        #endregion
+
+        #region List
+        public static class Lists
+        {
+            public static List<T> Combine<T>(params T[] values)
+            {
+                var list = new List<T>();
+
+                if (values.HasValue())
+                {
+                    list.AddRange(values);
+                }
+
+                return list;
+            }
+        }
+        #endregion
+
+        #region Program
+        public static class Program
+        {
+            /// <summary>
+            /// Runs program at <paramref name="processFileName"/> with arguments <paramref name="arguments"/>.
+            /// </summary>
+            /// <param name="processFileName">Filename of program to run</param>
+            /// <param name="arguments">Arguments for program</param>
+            /// <param name="output">Standard output from program execution</param>
+            /// <param name="error">Error output from program execution</param>
+            /// <returns>Program exit code</returns>
+            public static int Run(string processFileName, string arguments, out string output, out string error)
+            {
+                processFileName.ValidateArgument(nameof(processFileName));
+
+                var process = new Process()
+                {
+                    StartInfo = new ProcessStartInfo(processFileName, arguments)
+                    {
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+
+                process.Start();
+
+                process.WaitForExit();
+
+                output = process.StandardOutput.ReadToEnd();
+                error = process.StandardError.ReadToEnd();
+
+                return process.ExitCode;
             }
         }
         #endregion

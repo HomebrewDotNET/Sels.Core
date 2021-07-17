@@ -19,6 +19,17 @@ using Sels.Core.Excel.Export.Definitions.Tables;
 using Sels.Core.Extensions.Io;
 using Sels.Core.Components.Parameters;
 using Sels.Core.Components.Parameters.Parameters;
+using Sels.Core.Components.Serialization.KeyValue;
+using Sels.Core.TestTool.Models;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Reflection;
+using Newtonsoft.Json;
+using Sels.Core.Linux.Commands.PackageManager;
+using Sels.Core.Linux.Commands.Bash;
+using Sels.Core.Linux.Commands;
+using Sels.Core.Linux.Commands.Screen;
+using Sels.Core.Linux.Extensions;
+using Sels.Core.Linux.Commands.Core;
 
 namespace Sels.Core.TestTool
 {
@@ -26,7 +37,7 @@ namespace Sels.Core.TestTool
     {
         static void Main(string[] args)
         {
-            ConsoleHelper.Run(TestParameterizer);
+            ConsoleHelper.Run(TestLinuxCommands);
         }
 
         private static void DoRecurrentStuff()
@@ -219,6 +230,89 @@ namespace Sels.Core.TestTool
             text = parameterizer.Apply(text);
 
             Console.WriteLine(text);
+        }
+
+        private static void DeserializeKeyValuePairs()
+        {
+            var data = @"
+            Name: Jens
+            FamilyName: Sels
+            BirthDate: 1998-01-04
+            Role: Developer
+            Role: System Admin
+            Earnings: 1950.96
+            Earnings: 1037.24
+            Earnings: 560.58
+            IsGraduated: true
+            ";
+
+            var serializer = new KeyValueSerializer(settings: new KeyValueSerializerSettings(ParsingOption.TrimItem, ParsingOption.TrimKey, ParsingOption.TrimValue));
+
+            var person = serializer.Deserialize<PersonInfo>(data);
+
+            Console.WriteLine($"Result as json: {person.SerializeAsJson()}");
+        }
+
+        private static void TestAssignable()
+        {
+            var iListType = typeof(IList<string>);
+            var list = new List<string>();
+
+            Console.WriteLine($"{iListType} is assignable from {iListType}: {iListType.IsAssignableFrom(iListType)}");
+            Console.WriteLine($"{iListType} is assignable from {list.GetType()}: {iListType.IsAssignableFrom(list.GetType())}");
+            Console.WriteLine($"{iListType} is assignable to {list.GetType()}: {iListType.IsAssignableTo(list.GetType())}");
+            Console.WriteLine($"{list} is assignable from {iListType}: {list.IsAssignableFrom(iListType)}");
+            Console.WriteLine($"{list} is assignable to {iListType}: {list.IsAssignableTo(iListType)}");
+        }
+
+        private static void TestLinuxCommands()
+        {
+            Console.WriteLine(Environment.OSVersion);
+
+            var packageCommand = new DpkgInfoCommand();
+
+            var packages = new string[] { "sudo", "dpkg", "fail2ban", "ufw", "sels" };
+
+            foreach (var package in packages)
+            {
+                packageCommand.PackageName = package;
+                var result = packageCommand.Execute();
+
+                Console.WriteLine("Command: " + packageCommand.BuildCommand());
+                Console.WriteLine("Command result: " + result.SerializeAsJson());
+                Console.WriteLine($"Command {result.Package} is {(result.IsInstalled ? "installed" : "not installed")}");
+            }
+
+            var lsCommand = new DynamicCommand("ls -la /mnt");
+            Console.WriteLine("List result: " + lsCommand.Execute());
+            var grepCommand = new GrepCommand("c");
+            var teeCommand = new TeeCommand("/mnt/c/listResult.txt");
+
+            var chainCommand = new ChainCommand(lsCommand, CommandChain.Pipe, grepCommand, CommandChain.Pipe, teeCommand);
+
+            var chainResult = chainCommand.Execute();
+
+            Console.WriteLine("Command: " + chainCommand.BuildCommand());
+            Console.WriteLine("Command result: " + chainResult);
+
+            // Screen
+            packageCommand.PackageName = "screen";
+            var screenInfo = packageCommand.Execute();
+
+            if (screenInfo.IsInstalled)
+            {
+                var screenListCommand = new ScreenListCommand();
+                var screenRunCommand = new ScreenRunCommand("sleep 60", "TestSleepName");
+
+                Console.WriteLine("Screen run command: " + screenRunCommand.BuildCommand());
+                screenRunCommand.Execute().GetResult();
+
+                Console.WriteLine("Running screens: " + screenListCommand.Execute().GetResult().JoinStringNewLine());
+            }
+            else
+            {
+                Console.WriteLine("Screen is not installed");
+            }
         }
     }
 }

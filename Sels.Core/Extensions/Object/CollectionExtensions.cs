@@ -73,82 +73,6 @@ namespace Sels.Core.Extensions
         #endregion
         #endregion
 
-        #region List
-        #region Manipulation
-        public static bool UpdateFirst<T>(this List<T> list, Func<T, T, bool> comparator, T value)
-        {
-            return list.UpdateItemInEnumerable(comparator, value, true);
-        }
-
-        public static bool UpdateAll<T>(this List<T> list, Func<T, T, bool> comparator, T value)
-        {
-            return list.UpdateItemInEnumerable(comparator, value, false);
-        }
-
-        public static bool DeleteFirst<T>(this List<T> list, Func<T, T, bool> comparator, T value)
-        {
-            return list.DeleteItemInEnumerable(comparator, value, true);
-        }
-
-        public static bool DeleteAll<T>(this List<T> list, Func<T, T, bool> comparator, T value)
-        {
-            return list.DeleteItemInEnumerable(comparator, value, false);
-        }
-        #region Privates
-        public static bool UpdateItemInEnumerable<T>(this List<T> list, Func<T, T, bool> comparator, T value, bool onlyFirst = false)
-        {
-            var isUpdated = false;
-
-            if (list.HasValue())
-            {
-                for (int i = 0; i < list.Count; i++)
-                {
-                    var item = list[i];
-
-                    if (item.HasValue() && value.HasValue() && comparator(value, item))
-                    {
-                        list[i] = value;
-
-                        isUpdated = true;
-
-                        if (onlyFirst)
-                        {
-                            return isUpdated;
-                        }
-                    }
-                }
-            }
-
-            return isUpdated;
-        }
-
-        public static bool DeleteItemInEnumerable<T>(this List<T> list, Func<T, T, bool> comparator, T value, bool onlyFirst = false)
-        {
-            var hasDeleted = false;
-
-            if (list.HasValue())
-            {
-                foreach (var item in list)
-                {
-                    if (item.HasValue() && value.HasValue() && comparator(value, item))
-                    {
-                        list.Remove(item);
-                        hasDeleted = true;
-
-                        if (onlyFirst)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return hasDeleted;
-        }
-        #endregion
-        #endregion
-        #endregion
-
         #region Dictionary
         public static void Merge<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, Dictionary<TKey, List<TItem>> dictionaryToMerge)
         {
@@ -176,6 +100,8 @@ namespace Sels.Core.Extensions
                 dictionary.Add(key, value);
             }
         }
+
+        [Obsolete]
         public static void AddValueToCollection<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
         {
             dictionary.ValidateVariable(nameof(dictionary));
@@ -195,6 +121,14 @@ namespace Sels.Core.Extensions
             }
         }
 
+        /// <summary>
+        /// Adds <paramref name="item"/> to the list of <paramref name="key"/> if <paramref name="key"/> exists in <paramref name="dictionary"/>, otherwise create new list and add <paramref name="item"/> to it.
+        /// </summary>
+        /// <typeparam name="TKey">Dictionary key type</typeparam>
+        /// <typeparam name="TItem">Collection type</typeparam>
+        /// <param name="dictionary">Dictionary to add item to</param>
+        /// <param name="key">Key for list</param>
+        /// <param name="item">Item to add</param>
         public static void AddValueToList<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
         {
             dictionary.ValidateVariable(nameof(dictionary));
@@ -212,6 +146,7 @@ namespace Sels.Core.Extensions
             }
         }
 
+        [Obsolete]
         public static void AddValues<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, IEnumerable<TItem> items)
         {
             dictionary.ValidateVariable(nameof(dictionary));
@@ -230,6 +165,14 @@ namespace Sels.Core.Extensions
             }
         }
 
+        /// <summary>
+        /// Adds <paramref name="items"/> to the list of <paramref name="key"/> if <paramref name="key"/> exists in <paramref name="dictionary"/>, otherwise create new list and add <paramref name="items"/> to it.
+        /// </summary>
+        /// <typeparam name="TKey">Dictionary key type</typeparam>
+        /// <typeparam name="TItem">Collection type</typeparam>
+        /// <param name="dictionary">Dictionary to add item to</param>
+        /// <param name="key">Key for list</param>
+        /// <param name="items">Items to add</param>
         public static void AddValues<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, IEnumerable<TItem> items)
         {
             dictionary.ValidateVariable(nameof(dictionary));

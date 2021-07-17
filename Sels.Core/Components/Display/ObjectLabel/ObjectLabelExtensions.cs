@@ -68,6 +68,7 @@ namespace Sels.Core.Components.Display.ObjectLabel
 
             return enumValue.GetLabel(DefaultFormat);
         }
+
         public static string GetLabel(this Enum enumValue, LabelFormat format)
         {
             enumValue.ValidateVariable(nameof(enumValue));

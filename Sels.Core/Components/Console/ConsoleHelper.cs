@@ -25,7 +25,7 @@ namespace Sels.Core.Components.Console
             finally
             {
                 SystemConsole.WriteLine("Press any key to close");
-                SystemConsole.ReadKey();
+                SystemConsole.Read();
             }
         }
 
@@ -58,11 +58,6 @@ namespace Sels.Core.Components.Console
         {
             SystemConsole.ForegroundColor = _defaultForegroundColor;
             SystemConsole.BackgroundColor = _defaultBackgroundColor;
-        }
-
-        public static void WriteLine(ConsoleColor yellow, object p)
-        {
-            throw new NotImplementedException();
         }
     }
 }

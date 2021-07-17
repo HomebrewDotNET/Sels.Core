@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Unity", "Sels.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Excel", "Sels.Core.Excel\Sels.Core.Excel.csproj", "{4CC68328-4DC7-489B-B602-ED488D948F68}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Linux", "Sels.Core.Linux\Sels.Core.Linux.csproj", "{859B4C04-9D06-41C0-97D5-F0AF9FA85EDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{4CC68328-4DC7-489B-B602-ED488D948F68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CC68328-4DC7-489B-B602-ED488D948F68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CC68328-4DC7-489B-B602-ED488D948F68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{859B4C04-9D06-41C0-97D5-F0AF9FA85EDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{859B4C04-9D06-41C0-97D5-F0AF9FA85EDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{859B4C04-9D06-41C0-97D5-F0AF9FA85EDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{859B4C04-9D06-41C0-97D5-F0AF9FA85EDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

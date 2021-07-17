@@ -5,16 +5,16 @@ using System.Text;
 
 namespace Sels.Core.Components.Serialization
 {
-    public class BsonProvider : ISerializationProvider
+    public class JsonProvider : ISerializationProvider
     {
-        public T Deserialize<T>(string value)
+        public T Deserialize<T>(string value) where T : new()
         {
-            return value.DeserializeFromBson<T>();
+            return value.DeserializeFromJson<T>();
         }
 
         public string Serialize<T>(T value)
         {
-            return value.SerializeAsBson();
+            return value.SerializeAsJson();
         }
     }
 }

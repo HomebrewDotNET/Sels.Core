@@ -18,18 +18,28 @@ namespace Sels.Core.Extensions
         /// <summary>
         /// Calls HasValue using dynamic. Checks if the object contains information worth processing. Returns false when objects have default types, are empty collections, are empty or whitespace strings, ...
         /// </summary>
-        public static bool CheckUnknownHasValue(this object value)
+        public static bool CheckHasValueDynamically(this object value)
         {
             if(value == null) { return false; }
 
             return ((dynamic)value).HasValue();
         }
 
+        /// <summary>
+        /// Checks if <paramref name="value"/> is not null.
+        /// </summary>
+        /// <param name="value">Object to check</param>
+        /// <returns>Boolean indicating that <paramref name="value"/> is not null</returns>
         public static bool HasValue(this object value)
         {
             return value != null;
         }
 
+        /// <summary>
+        /// Checks if <paramref name="value"/> is not null, empty or whitespace.
+        /// </summary>
+        /// <param name="value">Object to check</param>
+        /// <returns>Boolean indicating that <paramref name="value"/> is not null, empty or whitespace</returns>
         public static bool HasValue(this string value)
         {
             return !string.IsNullOrWhiteSpace(value);
