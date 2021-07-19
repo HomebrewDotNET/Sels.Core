@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using FileIo = System.IO.File;
 using System.Text;
 using System.IO;
-using Sels.Core.Extensions.Io;
 
 namespace Sels.Core.Components.Backup
 {

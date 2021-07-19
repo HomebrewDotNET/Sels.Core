@@ -16,7 +16,6 @@ using Sels.Core.Excel.Export.Definitions;
 using Sels.Core.Excel;
 using Sels.Core.TestTool.ExportEntities;
 using Sels.Core.Excel.Export.Definitions.Tables;
-using Sels.Core.Extensions.Io;
 using Sels.Core.Components.Parameters;
 using Sels.Core.Components.Parameters.Parameters;
 using Sels.Core.Components.Serialization.KeyValue;
@@ -30,6 +29,11 @@ using Sels.Core.Linux.Commands;
 using Sels.Core.Linux.Commands.Screen;
 using Sels.Core.Linux.Extensions;
 using Sels.Core.Linux.Commands.Core;
+using Sels.Core.Components.FileSize.Byte;
+using Sels.Core.Templates.FileSize;
+using Sels.Core.Components.FileSize.Bit;
+using Sels.Core.Components.FileSize.Byte.Binary;
+using Sels.Core.Components.FileSize.Bit.Binary;
 
 namespace Sels.Core.TestTool
 {
@@ -37,7 +41,7 @@ namespace Sels.Core.TestTool
     {
         static void Main(string[] args)
         {
-            ConsoleHelper.Run(TestLinuxCommands);
+            ConsoleHelper.Run(TestFileSizes);
         }
 
         private static void DoRecurrentStuff()
@@ -313,6 +317,64 @@ namespace Sels.Core.TestTool
             {
                 Console.WriteLine("Screen is not installed");
             }
+        }
+    
+        private static void TestFileSizes()
+        {
+            const long Bytes = 100000000;
+
+            var kiloBytes = new KiloByte(Bytes);
+
+            ConvertAndPrint<MegaByte>(kiloBytes);
+            ConvertAndPrint<GigaByte>(kiloBytes);
+            ConvertAndPrint<TeraByte>(kiloBytes);
+            ConvertAndPrint<PetaByte>(kiloBytes);
+
+            var fileSize = FileSize.CreateFromSize<TeraByte>(1);
+
+            ConvertAndPrint<KiloByte>(fileSize);
+            ConvertAndPrint<MegaByte>(fileSize);
+            ConvertAndPrint<GigaByte>(fileSize);
+            ConvertAndPrint<TeraByte>(fileSize);
+            ConvertAndPrint<PetaByte>(fileSize);
+            ConvertAndPrint<ExaByte>(fileSize);
+            ConvertAndPrint<ZettaByte>(fileSize);
+            ConvertAndPrint<YottaByte>(fileSize);
+
+            ConvertAndPrint<KiloBit>(fileSize);
+            ConvertAndPrint<MegaBit>(fileSize);
+            ConvertAndPrint<GigaBit>(fileSize);
+            ConvertAndPrint<TeraBit>(fileSize);
+            ConvertAndPrint<PetaBit>(fileSize);
+            ConvertAndPrint<ExaBit>(fileSize);
+            ConvertAndPrint<ZettaBit>(fileSize);
+            ConvertAndPrint<YottaBit>(fileSize);
+
+            ConvertAndPrint<KibiByte>(fileSize);
+            ConvertAndPrint<MebiByte>(fileSize);
+            ConvertAndPrint<GibiByte>(fileSize);
+            ConvertAndPrint<TebiByte>(fileSize);
+            ConvertAndPrint<PebiByte>(fileSize);
+            ConvertAndPrint<ExbiByte>(fileSize);
+            ConvertAndPrint<ZebiByte>(fileSize);
+            ConvertAndPrint<YobiByte>(fileSize);
+
+            ConvertAndPrint<KibiBit>(fileSize);
+            ConvertAndPrint<MebiBit>(fileSize);
+            ConvertAndPrint<GibiBit>(fileSize);
+            ConvertAndPrint<TebiBit>(fileSize);
+            ConvertAndPrint<PebiBit>(fileSize);
+            ConvertAndPrint<ExbiBit>(fileSize);
+            ConvertAndPrint<ZebiBit>(fileSize);
+            ConvertAndPrint<YobiBit>(fileSize);
+        }
+
+
+        private static void ConvertAndPrint<TFileSize>(FileSize fileSize) where TFileSize : FileSize, new()
+        {
+            var newFileSize = fileSize.ToSize<TFileSize>();
+
+            Console.WriteLine($"{fileSize.ToDisplayString()} ({fileSize}) is {newFileSize.ToDisplayString()} ({newFileSize})");
         }
     }
 }

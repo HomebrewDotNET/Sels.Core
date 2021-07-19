@@ -3,41 +3,42 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Sels.Core.Extensions;
+using Sels.Core.Contracts.Configuration;
 
 namespace Sels.Core.Components.Configuration
 {
     public class ConfigProvider : IConfigProvider
     {
         // Constants
-        private const string AppSettingSection = "AppSettings";
+        private const string AppSettingSection = Constants.Config.Sections.AppSettings;
 
         // Fields
         private readonly IConfiguration _config;
 
         public ConfigProvider(IConfiguration config)
         {
-            config.ValidateVariable(nameof(config));
+            config.ValidateArgument(nameof(config));
 
             _config = config;
         }
 
         public string GetAppSetting(string key)
         {
-            key.ValidateVariable(nameof(key));
+            key.ValidateArgumentNotNullOrWhitespace(nameof(key));
 
             return GetAppSetting<string>(key);
         }
 
         public T GetAppSetting<T>(string key)
         {
-            key.ValidateVariable(nameof(key));
+            key.ValidateArgumentNotNullOrWhitespace(nameof(key));
 
             return _config.GetSection(AppSettingSection).GetValue<T>(key);
         }
 
         public string GetConnectionString(string key)
         {
-            key.ValidateVariable(nameof(key));
+            key.ValidateArgumentNotNullOrWhitespace(nameof(key));
 
             return _config.GetConnectionString(key);
         }
@@ -54,14 +55,14 @@ namespace Sels.Core.Components.Configuration
 
         public T GetSectionAs<T>(string section)
         {
-            section.ValidateVariable(nameof(section));
+            section.ValidateArgumentNotNullOrWhitespace(nameof(section));
 
             return _config.GetSection(section).Get<T>();
         }
 
         public T GetSectionAs<T>(params string[] sections)
         {
-            sections.ValidateVariable(x => x.HasValue(), () => "At least 1 section key must be supplied");
+            sections.ValidateArgumentNotNullOrEmpty(nameof(sections));
             Dictionary<string, object> sectionValue = new Dictionary<string, object>();
 
             IConfigurationSection currentSection = null;
@@ -70,7 +71,7 @@ namespace Sels.Core.Components.Configuration
             {
                 if (currentSection.HasValue())
                 {
-                    currentSection = _config.GetSection(section);
+                    currentSection = currentSection.GetSection(section);
                 }
                 else
                 {
@@ -93,16 +94,16 @@ namespace Sels.Core.Components.Configuration
 
         public T GetSectionSetting<T>(string key, string section)
         {
-            key.ValidateVariable(nameof(key));
-            section.ValidateVariable(nameof(section));
+            key.ValidateArgumentNotNullOrWhitespace(nameof(key));
+            section.ValidateArgumentNotNullOrWhitespace(nameof(section));
 
             return _config.GetSection(section).GetValue<T>(key);
         }
 
         public T GetSectionSetting<T>(string key, params string[] sections)
         {
-            key.ValidateVariable(nameof(key));
-            sections.ValidateVariable(x => x.HasValue(), () => "At least 1 section key must be supplied");
+            key.ValidateArgumentNotNullOrWhitespace(nameof(key));
+            sections.ValidateArgumentNotNullOrEmpty(nameof(sections));
 
             IConfigurationSection currentSection = null;
 
@@ -110,7 +111,7 @@ namespace Sels.Core.Components.Configuration
             {
                 if (currentSection.HasValue())
                 {
-                    currentSection = _config.GetSection(section);
+                    currentSection = currentSection.GetSection(section);
                 }
                 else
                 {

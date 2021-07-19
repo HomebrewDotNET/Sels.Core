@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Sels.Core.Extensions.Io
+namespace System.IO
 {
     public static class FileSystemExtensions
     {
@@ -232,6 +232,21 @@ namespace Sels.Core.Extensions.Io
             return destinationDirectory;
         }
         #endregion
+        #endregion
+
+        #region FileSystem
+        /// <summary>
+        /// Returns the drive info for the <paramref name="info"/> object.
+        /// </summary>
+        /// <param name="info">File system object to get drive info from</param>
+        /// <returns>Drive info for <paramref name="info"/></returns>
+        public static DriveInfo GetDriveInfo(this FileSystemInfo info)
+        {
+            info.ValidateArgument(nameof(info));
+            var drive = Path.GetPathRoot(info.FullName);
+
+            return new DriveInfo(drive);
+        }
         #endregion
 
         #region ToValid

@@ -1,4 +1,5 @@
 ﻿
+using Sels.Core.Components.Conversion;
 using Sels.Core.Extensions.Calculation;
 using Sels.Core.Extensions.Reflection;
 using System;
@@ -11,9 +12,20 @@ namespace Sels.Core.Extensions.Conversion
 {
     public static class ConversionExtensions
     {
-        public static T ConvertTo<T>(object value) where T : class
+        /// <summary>
+        /// Attempts to convert <paramref name="value"/> to <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type to convert to</typeparam>
+        /// <param name="value">Object to convert</param>
+        /// <returns>Converted object</returns>
+        public static T ConvertTo<T>(this object value)
         {
-            return (T)Convert.ChangeType(value, typeof(T));
+            if (value.HasValue())
+            {
+                return GenericConverter.DefaultConverter.ConvertTo(value.GetType(), typeof(T), value).AsOrDefault<T>();
+            }
+
+            return default;
         }
 
         /// <summary>

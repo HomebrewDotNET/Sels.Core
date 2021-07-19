@@ -97,13 +97,12 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
         /// <returns><paramref name="argument"/></returns>
-        public static T ValidateArgumentLarger<T, TCompare>(this T argument, string parameterName, TCompare comparator)
-            where T : IComparable<TCompare>
-            where TCompare : T
+        public static T ValidateArgumentLarger<T>(this T argument, string parameterName, T comparator)
+            where T : IComparable
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
 
-            return argument.ValidateArgument(x => argument.CompareTo(comparator) > 0, $"{nameof(parameterName)} must be larger than <{comparator}>. Was <{argument}>");
+            return argument.ValidateArgument(x => argument.CompareTo(comparator) > 0, $"{parameterName} must be larger than <{comparator}>. Was <{argument}>");
         }
 
         /// <summary>
@@ -115,13 +114,12 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
         /// <returns><paramref name="argument"/></returns>
-        public static T ValidateArgumentLargerOrEqual<T, TCompare>(this T argument, string parameterName, TCompare comparator)
-            where T : IComparable<TCompare>
-            where TCompare : T
+        public static T ValidateArgumentLargerOrEqual<T>(this T argument, string parameterName, T comparator)
+            where T : IComparable
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
 
-            return argument.ValidateArgument(x => argument.CompareTo(comparator) >= 0, $"{nameof(parameterName)} must be larger or equal to <{comparator}>. Was <{argument}>");
+            return argument.ValidateArgument(x => argument.CompareTo(comparator) >= 0, $"{parameterName} must be larger or equal to <{comparator}>. Was <{argument}>");
         }
 
         /// <summary>
@@ -133,13 +131,12 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
         /// <returns><paramref name="argument"/></returns>
-        public static T ValidateArgumentSmaller<T, TCompare>(this T argument, string parameterName, TCompare comparator)
-            where T : IComparable<TCompare>
-            where TCompare : T
+        public static T ValidateArgumentSmaller<T>(this T argument, string parameterName, T comparator)
+            where T : IComparable
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
 
-            return argument.ValidateArgument(x => argument.CompareTo(comparator) < 0, $"{nameof(parameterName)} must be larger or equal to <{comparator}>. Was <{argument}>");
+            return argument.ValidateArgument(x => argument.CompareTo(comparator) < 0, $"{parameterName} must be larger or equal to <{comparator}>. Was <{argument}>");
         }
 
         /// <summary>
@@ -151,13 +148,12 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
         /// <returns><paramref name="argument"/></returns>
-        public static T ValidateArgumentSmallerOrEqual<T, TCompare>(this T argument, string parameterName, TCompare comparator)
-            where T : IComparable<TCompare>
-            where TCompare : T
+        public static T ValidateArgumentSmallerOrEqual<T>(this T argument, string parameterName, T comparator)
+            where T : IComparable
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
 
-            return argument.ValidateArgument(x => argument.CompareTo(comparator) <= 0, $"{nameof(parameterName)} must be larger or equal to <{comparator}>. Was <{argument}>");
+            return argument.ValidateArgument(x => argument.CompareTo(comparator) <= 0, $"{parameterName} must be larger or equal to <{comparator}>. Was <{argument}>");
         }
 
         /// <summary>
@@ -170,13 +166,12 @@ namespace Sels.Core.Extensions
         /// <param name="startRange">Start value of range</param>
         /// <param name="endRange">End value of range</param>
         /// <returns><paramref name="argument"/></returns>
-        public static T ValidateArgumentInRange<T, TCompare>(this T argument, string parameterName, TCompare startRange, TCompare endRange)
-            where T : IComparable<TCompare>
-            where TCompare : T
+        public static T ValidateArgumentInRange<T>(this T argument, string parameterName, T startRange, T endRange)
+            where T : IComparable
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
 
-            return argument.ValidateArgument(x => argument.CompareTo(startRange) >= 0 && argument.CompareTo(endRange) <= 0, $"{nameof(parameterName)} must be in range of <{startRange}> and <{endRange}>. Was <{argument}>");
+            return argument.ValidateArgument(x => argument.CompareTo(startRange) >= 0 && argument.CompareTo(endRange) <= 0, $"{parameterName} must be in range of <{startRange}> and <{endRange}>. Was <{argument}>");
         }
         #endregion
 

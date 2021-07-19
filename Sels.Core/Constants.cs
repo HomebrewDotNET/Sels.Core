@@ -14,5 +14,14 @@ namespace Sels.Core
             public const string Comma = ",";
         }
         #endregion
+
+        public static class Config
+        {
+            public static class Sections
+            {
+                public const string AppSettings = "AppSettings";
+            }
+        }
+
     }
 }
