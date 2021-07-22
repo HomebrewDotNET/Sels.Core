@@ -19,6 +19,8 @@ namespace Sels.Core
         {
             public static class Sections
             {
+                public const string DefaultObjectAliases = "ObjectAliases";
+
                 public const string AppSettings = "AppSettings";
             }
         }

@@ -234,7 +234,7 @@ namespace Sels.Core.Extensions.Reflection
         /// <returns>Constructed object</returns>
         public static T Construct<T>(this Type type)
         {
-            type.ValidateVariable(nameof(type));
+            type.ValidateArgument(nameof(type));
 
             return Activator.CreateInstance(type).As<T>();
         }
@@ -248,7 +248,7 @@ namespace Sels.Core.Extensions.Reflection
         /// <returns>Constructed object</returns>
         public static T Construct<T>(this Type type, params object[] parameters)
         {
-            type.ValidateVariable(nameof(type));
+            type.ValidateArgument(nameof(type));
 
             return Activator.CreateInstance(type, parameters).As<T>();
         }
@@ -260,7 +260,7 @@ namespace Sels.Core.Extensions.Reflection
         /// <returns>Constructed object</returns>
         public static object Construct(this Type type)
         {
-            type.ValidateVariable(nameof(type));
+            type.ValidateArgument(nameof(type));
 
             var instance = Activator.CreateInstance(type);
 
@@ -275,7 +275,7 @@ namespace Sels.Core.Extensions.Reflection
         /// <returns>Constructed object</returns>
         public static object Construct(this Type type, params object[] parameters)
         {
-            type.ValidateVariable(nameof(type));
+            type.ValidateArgument(nameof(type));
 
             var instance = Activator.CreateInstance(type, parameters);
 
@@ -289,7 +289,7 @@ namespace Sels.Core.Extensions.Reflection
         /// </summary>
         public static bool CanConstructWith(this Type type, params Type[] argumentTypes)
         {
-            type.ValidateVariable(nameof(type));
+            type.ValidateArgument(nameof(type));
 
             foreach (var constructor in type.GetConstructors())
             {
@@ -309,7 +309,7 @@ namespace Sels.Core.Extensions.Reflection
                     var canAssignAllTypes = true;
 
                     // Loop over all properties
-                    for(int i = 0; i < nonDefaultValueParameterCount; i++)
+                    for(int i = 0; i < argumentTypes.Length; i++)
                     {
                         var constructorArgumentType = parameters[i].ParameterType;
                         var argumentType = argumentTypes[i];
@@ -335,7 +335,7 @@ namespace Sels.Core.Extensions.Reflection
         /// </summary>
         public static bool CanConstructWithArguments(this Type type, params object[] arguments)
         {
-            type.ValidateVariable(nameof(type));
+            type.ValidateArgument(nameof(type));
 
             return type.CanConstructWith(arguments.Select(x => x.GetTypeOrDefault()).ToArray());
         }

@@ -2,6 +2,7 @@
 using Sels.Core.Components.Conversion;
 using Sels.Core.Components.Serialization.KeyValue.Converters;
 using Sels.Core.Contracts.Conversion;
+using Sels.Core.Contracts.Serialization;
 using Sels.Core.Contracts.Serialization.KeyValue;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;

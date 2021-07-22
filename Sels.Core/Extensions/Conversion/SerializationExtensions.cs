@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using Sels.Core.Components.Serialization;
+using Sels.Core.Components.Serialization.Providers;
+using Sels.Core.Contracts.Serialization;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
@@ -299,6 +301,23 @@ namespace Sels.Core.Extensions.Conversion
         public static IEnumerable<T> DeserializeObjectsFromBson<T>(this IEnumerable<string> values)
         {
             return values.Select(x => x.DeserializeFromBson<T>());
+        }
+        #endregion
+
+        #region Provider
+        public static ISerializationProvider CreateProvider(this SerializationProvider provider)
+        {
+            switch (provider)
+            {
+                case SerializationProvider.Bson:
+                    return new BsonProvider();
+                case SerializationProvider.Json:
+                    return new JsonProvider();
+                case SerializationProvider.Xml:
+                    return new XmlProvider();
+            }
+
+            throw new NotSupportedException($"SerializationProvider {provider} is not supported");
         }
         #endregion
     }

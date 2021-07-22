@@ -1,4 +1,5 @@
-﻿using Sels.Core.Extensions.Conversion;
+﻿using Sels.Core.Contracts.Serialization;
+using Sels.Core.Extensions.Conversion;
 using System;
 using System.Collections.Generic;
 using System.Text;

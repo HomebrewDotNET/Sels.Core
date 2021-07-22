@@ -10,7 +10,7 @@ namespace Sels.Core.Linux.Exceptions.LinuxCommand
         // Properties
         public object Error { get; set; }
 
-        public LinuxCommandExecutionFailedException(object error) : base(error.ValidateVariable(nameof(error)).ToString())
+        public LinuxCommandExecutionFailedException(object error) : base(error.ValidateArgument(nameof(error)).ToString())
         {
             Error = error;
         }
@@ -25,7 +25,7 @@ namespace Sels.Core.Linux.Exceptions.LinuxCommand
             Error = error;
         }
 
-        public LinuxCommandExecutionFailedException(object error, Exception innerException) : base(error.ValidateVariable(nameof(error)).ToString(), innerException)
+        public LinuxCommandExecutionFailedException(object error, Exception innerException) : base(error.ValidateArgument(nameof(error)).ToString(), innerException)
         {
             Error = error;
         }

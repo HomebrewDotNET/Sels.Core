@@ -31,8 +31,8 @@ namespace Sels.Core.Components.Logging
 
         public StopWatchTimedLogger(IEnumerable<ILogger> loggers, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc)
         {
-            beginMessageFunc.ValidateVariable(nameof(beginMessageFunc));
-            endMessageFunc.ValidateVariable(nameof(endMessageFunc));
+            beginMessageFunc.ValidateArgument(nameof(beginMessageFunc));
+            endMessageFunc.ValidateArgument(nameof(endMessageFunc));
 
             _logLevel = logLevel;
             _endMessageFunc = endMessageFunc;
@@ -57,7 +57,7 @@ namespace Sels.Core.Components.Logging
 
         public override void Log(Action<TimeSpan, IEnumerable<ILogger>> loggingAction)
         {
-            loggingAction.ValidateVariable(nameof(loggingAction));
+            loggingAction.ValidateArgument(nameof(loggingAction));
 
             if(_stopWatch.HasValue() && _loggers.HasValue())
             {
