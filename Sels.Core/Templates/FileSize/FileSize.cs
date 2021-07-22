@@ -11,7 +11,7 @@ namespace Sels.Core.Templates.FileSize
     /// <summary>
     /// Base class for creating file sizes and allows for easy conversion between other filesizes.
     /// </summary>
-    public abstract class FileSize
+    public abstract class FileSize : IComparable<FileSize>, IEquatable<FileSize>
     {
         // Constants
         public const int ByteToBitMultiplier = 8;
@@ -201,5 +201,56 @@ namespace Sels.Core.Templates.FileSize
 
             return fileSize;
         }
+
+        #region Operations
+        public static bool operator ==(FileSize fileSize, FileSize otherFileSize)
+        {
+            return fileSize?.ByteSize == otherFileSize?.ByteSize;
+        }
+
+        public static bool operator !=(FileSize fileSize, FileSize otherFileSize)
+        {
+            return fileSize?.ByteSize != otherFileSize?.ByteSize;
+        }
+
+        public static bool operator <(FileSize fileSize, FileSize otherFileSize)
+        {
+            return fileSize?.ByteSize < otherFileSize?.ByteSize;
+        }
+
+        public static bool operator >(FileSize fileSize, FileSize otherFileSize)
+        {
+            return fileSize?.ByteSize > otherFileSize?.ByteSize;
+        }
+
+        public static bool operator <=(FileSize fileSize, FileSize otherFileSize)
+        {
+            return fileSize?.ByteSize <= otherFileSize?.ByteSize;
+        }
+
+        public static bool operator >=(FileSize fileSize, FileSize otherFileSize)
+        {
+            return fileSize?.ByteSize >= otherFileSize?.ByteSize;
+        }
+
+        public override int GetHashCode()
+        {
+            return ByteSize.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            return obj is FileSize objFileSize && ByteSize.Equals(objFileSize.ByteSize);
+        }
+
+        public int CompareTo(FileSize other)
+        {
+            return ByteSize.CompareTo(other?.ByteSize ?? 0);
+        }
+
+        public bool Equals(FileSize other)
+        {
+            return Equals(other.AsOrDefault<object>());
+        }
+        #endregion
     }
 }
