@@ -18,7 +18,7 @@ namespace Sels.Core.Templates.FileSize
         public const int DefaultUnitSize = 1000;
 
         // Fields
-        protected decimal _byteSize;
+        protected long _byteSize;
         protected decimal _size;
 
         // Properties
@@ -35,7 +35,7 @@ namespace Sels.Core.Templates.FileSize
         /// <summary>
         /// File size in bytes.
         /// </summary>
-        public decimal ByteSize
+        public long ByteSize
         {
             get
             {
@@ -99,7 +99,7 @@ namespace Sels.Core.Templates.FileSize
             return newSize;
         }
 
-        protected virtual decimal GetFileSize(decimal byteSize)
+        protected virtual decimal GetFileSize(long byteSize)
         {
             // Convert from bytes first
             var newSize = SizeMultiplier != 0 ? byteSize.DivideBy(UnitSize, SizeMultiplier) : byteSize;
@@ -110,7 +110,7 @@ namespace Sels.Core.Templates.FileSize
             return newSize;
         }
 
-        protected virtual decimal GetByteFileSize(decimal size)
+        protected virtual long GetByteFileSize(decimal size)
         {
             // Convert to bit to byte format
             size = IsByteSize ? size : size / ByteToBitMultiplier;
@@ -118,7 +118,7 @@ namespace Sels.Core.Templates.FileSize
             // Convert to bytes
             var newByteSize = SizeMultiplier != 0 ? size.MultiplyBy(UnitSize, SizeMultiplier) : size;
 
-            return newByteSize;
+            return newByteSize.ConvertTo<long>();
         }
 
         // Abstractions
@@ -176,7 +176,7 @@ namespace Sels.Core.Templates.FileSize
         /// <typeparam name="T">File size to create</typeparam>
         /// <param name="bytes">Byte size of new file size</param>
         /// <returns>New file size</returns>
-        public static T CreateFromBytes<T>(decimal bytes) where T : FileSize, new()
+        public static T CreateFromBytes<T>(long bytes) where T : FileSize, new()
         {
             var fileSize = new T() 
             { 

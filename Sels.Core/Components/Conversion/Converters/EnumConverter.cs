@@ -17,7 +17,19 @@ namespace Sels.Core.Components.Conversion.Converters
             convertableType.ValidateArgument(nameof(convertableType));
             convertType.ValidateArgument(nameof(convertType));
 
-            return convertType.IsAssignableFrom(typeof(Enum)) && value != null;
+            if(value != null)
+            {
+                if (convertableType.IsAssignableTo<Enum>())
+                {
+                    return convertType.IsAssignableTo<string>() || convertType.IsAssignableTo<int>();
+                }
+                else if (convertType.IsAssignableTo<Enum>())
+                {
+                    return convertableType.IsAssignableTo<string>() || convertableType.IsAssignableTo<int>();
+                }
+            }
+
+            return false;
         }
 
         public object ConvertTo(Type convertableType, Type convertType, object value)
@@ -25,7 +37,14 @@ namespace Sels.Core.Components.Conversion.Converters
             convertableType.ValidateArgument(nameof(convertableType));
             convertType.ValidateArgument(nameof(convertType));
 
-            return Enum.Parse(convertType, value.ToString());
+            if (convertableType.IsAssignableTo<Enum>())
+            {
+                return Convert.ChangeType(value, convertType);
+            }
+            else
+            {
+                return Enum.Parse(convertType, value.ToString(), true);
+            }           
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Sels.Core.Extensions
 {
-    [Obsolete]
     public static class ArgumentValidationExtensions
     {
         /// <summary>
@@ -297,6 +297,21 @@ namespace Sels.Core.Extensions
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
 
             return argument.ValidateArgument(x => argument != null && argument.CanConstructWith(), $"{parameterName} cannot be null && must contain {(parameterTypes.HasValue() ? "a constructor that has the following parameters: " + parameterTypes.JoinString(", ") : "a no-arg constructor")}");
+        }
+        #endregion
+
+        #region FileSystem
+        /// <summary>
+        /// Validates if <paramref name="argument"/> is not null and exists on the file system.
+        /// </summary>
+        /// <param name="argument">Method/Constructor argument</param>
+        /// <param name="validationFailedMessage">Message for ArgumentException when validation fails</param>
+        /// <returns><paramref name="argument"/></returns>
+        public static T ValidateArgumentExists<T>(this T argument, string validationFailedMessage) where T : FileSystemInfo
+        {
+            if (string.IsNullOrWhiteSpace(validationFailedMessage)) throw new ArgumentException($"{nameof(validationFailedMessage)} cannot be null, empty or whitespace");
+
+            return argument.ValidateArgument(x => x.HasValue() && x.Exists, validationFailedMessage);
         }
         #endregion
     }

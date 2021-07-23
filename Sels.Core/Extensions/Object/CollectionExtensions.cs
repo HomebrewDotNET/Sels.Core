@@ -13,19 +13,31 @@ namespace Sels.Core.Extensions
         private static Random _random = new Random();
 
         #region IEnumerable
-        public static IEnumerable<T> Copy<T>(this IEnumerable<T> list)
+        /// <summary>
+        /// Creates a new list from the elements in <paramref name="collection"/>.
+        /// </summary>
+        /// <typeparam name="T">Collection element type</typeparam>
+        /// <param name="collection">Collection to get elements from</param>
+        /// <returns>List containing all elements in <paramref name="collection"/></returns>
+        public static List<T> Copy<T>(this IEnumerable<T> collection)
         {
-            return new List<T>(list);
+            return new List<T>(collection);
         }
 
-        public static bool AreAllUnique<T>(this IEnumerable<T> list)
+        /// <summary>
+        /// Checks if all elements are unique in <paramref name="collection"/> by comparing with <see cref="object.Equals(object)"/>.
+        /// </summary>
+        /// <typeparam name="T">Collection element type</typeparam>
+        /// <param name="collection">Collection to check</param>
+        /// <returns>Boolean indicating if all elements in <paramref name="collection"/> are unique</returns>
+        public static bool AreAllUnique<T>(this IEnumerable<T> collection)
         {
-            if (list.HasValue())
+            if (collection.HasValue())
             {
-                foreach(var item in list)
+                foreach(var item in collection)
                 {
                     var occuranceAmount = 0;
-                    foreach(var itemToCompare in list)
+                    foreach(var itemToCompare in collection)
                     {
                         if (item.Equals(itemToCompare))
                         {
@@ -34,6 +46,44 @@ namespace Sels.Core.Extensions
 
                         // Has to be 2 because an item counts itself at least once
                         if(occuranceAmount > 1)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if all element values selected by <paramref name="valueSelector"/> are unique in <paramref name="collection"/> by comparing with <see cref="object.Equals(object)"/>.
+        /// </summary>
+        /// <typeparam name="T">Collection element type</typeparam>
+        /// <param name="collection">Collection to check</param>
+        /// <returns>Boolean indicating if all elements in <paramref name="collection"/> are unique</returns>
+        public static bool AreAllUnique<T>(this IEnumerable<T> collection, Func<T, object> valueSelector)
+        {
+            valueSelector.ValidateArgument(nameof(valueSelector));
+
+            if (collection.HasValue())
+            {
+                foreach (var item in collection)
+                {
+                    var itemValue = valueSelector(item);
+
+                    var occuranceAmount = 0;
+                    foreach (var itemToCompare in collection)
+                    {
+                        var itemToCompareValue = valueSelector(itemToCompare);
+
+                        if (itemValue.Equals(itemToCompareValue))
+                        {
+                            occuranceAmount++;
+                        }
+
+                        // Has to be 2 because an item counts itself at least once
+                        if (occuranceAmount > 1)
                         {
                             return false;
                         }

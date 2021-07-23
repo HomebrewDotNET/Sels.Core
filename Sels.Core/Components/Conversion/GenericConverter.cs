@@ -160,7 +160,7 @@ namespace Sels.Core.Components.Conversion
                                                                         .AddConverter<DateTimeConverter>()
                                                                         .AddConverter<EnumConverter>()
                                                                         .AddConverter<GuidConverter>()
-                                                                        .AddConverter<PrimitiveConverter>()
+                                                                        .AddConverter<DefaultConverter>()
                                                                         .AddConverter<StringConverter>();
         /// <summary>
         /// Default <see cref="GenericConverter"/> that contains sub converters that cover most simple base types with support for converting between objects and json strings.

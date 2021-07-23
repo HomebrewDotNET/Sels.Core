@@ -9,11 +9,10 @@ namespace Sels.Core.Extensions.Hashing
     public static class HashingExtensions
     {
         #region GenerateHash
-        public static string GenerateHash<THash>(object sourceObject) where THash : HashAlgorithm
+        public static string GenerateHash<THash>(this object sourceObject) where THash : HashAlgorithm
         {
-            sourceObject.ValidateVariable(nameof(sourceObject));
+            sourceObject.ValidateArgument(nameof(sourceObject));
             var hashType = typeof(THash);
-            hashType.ValidateVariable(x => !x.Equals(typeof(HashAlgorithm)), () => $"Please use an implementation of {typeof(HashAlgorithm)}");
 
             using (var hash = HashAlgorithm.Create(hashType.Name))
             {

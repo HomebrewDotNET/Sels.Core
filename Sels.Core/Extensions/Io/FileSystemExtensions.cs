@@ -82,6 +82,34 @@ namespace System.IO
 
         }
 
+        #region Create
+        /// <summary>
+        /// Creates a new file using the filename of <paramref name="file"/> and writes <paramref name="content"/> into the file.
+        /// </summary>
+        /// <param name="file">File to write</param>
+        /// <param name="content">Content to write into the file</param>
+        /// <param name="overwrite">If we can overwrite the file if it already exists</param>
+        /// <returns>Boolean indicating if the file was created</returns>
+        public static bool Create(this FileInfo file, string content, bool overwrite = false)
+        {
+            file.ValidateArgument(nameof(file));
+
+            if(file.Exists && overwrite)
+            {
+                file.Delete();
+            }
+
+            if (!file.Exists)
+            {
+                File.WriteAllText(file.FullName, content);
+                file.Refresh();
+                return file.Exists;
+            }
+
+            return false;
+        }
+        #endregion
+
         #region Backup
         private const string DefaultBackupFormat = "{0}.Backup";
 
@@ -107,6 +135,11 @@ namespace System.IO
         #endregion
 
         #region Io Operations
+        /// <summary>
+        /// Reads the file content from <paramref name="file"/>.
+        /// </summary>
+        /// <param name="file">File to read content from</param>
+        /// <returns>File content of <paramref name="file"/></returns>
         public static string Read(this FileInfo file)
         {
             return File.ReadAllText(file.FullName);

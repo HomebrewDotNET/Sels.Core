@@ -206,10 +206,11 @@ namespace Sels.Core.Extensions.Conversion
         /// Serializes <paramref name="value"/> to a Json string.
         /// </summary>
         /// <param name="value">Object to serialize</param>
+        /// <param name="formatting">Formatting option</param>
         /// <returns>Json string</returns>
-        public static string SerializeAsJson(this object value)
+        public static string SerializeAsJson(this object value, Formatting formatting = Formatting.None)
         {
-            return JsonConvert.SerializeObject(value);
+            return JsonConvert.SerializeObject(value, formatting);
         }
 
         /// <summary>

@@ -24,7 +24,7 @@ namespace Sels.Core.Components.Factory
             {
                 Array.Resize(ref parentSections, parentSections.Length + 1);
                 parentSections[parentSections.Length - 1] = aliasSection;
-                aliases = configurationProvider.GetSectionAs(parentSections);
+                aliases = configurationProvider.GetSectionAs(sections: parentSections);
             }
             else
             {

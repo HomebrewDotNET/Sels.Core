@@ -17,11 +17,14 @@ namespace Sels.Core
 
         public static class Config
         {
+            public const string DefaultAppSettingsFile = "AppSettings.json";
+
             public static class Sections
             {
                 public const string DefaultObjectAliases = "ObjectAliases";
 
                 public const string AppSettings = "AppSettings";
+                public const string ConnectionStrings = "ConnectionStrings";
             }
         }
 
