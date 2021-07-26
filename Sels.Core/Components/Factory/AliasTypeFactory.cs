@@ -24,14 +24,14 @@ namespace Sels.Core.Components.Factory
             {
                 Array.Resize(ref parentSections, parentSections.Length + 1);
                 parentSections[parentSections.Length - 1] = aliasSection;
-                aliases = configurationProvider.GetSectionAs(sections: parentSections);
+                aliases = configurationProvider.GetSectionAs(false, sections: parentSections);
             }
             else
             {
-                aliases = configurationProvider.GetSectionAs(aliasSection);
+                aliases = configurationProvider.GetSectionAs(aliasSection, false);
             }
 
-            _aliases = aliases.ToDictionary(x => x.Key, x => Type.GetType(x.Value.ToString()));
+            _aliases = (aliases ?? new Dictionary<string, object>()).ToDictionary(x => x.Key, x => Type.GetType(x.Value.ToString()));
         }
 
         protected override Type GetTypeFromIdentifier(string parameterName, string identifier)

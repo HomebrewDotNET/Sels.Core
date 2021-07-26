@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Sels.Core.Extensions
@@ -296,7 +297,21 @@ namespace Sels.Core.Extensions
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
 
-            return argument.ValidateArgument(x => argument != null && argument.CanConstructWith(), $"{parameterName} cannot be null && must contain {(parameterTypes.HasValue() ? "a constructor that has the following parameters: " + parameterTypes.JoinString(", ") : "a no-arg constructor")}");
+            return argument.ValidateArgument(x => argument != null && argument.CanConstructWith(parameterTypes), $"{parameterName} cannot be null && must contain {(parameterTypes.HasValue() ? "a constructor that has the following parameters: " + parameterTypes.JoinString(", ") : "a no-arg constructor")}");
+        }
+
+        /// <summary>
+        /// Validates if an instance can be constructed from <paramref name="argument"/> using the supplied <paramref name="arguments"/>.
+        /// </summary>
+        /// <param name="argument">Method/Constructor argument</param>
+        /// <param name="parameterName">Method/Constructor parameter name</param>
+        /// <param name="arguments">Contructor arguments in order</param>
+        /// <returns><paramref name="argument"/></returns>
+        public static Type ValidateArgumentCanBeContructedWithArguments(this Type argument, string parameterName, params object[] arguments)
+        {
+            if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
+
+            return argument.ValidateArgument(x => argument != null && argument.CanConstructWithArguments(arguments), $"{parameterName} cannot be null && must contain {(arguments.HasValue() ? "a constructor that has the following parameters: " + arguments.Select(x => x.GetTypeOrDefault()).JoinString(", ") : "a no-arg constructor")}");
         }
         #endregion
 

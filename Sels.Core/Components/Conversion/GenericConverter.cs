@@ -18,6 +18,13 @@ namespace Sels.Core.Components.Conversion
         private readonly List<IGenericTypeConverter> _converters = new List<IGenericTypeConverter>();
 
         // Properties
+        /// <summary>
+        /// Current converters used by this converter.
+        /// </summary>
+        public IGenericTypeConverter[] Converters => _converters.ToArray();
+        /// <summary>
+        /// Current settings for this converter.
+        /// </summary>
         public GenericConverterSettings Settings { get; }
 
         public GenericConverter() : this(new GenericConverterSettings())
@@ -66,6 +73,23 @@ namespace Sels.Core.Components.Conversion
         #endregion
 
         #region Config
+        /// <summary>
+        /// Replaces all current converts with <paramref name="converters"/>. Setting null will clear the converters.
+        /// </summary>
+        /// <param name="converters">Converters to set</param>
+        /// <returns>Self</returns>
+        public GenericConverter Set(IEnumerable<IGenericTypeConverter> converters = null)
+        {
+            _converters.Clear();
+
+            if (converters.HasValue())
+            {
+                _converters.AddRange(converters);
+            }
+
+            return this;
+        }
+
         #region Add
         /// <summary>
         /// Adds a sub converter that the <see cref="GenericConverter"/> can use.
@@ -157,10 +181,13 @@ namespace Sels.Core.Components.Conversion
         /// Default <see cref="GenericConverter"/> that contains sub converters that cover most simple base types.
         /// </summary>
         public static GenericConverter DefaultConverter => new GenericConverter()
+                                                                        .AddConverter<DirectoryInfoConverter>()
+                                                                        .AddConverter<FileInfoConverter>()
+                                                                        .AddConverter<FileSizeConverter>()
                                                                         .AddConverter<DateTimeConverter>()
                                                                         .AddConverter<EnumConverter>()
                                                                         .AddConverter<GuidConverter>()
-                                                                        .AddConverter<DefaultConverter>()
+                                                                        .AddConverter<GeneralConverter>()
                                                                         .AddConverter<StringConverter>();
         /// <summary>
         /// Default <see cref="GenericConverter"/> that contains sub converters that cover most simple base types with support for converting between objects and json strings.

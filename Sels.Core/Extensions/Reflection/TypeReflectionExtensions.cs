@@ -349,5 +349,34 @@ namespace Sels.Core.Extensions.Reflection
         }
         #endregion
         #endregion
+
+        #region Is
+        /// <summary>
+        /// Checks if <paramref name="type"/> is the same as <paramref name="typeToCheck"/>.
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <param name="typeToCheck">Type to compare to</param>
+        /// <returns>Boolean indicating if <paramref name="type"/> and <paramref name="typeToCheck"/> are the same type</returns>
+        public static bool Is(this Type type, Type typeToCheck)
+        {
+            type.ValidateArgument(nameof(type));
+            typeToCheck.ValidateArgument(nameof(typeToCheck));
+
+            return type.Equals(typeToCheck);
+        }
+
+        /// <summary>
+        /// Checks if <paramref name="type"/> is the same as <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type to compare to</typeparam>
+        /// <param name="type">Type to check</param>
+        /// <returns>Boolean indicating if <paramref name="type"/> and <typeparamref name="T"/> are the same type</returns>
+        public static bool Is<T>(this Type type)
+        {
+            type.ValidateArgument(nameof(type));
+
+            return type.Is(typeof(T));
+        }
+        #endregion
     }
 }

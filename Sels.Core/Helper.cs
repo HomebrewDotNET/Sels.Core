@@ -27,7 +27,7 @@ namespace Sels.Core
             {
                 if(path.HasValue() && ContainsValidDrive(path))
                 {
-                    return path.ToCharArray().Any(x => Path.GetInvalidPathChars().Contains(x));
+                    return !path.ToCharArray().Any(x => Path.GetInvalidPathChars().Contains(x));
                 }
 
                 return false;
@@ -37,7 +37,7 @@ namespace Sels.Core
             {
                 if (fileName.HasValue() && ContainsValidDrive(fileName))
                 {
-                    return fileName.ToCharArray().Any(x => Path.GetInvalidFileNameChars().Contains(x));
+                    return !fileName.ToCharArray().Any(x => Path.GetInvalidFileNameChars().Contains(x));
                 }
 
                 return false;
@@ -52,7 +52,8 @@ namespace Sels.Core
                     if (Path.IsPathRooted(fullPath))
                     {
                         var drive = Path.GetPathRoot(fullPath);
-                        return Environment.GetLogicalDrives().Any(x => x == drive);
+                        var logicalDrives = Environment.GetLogicalDrives();
+                        return logicalDrives.Any(x => x == drive);
                     }
                     else
                     {

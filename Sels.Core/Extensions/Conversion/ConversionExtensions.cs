@@ -108,19 +108,17 @@ namespace Sels.Core.Extensions.Conversion
         #endregion
 
         #region ToArray
-        [Obsolete]
-        public static T[] ToArray<T>(this T value)
+        /// <summary>
+        /// Tranforms <paramref name="items"/> into an array. If <paramref name="items"/> is null an empty array will be created
+        /// </summary>
+        /// <typeparam name="T">Element type of <paramref name="items"/></typeparam>
+        /// <param name="items">Collection to turn into an array</param>
+        /// <returns>A new array of element type <typeparamref name="T"/></returns>
+        public static T[] ToArrayOrDefault<T>(this IEnumerable<T> items)
         {
-            value.ValidateVariable(nameof(value));
-
-            return new T[] { value };
-        }
-        [Obsolete]
-        public static T[] ToArrayOrDefault<T>(this T value)
-        {
-            if (value.HasValue())
+            if (items.HasValue())
             {
-                return new T[] { value };
+                return items.ToArray();
             }
 
             return new T[0];

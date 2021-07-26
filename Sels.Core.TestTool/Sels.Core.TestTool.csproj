@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>0c7cc336-61e4-448f-a725-33103e084109</UserSecretsId>
+    <StartupObject>Sels.Core.TestTool.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

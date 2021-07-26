@@ -29,11 +29,12 @@ using Sels.Core.Linux.Commands;
 using Sels.Core.Linux.Commands.Screen;
 using Sels.Core.Linux.Extensions;
 using Sels.Core.Linux.Commands.Core;
-using Sels.Core.Components.FileSize.Byte;
-using Sels.Core.Templates.FileSize;
-using Sels.Core.Components.FileSize.Bit;
-using Sels.Core.Components.FileSize.Byte.Binary;
-using Sels.Core.Components.FileSize.Bit.Binary;
+using Sels.Core.Components.FileSizes.Byte;
+using Sels.Core.Templates.FileSizes;
+using Sels.Core.Components.FileSizes.Bit;
+using Sels.Core.Components.FileSizes.Byte.Binary;
+using Sels.Core.Components.FileSizes.Bit.Binary;
+using Sels.Core.Linux.Components.FileSystem;
 
 namespace Sels.Core.TestTool
 {
@@ -41,7 +42,7 @@ namespace Sels.Core.TestTool
     {
         static void Main(string[] args)
         {
-            ConsoleHelper.Run(TestFileSizes);
+            ConsoleHelper.Run(TestLinuxDirectory);
         }
 
         private static void DoRecurrentStuff()
@@ -369,6 +370,15 @@ namespace Sels.Core.TestTool
             ConvertAndPrint<YobiBit>(fileSize);
         }
 
+        private static void TestLinuxDirectory()
+        {
+            var directory = new LinuxDirectory("/mnt/c");
+
+            Console.WriteLine("Directory path: " + directory.Directory.FullName);
+            Console.WriteLine("Free size bytes: " + directory.FreeSpace.ByteSize);
+            Console.WriteLine("Free size GB: " + directory.FreeSpace.ToSize<GibiByte>().Size);
+            Console.WriteLine("Free size bytes: " + directory.Directory.GetDriveInfo().AvailableFreeSpace);
+        }
 
         private static void ConvertAndPrint<TFileSize>(FileSize fileSize) where TFileSize : FileSize, new()
         {

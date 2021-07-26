@@ -181,14 +181,16 @@ namespace Sels.Core.Extensions.Calculation
         {
             times.ValidateArgumentLargerOrEqual(nameof(times), 1);
 
+            decimal newValue = value;
+
             while (times > 0)
             {
-                value /= divideValue;
+                newValue /= divideValue;
 
                 times--;
             }
 
-            return value;
+            return newValue;
         }
         #endregion
 

@@ -16,6 +16,7 @@ namespace Sels.Core.Linux
             public const string Grep = "grep";
             public const string Tee = "tee";
             public const string Screen = "screen";
+            public const string Df = "df";
         }
 
         public const int SuccessExitCode = 0;
