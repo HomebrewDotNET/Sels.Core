@@ -69,9 +69,12 @@ namespace Sels.Core.Linux.Commands.Core
             var builder = new StringBuilder();
             builder.Append(StartCommand.BuildCommand()).AppendSpace();
 
-            foreach (var chainedCommand in IntermediateCommands)
+            if (IntermediateCommands.HasValue())
             {
-                builder.Append(chainedCommand.Chain.GetValue()).AppendSpace().Append(chainedCommand.Command.BuildCommand()).AppendSpace();
+                foreach (var chainedCommand in IntermediateCommands)
+                {
+                    builder.Append(chainedCommand.Chain.GetValue()).AppendSpace().Append(chainedCommand.Command.BuildCommand()).AppendSpace();
+                }
             }
 
             builder.Append(FinalChain.GetValue()).AppendSpace().Append(FinalCommand.BuildCommand());
@@ -148,6 +151,11 @@ namespace Sels.Core.Linux.Commands.Core
         /// Pipe output from previous command to current command.
         /// </summary>
         [EnumValue("|")]
-        Pipe
+        Pipe,
+        /// <summary>
+        /// Links commands with a space
+        /// </summary>
+        [EnumValue(" ")]
+        None
     }
 }

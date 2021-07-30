@@ -20,79 +20,64 @@ namespace Sels.Core.Extensions.Logging
         #region Message
         public static void LogMessage(this ILogger logger, LogLevel level, string message, params object[] args)
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
+                if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    if (logger.HasValue() && logger.IsEnabled(level))
-                    {
-                        logger.Log(level, message, args);
-                    }
+                    logger.Log(level, message, args);
                 }
-                catch { }
-            });
+            }
+            catch { }
         }
 
         public static void LogMessage(this ILogger logger, LogLevel level, Func<string> messageFunc, params object[] args)
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
+                if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    if (logger.HasValue() && logger.IsEnabled(level))
-                    {
-                        logger.Log(level, messageFunc(), args);
-                    }
+                    logger.Log(level, messageFunc(), args);
                 }
-                catch { }
-            });
+            }
+            catch { }
         }
         #endregion
 
         #region Exception
         public static void LogException(this ILogger logger, LogLevel level, Exception exception)
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
+                if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    if (logger.HasValue() && logger.IsEnabled(level))
-                    {
-                        logger.Log(level, exception, null);
-                    }
+                    logger.Log(level, exception, null);
                 }
-                catch { }
-            });
+            }
+            catch { }
         }
 
         public static void LogException(this ILogger logger, LogLevel level, string message, Exception exception, params object[] args)
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
+                if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    if (logger.HasValue() && logger.IsEnabled(level))
-                    {
-                        logger.Log(level, exception, message, args);
-                    }
+                    logger.Log(level, exception, message, args);
                 }
-                catch { }
-            });
+            }
+            catch { }
         }
 
         public static void LogException(this ILogger logger, LogLevel level, Func<string> messageFunc, Exception exception, params object[] args)
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
+                if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    if (logger.HasValue() && logger.IsEnabled(level))
-                    {
-                        logger.Log(level, exception, messageFunc(), args);
-                    }
+                    logger.Log(level, exception, messageFunc(), args);
                 }
-                catch { }
-            });
+            }
+            catch { }
         }
         #endregion
 
@@ -159,77 +144,62 @@ namespace Sels.Core.Extensions.Logging
 
         public static void LogObject(this ILogger logger, LogLevel level, ISerializationProvider serializer, params object[] objects)
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
+                if (logger.HasValue() && logger.IsEnabled(level) & objects.HasValue() && serializer.HasValue())
                 {
-                    if (logger.HasValue() && logger.IsEnabled(level) & objects.HasValue() && serializer.HasValue())
-                    {
-                        logger.Log(level, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine());
-                    }
+                    logger.Log(level, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine());
                 }
-                catch { }
-            });
+            }
+            catch { }
         }
 
         public static void LogObject(this ILogger logger, LogLevel level, ISerializationProvider serializer, string message, params object[] objects)
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
+                if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    if (logger.HasValue() && logger.IsEnabled(level))
-                    {
-                        logger.Log(level, Helper.Strings.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
-                    }
+                    logger.Log(level, Helper.Strings.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
                 }
-                catch { }
-            });
+            }
+            catch { }
         }
 
         public static void LogObject(this ILogger logger, LogLevel level, ISerializationProvider serializer, string message, Exception exception, params object[] objects)
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
+                if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    if (logger.HasValue() && logger.IsEnabled(level))
-                    {
-                        logger.Log(level, exception, Helper.Strings.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
-                    }
+                    logger.Log(level, exception, Helper.Strings.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
                 }
-                catch { }
-            });
+            }
+            catch { }
         }
 
         public static void LogObject(this ILogger logger, LogLevel level, ISerializationProvider serializer, Func<string> messageFunc, params object[] objects)
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
+                if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    if (logger.HasValue() && logger.IsEnabled(level))
-                    {
-                        logger.Log(level, Helper.Strings.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
-                    }
+                    logger.Log(level, Helper.Strings.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
                 }
-                catch { }
-            });
+            }
+            catch { }
         }
 
         public static void LogObject(this ILogger logger, LogLevel level, ISerializationProvider serializer, Func<string> messageFunc, Exception exception, params object[] objects)
         {
-            _ = Task.Run(() =>
+            try
             {
-                try
+                if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    if (logger.HasValue() && logger.IsEnabled(level))
-                    {
-                        logger.Log(level, exception, Helper.Strings.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
-                    }
+                    logger.Log(level, exception, Helper.Strings.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
                 }
-                catch { }
-            });
+            }
+            catch { }
         }
         #endregion
         #endregion

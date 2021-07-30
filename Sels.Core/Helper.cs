@@ -5,6 +5,9 @@ using System.Linq;
 using Sels.Core.Extensions;
 using System.IO;
 using System.Diagnostics;
+using System.Threading;
+using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace Sels.Core
 {
@@ -71,16 +74,49 @@ namespace Sels.Core
         {
             public static void RegisterApplicationClosingAction(Action action)
             {
-                action.ValidateVariable(nameof(action));
+                action.ValidateArgument(nameof(action));
 
                 AppDomain.CurrentDomain.ProcessExit += (x, y) => action();
             }
 
             public static void RegisterApplicationClosingAction(Action<object, EventArgs> action)
             {
-                action.ValidateVariable(nameof(action));
+                action.ValidateArgument(nameof(action));
 
                 AppDomain.CurrentDomain.ProcessExit += (x, y) => action(x, y);
+            }
+
+            /// <summary>
+            /// Sets the current directory to the directory of the executing process. This is to fix the config files when publishing as a self-contained app.
+            /// </summary>
+            public static void SetCurrentDirectoryToProcess()
+            {
+                var baseDir = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+
+                // Used for published configs
+                Directory.SetCurrentDirectory(baseDir);
+            }
+
+            /// <summary>
+            /// Sets the current directory to the directory of the executing process. This is to fix the config files when publishing as a self-contained app.
+            /// </summary>
+            public static void SetCurrentDirectoryToExecutingAssembly()
+            {
+                var baseDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+                // Used for published configs
+                Directory.SetCurrentDirectory(baseDir);
+            }
+
+            /// <summary>
+            /// Builds a new instance of <see cref="IConfiguration"/> using the default AppSettings.json file that resides besides the application exe.
+            /// </summary>
+            /// <returns></returns>
+            public static IConfiguration BuildDefaultConfigurationFile()
+            {
+                var currentDirectory = Directory.GetCurrentDirectory();
+
+                return new ConfigurationBuilder().SetBasePath(currentDirectory).AddJsonFile("appsettings.json").Build();
             }
         }
         #endregion
@@ -146,7 +182,7 @@ namespace Sels.Core
             /// <param name="output">Standard output from program execution</param>
             /// <param name="error">Error output from program execution</param>
             /// <returns>Program exit code</returns>
-            public static int Run(string processFileName, string arguments, out string output, out string error)
+            public static int Run(string processFileName, string arguments, out string output, out string error, CancellationToken token = default)
             {
                 processFileName.ValidateArgument(nameof(processFileName));
 
@@ -161,14 +197,32 @@ namespace Sels.Core
                     }
                 };
 
-                process.Start();
+                try
+                {
+                    process.Start();
 
-                process.WaitForExit();
+                    // Wait for process to finish
+                    while (!process.HasExited)
+                    {
+                        Thread.Sleep(250);
 
-                output = process.StandardOutput.ReadToEnd();
-                error = process.StandardError.ReadToEnd();
+                        // Kill process
+                        if (token.IsCancellationRequested)
+                        {
+                            process.Kill();
+                            process.WaitForExit();
+                        }                     
+                    }
 
-                return process.ExitCode;
+                    output = process.StandardOutput.ReadToEnd();
+                    error = process.StandardError.ReadToEnd();
+
+                    return process.ExitCode;
+                }
+                finally
+                {
+                    process.Dispose();
+                }
             }
         }
         #endregion

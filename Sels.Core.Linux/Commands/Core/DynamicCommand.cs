@@ -36,7 +36,7 @@ namespace Sels.Core.Linux.Commands.Core
 
         public override bool RunCommand(out string output, out string error, out int exitCode)
         {
-            return LinuxHelper.Program.Run(BuildArguments(), out output, out error, out exitCode);
+            return LinuxHelper.Program.Run(BuildArguments(), out output, out error, out exitCode, token: CancellationToken);
         }
 
         public override string BuildCommand()

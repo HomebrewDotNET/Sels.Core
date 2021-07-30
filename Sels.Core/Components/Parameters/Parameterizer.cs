@@ -38,8 +38,8 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public Parameterizer AddParameter(string name, Func<object, string, string> generateValueAction, Func<object> beginScopeAction = null)
         {
-            name.ValidateVariable(nameof(name));
-            generateValueAction.ValidateVariable(nameof(generateValueAction));
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
+            generateValueAction.ValidateArgument(nameof(generateValueAction));
 
             return AddParameter(new DelegateParameter(name, generateValueAction, beginScopeAction));
         }
@@ -49,8 +49,8 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public Parameterizer AddParameter(string name, Func<string> generateValueAction, Func<object> beginScopeAction = null)
         {
-            name.ValidateVariable(nameof(name));
-            generateValueAction.ValidateVariable(nameof(generateValueAction));
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
+            generateValueAction.ValidateArgument(nameof(generateValueAction));
 
             return AddParameter(name, (x, y) => generateValueAction(), beginScopeAction);
         }
@@ -60,7 +60,7 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public Parameterizer AddParameter(string name, string parameterValue)
         {
-            name.ValidateVariable(nameof(name));
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
 
             return AddParameter(name, (x,y) => parameterValue);
         }
@@ -68,10 +68,21 @@ namespace Sels.Core.Components.Parameters
         /// <summary>
         /// Adds parameter that the parameterizer can use
         /// </summary>
+        public Parameterizer AddParameter(string name, object parameterValue)
+        {
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
+            parameterValue.ValidateArgument(nameof(parameterValue));
+
+            return AddParameter(name, parameterValue.ToString());
+        }
+
+        /// <summary>
+        /// Adds parameter that the parameterizer can use
+        /// </summary>
         public Parameterizer AddParameter(Parameter parameter)
         {
-            parameter.ValidateVariable(nameof(parameter));
-            parameter.Name.ValidateVariable(nameof(parameter.Name));
+            parameter.ValidateArgument(nameof(parameter));
+            parameter.Name.ValidateArgumentNotNullOrWhitespace(nameof(parameter.Name));
 
             _parameters.AddOrUpdate(parameter.Name, parameter);
 
@@ -82,7 +93,7 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public Parameterizer AddParameters(params Parameter[] parameters)
         {
-            parameters.ValidateVariable(nameof(parameters));
+            parameters.ValidateArgument(nameof(parameters));
 
             foreach(var parameter in parameters)
             {
@@ -96,7 +107,7 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public Parameterizer AddParameters(IEnumerable<Parameter> parameters)
         {
-            parameters.ValidateVariable(nameof(parameters));
+            parameters.ValidateArgument(nameof(parameters));
 
             foreach (var parameter in parameters)
             {

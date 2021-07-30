@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace Sels.Core.Contracts.Commands
 {
@@ -9,6 +10,11 @@ namespace Sels.Core.Contracts.Commands
     /// </summary>
     public interface ICommand
     {
+        /// <summary>
+        /// Optional token for aborting long running command.
+        /// </summary>
+        public CancellationToken CancellationToken { get; set; }
+
         /// <summary>
         /// Runs the command and gets the stout, sterr and exit code.
         /// </summary>

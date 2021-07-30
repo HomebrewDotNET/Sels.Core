@@ -152,6 +152,12 @@ namespace System.IO
         #endregion
 
         #region Copying 
+        /// <summary>
+        /// Copies <paramref name="file"/> to directory <paramref name="destinationDirectory"/>.
+        /// </summary>
+        /// <param name="file">File to copy</param>
+        /// <param name="destinationDirectory">Directory to copy file to</param>
+        /// <returns>FileInfo of copied file</returns>
         public static FileInfo CopyTo(this FileInfo file, DirectoryInfo destinationDirectory, bool overwrite = false)
         {
             file.CreateIfNotExistAndValidate(nameof(file));
@@ -162,6 +168,13 @@ namespace System.IO
             return file.CopyTo(newFileName, overwrite);
         }
 
+        /// <summary>
+        /// Copies <paramref name="file"/> to directory <paramref name="destinationDirectory"/> with <paramref name="fileName"/> as the new file name.
+        /// </summary>
+        /// <param name="file">File to copy</param>
+        /// <param name="destinationDirectory">Directory to copy file to</param>
+        /// <param name="fileName">Filename of copied file</param>
+        /// <returns>FileInfo of copied file</returns>
         public static FileInfo CopyTo(this FileInfo file, DirectoryInfo destinationDirectory, string fileName, bool overwrite = false)
         {
             file.ValidateArgument(nameof(file));
@@ -171,6 +184,46 @@ namespace System.IO
             var newFileName = Path.Combine(destinationDirectory.FullName, fileName);
 
             return file.CopyTo(newFileName, overwrite);
+        }
+        #endregion
+
+        #region Moving 
+        /// <summary>
+        /// Moves <paramref name="file"/> to directory <paramref name="destinationDirectory"/>.
+        /// </summary>
+        /// <param name="file">File to move</param>
+        /// <param name="destinationDirectory">Directory to move file to</param>
+        /// <returns>FileInfo of moved file</returns>
+        public static FileInfo MoveTo(this FileInfo file, DirectoryInfo destinationDirectory)
+        {
+            file.CreateIfNotExistAndValidate(nameof(file));
+            destinationDirectory.CreateIfNotExistAndValidate(nameof(destinationDirectory));
+
+            var newFileName = Path.Combine(destinationDirectory.FullName, file.Name);
+
+            file.MoveTo(newFileName);
+
+            return new FileInfo(newFileName);
+        }
+
+        /// <summary>
+        /// Moves <paramref name="file"/> to directory <paramref name="destinationDirectory"/> with <paramref name="fileName"/> as the new file name.
+        /// </summary>
+        /// <param name="file">File to move</param>
+        /// <param name="destinationDirectory">Directory to move file to</param>
+        /// <param name="fileName">Filename of moved file</param>
+        /// <returns>FileInfo of moved file</returns>
+        public static FileInfo MoveTo(this FileInfo file, DirectoryInfo destinationDirectory, string fileName)
+        {
+            file.ValidateArgument(nameof(file));
+            destinationDirectory.CreateIfNotExistAndValidate(nameof(destinationDirectory));
+            fileName.ValidateArgumentNotNullOrWhitespace(nameof(fileName));
+
+            var newFileName = Path.Combine(destinationDirectory.FullName, fileName);
+
+            file.MoveTo(newFileName);
+
+            return new FileInfo(newFileName);
         }
         #endregion
     }

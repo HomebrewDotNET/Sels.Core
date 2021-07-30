@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace Sels.Core.Linux.Templates.LinuxCommand
 {
@@ -46,6 +47,8 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
     /// <typeparam name="TCommandResult">Type of result that the command returns</typeparam>
     public abstract class BaseLinuxCommand<TName, TCommandResult> : ILinuxCommand<TCommandResult>
     {
+        public CancellationToken CancellationToken { get; set; }
+
         public TName Name { get; }
 
         public BaseLinuxCommand(TName name) 
@@ -55,7 +58,7 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
 
         public virtual bool RunCommand(out string output, out string error, out int exitCode)
         {
-            return LinuxHelper.Program.Run(Name.GetArgumentValue(), BuildArguments(), out output, out error, out exitCode, SuccessExitCode);
+            return LinuxHelper.Program.Run(Name.GetArgumentValue(), BuildArguments(), out output, out error, out exitCode, SuccessExitCode, CancellationToken);
         }
 
         public virtual string BuildCommand()
@@ -94,5 +97,18 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
         public virtual int SuccessExitCode => LinuxConstants.SuccessExitCode;
 
         public abstract TCommandResult CreateResult(bool wasSuccesful, int exitCode, string output, string error);
+
+        // Overrides
+        public override string ToString()
+        {
+            try
+            {
+                return BuildCommand();
+            }
+            catch(Exception ex)
+            {
+                return "Could not build command: " + ex.Message;
+            }
+        }
     }
 }

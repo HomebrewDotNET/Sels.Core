@@ -19,7 +19,7 @@ namespace Sels.Core.Linux.Templates.Commands.Bash
 
         public override bool RunCommand(out string output, out string error, out int exitCode)
         {
-            return LinuxHelper.Program.Bash.Run(BuildArguments(), out output, out error, out exitCode);
+            return LinuxHelper.Program.Bash.Run(BuildArguments(), out output, out error, out exitCode, token: CancellationToken);
         }
 
         public override string BuildCommand()

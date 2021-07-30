@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -104,47 +105,6 @@ namespace Sels.Core.Extensions.Linq
             }
 
             return items;
-        }
-
-        public static IEnumerable<TOut> ForceSelect<TIn, TOut>(this IEnumerable<TIn> items, Func<TIn, TOut> function)
-        {
-            List<TOut> newItems = new List<TOut>();
-
-            if (items.HasValue())
-            {
-                foreach (var item in items)
-                {
-                    try
-                    {
-                        newItems.Add(function(item));
-                    }
-                    catch { }
-                }
-            }
-
-            return newItems;
-        }
-
-        public static IEnumerable<TOut> ForceSelect<TIn, TOut>(this IEnumerable<TIn> items, Func<TIn, TOut> function, Action<TIn, Exception> exceptionHandler)
-        {
-            List<TOut> newItems = new List<TOut>();
-
-            if (items.HasValue())
-            {
-                foreach (var item in items)
-                {
-                    try
-                    {
-                        newItems.Add(function(item));
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptionHandler.ForceExecute(item, ex);
-                    }
-                }
-            }
-
-            return newItems;
         }
 
         #region  ForceExecuteAction
@@ -379,6 +339,48 @@ namespace Sels.Core.Extensions.Linq
                 foreach (var item in items)
                 {
                     yield return select(item);
+                }
+            }
+        }
+        #endregion
+
+        #region ForceSelect
+        /// <summary>
+        /// Projects each element of a sequence into a new form.. Exception are caught so execution doesn't stop.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+        /// <typeparam name="TSelect">The type of the value returned by selector.</typeparam>
+        /// <param name="source"> A sequence of values to invoke a transform function on.</param>
+        /// <param name="selector">A transform function to apply to each element.</param>
+        /// <param name="exceptionHandler">Optional action for handling exceptions. First argument is the element that caused the exception en the second arg is the thrown exception</param>
+        /// <returns>An System.Collections.Generic.IEnumerable`1 whose elements are the result of invoking the transform function on each element of source.</returns>
+        public static IEnumerable<TSelect> ForceSelect<TSource, TSelect>(this IEnumerable<TSource> source, Func<TSource, TSelect> selector, Action<TSource, Exception> exceptionHandler = null)
+        {
+            if (source.HasValue())
+            {
+                foreach(var item in source)
+                {
+
+                    TSelect selectedItem;
+                    try
+                    {
+                        selectedItem = selector(item);
+                    }
+                    catch(Exception ex)
+                    {
+                        try
+                        {
+                            if (exceptionHandler.HasValue())
+                            {
+                                exceptionHandler(item, ex);
+                            }
+                        }
+                        catch { }
+
+                        continue;
+                    }
+
+                    yield return selectedItem;
                 }
             }
         }

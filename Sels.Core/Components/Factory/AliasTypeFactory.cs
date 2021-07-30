@@ -31,7 +31,7 @@ namespace Sels.Core.Components.Factory
                 aliases = configurationProvider.GetSectionAs(aliasSection, false);
             }
 
-            _aliases = (aliases ?? new Dictionary<string, object>()).ToDictionary(x => x.Key, x => Type.GetType(x.Value.ToString()));
+            _aliases = (aliases ?? new Dictionary<string, object>()).ToDictionary(x => x.Key, x => Type.GetType(x.Value.ToString(), true));
         }
 
         protected override Type GetTypeFromIdentifier(string parameterName, string identifier)

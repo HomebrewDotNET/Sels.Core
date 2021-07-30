@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace Sels.Core.Linux
 {
@@ -70,11 +71,11 @@ namespace Sels.Core.Linux
             /// <param name="exitCode">Exit code of command</param>
             /// <param name="succesExitCode">Exit code indicating succesful execution</param>
             /// <returns>Boolean indicating if the command was executed successfully</returns>
-            public static bool Run(string program, string arguments, out string output, out string error, out int exitCode, int succesExitCode = LinuxConstants.SuccessExitCode)
+            public static bool Run(string program, string arguments, out string output, out string error, out int exitCode, int succesExitCode = LinuxConstants.SuccessExitCode, CancellationToken token = default)
             {
                 program.ValidateArgument(nameof(program));
 
-                exitCode = Helper.Program.Run(program, arguments, out output, out error);
+                exitCode = Helper.Program.Run(program, arguments, out output, out error, token);
 
                 return exitCode == succesExitCode;
             }
@@ -88,11 +89,11 @@ namespace Sels.Core.Linux
             /// <param name="exitCode">Exit code of command</param>
             /// <param name="succesExitCode">Exit code indicating succesful execution</param>
             /// <returns>Boolean indicating if the command was executed successfully</returns>
-            public static bool Run(string command, out string output, out string error, out int exitCode, int succesExitCode = LinuxConstants.SuccessExitCode)
+            public static bool Run(string command, out string output, out string error, out int exitCode, int succesExitCode = LinuxConstants.SuccessExitCode, CancellationToken token = default)
             {
                 command.ValidateArgument(nameof(command));
 
-                return Run(LinuxConstants.Commands.Shell, FormatStringCommand(command), out output, out error, out exitCode, succesExitCode);
+                return Run(LinuxConstants.Commands.Shell, FormatStringCommand(command), out output, out error, out exitCode, succesExitCode, token);
             }
 
             /// <summary>
@@ -119,17 +120,15 @@ namespace Sels.Core.Linux
                 /// <param name="exitCode">Exit code of command</param>
                 /// <param name="succesExitCode">Exit code indicating succesful execution</param>
                 /// <returns>Boolean indicating if the command was executed successfully</returns>
-                public static bool Run(string command, out string output, out string error, out int exitCode, int succesExitCode = LinuxConstants.SuccessExitCode)
+                public static bool Run(string command, out string output, out string error, out int exitCode, int succesExitCode = LinuxConstants.SuccessExitCode, CancellationToken token = default)
                 {
                     command.ValidateArgument(nameof(command));
 
-                    return Program.Run(LinuxConstants.Commands.Bash, FormatStringCommand(command), out output, out error, out exitCode, succesExitCode);
+                    return Program.Run(LinuxConstants.Commands.Bash, FormatStringCommand(command), out output, out error, out exitCode, succesExitCode, token);
                 }
             }
             #endregion
         }
         #endregion
-
-
     }
 }

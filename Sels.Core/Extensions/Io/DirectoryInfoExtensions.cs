@@ -53,6 +53,10 @@ namespace System.IO
             return false;
         }
 
+        /// <summary>
+        /// Deletes all files and sub directories.
+        /// </summary>
+        /// <param name="directory">Directory to clear</param>
         public static void Clear(this DirectoryInfo directory)
         {
             directory.ValidateArgument(nameof(directory));
