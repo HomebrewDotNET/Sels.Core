@@ -9,6 +9,7 @@ namespace Sels.Core.Components.Properties
     public class ReadOnlyProperty<TValue>
     {
         // Fields
+        private bool _wasSet;
         private TValue _internalValue;
 
         private Func<TValue> _getterSetter = new Func<TValue>(() => default);
@@ -63,9 +64,17 @@ namespace Sels.Core.Components.Properties
         protected virtual TValue Get()
         {
             // If we have any getter set conditions and at least 1 returns true we set the internal value using the getterSetter or default value of TValue
-            if(_getterSetConditions.HasValue(x => x(_internalValue)))
+            if(_getterSetConditions.HasValue())
+            {
+                if(_getterSetConditions.Any(x => x(_internalValue)))
+                {
+                    Set(_getterSetter());
+                }               
+            }
+            else if (!_wasSet)
             {
                 Set(_getterSetter());
+                _wasSet = true;
             }
 
             return _internalValue;

@@ -11,6 +11,8 @@ using Sels.Core.Extensions.Conversion;
 using Sels.Core.Components.Logging;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Contracts.Factory;
+using Sels.Core.Components.IoC;
+using Unity.Lifetime;
 
 namespace Sels.Core.Unity.Components.Containers
 {
@@ -43,7 +45,7 @@ namespace Sels.Core.Unity.Components.Containers
         /// </summary>
         public IUnityContainer Container { get; }
 
-        public UnityServiceFactory()
+        public UnityServiceFactory() : this(DefaultContainer.Value)
         {
             
         }
@@ -149,6 +151,116 @@ namespace Sels.Core.Unity.Components.Containers
             type.ValidateArgument(nameof(type));
 
             return Container.ResolveAll(type);
+        }
+
+        public void Register(ServiceScope scope, Type type)
+        {
+            type.ValidateArgument(nameof(type));
+
+            switch (scope)
+            {
+                case ServiceScope.Transient:
+                    Container.RegisterType(type);
+                    break;
+                case ServiceScope.Scoped:
+                    Container.RegisterType(type, new HierarchicalLifetimeManager());
+                    break;
+                case ServiceScope.Singleton:
+                    Container.RegisterSingleton(type);
+                    break;
+            }
+        }
+
+        public void Register<T>(ServiceScope scope)
+        {
+            switch (scope)
+            {
+                case ServiceScope.Transient:
+                    Container.RegisterType<T>();
+                    break;
+                case ServiceScope.Scoped:
+                    Container.RegisterType<T>(new HierarchicalLifetimeManager());
+                    break;
+                case ServiceScope.Singleton:
+                    Container.RegisterSingleton<T>();
+                    break;
+            }
+        }
+
+        public void Register(ServiceScope scope, Type type, string name)
+        {
+            type.ValidateArgument(nameof(type));
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
+
+            switch (scope)
+            {
+                case ServiceScope.Transient:
+                    Container.RegisterType(type, name);
+                    break;
+                case ServiceScope.Scoped:
+                    Container.RegisterType(type, name, new HierarchicalLifetimeManager());
+                    break;
+                case ServiceScope.Singleton:
+                    Container.RegisterSingleton(type, name);
+                    break;
+            }
+        }
+
+        public void Register<T>(ServiceScope scope, string name)
+        {
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
+
+            switch (scope)
+            {
+                case ServiceScope.Transient:
+                    Container.RegisterType<T>(name);
+                    break;
+                case ServiceScope.Scoped:
+                    Container.RegisterType<T>(name, new HierarchicalLifetimeManager());
+                    break;
+                case ServiceScope.Singleton:
+                    Container.RegisterSingleton<T>(name);
+                    break;
+            }
+        }
+
+        public void Register(ServiceScope scope, Type serviceType, Type implementationType, string name)
+        {
+            serviceType.ValidateArgument(nameof(serviceType));
+            implementationType.ValidateArgument(nameof(implementationType));
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
+
+            switch (scope)
+            {
+                case ServiceScope.Transient:
+                    Container.RegisterType(serviceType, implementationType, name);
+                    break;
+                case ServiceScope.Scoped:
+                    Container.RegisterType(serviceType, implementationType, name, new HierarchicalLifetimeManager());
+                    break;
+                case ServiceScope.Singleton:
+                    Container.RegisterSingleton(serviceType, implementationType, name);
+                    break;
+            }
+
+        }
+
+        public void Register<TService, TImplementation>(ServiceScope scope, string name) where TImplementation : TService
+        {
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
+
+            switch (scope)
+            {
+                case ServiceScope.Transient:
+                    Container.RegisterType<TService, TImplementation>(name);
+                    break;
+                case ServiceScope.Scoped:
+                    Container.RegisterType<TService, TImplementation>(name, new HierarchicalLifetimeManager());
+                    break;
+                case ServiceScope.Singleton:
+                    Container.RegisterSingleton<TService, TImplementation>(name);
+                    break;
+            }
         }
     }
 }

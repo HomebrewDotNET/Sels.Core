@@ -43,7 +43,7 @@ namespace Sels.Core.Components.Conversion
             convertableType.ValidateArgument(nameof(convertableType));
             convertType.ValidateArgument(nameof(convertType));
 
-            return _converters.HasValue() && _converters.Any(x => x.CanConvert(convertableType, convertType, value));
+            return  convertableType.Equals(convertType) || (_converters.HasValue() && _converters.Any(x => x.CanConvert(convertableType, convertType, value)));
         }
 
         public object ConvertTo(Type convertableType, Type convertType, object value)
@@ -53,6 +53,11 @@ namespace Sels.Core.Components.Conversion
 
             try
             {
+                if (convertableType.Equals(convertType))
+                {
+                    return value;
+                }
+
                 var converter = _converters.FirstOrDefault(x => x.CanConvert(convertableType, convertType, value));
 
                 if (converter.HasValue())

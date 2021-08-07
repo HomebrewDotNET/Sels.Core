@@ -1,4 +1,8 @@
-﻿using Sels.Core.Extensions;
+﻿using Sels.Core.Components.FileSizes.Byte;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Reflection;
+using Sels.Core.Templates.FileSizes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -77,6 +81,15 @@ namespace System.IO
                 Process.Start("explorer.exe", file.FullName);
             }
 
+        }
+
+        public static TSize GetFileSize<TSize>(this FileInfo file) where TSize : FileSize
+        {
+            file.ValidateArgumentExists(nameof(file));
+
+            var sizeType = typeof(TSize).Is<FileSize>() ? typeof(SingleByte) : typeof(TSize);
+
+            return FileSize.CreateFromBytes(file.Length, sizeType).As<TSize>();
         }
 
         #region Backup
