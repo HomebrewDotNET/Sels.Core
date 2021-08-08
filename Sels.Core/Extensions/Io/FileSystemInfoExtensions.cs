@@ -22,11 +22,25 @@ namespace System.IO
         private static extern bool GetDiskFreeSpaceEx(string lpszPath, ref long lpFreeBytesAvailable, ref long lpTotalNumberOfBytes, ref long lpTotalNumberOfFreeBytes);
 
         /// <summary>
-        /// Returns the amount of free space on the drive that <paramref name="info"/> is located on.
+        /// Returns the amount of free space on the drive that <paramref name="info"/> is located on. 
         /// </summary>
         /// <param name="info">Location to check</param>
         /// <returns>Free size in <see cref="SingleByte"/></returns>
         public static FileSize GetFreeSpace(this FileSystemInfo info)
+        {
+            info.ValidateArgument(nameof(info));
+
+            var drive = info.GetDriveInfo();
+
+            return FileSize.CreateFromBytes<SingleByte>(drive.AvailableFreeSpace);
+        }
+
+        /// <summary>
+        /// Returns the amount of free space on the drive that <paramref name="info"/> is located on. Only works on windows as it relies on a windows dll.
+        /// </summary>
+        /// <param name="info">Location to check</param>
+        /// <returns>Free size in <see cref="SingleByte"/></returns>
+        public static FileSize GetFreeSpaceOnWindows(this FileSystemInfo info)
         {
             info.ValidateArgument(nameof(info));
 
@@ -36,7 +50,7 @@ namespace System.IO
             long totalBytes = 0;
             long totalNumberFreeBytes = 0;
 
-            if(GetDiskFreeSpaceEx(path, ref freeBytes, ref totalBytes, ref totalNumberFreeBytes))
+            if (GetDiskFreeSpaceEx(path, ref freeBytes, ref totalBytes, ref totalNumberFreeBytes))
             {
                 return FileSize.CreateFromBytes<SingleByte>(freeBytes);
             }
