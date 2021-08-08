@@ -53,6 +53,18 @@ namespace Sels.Core.Components.Logging
         #endregion
 
         #region Logging
+        #region Debug
+        /// <summary>
+        /// Logs a message using severity <see cref="LogLevel.Debug"/>.
+        /// </summary>
+        /// <param name="message">Message to log</param>
+        /// <param name="args">Optional logging parameters</param>
+        public static void Debug(string message, params object[] args)
+        {
+            Log(LogLevel.Debug, message, args);
+        }
+        #endregion
+
         #region Log
         /// <summary>
         /// Perform a logging action using the registered loggers.

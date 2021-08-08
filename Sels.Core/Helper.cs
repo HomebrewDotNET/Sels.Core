@@ -181,8 +181,10 @@ namespace Sels.Core
             /// <param name="arguments">Arguments for program</param>
             /// <param name="output">Standard output from program execution</param>
             /// <param name="error">Error output from program execution</param>
+            /// <param name="killWaitTime">How long to wait for the process to exit after killing it. This is only applicable when the cancellation token is used</param>
+            /// <param name="token">CancellationToken for stopping the execution of the process</param>
             /// <returns>Program exit code</returns>
-            public static int Run(string processFileName, string arguments, out string output, out string error, CancellationToken token = default)
+            public static int Run(string processFileName, string arguments, out string output, out string error, CancellationToken token = default, int killWaitTime = 10000)
             {
                 processFileName.ValidateArgument(nameof(processFileName));
 
@@ -210,7 +212,7 @@ namespace Sels.Core
                         if (token.IsCancellationRequested)
                         {
                             process.Kill();
-                            process.WaitForExit();
+                            process.WaitForExit(killWaitTime);
                         }                     
                     }
 
