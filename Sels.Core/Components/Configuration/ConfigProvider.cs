@@ -68,7 +68,7 @@ namespace Sels.Core.Components.Configuration
         {
             section.ValidateArgumentNotNullOrWhitespace(nameof(section));
 
-            var configSection = _config.GetSection(section);
+            var configSection = GetSection(section);
 
             if (required && !configSection.Exists())
             {
@@ -84,26 +84,14 @@ namespace Sels.Core.Components.Configuration
         {
             sections.ValidateArgumentNotNullOrEmpty(nameof(sections));
 
-            IConfigurationSection currentSection = null;
+            var section = GetSection(sections);
 
-            foreach (var section in sections)
-            {
-                if (currentSection.HasValue())
-                {
-                    currentSection = currentSection.GetSection(section);
-                }
-                else
-                {
-                    currentSection = _config.GetSection(section);
-                }
-            }
-
-            if (required && !currentSection.Exists())
+            if (required && !section.Exists())
             {
                 throw new ConfigurationMissingException(sections.JoinString("."), ConfigFile);
             }
 
-            var value = currentSection.Get<T>();
+            var value = section.Get<T>();
 
             return validator.HasValue() ? value.ValidateArgument(validator, x => new MisconfiguredException(sections.JoinString("."), ConfigFile, misconfigurationReason.HasValue() ? misconfigurationReason(x) : $"<{x.SerializeAsJson()}> is not a valid value")) : value;
         }
@@ -123,7 +111,7 @@ namespace Sels.Core.Components.Configuration
             key.ValidateArgumentNotNullOrWhitespace(nameof(key));
             section.ValidateArgumentNotNullOrWhitespace(nameof(section));
 
-            var configSection = _config.GetSection(AppSettingSection);
+            var configSection = GetSection(section);
 
             if (required && !configSection.Exists())
             {
@@ -140,6 +128,27 @@ namespace Sels.Core.Components.Configuration
             key.ValidateArgumentNotNullOrWhitespace(nameof(key));
             sections.ValidateArgumentNotNullOrEmpty(nameof(sections));
 
+            var configSection = GetSection(sections);
+
+            if (required && !configSection.Exists())
+            {
+                throw new ConfigurationMissingException(key, sections.JoinString("."), ConfigFile);
+            }
+
+            var value = configSection.GetValue<T>(key);
+
+            return validator.HasValue() ? value.ValidateArgument(validator, x => new MisconfiguredException(key, sections.JoinString("."), ConfigFile, misconfigurationReason.HasValue() ? misconfigurationReason(x) : $"<{x}> is not a valid value")) : value;
+        }
+
+        public bool IsSectionDefined(params string[] sections)
+        {
+            sections.ValidateArgumentNotNullOrEmpty(nameof(sections));
+
+            return GetSection(sections).Exists();
+        }
+
+        private IConfigurationSection GetSection(params string[] sections)
+        {
             IConfigurationSection currentSection = null;
 
             foreach (var section in sections)
@@ -154,14 +163,7 @@ namespace Sels.Core.Components.Configuration
                 }
             }
 
-            if (required && !currentSection.Exists())
-            {
-                throw new ConfigurationMissingException(key, sections.JoinString("."), ConfigFile);
-            }
-
-            var value =  currentSection.GetValue<T>(key);
-
-            return validator.HasValue() ? value.ValidateArgument(validator, x => new MisconfiguredException(key, sections.JoinString("."), ConfigFile, misconfigurationReason.HasValue() ? misconfigurationReason(x) : $"<{x}> is not a valid value")) : value;
+            return currentSection;
         }
     }
 }

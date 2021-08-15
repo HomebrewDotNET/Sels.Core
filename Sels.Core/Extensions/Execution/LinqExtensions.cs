@@ -469,5 +469,17 @@ namespace Sels.Core.Extensions.Linq
             }
         }
         #endregion
+
+        #region Trim
+        /// <summary>
+        /// Returns an enumerator that trims the values in <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">Strings to trim</param>
+        /// <returns>An enumerator that trims each element</returns>
+        public static IEnumerable<string> Trim(this IEnumerable<string> source)
+        {
+            return source.Select(x => x.Trim());
+        }
+        #endregion
     }
 }

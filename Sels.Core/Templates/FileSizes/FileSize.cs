@@ -293,6 +293,11 @@ namespace Sels.Core.Templates.FileSizes
             return CreateFromBytes<SingleByte>(newBytes > 0 ? newBytes : 0);
         }
 
+        public static implicit operator FileSize(long bytes)
+        {
+            return new SingleByte(bytes);
+        }
+
         public override int GetHashCode()
         {
             return ByteSize.GetHashCode();

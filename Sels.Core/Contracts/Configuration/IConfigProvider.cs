@@ -81,5 +81,12 @@ namespace Sels.Core.Contracts.Configuration
         /// <param name="sections">Name of config section</param>
         /// <returns>Section converted to <typeparamref name="T"/></returns>
         T GetSectionAs<T>(bool required = true, Predicate<T> validator = null, Func<T, string> misconfigurationReason = null, params string[] sections);
+
+        /// <summary>
+        /// Checks if the last section in <paramref name="sections"/> exists in the config file.
+        /// </summary>
+        /// <param name="sections">Full order of the sections to check.</param>
+        /// <returns>Boolean indicating if the last section in <paramref name="sections"/> exists</returns>
+        bool IsSectionDefined(params string[] sections);
     }
 }
