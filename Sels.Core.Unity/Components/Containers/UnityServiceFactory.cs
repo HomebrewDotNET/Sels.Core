@@ -57,8 +57,6 @@ namespace Sels.Core.Unity.Components.Containers
 
         public bool IsRegistered(Type type)
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             type.ValidateArgument(nameof(type));
 
             return Container.IsRegistered(type);
@@ -66,15 +64,11 @@ namespace Sels.Core.Unity.Components.Containers
 
         public bool IsRegistered<T>()
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             return IsRegistered(typeof(T));
         }
 
         public bool IsRegistered(Type type, string name)
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             type.ValidateArgument(nameof(type));
             name.ValidateArgumentNotNullOrWhitespace(nameof(name));
 
@@ -83,8 +77,6 @@ namespace Sels.Core.Unity.Components.Containers
 
         public bool IsRegistered<T>(string name)
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             name.ValidateArgumentNotNullOrWhitespace(nameof(name));
 
             return IsRegistered(typeof(T), name);
@@ -92,8 +84,6 @@ namespace Sels.Core.Unity.Components.Containers
 
         public IServiceCollection LoadFrom(IServiceCollection collection)
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             collection.ValidateArgument(nameof(collection));
 
             // This transfers registrations from collection to container
@@ -104,15 +94,11 @@ namespace Sels.Core.Unity.Components.Containers
 
         public T Resolve<T>()
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             return Resolve(typeof(T)).As<T>();
         }
 
         public T Resolve<T>(string name)
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             name.ValidateArgumentNotNullOrWhitespace(nameof(name));
 
             return Resolve(typeof(T), name).As<T>();
@@ -120,8 +106,6 @@ namespace Sels.Core.Unity.Components.Containers
 
         public object Resolve(Type type)
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             type.ValidateArgument(nameof(type));
 
             return Container.Resolve(type);
@@ -129,8 +113,6 @@ namespace Sels.Core.Unity.Components.Containers
 
         public object Resolve(Type type, string name)
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             type.ValidateArgument(nameof(type));
             name.ValidateArgumentNotNullOrWhitespace(nameof(name));
 
@@ -139,15 +121,11 @@ namespace Sels.Core.Unity.Components.Containers
 
         public IEnumerable<T> ResolveAll<T>()
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             return Container.ResolveAll<T>();
         }
 
         public IEnumerable<object> ResolveAll(Type type)
         {
-            using var tracer = LoggingServices.TraceMethod(LogLevel.Debug, this);
-
             type.ValidateArgument(nameof(type));
 
             return Container.ResolveAll(type);

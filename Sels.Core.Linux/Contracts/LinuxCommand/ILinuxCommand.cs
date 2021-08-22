@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Contracts.Commands;
+using Sels.Core.Linux.Contracts.LinuxCommand.Commands;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Sels.Core.Linux.Contracts.LinuxCommand
     /// <summary>
     /// Used to run linux commands or build linux command strings.
     /// </summary>
-    public interface ILinuxCommand : ILinuxCommand<string>
+    public interface ILinuxCommand : ILinuxCommand<ILinuxCommandResult<string, string>>
     {
 
     }

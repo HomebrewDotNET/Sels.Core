@@ -18,6 +18,12 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Attributes
         /// </summary>
         public string Flag { get; }
 
+        /// <summary>
+        /// Defines an argument that will create a flag when the property value can be converted to true.
+        /// </summary>
+        /// <param name="flag">String value to generate</param>
+        /// <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
+        /// <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
         public FlagArgument(string flag , int order = LinuxConstants.DefaultLinuxArgumentOrder, bool required = false) : base(true, order, required)
         {
             flag.ValidateArgumentNotNullOrWhitespace(nameof(flag));

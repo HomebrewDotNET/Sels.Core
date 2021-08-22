@@ -23,18 +23,17 @@ using Sels.Core.TestTool.Models;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 using Newtonsoft.Json;
-using Sels.Core.Linux.Commands.PackageManager;
-using Sels.Core.Linux.Commands.Bash;
-using Sels.Core.Linux.Commands;
-using Sels.Core.Linux.Commands.Screen;
 using Sels.Core.Linux.Extensions;
-using Sels.Core.Linux.Commands.Core;
 using Sels.Core.Components.FileSizes.Byte;
 using Sels.Core.Templates.FileSizes;
 using Sels.Core.Components.FileSizes.Bit;
 using Sels.Core.Components.FileSizes.Byte.Binary;
 using Sels.Core.Components.FileSizes.Bit.Binary;
 using Sels.Core.Linux.Components.FileSystem;
+using Sels.Core.Linux.Components.LinuxCommand.Commands.PackageManager;
+using Sels.Core.Linux.Components.LinuxCommand.Commands.Core;
+using Sels.Core.Linux.Components.LinuxCommand.Commands;
+using Sels.Core.Linux.Components.LinuxCommand.Commands.Screen;
 
 namespace Sels.Core.TestTool
 {
@@ -293,7 +292,7 @@ namespace Sels.Core.TestTool
             var grepCommand = new GrepCommand("c");
             var teeCommand = new TeeCommand("/mnt/c/listResult.txt");
 
-            var chainCommand = new ChainCommand(lsCommand, CommandChain.Pipe, grepCommand, CommandChain.Pipe, teeCommand);
+            var chainCommand = new ChainCommand(lsCommand, CommandChainer.Pipe, grepCommand, CommandChainer.Pipe, teeCommand);
 
             var chainResult = chainCommand.Execute();
 
@@ -372,12 +371,12 @@ namespace Sels.Core.TestTool
 
         private static void TestLinuxDirectory()
         {
-            var directory = new LinuxDirectory("/mnt/c");
+            var directory = new LinuxDirectory("/mnt/g");
 
-            Console.WriteLine("Directory path: " + directory.Directory.FullName);
+            Console.WriteLine("Directory path: " + directory.Source.FullName);
             Console.WriteLine("Free size bytes: " + directory.FreeSpace.ByteSize);
-            Console.WriteLine("Free size GB: " + directory.FreeSpace.ToSize<GibiByte>().Size);
-            Console.WriteLine("Free size bytes: " + directory.Directory.GetDriveInfo().AvailableFreeSpace);
+            Console.WriteLine("Free size GiB: " + directory.FreeSpace.ToSize<GibiByte>().Size);
+            Console.WriteLine("Free size bytes from drive info: " + directory.Source.GetDriveInfo().AvailableFreeSpace);
         }
 
         private static void ConvertAndPrint<TFileSize>(FileSize fileSize) where TFileSize : FileSize, new()

@@ -9,9 +9,9 @@ using System.Text;
 namespace Sels.Core.Linux.Components.LinuxCommand.Attributes
 {
     /// <summary>
-    /// Creates argument by calling a property getter, field or method on the property. Uses ToString or the value defined in the <see cref="LinuxValueAttribute"/>.
+    /// Creates argument by calling a property getter, field or method on the property. Uses <see cref="object.ToString()"/> or the value defined in the <see cref="LinuxValueAttribute"/>.
     /// </summary>
-    public class ObjectArgument : LinuxArgument
+    public class ObjectArgument : TextArgument
     {
         // Properties
         private Selector Selector { get; }
@@ -19,14 +19,17 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Attributes
         private object Argument { get; set; }
 
         /// <summary>
-        /// Creates argument by calling a property getter, field or method on the property. Uses ToString or the value defined in the <see cref="LinuxValueAttribute"/>.
+        /// Defines an argument whose value will be created by calling a property getter, field or method on the property. Uses <see cref="object.ToString()"/> or the value defined in the <see cref="LinuxValueAttribute"/>.
         /// </summary>
         /// <param name="selector">What member type to get argument value from</param>
         /// <param name="target">Where to get argument value from</param>
         /// <param name="argument">Optional argument for method</param>
+        /// <param name="prefix">Optional prefix that will be placed along side the property value based on <paramref name="format"/></param>
+        /// <param name="format">How the <paramref name="prefix"/> and property value should be formatted. Use <see cref="PrefixFormat"/> for the <paramref name="prefix"/> and <see cref="ValueFormat"/> for the property value</param>
+        /// <param name="parsingOption">Optional parsing for the property value</param>
         /// <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
         /// <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
-        public ObjectArgument(Selector selector, string target, object argument = null, int order = LinuxConstants.DefaultLinuxArgumentOrder, bool required = false) : base(false, order, required)
+        public ObjectArgument(Selector selector, string target, object argument = null, string prefix = null, string format = null, TextParsingOptions parsingOption = TextParsingOptions.None, int order = LinuxConstants.DefaultLinuxArgumentOrder, bool required = false) : base(prefix, format, parsingOption, false, false, order, required)
         {
             Selector = selector;
             Target = target.ValidateArgumentNotNullOrWhitespace(nameof(target));
@@ -69,7 +72,7 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Attributes
                         break;
                 }
 
-                return argument.GetArgumentValue();
+                return base.CreateArgument(argument);
             }
 
             return string.Empty;

@@ -22,7 +22,13 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Attributes
         /// </summary>
         public bool Required { get; }
 
-        public LinuxArgument(bool convertToPrimitive, int order = LinuxConstants.DefaultLinuxArgumentOrder, bool required = false)
+        /// <summary>
+        /// Default constructor for this template.
+        /// </summary>
+        /// <param name="convertToPrimitive">If all non primitive types should be converted to string. If enabled all non primitive types and non primitive elements in collections will be converted to string using <see cref="object.ToString()"/></param>
+        /// <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
+        /// <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
+        protected LinuxArgument(bool convertToPrimitive, int order = LinuxConstants.DefaultLinuxArgumentOrder, bool required = false)
         {
             _convertToPrimitive = convertToPrimitive;
             Order = order;

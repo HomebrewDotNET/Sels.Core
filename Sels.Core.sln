@@ -20,6 +20,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Excel", "Sels.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Linux", "Sels.Core.Linux\Sels.Core.Linux.csproj", "{859B4C04-9D06-41C0-97D5-F0AF9FA85EDC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9ADF9A39-B6EC-440C-AA22-6478FF9F7EA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sels.Core.Test", "Tests\Sels.Core.Test\Sels.Core.Test.csproj", "{073701B9-104D-4557-9914-DB6A0C1F8277}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,9 +50,16 @@ Global
 		{859B4C04-9D06-41C0-97D5-F0AF9FA85EDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{859B4C04-9D06-41C0-97D5-F0AF9FA85EDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{859B4C04-9D06-41C0-97D5-F0AF9FA85EDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{073701B9-104D-4557-9914-DB6A0C1F8277}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{073701B9-104D-4557-9914-DB6A0C1F8277}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{073701B9-104D-4557-9914-DB6A0C1F8277}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{073701B9-104D-4557-9914-DB6A0C1F8277}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{073701B9-104D-4557-9914-DB6A0C1F8277} = {9ADF9A39-B6EC-440C-AA22-6478FF9F7EA6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9510E55C-920C-4EDB-9F77-D83C4E047361}

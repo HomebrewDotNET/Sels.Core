@@ -8,15 +8,18 @@ namespace Sels.Core.Linux
     {
         public static class Commands
         {
-            public const string Sudo = "sudo";
-            public const string Echo = "echo";
-            public const string Shell = "/bin/sh";
-            public const string Bash = "/bin/bash";
-            public const string Dpkg = "dpkg";
-            public const string Grep = "grep";
-            public const string Tee = "tee";
-            public const string Screen = "screen";
-            public const string Df = "df";
+            private const string DefaultCommandRoot = "/bin/";
+
+            public const string Sudo = DefaultCommandRoot + "sudo";
+            public const string Echo = DefaultCommandRoot + "echo";
+            public const string Shell = DefaultCommandRoot + "sh";
+            public const string Bash = DefaultCommandRoot + "bash";
+            public const string Dpkg = DefaultCommandRoot + "dpkg";
+            public const string Grep = DefaultCommandRoot + "grep";
+            public const string Tee = DefaultCommandRoot + "tee";
+            public const string Screen = DefaultCommandRoot + "screen";
+            public const string Df = DefaultCommandRoot + "df";
+            public const string Awk = DefaultCommandRoot + "awk";
         }
 
         public const int SuccessExitCode = 0;

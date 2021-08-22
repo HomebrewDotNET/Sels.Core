@@ -11,11 +11,13 @@ namespace Sels.Core.Components.FileSizes.Byte
     public class SingleByte : ByteFileSize
     {
         // Constants
+        public const string FileSizeDisplayName = "Byte";
         public const string FileSizeAbbreviation = "B";
 
         // Properties
         public override string Abbreviation => FileSizeAbbreviation;
         protected override int SizeMultiplier => 0;
+        public override string DisplayName => FileSizeDisplayName;
 
         public SingleByte() : base()
         {

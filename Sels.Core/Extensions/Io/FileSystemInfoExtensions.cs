@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
@@ -66,9 +67,8 @@ namespace System.IO
         public static DriveInfo GetDriveInfo(this FileSystemInfo info)
         {
             info.ValidateArgument(nameof(info));
-            var drive = Path.GetPathRoot(info.FullName);
 
-            return new DriveInfo(drive);
+            return new DriveInfo(info.FullName);
         }
     }
 }

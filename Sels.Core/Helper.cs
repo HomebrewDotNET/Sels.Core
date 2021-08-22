@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Sels.Core
 {
@@ -126,28 +127,29 @@ namespace Sels.Core
         {
             public static string JoinStrings(params object[] values)
             {
-                values.ValidateVariable(nameof(values));
+                values.ValidateArgument(nameof(values));
 
                 return values.JoinString();
             }
 
             public static string JoinStrings(string joinValue, params string[] strings)
             {
-                strings.ValidateVariable(nameof(strings));
+                joinValue.ValidateArgument(nameof(joinValue));
+                strings.ValidateArgument(nameof(strings));
 
                 return strings.JoinString(joinValue);
             }
 
             public static string JoinStringsNewLine(params string[] strings)
             {
-                strings.ValidateVariable(nameof(strings));
+                strings.ValidateArgument(nameof(strings));
 
                 return strings.JoinStringNewLine();
             }
 
             public static string JoinStringsTab(params string[] strings)
             {
-                strings.ValidateVariable(nameof(strings));
+                strings.ValidateArgument(nameof(strings));
 
                 return strings.JoinStringTab();
             }
@@ -157,6 +159,12 @@ namespace Sels.Core
         #region List
         public static class Lists
         {
+            /// <summary>
+            /// Creates a new list using <paramref name="values"/>.
+            /// </summary>
+            /// <typeparam name="T">Type of values to add to list</typeparam>
+            /// <param name="values">Values to add to list</param>
+            /// <returns>List whose elements are equal to <paramref name="values"/></returns>
             public static List<T> Combine<T>(params T[] values)
             {
                 var list = new List<T>();
@@ -168,6 +176,30 @@ namespace Sels.Core
 
                 return list;
             }
+
+            /// <summary>
+            /// Merges all elements from the collections in <paramref name="values"/> into a single list.
+            /// </summary>
+            /// <typeparam name="T">Type of values to add to list</typeparam>
+            /// <param name="values">Collection of collections whose values to add to the list</param>
+            /// <returns>List whose elements are equal to the elements in the <paramref name="values"/> collections</returns>
+            public static List<T> Merge<T>(params IEnumerable<T>[] values)
+            {
+                var list = new List<T>();
+
+                if (values.HasValue())
+                {
+                    foreach(var value in values)
+                    {
+                        if (value.HasValue())
+                        {
+                            list.AddRange(value);
+                        }
+                    }
+                }
+
+                return list;
+            }
         }
         #endregion
 
@@ -175,7 +207,7 @@ namespace Sels.Core
         public static class Program
         {
             /// <summary>
-            /// Runs program at <paramref name="processFileName"/> with arguments <paramref name="arguments"/>.
+            /// Runs program at <paramref name="processFileName"/> with <paramref name="arguments"/>.
             /// </summary>
             /// <param name="processFileName">Filename of program to run</param>
             /// <param name="arguments">Arguments for program</param>
@@ -208,12 +240,18 @@ namespace Sels.Core
                     {
                         Thread.Sleep(250);
 
-                        // Kill process
+                        // Wait for process to exit
                         if (token.IsCancellationRequested)
                         {
                             process.Kill();
-                            process.WaitForExit(killWaitTime);
-                        }                     
+                            if (!process.WaitForExit(killWaitTime)) {
+                                throw new TaskCanceledException($"Process {process.Id} could not properly stop in {killWaitTime}ms");
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
                     }
 
                     output = process.StandardOutput.ReadToEnd();

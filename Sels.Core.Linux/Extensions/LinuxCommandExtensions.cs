@@ -4,7 +4,9 @@ using Sels.Core.Linux.Contracts.LinuxCommand;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Sels.Core.Linux.Commands.Core;
+using Sels.Core.Linux.Components.LinuxCommand.Commands.Core;
+using Sels.Core.Linux.Contracts.LinuxCommand.Commands;
+using Sels.Core.Linux.Components.LinuxCommand.Commands;
 
 namespace Sels.Core.Linux.Extensions
 {
@@ -12,13 +14,13 @@ namespace Sels.Core.Linux.Extensions
     {
         #region Result
         /// <summary>
-        /// Returns the result if the command was executed successfully. Throws LinuxCommandExecutionFailedException if the command failed containing the error object
+        /// Returns the result if the command was executed successfully. Throws <see cref="LinuxCommandExecutionFailedException"/> if the command failed containing the error object.
         /// </summary>
         public static TOutput GetResult<TOutput, TError>(this ILinuxCommandResult<TOutput, TError> commandResult)
         {
             commandResult.ValidateArgument(nameof(commandResult));
 
-            return commandResult.Failed ? throw new LinuxCommandExecutionFailedException(commandResult.Error) : commandResult.Output;
+            return commandResult.Failed ? throw new LinuxCommandExecutionFailedException(commandResult.ExitCode, commandResult.Error) : commandResult.Output;
         }
         #endregion
 
@@ -67,7 +69,7 @@ namespace Sels.Core.Linux.Extensions
 
             var sudo = new SudoCommand<TResult>(command);
 
-            return new ChainCommand<TResult>(echo, CommandChain.Pipe, sudo).Execute(out exitCode);
+            return new ChainCommand<TResult>(echo, CommandChainer.Pipe, sudo).Execute(out exitCode);
         }
 
         /// <summary>

@@ -1,7 +1,9 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
+using Sels.Core.Linux.Components.LinuxCommand.Commands;
 using Sels.Core.Linux.Contracts.LinuxCommand;
+using Sels.Core.Linux.Contracts.LinuxCommand.Commands;
 using Sels.Core.Linux.Extensions.Argument;
 using System;
 using System.Collections.Generic;
@@ -28,15 +30,15 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
     /// Used to run linux commands or build linux command strings.
     /// </summary>
     /// <typeparam name="TName">Type of object that represents the command name</typeparam>
-    public abstract class BaseLinuxCommand<TName> : BaseLinuxCommand<TName, string>, ILinuxCommand
+    public abstract class BaseLinuxCommand<TName> : BaseLinuxCommand<TName, ILinuxCommandResult<string, string>>, ILinuxCommand
     {
         public BaseLinuxCommand(TName name) : base(name)
         {
         }
 
-        public override string CreateResult(bool wasSuccesful, int exitCode, string output, string error)
+        public override ILinuxCommandResult<string, string> CreateResult(bool wasSuccesful, int exitCode, string output, string error)
         {
-            return error.HasValue() ? error : output;
+            return new LinuxCommandResult<string, string>(!wasSuccesful, output, error, exitCode);
         }
     }
 
@@ -71,7 +73,16 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
         /// </summary>
         protected virtual string BuildArguments()
         {
-            return LinuxHelper.Arguments.BuildLinuxArguments(this);
+            return LinuxHelper.Command.BuildLinuxArguments(this, GetStaticArguments());
+        }
+
+        /// <summary>
+        /// Optional method for providing additional arguments who aren't created from properties.
+        /// </summary>
+        /// <returns>List of additional properties</returns>
+        protected virtual IEnumerable<(string Argument, int Order)> GetStaticArguments()
+        {
+            return null;
         }
 
         public TCommandResult Execute()
