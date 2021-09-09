@@ -9,6 +9,8 @@ using System.Threading;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions.Logging;
 
 namespace Sels.Core
 {
@@ -207,22 +209,23 @@ namespace Sels.Core
         public static class Program
         {
             /// <summary>
-            /// Runs program at <paramref name="processFileName"/> with <paramref name="arguments"/>.
+            /// Runs program at <paramref name="programFileName"/> with <paramref name="arguments"/>.
             /// </summary>
-            /// <param name="processFileName">Filename of program to run</param>
+            /// <param name="programFileName">Filename of program to run</param>
             /// <param name="arguments">Arguments for program</param>
             /// <param name="output">Standard output from program execution</param>
             /// <param name="error">Error output from program execution</param>
             /// <param name="killWaitTime">How long to wait for the process to exit after killing it. This is only applicable when the cancellation token is used</param>
             /// <param name="token">CancellationToken for stopping the execution of the process</param>
             /// <returns>Program exit code</returns>
-            public static int Run(string processFileName, string arguments, out string output, out string error, CancellationToken token = default, int killWaitTime = 10000)
+            public static int Run(string programFileName, string arguments, out string output, out string error, CancellationToken token = default, IEnumerable<ILogger> loggers = null, int killWaitTime = 10000)
             {
-                processFileName.ValidateArgument(nameof(processFileName));
+                using var logger = loggers.CreateTimedLogger(LogLevel.Debug, $"Executing program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)}", x => $"Executed program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)} in {x.PrintTotalMs()}");
+                programFileName.ValidateArgument(nameof(programFileName));
 
                 var process = new Process()
                 {
-                    StartInfo = new ProcessStartInfo(processFileName, arguments)
+                    StartInfo = new ProcessStartInfo(programFileName, arguments)
                     {
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
@@ -234,21 +237,29 @@ namespace Sels.Core
                 try
                 {
                     process.Start();
+                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Started process {process.Id} ({time.PrintTotalMs()})"));
 
                     // Wait for process to finish
                     while (!process.HasExited)
                     {
+                        logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Waiting for process {process.Id} to exit ({time.PrintTotalMs()})"));
                         Thread.Sleep(250);
 
                         // Wait for process to exit
                         if (token.IsCancellationRequested)
                         {
-                            process.Kill();
+                            logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killing process {process.Id} ({time.PrintTotalMs()})"));
+                            var killTask = Task.Run(process.Kill);
+                            logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Sent kill signal to process {process.Id} and will now wait for maximum {killWaitTime}ms for it to exit ({time.PrintTotalMs()})"));
+
                             if (!process.WaitForExit(killWaitTime)) {
+                                logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killed process {process.Id} could not gracefully exit within {killWaitTime}ms ({time.PrintTotalMs()})"));
                                 throw new TaskCanceledException($"Process {process.Id} could not properly stop in {killWaitTime}ms");
                             }
                             else
                             {
+                                logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killed process {process.Id} exited gracefully ({time.PrintTotalMs()})"));
+                                killTask.Wait();
                                 break;
                             }
                         }
@@ -261,6 +272,7 @@ namespace Sels.Core
                 }
                 finally
                 {
+                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Disposing process {process.Id} ({time.PrintTotalMs()})"));
                     process.Dispose();
                 }
             }

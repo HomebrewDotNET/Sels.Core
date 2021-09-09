@@ -1,4 +1,6 @@
-﻿using Sels.Core.Contracts.Commands;
+﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Components.Commands;
+using Sels.Core.Contracts.Commands;
 using Sels.Core.Linux.Contracts.LinuxCommand.Commands;
 using System;
 using System.Collections.Generic;
@@ -23,13 +25,13 @@ namespace Sels.Core.Linux.Contracts.LinuxCommand
         /// <summary>
         /// Executes linux command and parses result to <typeparamref name="TCommandResult"/>.
         /// </summary>
-        TCommandResult Execute();
+        TCommandResult Execute(CommandExecutionOptions options = null);
 
         /// <summary>
         /// Executes linux command and parses result to <typeparamref name="TCommandResult"/>.
         /// </summary>
         /// <param name="exitCode">Exit code returned from executing command</param>
-        TCommandResult Execute(out int exitCode);
+        TCommandResult Execute(out int exitCode, CommandExecutionOptions options = null);
 
         /// <summary>
         /// Parses <paramref name="exitCode"/> and <paramref name="error"/> from command execution to an object of type <typeparamref name="TCommandResult"/>.
@@ -39,6 +41,6 @@ namespace Sels.Core.Linux.Contracts.LinuxCommand
         /// <param name="output">Stout of command execution</param>
         /// <param name="wasSuccesful">Boolean indicating if command execution was successful</param>
         /// <returns>Result from command execution</returns>
-        TCommandResult CreateResult(bool wasSuccesful, int exitCode, string output, string error);
+        TCommandResult CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null);
     }
 }

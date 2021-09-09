@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sels.Core.Components.Commands;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -11,18 +12,13 @@ namespace Sels.Core.Contracts.Commands
     public interface ICommand
     {
         /// <summary>
-        /// Optional token for aborting long running command.
-        /// </summary>
-        public CancellationToken CancellationToken { get; set; }
-
-        /// <summary>
         /// Runs the command and gets the stout, sterr and exit code.
         /// </summary>
         /// <param name="output">Stout of command</param>
         /// <param name="error">Sterr of command</param>
         /// <param name="exitCode">Exit code of command</param>
         /// <returns>Boolean indicating if the command executed succesfully</returns>
-        bool RunCommand(out string output, out string error, out int exitCode);
+        bool RunCommand(out string output, out string error, out int exitCode, CommandExecutionOptions options = null);
 
         /// <summary>
         /// Builds the command string.

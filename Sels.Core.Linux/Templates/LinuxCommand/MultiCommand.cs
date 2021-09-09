@@ -1,4 +1,5 @@
-﻿using Sels.Core.Contracts.Commands;
+﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Contracts.Commands;
 using Sels.Core.Extensions;
 using Sels.Core.Linux.Components.LinuxCommand.Commands;
 using Sels.Core.Linux.Components.LinuxCommand.Commands.Core;
@@ -23,7 +24,7 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
 
         }
 
-        protected override string BuildArguments()
+        protected override string BuildArguments(IEnumerable<ILogger> loggers = null)
         {
             var commandChain = BuildCommandChain(new MultiCommandBuilder());
 
@@ -46,7 +47,7 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
     /// </summary>
     public abstract class MultiCommand : MultiCommand<ILinuxCommandResult<string, string>>, ILinuxCommand
     {
-        public override ILinuxCommandResult<string, string> CreateResult(bool wasSuccesful, int exitCode, string output, string error)
+        public override ILinuxCommandResult<string, string> CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
             return new LinuxCommandResult<string, string>(!wasSuccesful, output, error, exitCode);
         }

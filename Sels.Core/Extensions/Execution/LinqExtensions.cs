@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +13,9 @@ namespace Sels.Core.Extensions.Linq
     {
         public static IEnumerable<T> WherePredicate<T>(this IEnumerable<T> items, Predicate<T> predicate)
         {
+            // Parse to array to avoid triggering the enumerator multiple times.
+            items = items.ToArrayOrDefault();
+
             if (items.HasValue())
             {
                 foreach (var item in items)
@@ -27,6 +31,9 @@ namespace Sels.Core.Extensions.Linq
         #region Execution
         public static IEnumerable<T> Execute<T>(this IEnumerable<T> items, Action<T> action)
         {
+            // Parse to array to avoid triggering the enumerator multiple times.
+            items = items.ToArrayOrDefault();
+
             if (items.HasValue())
             {
                 foreach (var item in items)
@@ -40,9 +47,11 @@ namespace Sels.Core.Extensions.Linq
 
         public static IEnumerable<T> Execute<T>(this IEnumerable<T> items, Action<T> action, Action<T, Exception> exceptionHandler)
         {
+            // Parse to array to avoid triggering the enumerator multiple times.
+            items = items.ToArrayOrDefault();
+
             if (items.HasValue())
             {
-
                 foreach (var item in items)
                 {
                     try
@@ -62,6 +71,9 @@ namespace Sels.Core.Extensions.Linq
 
         public static async Task<IEnumerable<T>> ExecuteAsync<T>(this IEnumerable<T> items, Func<T, Task> action)
         {
+            // Parse to array to avoid triggering the enumerator multiple times.
+            items = items.ToArrayOrDefault();
+
             if (items.HasValue())
             {
                 foreach (var item in items)
@@ -75,6 +87,9 @@ namespace Sels.Core.Extensions.Linq
 
         public static IEnumerable<T> ForceExecute<T>(this IEnumerable<T> items, Action<T> action)
         {
+            // Parse to array to avoid triggering the enumerator multiple times.
+            items = items.ToArrayOrDefault();
+
             if (items.HasValue())
             {
                 foreach (var item in items)
@@ -88,6 +103,9 @@ namespace Sels.Core.Extensions.Linq
 
         public static IEnumerable<T> ForceExecute<T>(this IEnumerable<T> items, Action<T> action, Action<T, Exception> exceptionHandler)
         {
+            // Parse to array to avoid triggering the enumerator multiple times.
+            items = items.ToArrayOrDefault();
+
             if (items.HasValue())
             {
                 foreach (var item in items)

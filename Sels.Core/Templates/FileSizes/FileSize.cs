@@ -134,7 +134,7 @@ namespace Sels.Core.Templates.FileSizes
             var newByteSize = SizeMultiplier != 0 ? size.MultiplyBy(UnitSize, SizeMultiplier) : size;
 
             // Round up
-            newByteSize = Math.Round(newByteSize, MidpointRounding.AwayFromZero);
+            newByteSize = GetRoundedBytes(newByteSize);
 
             return newByteSize.ConvertTo<long>();
         }
@@ -145,9 +145,31 @@ namespace Sels.Core.Templates.FileSizes
         /// </summary>
         /// <param name="decimals">The number of decimal places in the return value</param>
         /// <returns>Rounded <see cref="Size"/></returns>
-        public decimal GetRoundedSize(int decimals)
+        protected decimal GetRoundedSize(int decimals)
         {
             return Math.Round(Size, decimals, MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>
+        /// Converts <paramref name="bytes"/> in <see cref="double"/> to <see cref="long"/>.
+        /// </summary>
+        /// <returns>Rounded bytes</returns>
+        protected static long GetRoundedBytes(double bytes)
+        {
+            bytes = Math.Round(bytes, MidpointRounding.AwayFromZero);
+
+            return bytes.ConvertTo<long>();
+        }
+
+        /// <summary>
+        /// Converts <paramref name="bytes"/> in <see cref="decimal"/> to <see cref="long"/>.
+        /// </summary>
+        /// <returns>Rounded bytes</returns>
+        protected static long GetRoundedBytes(decimal bytes)
+        {
+            bytes = Math.Round(bytes, MidpointRounding.AwayFromZero);
+
+            return bytes.ConvertTo<long>();
         }
 
         // Abstractions
@@ -313,6 +335,54 @@ namespace Sels.Core.Templates.FileSizes
             var bytes = fileSize.HasValue() ? fileSize.ByteSize : 0;
             var otherBytes = otherFileSize.HasValue() ? otherFileSize.ByteSize : 0;
             var newBytes = bytes - otherBytes;
+
+            return CreateFromBytes<SingleByte>(newBytes > 0 ? newBytes : 0);
+        }
+
+        public static SingleByte operator *(FileSize fileSize, double value)
+        {
+            var bytes = fileSize.HasValue() ? fileSize.ByteSize : 0;
+            var newBytes = GetRoundedBytes(bytes * value);
+
+            return CreateFromBytes<SingleByte>(newBytes > 0 ? newBytes : 0);
+        }
+
+        public static SingleByte operator *(FileSize fileSize, decimal value)
+        {
+            var bytes = fileSize.HasValue() ? fileSize.ByteSize : 0;
+            var newBytes = GetRoundedBytes(bytes * value);
+
+            return CreateFromBytes<SingleByte>(newBytes > 0 ? newBytes : 0);
+        }
+
+        public static SingleByte operator *(FileSize fileSize, int value)
+        {
+            var bytes = fileSize.HasValue() ? fileSize.ByteSize : 0;
+            var newBytes = bytes * value;
+
+            return CreateFromBytes<SingleByte>(newBytes > 0 ? newBytes : 0);
+        }
+
+        public static SingleByte operator /(FileSize fileSize, double value)
+        {
+            var bytes = fileSize.HasValue() ? fileSize.ByteSize : 0;
+            var newBytes = GetRoundedBytes(bytes / value);
+
+            return CreateFromBytes<SingleByte>(newBytes > 0 ? newBytes : 0);
+        }
+
+        public static SingleByte operator /(FileSize fileSize, decimal value)
+        {
+            var bytes = fileSize.HasValue() ? fileSize.ByteSize : 0;
+            var newBytes = GetRoundedBytes(bytes / value);
+
+            return CreateFromBytes<SingleByte>(newBytes > 0 ? newBytes : 0);
+        }
+
+        public static SingleByte operator /(FileSize fileSize, int value)
+        {
+            var bytes = fileSize.HasValue() ? fileSize.ByteSize : 0;
+            var newBytes = bytes / value;
 
             return CreateFromBytes<SingleByte>(newBytes > 0 ? newBytes : 0);
         }

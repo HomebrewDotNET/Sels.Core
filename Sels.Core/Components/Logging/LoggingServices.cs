@@ -7,6 +7,7 @@ using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -17,6 +18,12 @@ namespace Sels.Core.Components.Logging
         // Fields
         private static object _threadLock = new object();
         private static readonly List<ILogger> _loggers = new List<ILogger>();
+
+        // Properties
+        /// <summary>
+        /// Registered loggers used by the <see cref="LoggingServices"/>.
+        /// </summary>
+        public static IReadOnlyCollection<ILogger> Loggers => new ReadOnlyCollection<ILogger>(_loggers);
 
         #region Setup
         public static void RegisterLoggers(IEnumerable<ILogger> loggers)

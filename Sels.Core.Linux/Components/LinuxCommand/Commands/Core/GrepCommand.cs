@@ -1,4 +1,5 @@
-﻿using Sels.Core.Extensions;
+﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions;
 using Sels.Core.Linux.Components.LinuxCommand;
 using Sels.Core.Linux.Components.LinuxCommand.Attributes;
 using Sels.Core.Linux.Templates.LinuxCommand;
@@ -62,7 +63,7 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Commands.Core
 
         }
 
-        public override LinuxCommandResult<string[], string> CreateResult(bool wasSuccesful, int exitCode, string output, string error)
+        public override LinuxCommandResult<string[], string> CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
             if (wasSuccesful)
             {

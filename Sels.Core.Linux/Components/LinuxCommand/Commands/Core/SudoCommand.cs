@@ -1,4 +1,5 @@
-﻿using Sels.Core.Contracts.Commands;
+﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Contracts.Commands;
 using Sels.Core.Extensions;
 using Sels.Core.Linux.Components.LinuxCommand.Attributes;
 using Sels.Core.Linux.Contracts.LinuxCommand;
@@ -45,7 +46,7 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Commands.Core
             Command = command.ValidateArgument(nameof(command));
         }
 
-        public override TResult CreateResult(bool wasSuccesful, int exitCode, string output, string error)
+        public override TResult CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
             return Command.CreateResult(wasSuccesful, exitCode, output, error);
         }

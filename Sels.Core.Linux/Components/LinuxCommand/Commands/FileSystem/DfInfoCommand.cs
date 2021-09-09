@@ -1,4 +1,5 @@
-﻿using Sels.Core.Components.Conversion;
+﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Components.Conversion;
 using Sels.Core.Components.Serialization.Table;
 using Sels.Core.Contracts.Conversion;
 using Sels.Core.Linux.Components.LinuxCommand;
@@ -25,7 +26,7 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Commands.FileSystem
         [ObjectArgument(Selector.Property, nameof(FileSystemInfo.FullName), parsingOption: TextParsingOptions.Quotes, order: 2, required: true)]
         public FileSystemInfo Member { get; set; }
 
-        public override LinuxCommandResult<DiskFreeInfo, string> CreateResult(bool wasSuccesful, int exitCode, string output, string error)
+        public override LinuxCommandResult<DiskFreeInfo, string> CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
             if (wasSuccesful)
             {

@@ -1,4 +1,5 @@
-﻿using Sels.Core.Components.Serialization.KeyValue;
+﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Components.Serialization.KeyValue;
 using Sels.Core.Components.Serialization.KeyValue.Attributes;
 using Sels.Core.Extensions;
 using Sels.Core.Linux.Components.LinuxCommand;
@@ -28,7 +29,7 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Commands.PackageManager
 
         }
 
-        public override PackageInfo CreateResult(bool wasSuccesful, int exitCode, string output, string error)
+        public override PackageInfo CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
             if (wasSuccesful)
             {

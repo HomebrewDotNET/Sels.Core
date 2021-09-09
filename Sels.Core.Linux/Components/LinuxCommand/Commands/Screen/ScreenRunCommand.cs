@@ -7,6 +7,7 @@ using Sels.Core.Linux.Templates.LinuxCommand.Commands.Screen;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Sels.Core.Linux.Components.LinuxCommand.Commands.Screen
 {
@@ -50,7 +51,7 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Commands.Screen
 
         }
 
-        public override LinuxCommandResult<string> CreateResult(bool wasSuccesful, int exitCode, string output, string error)
+        public override LinuxCommandResult<string> CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
             error = !wasSuccesful && !error.HasValue() ? output : error;
 

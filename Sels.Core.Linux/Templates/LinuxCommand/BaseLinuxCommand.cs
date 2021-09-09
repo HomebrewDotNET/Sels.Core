@@ -1,5 +1,8 @@
-﻿using Sels.Core.Extensions;
+﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Components.Commands;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.Linux.Components.LinuxCommand.Commands;
 using Sels.Core.Linux.Contracts.LinuxCommand;
@@ -36,8 +39,9 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
         {
         }
 
-        public override ILinuxCommandResult<string, string> CreateResult(bool wasSuccesful, int exitCode, string output, string error)
+        public override ILinuxCommandResult<string, string> CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
+            loggers.LogMessage(LogLevel.Trace, $"Creating command result for {LoggerName} who {(wasSuccesful ? "executed successfully" : "failed execution")} with exit code {exitCode}, output length of {output?.Length} and error length of {error?.Length}");
             return new LinuxCommandResult<string, string>(!wasSuccesful, output, error, exitCode);
         }
     }
@@ -49,18 +53,31 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
     /// <typeparam name="TCommandResult">Type of result that the command returns</typeparam>
     public abstract class BaseLinuxCommand<TName, TCommandResult> : ILinuxCommand<TCommandResult>
     {
-        public CancellationToken CancellationToken { get; set; }
-
         public TName Name { get; }
+
+        protected string LoggerName => GetType().Name;
 
         public BaseLinuxCommand(TName name) 
         {
             Name = name.ValidateArgument(nameof(name));
         }
 
-        public virtual bool RunCommand(out string output, out string error, out int exitCode)
+        public virtual bool RunCommand(out string output, out string error, out int exitCode, CommandExecutionOptions options = null)
         {
-            return LinuxHelper.Program.Run(Name.GetArgumentValue(), BuildArguments(), out output, out error, out exitCode, SuccessExitCode, CancellationToken);
+            using var loggers = (options.HasValue() ? options.Loggers : null).CreateTimedLogger(LogLevel.Debug, $"Running command {LoggerName}", x => $"Ran command {LoggerName} in {x.PrintTotalMs()}");
+            var optionsDefined = options.HasValue();
+            var succesExitCode = optionsDefined && options.SuccessExitCode.HasValue ? options.SuccessExitCode.Value : SuccessExitCode;
+            CancellationToken cancellationToken = optionsDefined ? options.Token : default;
+
+            var result = LinuxHelper.Program.Run(Name.GetArgumentValue(), BuildArguments(options.Loggers), out output, out error, out exitCode, succesExitCode, cancellationToken, options?.Loggers);
+
+            if (optionsDefined && options.FailOnErrorOutput && error.HasValue())
+            {
+                loggers.Log((time, logger) => logger.LogMessage(LogLevel.Trace, $"Command {LoggerName} could not be run succesfully because error output contained value ({time.PrintTotalMs()})"));
+                return false;
+            }
+
+            return result;
         }
 
         public virtual string BuildCommand()
@@ -71,43 +88,51 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
         /// <summary>
         /// Builds arguments for running the linux command.
         /// </summary>
-        protected virtual string BuildArguments()
+        protected virtual string BuildArguments(IEnumerable<ILogger> loggers = null)
         {
-            return LinuxHelper.Command.BuildLinuxArguments(this, GetStaticArguments());
+            loggers.LogMessage(LogLevel.Debug, $"Building arguments for command {LoggerName}");
+            return LinuxHelper.Command.BuildLinuxArguments(this, GetStaticArguments(loggers), loggers);
         }
 
         /// <summary>
         /// Optional method for providing additional arguments who aren't created from properties.
         /// </summary>
         /// <returns>List of additional properties</returns>
-        protected virtual IEnumerable<(string Argument, int Order)> GetStaticArguments()
+        protected virtual IEnumerable<(string Argument, int Order)> GetStaticArguments(IEnumerable<ILogger> loggers = null)
         {
+            loggers.LogMessage(LogLevel.Debug, $"Getting static arguments for command {LoggerName}");
             return null;
         }
 
-        public TCommandResult Execute()
+        public TCommandResult Execute(CommandExecutionOptions options = null)
         {
-            return Execute(out _);
+            return Execute(out _, options);
         }
 
-        public TCommandResult Execute(out int exitCode)
+        public TCommandResult Execute(out int exitCode, CommandExecutionOptions options = null)
         {
-            if(RunCommand(out string output, out string error, out exitCode))
+            using var loggers = (options.HasValue() ? options.Loggers : null).CreateTimedLogger(LogLevel.Debug, $"Executing command {LoggerName}", x => $"Executed command {LoggerName} in {x.PrintTotalMs()}");
+
+            if(RunCommand(out string output, out string error, out exitCode, options))
             {
-                return CreateResult(true, exitCode, output, error);
+                var commandExitCode = exitCode;
+                loggers.Log((time, logger) => logger.LogMessage(LogLevel.Trace, $"Command {LoggerName} succesfully executed with exit code {commandExitCode} ({time.PrintTotalMs()})"));
+                return CreateResult(true, exitCode, output, error, options?.Loggers);
             }
             else
             {
-                return CreateResult(false, exitCode, output, error);
+                var commandExitCode = exitCode;
+                loggers.Log((time, logger) => logger.LogMessage(LogLevel.Trace, $"Command {LoggerName} failed execution with exit code {commandExitCode} ({time.PrintTotalMs()})"));
+                return CreateResult(false, exitCode, output, error, options?.Loggers);
             }
         }
 
         /// <summary>
-        /// Exit code returned from executing the command that indicates it executed succesfully.
+        /// Default exit code returned from executing the command that indicates it executed succesfully.
         /// </summary>
-        public virtual int SuccessExitCode => LinuxConstants.SuccessExitCode;
+        protected virtual int SuccessExitCode => LinuxConstants.SuccessExitCode;
 
-        public abstract TCommandResult CreateResult(bool wasSuccesful, int exitCode, string output, string error);
+        public abstract TCommandResult CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null);
 
         // Overrides
         public override string ToString()

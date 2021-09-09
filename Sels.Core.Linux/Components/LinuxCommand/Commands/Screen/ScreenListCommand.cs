@@ -1,4 +1,5 @@
-﻿using Sels.Core.Extensions;
+﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions;
 using Sels.Core.Linux.Components.LinuxCommand;
 using Sels.Core.Linux.Templates.LinuxCommand.Commands.Screen;
 using System;
@@ -10,7 +11,7 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Commands.Screen
 {
     public class ScreenListCommand : ScreenCommand<LinuxCommandResult<string[], string>>
     {
-        public override LinuxCommandResult<string[], string> CreateResult(bool wasSuccesful, int exitCode, string output, string error)
+        public override LinuxCommandResult<string[], string> CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
             if (wasSuccesful)
             {
@@ -35,7 +36,7 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Commands.Screen
             }
         }
 
-        protected override string BuildArguments()
+        protected override string BuildArguments(IEnumerable<ILogger> loggers = null)
         {
             return "-ls";
         }

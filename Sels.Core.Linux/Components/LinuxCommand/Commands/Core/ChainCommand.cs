@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Sels.Core.Linux.Contracts.LinuxCommand.Commands;
+using Microsoft.Extensions.Logging;
 
 namespace Sels.Core.Linux.Components.LinuxCommand.Commands.Core
 {
@@ -77,12 +78,12 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Commands.Core
 
         }
 
-        protected override string BuildArguments()
+        protected override string BuildArguments(IEnumerable<ILogger> loggers = null)
         {
             return LinuxHelper.Command.BuildLinuxCommandString(StartCommand, IntermediateCommands, FinalChain, FinalCommand);
         }
 
-        public override TCommandResult CreateResult(bool wasSuccesful, int exitCode, string output, string error)
+        public override TCommandResult CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
             return FinalCommand.CreateResult(wasSuccesful, exitCode, output, error);
         }

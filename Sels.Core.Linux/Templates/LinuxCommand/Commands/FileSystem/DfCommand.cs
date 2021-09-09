@@ -1,4 +1,5 @@
-﻿using Sels.Core.Components.Conversion;
+﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Components.Conversion;
 using Sels.Core.Components.Serialization.Table;
 using Sels.Core.Components.Serialization.Table.Attributes;
 using Sels.Core.Contracts.Conversion;
@@ -34,7 +35,7 @@ namespace Sels.Core.Linux.Templates.LinuxCommand.Commands.FileSystem
 
         }
 
-        protected override IEnumerable<(string Argument, int Order)> GetStaticArguments()
+        protected override IEnumerable<(string Argument, int Order)> GetStaticArguments(IEnumerable<ILogger> loggers = null)
         {
             yield return ("-P", 1);
         }
