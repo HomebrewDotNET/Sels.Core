@@ -60,7 +60,7 @@ namespace Sels.Core.Components.Logging
         #endregion
 
         #region Logging
-        #region Debug
+        #region Trace levels
         /// <summary>
         /// Logs a message using severity <see cref="LogLevel.Debug"/>.
         /// </summary>
@@ -69,6 +69,16 @@ namespace Sels.Core.Components.Logging
         public static void Debug(string message, params object[] args)
         {
             Log(LogLevel.Debug, message, args);
+        }
+
+        /// <summary>
+        /// Logs a message using severity <see cref="LogLevel.Warning"/>.
+        /// </summary>
+        /// <param name="message">Message to log</param>
+        /// <param name="args">Optional logging parameters</param>
+        public static void Warning(string message, params object[] args)
+        {
+            Log(LogLevel.Warning, message, args);
         }
         #endregion
 
@@ -271,14 +281,14 @@ namespace Sels.Core.Components.Logging
             return CreateTimedLogger(level, () => $"Executing action <{action}>", x => $"Executed action <{action}> in {x.PrintTotalMs()}");
         }
         /// <summary>
-        /// Traces how long a method took to execute with severity <see cref="LogLevel.Debug"/>. Timer starts when calling method and stops when return value is disposed.
+        /// Traces how long a method took to execute with severity <see cref="LogLevel.Trace"/>. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
         /// <param name="caller">Object that wants it's method execution traced</param>
         /// <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
         /// <returns>Timing scope</returns>
         public static IDisposable TraceMethod(object caller, [CallerMemberName] string method = null)
         {
-            return TraceMethod(LogLevel.Debug, caller, method);
+            return TraceMethod(LogLevel.Trace, caller, method);
         }
         /// <summary>
         /// Traces how long a method took to execute. Timer starts when calling method and stops when return value is disposed.
@@ -289,7 +299,29 @@ namespace Sels.Core.Components.Logging
         /// <returns>Timing scope</returns>
         public static IDisposable TraceMethod(LogLevel level, object caller, [CallerMemberName] string method = null)
         {
-            var fullMethodName = $"{(caller.HasValue() ? caller.GetType().FullName : "Null")}.{method}";
+            return TraceMethod(level, caller?.GetType(), method);
+        }
+
+        /// <summary>
+        /// Traces how long a method took to execute with severity <see cref="LogLevel.Trace"/>. Timer starts when calling method and stops when return value is disposed.
+        /// </summary>
+        /// <param name="caller">Type of object that wants it's method execution traced</param>
+        /// <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+        /// <returns>Timing scope</returns>
+        public static IDisposable TraceMethod(Type caller, [CallerMemberName] string method = null)
+        {
+            return TraceMethod(LogLevel.Trace, caller, method);
+        }
+        /// <summary>
+        /// Traces how long a method took to execute. Timer starts when calling method and stops when return value is disposed.
+        /// </summary>
+        /// <param name="level">Severity level for log</param>
+        /// <param name="caller">Type of object that wants it's method execution traced</param>
+        /// <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+        /// <returns>Timing scope</returns>
+        public static IDisposable TraceMethod(LogLevel level, Type caller, [CallerMemberName] string method = null)
+        {
+            var fullMethodName = $"{(caller.HasValue() ? caller.FullName : "Null")}.{method}";
 
             return CreateTimedLogger(level, () => $"Calling method <{fullMethodName}>", x => $"Called method <{fullMethodName}> in {x.PrintTotalMs()}");
         }

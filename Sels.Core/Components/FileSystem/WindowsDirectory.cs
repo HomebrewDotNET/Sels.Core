@@ -15,6 +15,8 @@ namespace Sels.Core.Components.FileSystem
         // Properties
         public override FileSize FreeSpace => Source.GetFreeSpaceOnWindows();
 
+        public override string MountPoint => throw new NotImplementedException();
+
         public WindowsDirectory(string path) : base(path)
         {
 

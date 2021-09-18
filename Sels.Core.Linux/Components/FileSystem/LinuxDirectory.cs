@@ -20,6 +20,8 @@ namespace Sels.Core.Linux.Components.FileSystem
         // Properties
         public override FileSize FreeSpace => new DfFreeSpaceCommand<KibiByte>() { Member = Source }.Execute().GetResult();
 
+        public override string MountPoint => new DfMountPointCommand() { Member = Source }.Execute().GetResult();
+
         public LinuxDirectory(string path) : base(path)
         {
 

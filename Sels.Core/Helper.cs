@@ -242,7 +242,7 @@ namespace Sels.Core
                     // Wait for process to finish
                     while (!process.HasExited)
                     {
-                        logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Waiting for process {process.Id} to exit ({time.PrintTotalMs()})"));
+                        logger.Log((time, log) => log.LogMessage(LogLevel.Trace, $"Waiting for process {process.Id} to exit ({time.PrintTotalMs()})"));
                         Thread.Sleep(250);
 
                         // Wait for process to exit
@@ -265,8 +265,12 @@ namespace Sels.Core
                         }
                     }
 
+                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Process {process.Id} has exited. Collecting output ({time.PrintTotalMs()})"));
+
                     output = process.StandardOutput.ReadToEnd();
                     error = process.StandardError.ReadToEnd();
+
+                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Process {process.Id} output collected ({time.PrintTotalMs()})"));
 
                     return process.ExitCode;
                 }
