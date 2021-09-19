@@ -182,14 +182,14 @@ namespace Sels.Core.Components.Parameters
 
             while (true)
             {
-                if(currentStartIndex > 0)
+                if(currentStartIndex >= 0)
                 {
                     // Find next parameter start
                     var nextStartIndex = sourceText.IndexOf(ParameterPrefix.Value, currentStartIndex + 1);
                     // Find next parameter end
                     var nextEndIndex = sourceText.IndexOf(ParameterSuffix.Value, currentStartIndex + 1);
                    
-                    if(nextEndIndex > 0)
+                    if(nextEndIndex >= 0)
                     {
                         // If we have a next parameter start and it falls before the next parameter end we have a sub parameter so we skip otherwise we found a parameter when we have a next parameter end
                         if (nextStartIndex < 1 || nextStartIndex > nextEndIndex)

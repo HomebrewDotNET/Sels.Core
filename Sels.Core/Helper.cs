@@ -270,7 +270,7 @@ namespace Sels.Core
                     output = process.StandardOutput.ReadToEnd();
                     error = process.StandardError.ReadToEnd();
 
-                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Process {process.Id} output collected ({time.PrintTotalMs()})"));
+                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Process {process.Id} output collected and has exited with code {process.ExitCode} ({time.PrintTotalMs()})"));
 
                     return process.ExitCode;
                 }
