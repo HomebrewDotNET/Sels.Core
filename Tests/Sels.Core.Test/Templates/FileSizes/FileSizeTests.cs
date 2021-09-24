@@ -15,7 +15,6 @@ namespace Sels.Core.Test.Templates.FileSizes
     {
 
         #region ToSize
-
         [TestCase(8, typeof(Bit), 1)]
         [TestCase(1, typeof(SingleByte), 1)]
         [TestCase(50, typeof(KiloByte), 50000)]
