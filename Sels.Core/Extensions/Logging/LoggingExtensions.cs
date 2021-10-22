@@ -14,6 +14,9 @@ using System.Threading.Tasks;
 
 namespace Sels.Core.Extensions.Logging
 {
+    /// <summary>
+    /// Exposes some simple additonal logging methods on ILoggers.
+    /// </summary>
     public static class LoggingExtensions
     {
         #region Logger
