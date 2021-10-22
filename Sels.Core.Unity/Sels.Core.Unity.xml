@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Unity</name>
+    </assembly>
+    <members>
+        <member name="P:Sels.Core.Unity.Components.Containers.UnityServiceFactory.DefaultContainer">
+            <summary>
+            Default container used when calling the no arg constructor.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Unity.Components.Containers.UnityServiceFactory.Container">
+            <summary>
+            Container with the registered services.
+            </summary>
+        </member>
+    </members>
+</doc>

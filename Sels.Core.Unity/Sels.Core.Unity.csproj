@@ -2,6 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Jens Sels</Authors>
+    <Company>Homebrew IT</Company>
+    <Product>Unity Core Library</Product>
+    <Description>Uses the Unity IoC container to implement abstractions in Sels.Core.
+Used by projects maintained here: https://github.com/Jenssels1998</Description>
+    <Copyright>Jens Sels</Copyright>
+    <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
+    <PackageTags>Sels</PackageTags>
+	<!--For NuGet package-->
+	<DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
+	<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
 	<!--Exclude pdb files from release build-->
@@ -10,7 +23,20 @@
 		<DebugSymbols>false</DebugSymbols>
 	</PropertyGroup>
 
+	<!--Include non-NuGet package projects in NuGet package-->
+	<Target Name="PrePackage" BeforeTargets="BuildPackage">
+		<PropertyGroup>
+			<BuildCommand>$(BuildCommand) -IncludeReferencedProjects</BuildCommand>
+		</PropertyGroup>
+	</Target>
 
+	<!--Clear local versions if already added and add NuGet package to local repository-->
+	<Target Name="NuGetPushToLocal" AfterTargets="Pack" Condition="'$(OS)' == 'Windows_NT' And Exists('C:\NuGet\nuget.exe')">
+		<RemoveDir Directories="%USERPROFILE%\.nuget\packages\$(PackageId)\$(PackageVersion)" />
+		<RemoveDir Directories="C:\NuGet\$(PackageId)\$(PackageVersion)" />
+		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
+	</Target>
+	
 	<ItemGroup>
     <Folder Include="Extensions\" />
   </ItemGroup>

@@ -1,0 +1,2613 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Components.Commands.CommandExecutionOptions">
+            <summary>
+            Provides extra options when executing a <see cref="T:Sels.Core.Contracts.Commands.ICommand"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Commands.CommandExecutionOptions.Token">
+            <summary>
+            Token for cancelling the execution of long running <see cref="T:Sels.Core.Contracts.Commands.ICommand"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Commands.CommandExecutionOptions.SuccessExitCode">
+            <summary>
+            Command will succeed when the exit code returned from executing a <see cref="T:Sels.Core.Contracts.Commands.ICommand"/> is equal to this value. If left null the default success exit code of the <see cref="T:Sels.Core.Contracts.Commands.ICommand"/> will be used. 
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Commands.CommandExecutionOptions.FailOnErrorOutput">
+            <summary>
+            If set to true the <see cref="T:Sels.Core.Contracts.Commands.ICommand"/> execution will fail regardless of the exit code returned when the error output has value.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Commands.CommandExecutionOptions.Loggers">
+            <summary>
+            Allows <see cref="T:Sels.Core.Contracts.Commands.ICommand"/> to log.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.Converters.DateTimeConverter">
+            <summary>
+            Converts objects to DateTime.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.Converters.DirectoryInfoConverter">
+            <summary>
+            Converter that can convert between a path and a directory info.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.Converters.EnumConverter">
+            <summary>
+            Converts objects to Enums.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.Converters.FileInfoConverter">
+            <summary>
+            Converter that can convert between a filename and a file info.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.Converters.FileSizeConverter">
+            <summary>
+            Converter that can convert 
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.Converters.GeneralConverter">
+            <summary>
+            Converter that can convert between most common simple types
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Conversion.Converters.GeneralConverter.IsConvertableType(System.Type)">
+            <summary>
+            Checks if this converter can convert <paramref name="type"/>.
+            </summary>
+            <param name="type">Type to check</param>
+            <returns>Boolean indicating if <paramref name="type"/> is supported</returns>
+        </member>
+        <member name="P:Sels.Core.Components.Conversion.Converters.GeneralConverter.ConvertableTypes">
+            <summary>
+            Supported types that this converted can convert between.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.Converters.GuidConverter">
+            <summary>
+            Converts objects to Guids.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.Converters.JsonConverter">
+            <summary>
+            Converts json strings to objects and objects to json strings.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.Converters.StringConverter">
+            <summary>
+            Converts objects to string.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.Converters.XmlConverter">
+            <summary>
+            Converts xml strings to objects and objects to xml strings.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.DynamicConverter">
+            <summary>
+            Converter that uses delegates to convert objects. 
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Conversion.DynamicConverter.#ctor(System.Func{System.Type,System.Type,System.Object,System.Object},System.Func{System.Type,System.Type,System.Object,System.Boolean})">
+            <summary>
+            Default constructor.
+            </summary>
+            <param name="convertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Components.Conversion.DynamicConverter.CanConvert(System.Type,System.Type,System.Object)"/></param>
+            <param name="canConvertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Components.Conversion.DynamicConverter.ConvertTo(System.Type,System.Type,System.Object)"/></param>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.GenericConverter">
+            <summary>
+            Converter that can be configured with other converters. Converter will use first sub converter that can convert between the supplied types. 
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Conversion.GenericConverter.Converters">
+            <summary>
+            Current converters used by this converter.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Conversion.GenericConverter.Settings">
+            <summary>
+            Current settings for this converter.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Conversion.GenericConverter.Set(System.Collections.Generic.IEnumerable{Sels.Core.Contracts.Conversion.IGenericTypeConverter})">
+            <summary>
+            Replaces all current converts with <paramref name="converters"/>. Setting null will clear the converters.
+            </summary>
+            <param name="converters">Converters to set</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Conversion.GenericConverter.AddConverter(Sels.Core.Contracts.Conversion.IGenericTypeConverter)">
+            <summary>
+            Adds a sub converter that the <see cref="T:Sels.Core.Components.Conversion.GenericConverter"/> can use.
+            </summary>
+            <param name="converter">Converter to add</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Conversion.GenericConverter.AddConverter(System.Func{System.Type,System.Type,System.Object,System.Object},System.Func{System.Type,System.Type,System.Object,System.Boolean})">
+            <summary>
+            Adds a sub converter with the supplied delegates that the <see cref="T:Sels.Core.Components.Conversion.GenericConverter"/> can use.
+            </summary>
+            <param name="convertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Components.Conversion.GenericConverter.CanConvert(System.Type,System.Type,System.Object)"/></param>
+            <param name="canConvertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Components.Conversion.GenericConverter.ConvertTo(System.Type,System.Type,System.Object)"/></param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Conversion.GenericConverter.AddConverter``1">
+            <summary>
+            Adds a new sub converter of type <typeparamref name="TConverter"/>.
+            </summary>
+            <typeparam name="TConverter">Type of converter</typeparam>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Conversion.GenericConverter.InsertConverter(System.Type,Sels.Core.Contracts.Conversion.IGenericTypeConverter)">
+            <summary>
+            Adds a sub converter that the <see cref="T:Sels.Core.Components.Conversion.GenericConverter"/> can use and adds it before the first converter with type <paramref name="type"/>.
+            </summary>
+            <param name="converter">Converter to add</param>
+            <param name="type">Type of converter to insert before</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Conversion.GenericConverter.AddConverter(System.Type,System.Func{System.Type,System.Type,System.Object,System.Object},System.Func{System.Type,System.Type,System.Object,System.Boolean})">
+            <summary>
+            Adds a sub converter with the supplied delegates that the <see cref="T:Sels.Core.Components.Conversion.GenericConverter"/> can use and adds it before the first converter with type <paramref name="type"/>.
+            </summary>
+            <param name="convertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Components.Conversion.GenericConverter.CanConvert(System.Type,System.Type,System.Object)"/></param>
+            <param name="canConvertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Components.Conversion.GenericConverter.ConvertTo(System.Type,System.Type,System.Object)"/></param>
+            <param name="type">Type of converter to insert before</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Conversion.GenericConverter.InsertConverter``1(System.Type)">
+            <summary>
+            Adds a new sub converter of type <typeparamref name="TConverter"/> and adds it before the first converter with type <paramref name="type"/>.
+            </summary>
+            <typeparam name="TConverter">Type of converter</typeparam>
+            <returns>Self</returns>
+        </member>
+        <member name="P:Sels.Core.Components.Conversion.GenericConverter.DefaultConverter">
+            <summary>
+            Default <see cref="T:Sels.Core.Components.Conversion.GenericConverter"/> that contains sub converters that cover most simple base types.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Conversion.GenericConverter.DefaultJsonConverter">
+            <summary>
+            Default <see cref="T:Sels.Core.Components.Conversion.GenericConverter"/> that contains sub converters that cover most simple base types with support for converting between objects and json strings.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Conversion.GenericConverter.DefaultXmlConverter">
+            <summary>
+            Default <see cref="T:Sels.Core.Components.Conversion.GenericConverter"/> that contains sub converters that cover most simple base types with support for converting between objects and xml strings.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Conversion.GenericConverterSettings">
+            <summary>
+            Contains settings that modifies the behaviour of <see cref="T:Sels.Core.Components.Conversion.GenericConverter"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Conversion.GenericConverterSettings.ThrowOnFailedConversion">
+            <summary>
+            Rethrows any exception that gets thrown during conversion, set to false to return the default value of the convertType.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Factory.AliasTypeFactory">
+            <summary>
+            Object factory that uses type aliases as identifier to create new objects. Aliases are loaded from config. Uses <see cref="T:Sels.Core.Components.Factory.ObjectConstructionConfig"/> as the config section.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Factory.GenericFactory`1">
+            <summary>
+            Factory that creates new instances by calling the right constructor based on supplied arguments.
+            </summary>
+            <typeparam name="T">Type of new instances that factory can create</typeparam>
+        </member>
+        <member name="P:Sels.Core.Components.Factory.GenericFactory`1.InstanceType">
+            <summary>
+            Type of new instances that factory can create.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Factory.ObjectConstructionConfig">
+            <summary>
+            Object that maps to a configuration section that contains settings to create objects.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Factory.ObjectConstructionConfig.Identifier">
+            <summary>
+            Factory identifier.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Factory.ObjectConstructionConfig.Arguments">
+            <summary>
+            Optional constructor arguments.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Factory.ObjectConstructionArgumentConfig">
+            <summary>
+            Object that maps to a configuration section that contains settings for constructor arguments.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Factory.ObjectConstructionArgumentConfig.Value">
+            <summary>
+            Constructor value.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Factory.ObjectConstructionArgumentConfig.Type">
+            <summary>
+            Optional type of argument.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Factory.TypeFactory">
+            <summary>
+            Object factory that uses type names as identifier to create new objects. Uses <see cref="T:Sels.Core.Components.Factory.ObjectConstructionConfig"/> as the config section.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit">
+            <summary>
+            Displays file size in exbibit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit">
+            <summary>
+            Displays file size in gibibit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit">
+            <summary>
+            Displays file size in kibibit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit">
+            <summary>
+            Displays file size in mebibit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit">
+            <summary>
+            Displays file size in pebibit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit">
+            <summary>
+            Displays file size in tebibit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit">
+            <summary>
+            Displays file size in yobibit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit">
+            <summary>
+            Displays file size in zebibit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.Bit">
+            <summary>
+            Displays file size in bit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.ExaBit">
+            <summary>
+            Displays file size in exabit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.GigaBit">
+            <summary>
+            Displays file size in gigabit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.KiloBit">
+            <summary>
+            Displays file size in kilobit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.MegaBit">
+            <summary>
+            Displays file size in megabit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.PetaBit">
+            <summary>
+            Displays file size in petabyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.TeraBit">
+            <summary>
+            Displays file size in terabit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.YottaBit">
+            <summary>
+            Displays file size in yottabit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Bit.ZettaBit">
+            <summary>
+            Displays file size in zettabit.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte">
+            <summary>
+            Displays file size in exbibyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte">
+            <summary>
+            Displays file size in gibibyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte">
+            <summary>
+            Displays file size in kibibyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte">
+            <summary>
+            Displays file size in mebibyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte">
+            <summary>
+            Displays file size in pebibyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte">
+            <summary>
+            Displays file size in tebibyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte">
+            <summary>
+            Displays file size in yobibyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte">
+            <summary>
+            Displays file size in zebibyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.ExaByte">
+            <summary>
+            Displays file size in exabyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.GigaByte">
+            <summary>
+            Displays file size in gigabyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.KiloByte">
+            <summary>
+            Displays file size in kilobyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.MegaByte">
+            <summary>
+            Displays file size in megabyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.PetaByte">
+            <summary>
+            Displays file size in petabyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.SingleByte">
+            <summary>
+            Displays file size in byte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.TeraByte">
+            <summary>
+            Displays file size in terabyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.YottaByte">
+            <summary>
+            Displays file size in yottabyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSizes.Byte.ZettaByte">
+            <summary>
+            Displays file size in zettabyte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.FileSystem.WindowsDirectory">
+            <summary>
+            Windows specific wrapper for <see cref="T:Sels.Core.Templates.FileSystem.CrossPlatformDirectory"/>
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Filtering.ObjectFilter.ObjectFilter`2.CreateExplicitMap(System.Linq.Expressions.Expression{System.Action{`0}},System.Linq.Expressions.Expression{System.Action{`1}})">
+            <summary>
+            Used to expliticly map 2 properties together. By default properties with the same name are implicitly mapped
+            </summary>
+            <param name="filterPropertyExpression">Property on filter object</param>
+            <param name="objectPropertyExpression">Property on object</param>
+        </member>
+        <member name="M:Sels.Core.Components.Filtering.ObjectFilter.ObjectFilter`2.CreateExplicitTypeFilter``1(System.Func{``0,``0,System.Boolean})">
+            <summary>
+            Used when filtering properties of type T. If no explicit filters exist the ObjectFilters uses Equals
+            </summary>
+            <typeparam name="T">Property type</typeparam>
+            <param name="filter">Filter delegate</param>
+        </member>
+        <member name="M:Sels.Core.Components.Filtering.ObjectFilter.ObjectFilter`2.CreateExplicitFilter``2(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Linq.Expressions.Expression{System.Func{`1,``1}},System.Func{``0,``1,System.Boolean})">
+            <summary>
+            Create a explicit mapping for 2 properties if their property types aren't assignable from each other
+            </summary>
+            <typeparam name="TFilterValue">Filter property type</typeparam>
+            <typeparam name="TObjectValue">Object property type</typeparam>
+            <param name="filterPropertyExpression">Property on filter object</param>
+            <param name="filter">Filter delegate</param>
+        </member>
+        <member name="T:Sels.Core.Components.IoC.ServiceScope">
+            <summary>
+            Scope that dictates when a new instance should be created when the service gets resolved.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Components.IoC.ServiceScope.Transient">
+            <summary>
+            A new instance is always created.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Components.IoC.ServiceScope.Scoped">
+            <summary>
+            The same instance is resolved within the same scope.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Components.IoC.ServiceScope.Singleton">
+            <summary>
+            Only 1 instance is created.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Logging.LoggingServices.Loggers">
+            <summary>
+            Registered loggers used by the <see cref="T:Sels.Core.Components.Logging.LoggingServices"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Debug(System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Debug"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Warning(System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Warning"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Log(System.Action{System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Perform a logging action using the registered loggers.
+            </summary>
+            <param name="logAction">Action to perform on loggers</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Log(System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Information"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Log(Microsoft.Extensions.Logging.LogLevel,System.String,System.Object[])">
+            <summary>
+            Logs a message.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Log(System.Exception)">
+            <summary>
+            Logs an exception with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Error"/>.
+            </summary>
+            <param name="exception">Exception to log</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Log(Microsoft.Extensions.Logging.LogLevel,System.Exception)">
+            <summary>
+            Logs an exception.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="exception">Exception to log</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Log(System.String,System.Exception,System.Object[])">
+            <summary>
+            Logs a exception with an extra message with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Error"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="exception">Exception to log</param>
+            <param name="args">Optional logging parameters</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Log(Microsoft.Extensions.Logging.LogLevel,System.String,System.Exception,System.Object[])">
+            <summary>
+            Logs a exception with an extra message.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="message">Message to log</param>
+            <param name="exception">Exception to log</param>
+            <param name="args">Optional logging parameters</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Trace(System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceObject(System.Object)">
+            <summary>
+            Traces an object to the logs using the <see cref="T:Sels.Core.Components.Serialization.Providers.JsonProvider"/> serialization provider with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <param name="objectToTrace">Object to serialize and log</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceObject(Microsoft.Extensions.Logging.LogLevel,System.Object)">
+            <summary>
+            Traces an object to the logs using the <see cref="T:Sels.Core.Components.Serialization.Providers.JsonProvider"/> serialization provider.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceObject(System.String,System.Object)">
+            <summary>
+            Traces an object to the logs using the <see cref="T:Sels.Core.Components.Serialization.Providers.JsonProvider"/> serialization provider with an extra message with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceObject(Microsoft.Extensions.Logging.LogLevel,System.String,System.Object)">
+            <summary>
+            Traces an object to the logs using the <see cref="T:Sels.Core.Components.Serialization.Providers.JsonProvider"/> serialization provider with an extra message.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="message">Message to log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceObject``1(System.Object)">
+            <summary>
+            Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <typeparam name="TProvider">Type of serialization provider</typeparam>
+            <param name="objectToTrace">Object to serialize and log</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceObject``1(Microsoft.Extensions.Logging.LogLevel,System.Object)">
+            <summary>
+            Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider.
+            </summary>
+            <typeparam name="TProvider">Type of serialization provider</typeparam>
+            <param name="level">Severity level for log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceObject``1(System.String,System.Object)">
+            <summary>
+            Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with an extra message with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <typeparam name="TProvider">Type of serialization provider</typeparam>
+            <param name="message">Message to log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceObject``1(Microsoft.Extensions.Logging.LogLevel,System.String,System.Object)">
+            <summary>
+            Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with an extra message.
+            </summary>
+            <typeparam name="TProvider">Type of serialization provider</typeparam>
+            <param name="level">Severity level for log</param>
+            <param name="message">Message to log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceAction(System.String)">
+            <summary>
+            Traces how long an action took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="action">Action to trace</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceAction(System.String,System.Func{System.TimeSpan,System.String})">
+            <summary>
+            Traces how long an action took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="actionStartMessage">Log message when action starts</param>
+            <param name="actionFinishedMessage">Log message when action is finished</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceAction(Microsoft.Extensions.Logging.LogLevel,System.String,System.Func{System.TimeSpan,System.String})">
+            <summary>
+            Traces how long an action took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="actionStartMessage">Log message when action starts</param>
+            <param name="actionFinishedMessage">Log message when action is finished</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceAction(Microsoft.Extensions.Logging.LogLevel,System.String)">
+            <summary>
+            Traces how long an action took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="action">Action to trace</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceMethod(System.Object,System.String)">
+            <summary>
+            Traces how long a method took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="caller">Object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceMethod(Microsoft.Extensions.Logging.LogLevel,System.Object,System.String)">
+            <summary>
+            Traces how long a method took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="caller">Object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceMethod(System.Type,System.String)">
+            <summary>
+            Traces how long a method took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="caller">Type of object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.TraceMethod(Microsoft.Extensions.Logging.LogLevel,System.Type,System.String)">
+            <summary>
+            Traces how long a method took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="caller">Type of object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.CreateTimedLogger(Microsoft.Extensions.Logging.LogLevel,System.Func{System.String},System.Func{System.TimeSpan,System.String})">
+            <summary>
+            Creates a logger that logs a message when created and a message when disposed using the elapsed time between creating and disposing the logger.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="beginMessageFunc">Func that creates the start message</param>
+            <param name="endMessageFunc">Func that creates the stop message</param>
+            <returns>Logger that keeps start of elapsed time since it was created</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.GlobalParameters.AddParameter(System.String,System.Func{System.Object,System.String,System.String},System.Func{System.Object})">
+            <summary>
+            Adds a global parameter that gets loaded into any Parameterizer that has loadGlobalParameters enabled
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.GlobalParameters.AddParameter(System.String,System.String)">
+            <summary>
+            Adds a global parameter that gets loaded into any Parameterizer that has loadGlobalParameters enabled
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.GlobalParameters.AddParameter(Sels.Core.Components.Parameters.Parameter)">
+            <summary>
+            Adds a global parameter that gets loaded into any Parameterizer that has loadGlobalParameters enabled
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.GlobalParameters.AddParameters(Sels.Core.Components.Parameters.Parameter[])">
+            <summary>
+            Adds multiple global parameters that get loaded into any Parameterizer that has loadGlobalParameters enabled
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.GlobalParameters.AddParameters(System.Collections.Generic.IEnumerable{Sels.Core.Components.Parameters.Parameter})">
+            <summary>
+            Adds multiple global parameters that get loaded into any Parameterizer that has loadGlobalParameters enabled
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter.GenerateNewValue(System.String)">
+            <summary>
+            Generates a new value using the supplied argument without starting a scope
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter.GenerateNewValue(System.Object,System.String)">
+            <summary>
+            Generates a new value using the supplied argument and scope
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter.AddDependency(System.String)">
+            <summary>
+            Adds a dependency to another parameter by name.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter.AddDependency(Sels.Core.Components.Parameters.Parameter)">
+            <summary>
+            Adds a dependency to another parameter.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter.GetParameterValue(System.String,System.String)">
+            <summary>
+            Gets the value of another parameter
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter.BeginScope">
+            <summary>
+            Creates a new context that can be used to create a new scope
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter.GenerateValue(System.Object)">
+            <summary>
+            Generates new value without argument
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter.GenerateValue(System.Object,System.String)">
+            <summary>
+            Generate bew value with argument
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter`1.BeginNewScope">
+            <summary>
+            Creates a new context that can be used to create a new scope
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter`1.GenerateValue(`0)">
+            <summary>
+            Generates new value without argument
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameter`1.GenerateValue(`0,System.String)">
+            <summary>
+            Generate bew value with argument
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameterizer.AddParameter(System.String,System.Func{System.Object,System.String,System.String},System.Func{System.Object})">
+            <summary>
+            Adds parameter that the parameterizer can use
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameterizer.AddParameter(System.String,System.Func{System.String},System.Func{System.Object})">
+            <summary>
+            Adds parameter that the parameterizer can use
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameterizer.AddParameter(System.String,System.String)">
+            <summary>
+            Adds parameter that the parameterizer can use
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameterizer.AddParameter(System.String,System.Object)">
+            <summary>
+            Adds parameter that the parameterizer can use
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameterizer.AddParameter(Sels.Core.Components.Parameters.Parameter)">
+            <summary>
+            Adds parameter that the parameterizer can use
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameterizer.AddParameters(Sels.Core.Components.Parameters.Parameter[])">
+            <summary>
+            Adds multiple parameters that the parameterizer can use
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameterizer.AddParameters(System.Collections.Generic.IEnumerable{Sels.Core.Components.Parameters.Parameter})">
+            <summary>
+            Adds multiple parameters that the parameterizer can use
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameterizer.Apply(System.String)">
+            <summary>
+            Applies any parameters that are registered in this parameterizer to the supplied text
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Parameters.Parameters.CachedParameter">
+            <summary>
+            Caches generated values by using argument within the same scope
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameters.CachedParameter.GenerateValue">
+            <summary>
+            Generates a new value without scope or argument
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.Property`1.AddGetterSetCondition(System.Predicate{`0})">
+            <summary>
+            Adds a Getter Set condition. If the condition returns true the internal value will be set using the getterSetter
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.Property`1.AddGetterSetter(System.Func{`0})">
+            <summary>
+            Returns value for the internal value when any of the Getter Set conditions return true
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.Property`1.AddSetterValidation(System.Predicate{`0},System.String)">
+            <summary>
+            Adds validation on setting the internal value. InvalidOperationException is thrown using the errorMessage when the Condition fails
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.Property`1.AddSetterValidation(System.Predicate{`0},System.Func{System.Exception})">
+            <summary>
+            Adds validation on setting the internal value. Exception is thrown using the ErrorException Func when the Condition fails
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.ReadOnlyProperty`1.AddGetterSetCondition(System.Predicate{`0})">
+            <summary>
+            Adds a Getter Set condition. If the condition returns true the internal value will be set using the getterSetter
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.ReadOnlyProperty`1.AddGetterSetter(System.Func{`0})">
+            <summary>
+            Returns value for the internal value when any of the Getter Set conditions return true
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.ThreadSafeProperty`1.AddGetterSetCondition(System.Predicate{`0})">
+            <summary>
+            Adds a Getter Set condition. If the condition returns true the internal value will be set using the getterSetter
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.ThreadSafeProperty`1.AddGetterSetter(System.Func{`0})">
+            <summary>
+            Returns value for the internal value when any of the Getter Set conditions return true
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.ThreadSafeProperty`1.AddSetterValidation(System.Predicate{`0},System.String)">
+            <summary>
+            Adds validation on setting the internal value. InvalidOperationException is thrown using the errorMessage when the Condition fails
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.ThreadSafeProperty`1.AddSetterValidation(System.Predicate{`0},System.Func{System.Exception})">
+            <summary>
+            Adds validation on setting the internal value. Exception is thrown using the ErrorException Func when the Condition fails
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.ThreadSafeReadOnlyProperty`1.AddGetterSetCondition(System.Predicate{`0})">
+            <summary>
+            Adds a Getter Set condition. If the condition returns true the internal value will be set using the getterSetter
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Properties.ThreadSafeReadOnlyProperty`1.AddGetterSetter(System.Func{`0})">
+            <summary>
+            Returns value for the internal value when any of the Getter Set conditions return true
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Serialization.KeyValue.Attributes.KeyValueCollectionAttribute">
+            <summary>
+            Used to configure the serialization between the property this is defined on and the string value. This attribute adds extra options for collection properties.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.KeyValue.Attributes.KeyValueCollectionAttribute.FactoryType">
+            <summary>
+            Optional factory for handling items from collections.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.KeyValue.Attributes.KeyValueCollectionAttribute.FactoryArgument">
+            <summary>
+            Optional argument that can be passed down to an <see cref="T:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueCollectionFactory"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.KeyValue.Attributes.KeyValueCollectionAttribute.TypeConverterType">
+            <summary>
+            Optional type of a <see cref="T:Sels.Core.Contracts.Conversion.IGenericTypeConverter"/> to use for converting to/from collection elements.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Serialization.KeyValue.Attributes.KeyValuePropertyAttribute">
+            <summary>
+            Used to configure the serialization between the property this is defined on and the string value.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.KeyValue.Attributes.KeyValuePropertyAttribute.ConverterType">
+            <summary>
+            Optional value converter used to convert between the property type and string.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.KeyValue.Attributes.KeyValuePropertyAttribute.ConverterArgument">
+            <summary>
+            Optional argument that can be passed down to an IKeyValueConverter.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.KeyValue.KeyValueSerializer.KeyValueSplitter">
+            <summary>
+            Used to split/join key value pairs from an item
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.KeyValue.KeyValueSerializer.ItemSplitter">
+            <summary>
+            Used to split/join values from/to the source string
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Components.Serialization.KeyValue.ParsingOption.TrimKey">
+            <summary>
+            Trim key when splitting each item.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Components.Serialization.KeyValue.ParsingOption.TrimValue">
+            <summary>
+            Trim value when splitting each item.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Components.Serialization.KeyValue.ParsingOption.TrimItem">
+            <summary>
+            Trim each item when splitting the source string into multiple items.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Serialization.Providers.SerializationProvider">
+            <summary>
+            Common serialization providers.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Serialization.Table.Attributes.TableColumnAttribute">
+            <summary>
+            Provides serialization info for <see cref="T:Sels.Core.Components.Serialization.Table.TableSerializer"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.Table.Attributes.TableColumnAttribute.ColumnIndex">
+            <summary>
+            Which column to deserialize to this property or serialize in to the column.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.Table.Attributes.TableColumnAttribute.Converter">
+            <summary>
+            Optional converter for converting between string and property value.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Serialization.Table.TableSerializer">
+            <summary>
+            Serializer that splits up a string into rows and columns and then serializes/deserializes each row.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.Table.TableSerializer.RowSplitter">
+            <summary>
+            Splitter used to split a string into rows.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.Table.TableSerializer.ColumnSplitter">
+            <summary>
+            Splitter used to split a row into multiple columns. If null or empty columns are split on white space characters.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.Table.TableSerializer.SkipDataRow">
+            <summary>
+            How many rows are skipped before serializing/deserializing. Can be used to skip the header row.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Serialization.Table.TableSerializer.SkipLastDataRow">
+            <summary>
+            How many of the last rows are skipped when serializing/deserializing.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Serialization.Table.TableSerializer.Serialize(System.Collections.Generic.IEnumerable{System.Object},System.Type)">
+            <summary>
+            Serializes all <paramref name="values"/> to a string.
+            </summary>
+            <param name="values">Objects to serialize</param>
+            <param name="type">Type of object to serialize</param>
+            <returns>Serialized <paramref name="values"/></returns>
+        </member>
+        <member name="M:Sels.Core.Components.Serialization.Table.TableSerializer.Serialize``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Serializes all <paramref name="values"/> to a string.
+            </summary>
+            <typeparam name="T">Type of object to serialize</typeparam>
+            <param name="values">Objects to serialize</param>
+            <returns>Deserialized objects</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Serialization.Table.TableSerializer.Deserialize(System.String,System.Type)">
+            <summary>
+            Deserializes all rows in <paramref name="value"/> to objects of Type <paramref name="type"/>.
+            </summary>
+            <param name="value">String to deserialize</param>
+            <param name="type">Type of object to deserialize to</param>
+            <returns>Deserialized objects</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Serialization.Table.TableSerializer.Deserialize``1(System.String)">
+            <summary>
+            Deserializes all rows in <paramref name="value"/> to objects of Type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of object to deserialize to</typeparam>
+            <param name="value">String to deserialize</param>
+            <returns>Deserialized objects</returns>
+        </member>
+        <member name="F:Sels.Core.Components.Serialization.Table.TableSerializer.DefaultRowSplitter">
+            <summary>
+            Default splitter used to split a string into rows.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Components.Serialization.Table.TableSerializer.DefaultColumnSplitter">
+            <summary>
+            Default splitter used to split a row into multiple columns. If null or empty columns are split on white space characters.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Contracts.Commands.ICommand">
+            <summary>
+            Exposes methods to run commands (powershell, linux, ...) and build the command string.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Commands.ICommand.RunCommand(System.String@,System.String@,System.Int32@,Sels.Core.Components.Commands.CommandExecutionOptions)">
+            <summary>
+            Runs the command and gets the stout, sterr and exit code.
+            </summary>
+            <param name="output">Stout of command</param>
+            <param name="error">Sterr of command</param>
+            <param name="exitCode">Exit code of command</param>
+            <returns>Boolean indicating if the command executed succesfully</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Commands.ICommand.BuildCommand">
+            <summary>
+            Builds the command string.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetConnectionString(System.String,System.Boolean)">
+            <summary>
+            Get Connection String with <paramref name="name"/>.
+            </summary>
+            <param name="name">Name of connection string name</param>
+            <returns>Connection string</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetAppSetting(System.String,System.Boolean,System.Predicate{System.String},System.Func{System.String,System.String})">
+            <summary>
+            Get setting with <paramref name="name"/> from the AppSettings section.
+            </summary>
+            <param name="name">Name of config property</param>
+            <returns>App setting value</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetAppSetting``1(System.String,System.Boolean,System.Predicate{``0},System.Func{``0,System.String})">
+            <summary>
+            Get setting with <paramref name="name"/> from the AppSettings section.
+            </summary>
+            <typeparam name="T">Type to convert to</typeparam>
+            <param name="name">Name of config property</param>
+            <returns>App setting value converted to <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetSectionSetting(System.String,System.String,System.Boolean,System.Predicate{System.String},System.Func{System.String,System.String})">
+            <summary>
+            Get setting with <paramref name="name"/> from the <paramref name="section"/> section.
+            </summary>
+            <param name="name">Name of config property</param>
+            <param name="section">Name of config section</param>
+            <returns>Setting value</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetSectionSetting(System.String,System.Boolean,System.Predicate{System.String},System.Func{System.String,System.String},System.String[])">
+            <summary>
+            Get setting with <paramref name="name"/> from the <paramref name="sections"/> sections.
+            </summary>
+            <param name="name">Name of config property</param>
+            <param name="sections">Name of the config sections</param>
+            <returns>Setting value</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetSectionSetting``1(System.String,System.String,System.Boolean,System.Predicate{``0},System.Func{``0,System.String})">
+            <summary>
+            Get setting with <paramref name="name"/> from the <paramref name="section"/> section.
+            </summary>
+            <typeparam name="T">Type to convert to</typeparam>
+            <param name="name">Name of config property</param>
+            <param name="section">Name of config section</param>
+            <returns>Setting value converted to <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetSectionSetting``1(System.String,System.Boolean,System.Predicate{``0},System.Func{``0,System.String},System.String[])">
+            <summary>
+            Get setting with <paramref name="name"/> from the <paramref name="sections"/> sections.
+            </summary>
+            <typeparam name="T">Type to convert to</typeparam>
+            <param name="name">Name of config property</param>
+            <param name="sections">Name of the config sections</param>
+            <returns>Setting value converted to <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetSectionAs(System.String,System.Boolean,System.Predicate{System.Collections.Generic.Dictionary{System.String,System.Object}},System.Func{System.Collections.Generic.Dictionary{System.String,System.Object},System.String})">
+            <summary>
+            Get all the properties in <paramref name="section"/> as key value pairs in a dictionary.
+            </summary>
+            <param name="section">Name of config section</param>
+            <returns>Key value pairs</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetSectionAs(System.Boolean,System.Predicate{System.Collections.Generic.Dictionary{System.String,System.Object}},System.Func{System.Collections.Generic.Dictionary{System.String,System.Object},System.String},System.String[])">
+            <summary>
+            Get all the properties in the <paramref name="sections"/> as key value pairs in a dictionary.
+            </summary>
+            <param name="sections">Name of config section</param>
+            <returns>Key value pairs</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetSectionAs``1(System.String,System.Boolean,System.Predicate{``0},System.Func{``0,System.String})">
+            <summary>
+            Get the <paramref name="section"/> from config and convert it to <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type to convert to</typeparam>
+            <param name="section">Name of config section</param>
+            <returns>Section converted to <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetSectionAs``1(System.Boolean,System.Predicate{``0},System.Func{``0,System.String},System.String[])">
+            <summary>
+            Get the last section of <paramref name="sections"/> from config and convert it to <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type to convert to</typeparam>
+            <param name="sections">Name of config section</param>
+            <returns>Section converted to <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.IsSectionDefined(System.String[])">
+            <summary>
+            Checks if the last section in <paramref name="sections"/> exists in the config file.
+            </summary>
+            <param name="sections">Full order of the sections to check.</param>
+            <returns>Boolean indicating if the last section in <paramref name="sections"/> exists</returns>
+        </member>
+        <member name="T:Sels.Core.Contracts.Conversion.IGenericTypeConverter">
+            <summary>
+            Converter that can converts objects into other types.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Conversion.IGenericTypeConverter.CanConvert(System.Type,System.Type,System.Object)">
+            <summary>
+            Checks this converter can convert <paramref name="value"/> of type <paramref name="convertableType"/> to type <paramref name="convertType"/>.
+            </summary>
+            <param name="convertableType">Type to convert</param>
+            <param name="convertType">Type to convert to</param>
+            <param name="value">Value to convert</param>
+            <returns>Boolean indicating if this converter can convert from <paramref name="convertableType"/> to <paramref name="convertType"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Conversion.IGenericTypeConverter.ConvertTo(System.Type,System.Type,System.Object)">
+            <summary>
+            Converts <paramref name="value"/> of type <paramref name="convertableType"/> to <paramref name="convertType"/>.
+            </summary>
+            <param name="convertableType">Type to convert</param>
+            <param name="convertType">Type to convert to</param>
+            <param name="value">Object to convert</param>
+            <returns>Converted value</returns>
+        </member>
+        <member name="T:Sels.Core.Contracts.Factory.IFactory`1">
+            <summary>
+            Factory that is able to create new instances of <typeparamref name="T"/> based on supplied arguments.
+            </summary>
+            <typeparam name="T">Type of new instances that factory can create</typeparam>
+        </member>
+        <member name="T:Sels.Core.Contracts.Factory.IObjectFactory">
+            <summary>
+            Factory responsible for creating objects using an identifier and contruction arguments.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IObjectFactory.Build(System.String,System.Object[])">
+            <summary>
+            Creates a new object with Identifier <paramref name="identifier"/> and optional contructor arguments <paramref name="arguments"/>.
+            </summary>
+            <param name="identifier">Object idetifier so factory knows which object to create</param>
+            <param name="arguments">Optiona arguments for creating the object</param>
+            <returns>A new instance of object with id <paramref name="identifier"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IObjectFactory.Build``1(System.String,System.Object[])">
+            <summary>
+            Creates a new object with Identifier <paramref name="identifier"/> and optional contructor arguments <paramref name="arguments"/> and casts it to <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type to cast created object to</typeparam>
+            <param name="identifier">Object idetifier so factory knows which object to create</param>
+            <param name="arguments">Optiona arguments for creating the object</param>
+            <returns>A new instance of object with id <paramref name="identifier"/> casted to <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IObjectFactory.BuildFromConfig(System.String,System.String[])">
+            <summary>
+            Creates a new object using the configuration section with Name <paramref name="section"/>.
+            </summary>
+            <param name="section">Name of section containing the build configuration</param>
+            <param name="parentSections">Optional parent sections</param>
+            <returns>A new instance of the object defined in config</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IObjectFactory.BuildFromConfig``1(System.String,System.String[])">
+            <summary>
+            Creates a new object  casted to <typeparamref name="T"/> using the configuration section with Name <paramref name="section"/>.
+            </summary>
+            <param name="section">Name of section containing the build configuration</param>
+            <param name="parentSections">Optional parent sections</param>
+            <returns>A new instance of the object defined in config casted to <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IObjectFactory.BuildAllFromConfig(System.String,System.String[])">
+            <summary>
+            Creates new objects casted to <typeparamref name="T"/> using the configuration section with Name <paramref name="section"/>.
+            </summary>
+            <param name="section">Name of section containing the build configuration</param>
+            <param name="parentSections">Optional parent sections</param>
+            <returns>A new instance of the object defined in config</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IObjectFactory.BuildAllFromConfig``1(System.String,System.String[])">
+            <summary>
+            Creates new objects casted to <typeparamref name="T"/> using the configuration section with Name <paramref name="section"/>.
+            </summary>
+            <param name="section">Name of section containing the build configuration</param>
+            <param name="parentSections">Optional parent sections</param>
+            <returns>A new instance of the object defined in config casted to <typeparamref name="T"/></returns>
+        </member>
+        <member name="T:Sels.Core.Contracts.Factory.IServiceFactory">
+            <summary>
+            IoC factory that is able to resolve services based on the type and/or the name of the service.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.Resolve``1">
+            <summary>
+            Resolve the first registered service of Type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of service to resolve</typeparam>
+            <returns>Registered service of Type <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.Resolve``1(System.String)">
+            <summary>
+            Resolve the registered service of Type <typeparamref name="T"/> with Name <paramref name="name"/>.
+            </summary>
+            <typeparam name="T">Type of service to resolve</typeparam>
+            <param name="name">Name of the service to resolve</param>
+            <returns>Registered service of Type <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.ResolveAll``1">
+            <summary>
+            Resolve all services of Type <typeparamref name="T"/>
+            </summary>
+            <typeparam name="T">Type of service to resolve</typeparam>
+            <returns>All registered services of Type <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.Resolve(System.Type)">
+            <summary>
+            Resolve the first registered service of Type <paramref name="type"/>.
+            </summary>
+            <param name="type">Type of service to resolve</param>
+            <returns>Registered service of Type <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.Resolve(System.Type,System.String)">
+            <summary>
+            Resolve the registered service of Type <paramref name="type"/> with Name <paramref name="name"/>.
+            </summary>
+            <param name="type">Type of service to resolve</param>
+            <param name="name">Name of the service to resolve</param>
+            <returns>Registered service of Type <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.ResolveAll(System.Type)">
+            <summary>
+            Resolve all services of Type <paramref name="type"/>
+            </summary>
+            <param name="type">Type of service to resolve</param>
+            <returns>All registered services of Type <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.IsRegistered(System.Type)">
+            <summary>
+            Checks if this factory can resolve services of Type <paramref name="type"/>.
+            </summary>
+            <param name="type">Type of service to check</param>
+            <returns>Boolean indicating if the factory can resolve services of Type <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.IsRegistered``1">
+            <summary>
+            Checks if this factory can resolve services of Type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of service to check</typeparam>
+            <returns>Boolean indicating if the factory can resolve services of Type <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.IsRegistered(System.Type,System.String)">
+            <summary>
+            Checks if this factory can resolve services of Type <paramref name="type"/> with Name <paramref name="name"/>.
+            </summary>
+            <param name="type">Type of service to check</param>
+            <param name="name">Name of the service to resolve</param>
+            <returns>Boolean indicating if the factory can resolve services of Type <paramref name="type"/> with Name <paramref name="name"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.IsRegistered``1(System.String)">
+            <summary>
+            Checks if this factory can resolve services of Type <typeparamref name="T"/> with Name <paramref name="name"/>.
+            </summary>
+            <typeparam name="T">Type of service to check</typeparam>
+            <param name="name">Name of the service to resolve</param>
+            <returns>Boolean indicating if the factory can resolve services of Type <typeparamref name="T"/> with Name <paramref name="name"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.Register(Sels.Core.Components.IoC.ServiceScope,System.Type)">
+            <summary>
+            Adds a new service of Type <paramref name="type"/> to the factory.
+            </summary>
+            <param name="type">Type of service to add</param>
+            <param name="scope">Scope of the service</param>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.Register``1(Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Adds a new service of Type <typeparamref name="T"/> to the factory.
+            </summary>
+            <typeparam name="T">Type of service to add</typeparam>
+            <param name="scope">Scope of the service</param> 
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.Register(Sels.Core.Components.IoC.ServiceScope,System.Type,System.String)">
+            <summary>
+            Adds a new service of Type <paramref name="type"/> with Name <paramref name="name"/> to the factory.
+            </summary>
+            <param name="type">Type of service to add</param>
+            <param name="name">Name of service</param>
+            <param name="scope">Scope of the service</param>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.Register``1(Sels.Core.Components.IoC.ServiceScope,System.String)">
+            <summary>
+            Adds a new service of Type <typeparamref name="T"/> with Name <paramref name="name"/> to the factory.
+            </summary>
+            <typeparam name="T">Type of service to add</typeparam>
+            <param name="name">Name of service</param>
+            <param name="scope">Scope of the service</param>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.Register(Sels.Core.Components.IoC.ServiceScope,System.Type,System.Type,System.String)">
+            <summary>
+            Adds a new service of Type <paramref name="implementationType"/> that can be resolved as an implementation for <paramref name="serviceType"/> with Name <paramref name="name"/>.
+            </summary>
+            <param name="scope">Scope of the service</param>
+            <param name="serviceType">Type of service to register <paramref name="implementationType"/> under</param>
+            <param name="implementationType">Type of service to add</param>
+            <param name="name">Name of service</param>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.Register``2(Sels.Core.Components.IoC.ServiceScope,System.String)">
+            <summary>
+            Adds a new service of Type <typeparamref name="TImplementation"/> that can be resolved as an implementation for <typeparamref name="TService"/> with Name <paramref name="name"/>.
+            </summary>
+            <typeparam name="TService">Type of service to register <typeparamref name="TImplementation"/> under</typeparam>
+            <typeparam name="TImplementation">Type of service to add</typeparam>
+            <param name="scope">Scope of the service</param>
+            <param name="name">Name of service</param>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IServiceFactory.LoadFrom(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Load all registered services from <paramref name="collection"/> into this factory.
+            </summary>
+            <param name="collection">Collection with registered services</param>
+            <returns><paramref name="collection"/></returns>
+        </member>
+        <member name="T:Sels.Core.Contracts.Serialization.ISerializationProvider">
+            <summary>
+            Service that can serialize and deserialize objects
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Serialization.ISerializationProvider.Serialize``1(``0)">
+            <summary>
+            Serializes <paramref name="value"/> to a string.
+            </summary>
+            <typeparam name="T">Type of object to serialize</typeparam>
+            <param name="value">Object to serialize</param>
+            <returns>String representing <paramref name="value"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Serialization.ISerializationProvider.Deserialize``1(System.String)">
+            <summary>
+            Deserializes <paramref name="value"/> into an object to Type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of object to deserialize to</typeparam>
+            <param name="value">String containing the serialized object</param>
+            <returns>Deserialized object from <paramref name="value"/></returns>
+        </member>
+        <member name="T:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueCollectionFactory">
+            <summary>
+            Factory for creating or updating the property collection when deserializing or joining together the serialized string values.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueCollectionFactory.CreateCollection(System.Type,System.Collections.Generic.IEnumerable{System.Object},System.Object)">
+            <summary>
+            Creates a collection containing the deserializedItems.
+            </summary>
+            <param name="collectionType">Type of collection</param>
+            <param name="propertyCollection">Property value</param>
+            <param name="deserializedItems">Deserialized items</param>
+            <param name="factoryArgument">Optional argument from KeyValueCollectionAttribute</param>
+            <returns>Collection</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueCollectionFactory.ParseItems(System.Collections.Generic.IEnumerable{System.String},System.Object)">
+            <summary>
+            Used to parse serialized items from source collection before adding the key before all items. Can be used to either merge/join some or all items.
+            </summary>
+            <param name="serializedItems">Serialized items from source collection</param>
+            <param name="factoryArgument">Optional argument from KeyValueCollectionAttribute</param>
+            <returns>Joined/Merged items</returns>
+        </member>
+        <member name="T:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueConverter">
+            <summary>
+            Converter for converting between the string value and other types.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueConverter.ConvertTo(System.Type,System.Collections.Generic.IEnumerable{System.String},System.Object)">
+            <summary>
+            Converts the <paramref name="values"/> to <paramref name="conversionType"/>. Used for converting the values for the same key to a property value.
+            </summary>
+            <param name="conversionType">Type to convert to</param>
+            <param name="values">String values to convert</param>
+            <param name="converterArgument">Optional argument from <see cref="T:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueSerializationAttribute"/></param>
+            <returns>Converted object</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueConverter.ConvertTo(System.Type,System.Object,System.Object)">
+            <summary>
+            Converts <paramref name="value"/> of Type <paramref name="conversionType"/> to string. Used for converting a property value to values for the same key.
+            </summary>
+            <param name="conversionType">Type to convert from</param>
+            <param name="value">Property value to convert</param>
+            <param name="converterArgument">Optional argument from <see cref="T:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueSerializationAttribute"/></param>
+            <returns>Converted object</returns>
+        </member>
+        <member name="P:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueSerializationAttribute.Key">
+            <summary>
+            Specifies the key name.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueSerializationAttribute.Ignore">
+            <summary>
+            Set to true to ignore property during serialization.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueSerializationAttribute.Serialize(System.Type,System.Object)">
+            <summary>
+            Serializes the property value.
+            </summary>
+            <param name="propertyType">Property type</param>
+            <param name="propertyValue">Property value</param>
+            <returns>Serialized values</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Serialization.KeyValue.IKeyValueSerializationAttribute.Deserialize(System.Type,System.Collections.Generic.IEnumerable{System.String},System.Object)">
+            <summary>
+            Deserializes the string to the property value.
+            </summary>
+            <param name="values">String values to deserialize</param>
+            <returns>Property value</returns>
+        </member>
+        <member name="T:Sels.Core.Delegates">
+            <summary>
+            Contains delegate definitions.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Delegates.Comparator`1">
+            <summary>
+            Encapsulates a method that compares to objects of type <typeparamref name="T"/> to see if they are equal, matching, ...
+            </summary>
+            <typeparam name="T">Type of objects to compare</typeparam>
+            <param name="arg1">Object to compare</param>
+            <param name="arg2">Object to compare</param>
+            <returns>Boolean indicating if <param name="arg1"/> is equal, matching, ... to <param name="arg2"/></returns>
+        </member>
+        <member name="T:Sels.Core.Exceptions.Configuration.ConfigurationMissingException">
+            <summary>
+            Indicates that configuration was expected but missing in the config file
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Exceptions.Configuration.ConfigurationMissingException.MissingKey">
+            <summary>
+            Configuration key or section name that is missing from config
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Exceptions.Configuration.ConfigurationMissingException.ConfigFile">
+            <summary>
+            Configuration file that is missing the needed config key/section
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Exceptions.Configuration.MisconfiguredException.ConfigKey">
+            <summary>
+            Config key/section that was misconfigured.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Exceptions.Configuration.MisconfiguredException.ConfigFile">
+            <summary>
+            Configuration file that is missing the needed config key
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Exceptions.Configuration.MisconfiguredException.Reason">
+            <summary>
+            Reason that <see cref="P:Sels.Core.Exceptions.Configuration.MisconfiguredException.ConfigKey"/> was misconfigured. 
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Calculation.CalculationExtensions.MultiplyBy(System.Decimal,System.Decimal,System.Int32)">
+            <summary>
+            Multiplies <paramref name="value"/> by <paramref name="multiplyValue"/> <paramref name="times"/> times.
+            </summary>
+            <param name="value">Value to multiply</param>
+            <param name="multiplyValue">Value to multiply <paramref name="value"/> with</param>
+            <param name="times">How many times to multiply <paramref name="value"/> with <paramref name="multiplyValue"/></param>
+            <returns>Calculated value</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Calculation.CalculationExtensions.MultiplyBy(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Multiplies <paramref name="value"/> by <paramref name="multiplyValue"/> <paramref name="times"/> times.
+            </summary>
+            <param name="value">Value to multiply</param>
+            <param name="multiplyValue">Value to multiply <paramref name="value"/> with</param>
+            <param name="times">How many times to multiply <paramref name="value"/> with <paramref name="multiplyValue"/></param>
+            <returns>Calculated value</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Calculation.CalculationExtensions.DivideBy(System.Decimal,System.Decimal,System.Int32)">
+            <summary>
+            Divides <paramref name="value"/> by <paramref name="divideValue"/> <paramref name="times"/> times.
+            </summary>
+            <param name="value">Value to divide</param>
+            <param name="divideValue">Value to divide <paramref name="value"/> with</param>
+            <param name="times">How many times to divide <paramref name="value"/> with <paramref name="divideValue"/></param>
+            <returns>Calculated value</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Calculation.CalculationExtensions.DivideBy(System.Int64,System.Int64,System.Int32)">
+            <summary>
+            Divides <paramref name="value"/> by <paramref name="divideValue"/> <paramref name="times"/> times.
+            </summary>
+            <param name="value">Value to divide</param>
+            <param name="divideValue">Value to divide <paramref name="value"/> with</param>
+            <param name="times">How many times to divide <paramref name="value"/> with <paramref name="divideValue"/></param>
+            <returns>Calculated value</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.ConvertTo``1(System.Object)">
+            <summary>
+            Attempts to convert <paramref name="value"/> to <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type to convert to</typeparam>
+            <param name="value">Object to convert</param>
+            <returns>Converted object</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.As``1(System.Object)">
+            <summary>
+            Casts <paramref name="source"/> to type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type to cast to</typeparam>
+            <param name="source">Object to cast</param>
+            <returns>Casted object</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.AsOrDefault``1(System.Object)">
+            <summary>
+            Casts <paramref name="source"/> to type <typeparamref name="T"/> if it can be casted, otherwise return default of <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type to cast to</typeparam>
+            <param name="source">Object to cast</param>
+            <returns>Casted object</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.ToArrayOrDefault``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Tranforms <paramref name="items"/> into an array. If <paramref name="items"/> is null an empty array will be created
+            </summary>
+            <typeparam name="T">Element type of <paramref name="items"/></typeparam>
+            <param name="items">Collection to turn into an array</param>
+            <returns>A new array of element type <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.AsArray``1(``0)">
+            <summary>
+            Creates a new array containing <paramref name="value"/>.
+            </summary>
+            <typeparam name="T">Type of <paramref name="value"/></typeparam>
+            <param name="value">Value to add to array</param>
+            <returns>Array containing <paramref name="value"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.AsArrayOrDefault``1(``0)">
+            <summary>
+            Creates a new array containing <paramref name="value"/> if it is not null, otherwise create an empty array.
+            </summary>
+            <typeparam name="T">Type of <paramref name="value"/></typeparam>
+            <param name="value">Value to add to array</param>
+            <returns>Array containing <paramref name="value"/> or empty array</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.AsList``1(``0)">
+            <summary>
+            Creates a new list containing <paramref name="value"/>.
+            </summary>
+            <typeparam name="T">Type of <paramref name="value"/></typeparam>
+            <param name="value">Value to add to list</param>
+            <returns>List containing <paramref name="value"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.AsListOrDefault``1(``0)">
+            <summary>
+            Creates a new list containing <paramref name="value"/> if it is not null, otherwise create an empty array.
+            </summary>
+            <typeparam name="T">Type of <paramref name="value"/></typeparam>
+            <param name="value">Value to add to list</param>
+            <returns>List containing <paramref name="value"/> or empty list</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.GroupAsDictionary``3(System.Collections.Generic.IEnumerable{``2},System.Func{``2,``0},System.Func{``2,``1})">
+            <summary>
+            Creates new dictionary by grouping the items in <paramref name="source"/>. <paramref name="keySelector"/> will select the key for each item and <paramref name="valueSelector"/> will select the value for each item.
+            </summary>
+            <typeparam name="TKey">Key type for dictionary</typeparam>
+            <typeparam name="TValue">Value type for dictionary</typeparam>
+            <typeparam name="T">Collection type of <paramref name="source"/></typeparam>
+            <param name="source">Items to group</param>
+            <param name="keySelector">Func that selects key for each item</param>
+            <param name="valueSelector">Func that selects value for each item</param>
+            <returns>Dictionary with grouped items from <paramref name="source"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.GroupAsDictionary``2(System.Collections.Generic.IEnumerable{``1},System.Func{``1,``0})">
+            <summary>
+            Creates new dictionary by grouping the items in <paramref name="source"/>. <paramref name="keySelector"/> will select the key for each item.
+            </summary>
+            <typeparam name="TKey">Key type for dictionary</typeparam>
+            <typeparam name="T">Collection type of <paramref name="source"/></typeparam>
+            <param name="source">Items to group</param>
+            <param name="keySelector">Func that selects key for each item</param>
+            <returns>Dictionary with grouped items from <paramref name="source"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.IsXml(System.String)">
+            <summary>
+            Checks if <paramref name="value"/> start with a valid xml token.
+            </summary>
+            <param name="value">Value to check</param>
+            <returns>Boolean indicating if <paramref name="value"/> starts with a valid xml token</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.SerializeAsXml(System.Object)">
+            <summary>
+            Serializes <paramref name="value"/> to a Xml string.
+            </summary>
+            <param name="value">Object to serialize</param>
+            <returns>Xml string</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.DeserializeFromXml``1(System.String)">
+            <summary>
+            Deserializes the Xml string <paramref name="value"/> to an object of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of object to deserialize to</typeparam>
+            <param name="value">Xml string to deserialize</param>
+            <returns>Deserialized Xml string</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.DeserializeFromXml(System.String,System.Type)">
+            <summary>
+            Deserializes the Xml string <paramref name="value"/> to an object of type <paramref name="type"/>.
+            </summary>
+            <param name="value">Xml string to deserialize</param>
+            <param name="type">Type of object to deserialize to</param>
+            <returns>Deserialized Xml string</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.SerializeObjectsAsXml``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Serializes all objects in <paramref name="values"/> to Xml strings.
+            </summary>
+            <typeparam name="T">Type of object to serialize</typeparam>
+            <param name="values">List of objects to serialize</param>
+            <returns>List containing the serialized Xml strings</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.DeserializeObjectsFromXml``1(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Deserializes all Xml strings in <paramref name="values"/> to objects of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of object to deserialize to</typeparam>
+            <param name="values">List of Xml strings to deserialize</param>
+            <returns>List containing all the deserialized Xml strings</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.IsJson(System.String)">
+            <summary>
+            Checks if <paramref name="value"/> start with a valid json token.
+            </summary>
+            <param name="value">Value to check</param>
+            <returns>Boolean indicating if <paramref name="value"/> starts with a valid json token</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.DeepCloneWithJson``1(``0)">
+            <summary>
+            Clones <paramref name="value"/> using Json.
+            </summary>
+            <typeparam name="T">Object of type to clone</typeparam>
+            <param name="value">Object to clone</param>
+            <returns>Cloned object</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.SerializeAsJson(System.Object,Newtonsoft.Json.Formatting)">
+            <summary>
+            Serializes <paramref name="value"/> to a Json string.
+            </summary>
+            <param name="value">Object to serialize</param>
+            <param name="formatting">Formatting option</param>
+            <returns>Json string</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.DeserializeFromJson``1(System.String)">
+            <summary>
+            Deserializes the Json string <paramref name="value"/> to an object of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of object to deserialize to</typeparam>
+            <param name="value">Json string to deserialize</param>
+            <returns>Deserialized Json string</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.DeserializeFromJson(System.String,System.Type)">
+            <summary>
+            Deserializes the Json string <paramref name="value"/> to an object of type <paramref name="type"/>.
+            </summary>
+            <param name="value">Json string to deserialize</param>
+            <param name="type">Type of object to deserialize to</param>
+            <returns>Deserialized Json string</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.SerializeObjectsAsJson``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Serializes all objects in <paramref name="values"/> to Json strings.
+            </summary>
+            <typeparam name="T">Type of object to serialize</typeparam>
+            <param name="values">List of objects to serialize</param>
+            <returns>List containing the serialized Json strings</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Conversion.SerializationExtensions.DeserializeObjectsFromJson``1(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Deserializes all Json strings in <paramref name="values"/> to objects of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of object to deserialize to</typeparam>
+            <param name="values">List of Json strings to deserialize</param>
+            <returns>List containing all the deserialized Json strings</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.DependencyInjection.InjectionExtensions.InjectProperties``1(``0,System.Collections.Generic.Dictionary{System.String,System.Object},Sels.Core.Contracts.Conversion.IGenericTypeConverter)">
+            <summary>
+            Tries to set the values in <paramref name="injectables"/> to the right property in <paramref name="source"/> by comparing the property name and <paramref name="injectables"/> key.
+            </summary>
+            <typeparam name="T">Type of object to inject</typeparam>
+            <param name="source">Object to set properties on</param>
+            <param name="injectables">Values to set on <paramref name="source"/></param>
+            <param name="typeConverter">Converter that converts the values in <paramref name="injectables"/> to the right property type</param>
+            <returns><paramref name="source"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.DependencyInjection.InjectionExtensions.InjectProperties``1(``0,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Tries to set the values in <paramref name="injectables"/> to the right property in <paramref name="source"/> by comparing the property name and <paramref name="injectables"/> key. <see cref="P:Sels.Core.Components.Conversion.GenericConverter.DefaultConverter"/> will be used as converter.
+            </summary>
+            <typeparam name="T">Type of object to inject</typeparam>
+            <param name="source">Object to set properties on</param>
+            <param name="injectables">Values to set on <paramref name="source"/></param>
+            <returns><paramref name="source"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Linq.LinqExtensions.ForceSelect``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Action{``0,System.Exception})">
+            <summary>
+            Projects each element of a sequence into a new form.. Exception are caught so execution doesn't stop.
+            </summary>
+            <typeparam name="TSource">The type of the elements of source.</typeparam>
+            <typeparam name="TSelect">The type of the value returned by selector.</typeparam>
+            <param name="source"> A sequence of values to invoke a transform function on.</param>
+            <param name="selector">A transform function to apply to each element.</param>
+            <param name="exceptionHandler">Optional action for handling exceptions. First argument is the element that caused the exception en the second arg is the thrown exception</param>
+            <returns>An System.Collections.Generic.IEnumerable`1 whose elements are the result of invoking the transform function on each element of source.</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Linq.LinqExtensions.ModifyItemIf``1(``0[],System.Predicate{``0},System.Func{``0,``0})">
+            <summary>
+            Modifies item in array using modifier if condition is true
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Linq.LinqExtensions.ModifyItemIf``1(System.Collections.Generic.IEnumerable{``0},System.Predicate{``0},System.Func{``0,``0})">
+            <summary>
+            Modifies item in collection using modifier if condition is true
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Linq.LinqExtensions.ModifyIf``1(``0,System.Predicate{``0},System.Func{``0,``0})">
+            <summary>
+            Returns modified object from modifier if confition is true, otherwise return item.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Linq.LinqExtensions.Enumerate(System.Collections.IEnumerable)">
+            <summary>
+            Yield return any object in <paramref name="source"/>.
+            </summary>
+            <param name="source">Collection to get items from</param>
+            <returns>Objects in <paramref name="source"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Linq.LinqExtensions.Trim(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Returns an enumerator that trims the values in <paramref name="source"/>.
+            </summary>
+            <param name="source">Strings to trim</param>
+            <returns>An enumerator that trims each element</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.FileSizes.FileSizeExtensions.ToFileSize``1(System.Int64)">
+            <summary>
+            Creates a file size object from <paramref name="bytes"/>.
+            </summary>
+            <typeparam name="TSize">File size format</typeparam>
+            <param name="bytes">File size in bytes</param>
+            <returns>New file size object with <see cref="P:Sels.Core.Templates.FileSizes.FileSize.ByteSize"/> equal to <paramref name="bytes"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.FileSizes.FileSizeExtensions.ToFileSize(System.Int64)">
+            <summary>
+            Creates a file size object from <paramref name="bytes"/>.
+            </summary>
+            <param name="bytes">File size in bytes</param>
+            <returns>New file size object with <see cref="P:Sels.Core.Templates.FileSizes.FileSize.ByteSize"/> equal to <paramref name="bytes"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.FileSizes.FileSizeExtensions.ToFileSize``1(System.Decimal)">
+            <summary>
+            Creates a file size object from <paramref name="bytes"/>.
+            </summary>
+            <typeparam name="TSize">File size format</typeparam>
+            <param name="size">File size</param>
+            <returns>New file size object with <see cref="P:Sels.Core.Templates.FileSizes.FileSize.Size"/> equal to <paramref name="size"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.GenericExtensions.CheckHasValueDynamically(System.Object)">
+            <summary>
+            Calls HasValue using dynamic. Checks if the object contains information worth processing. Returns false when objects have default types, are empty collections, are empty or whitespace strings, ...
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.GenericExtensions.HasValue(System.Object)">
+            <summary>
+            Checks if <paramref name="value"/> is not null.
+            </summary>
+            <param name="value">Object to check</param>
+            <returns>Boolean indicating that <paramref name="value"/> is not null</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.GenericExtensions.HasValue(System.String)">
+            <summary>
+            Checks if <paramref name="value"/> is not null, empty or whitespace.
+            </summary>
+            <param name="value">Object to check</param>
+            <returns>Boolean indicating that <paramref name="value"/> is not null, empty or whitespace</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.CollectionExtensions.Copy``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Creates a new list from the elements in <paramref name="collection"/>.
+            </summary>
+            <typeparam name="T">Collection element type</typeparam>
+            <param name="collection">Collection to get elements from</param>
+            <returns>List containing all elements in <paramref name="collection"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.CollectionExtensions.AreAllUnique``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Checks if all elements are unique in <paramref name="collection"/> by comparing with <see cref="M:System.Object.Equals(System.Object)"/>.
+            </summary>
+            <typeparam name="T">Collection element type</typeparam>
+            <param name="collection">Collection to check</param>
+            <returns>Boolean indicating if all elements in <paramref name="collection"/> are unique</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.CollectionExtensions.AreAllUnique``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Object})">
+            <summary>
+            Checks if all element values selected by <paramref name="valueSelector"/> are unique in <paramref name="collection"/> by comparing with <see cref="M:System.Object.Equals(System.Object)"/>.
+            </summary>
+            <typeparam name="T">Collection element type</typeparam>
+            <param name="collection">Collection to check</param>
+            <returns>Boolean indicating if all elements in <paramref name="collection"/> are unique</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.CollectionExtensions.AddValueToList``2(System.Collections.Generic.Dictionary{``0,System.Collections.Generic.List{``1}},``0,``1)">
+            <summary>
+            Adds <paramref name="item"/> to the list of <paramref name="key"/> if <paramref name="key"/> exists in <paramref name="dictionary"/>, otherwise create new list and add <paramref name="item"/> to it.
+            </summary>
+            <typeparam name="TKey">Dictionary key type</typeparam>
+            <typeparam name="TItem">Collection type</typeparam>
+            <param name="dictionary">Dictionary to add item to</param>
+            <param name="key">Key for list</param>
+            <param name="item">Item to add</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.CollectionExtensions.AddValues``2(System.Collections.Generic.Dictionary{``0,System.Collections.Generic.List{``1}},``0,System.Collections.Generic.IEnumerable{``1})">
+            <summary>
+            Adds <paramref name="items"/> to the list of <paramref name="key"/> if <paramref name="key"/> exists in <paramref name="dictionary"/>, otherwise create new list and add <paramref name="items"/> to it.
+            </summary>
+            <typeparam name="TKey">Dictionary key type</typeparam>
+            <typeparam name="TItem">Collection type</typeparam>
+            <param name="dictionary">Dictionary to add item to</param>
+            <param name="key">Key for list</param>
+            <param name="items">Items to add</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.DateTimeExtensions.GetDifference(System.DateTime)">
+            <summary>
+            Gets the difference in time between <paramref name="startDate"/> and <see cref="P:System.DateTime.Now"/>.
+            </summary>
+            <param name="startDate">Date to compare with <see cref="P:System.DateTime.Now"/></param>
+            <returns>Time difference between <paramref name="startDate"/> and <see cref="P:System.DateTime.Now"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.DateTimeExtensions.GetDifference(System.DateTime,System.DateTime)">
+            <summary>
+            Gets the difference in time between <paramref name="startDate"/> and <paramref name="endDate"/>.
+            </summary>
+            <param name="startDate">Date to compare with <paramref name="endDate"/></param>
+            <param name="endDate">Date to compare with <paramref name="startDate"/></param>
+            <returns>Time difference between <paramref name="startDate"/> and <paramref name="endDate"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.DateTimeExtensions.GetMinuteDifference(System.DateTime)">
+            <summary>
+            Gets the difference in minutes between <paramref name="startDate"/> and <see cref="P:System.DateTime.Now"/>.
+            </summary>
+            <param name="startDate">Date to compare with <see cref="P:System.DateTime.Now"/></param>
+            <returns>Total minute difference between <paramref name="startDate"/> and <see cref="P:System.DateTime.Now"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.DateTimeExtensions.GetMinuteDifference(System.DateTime,System.DateTime)">
+            <summary>
+            Gets the difference in minutes between <paramref name="startDate"/> and <paramref name="endDate"/>.
+            </summary>
+            <param name="startDate">Date to compare with <paramref name="endDate"/></param>
+            <param name="endDate">Date to compare with <paramref name="startDate"/></param>
+            <returns>Total minute difference between <paramref name="startDate"/> and <paramref name="endDate"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Object.EnumExtensions.GetValue(System.Enum)">
+            <summary>
+            Gets the value of the <see cref="T:Sels.Core.Components.Enumeration.Value.EnumValue"/> attribute if it's defined. Otherwise return enumeration as string.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.GetTypeOrDefault(System.Object)">
+            <summary>
+            Returns source type of it's not null, otherwise return null
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.IsItemContainer(System.Type)">
+            <summary>
+            Checks if type is a collection of some sorts.
+            </summary>
+            <param name="type">Type to check</param>
+            <returns>Boolean indicating if type is an item container</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.IsNullable(System.Type)">
+            <summary>
+            Check if we can assign null to the type
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.IsAssignableFrom``1(System.Object)">
+            <summary>
+            Checks if an instance of <typeparamref name="TType"/> can be assigned to a variable with the same type as <paramref name="source"/>.
+            </summary>
+            <typeparam name="TType">Type to check</typeparam>
+            <param name="source">Object to check against</param>
+            <returns>Boolean indicating if an instance of <typeparamref name="TType"/> can be assigned to a variable with the same type as <paramref name="source"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.IsAssignableFrom(System.Object,System.Type)">
+            <summary>
+            Checks if an instance of <paramref name="type"/> can be assigned to a variable with the same type as <paramref name="source"/>.
+            </summary>
+            <param name="source">Object to check against</param>
+            <param name="type">Type to check</param>
+            <returns>Boolean indicating if an instance of <paramref name="type"/> can be assigned to a variable with the same type as <paramref name="source"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.IsAssignableTo``1(System.Object)">
+            <summary>
+            Checks if <paramref name="source"/> can be assigned to a variable of type <typeparamref name="TType"/>.
+            </summary>
+            <typeparam name="TType">Type to check against</typeparam>
+            <param name="source">Source object to check</param>
+            <returns>Boolean indicating if <paramref name="source"/> can be assigned to <typeparamref name="TType"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.IsAssignableTo``1(System.Type)">
+            <summary>
+            Checks if an instance of <paramref name="source"/> can be assigned to a variable of type <typeparamref name="TType"/>.
+            </summary>
+            <typeparam name="TType">Type to check against</typeparam>
+            <param name="source">Source type to check</param>
+            <returns>Boolean indicating if an instance of <paramref name="source"/> can be assigned to <typeparamref name="TType"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.IsAssignableTo(System.Object,System.Type)">
+            <summary>
+            Checks if <paramref name="source"/> can be assigned to a variable of type <paramref name="type"/>.
+            </summary>
+            <param name="source">Source object to check</param>
+            <param name="type">Type to check against</param>
+            <returns>Boolean indicating if <paramref name="source"/> can be assigned to <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.IsAssignableTo(System.Type,System.Type)">
+            <summary>
+            Checks if an instance of <paramref name="sourceType"/> can be assigned to a variable of type <paramref name="type"/>.
+            </summary>
+            <param name="sourceType">Source type to check</param>
+            <param name="type">Type to check against</param>
+            <returns>Boolean indicating if an instance of <paramref name="sourceType"/> can be assigned to <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.GetDefaultValue(System.Type)">
+            <summary>
+            Returns the default value for <paramref name="type"/>.
+            </summary>
+            <param name="type">Type to return the default value from</param>
+            <returns>Default value for <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.Construct``1(System.Type)">
+            <summary>
+            Creates an instance of <paramref name="type"/>.
+            </summary>
+            <typeparam name="T">Type to cast to</typeparam>
+            <param name="type">Type to create object from</param>
+            <returns>Constructed object</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.Construct``1(System.Type,System.Object[])">
+            <summary>
+            Creates an instance of <paramref name="type"/> with <paramref name="parameters"/> as constructor arguments.
+            </summary>
+            <typeparam name="T">Type to cast to</typeparam>
+            <param name="type">Type to create object from</param>
+            <param name="parameters">Constructor arguments</param>
+            <returns>Constructed object</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.Construct(System.Type)">
+            <summary>
+            Creates an instance of <paramref name="type"/>.
+            </summary>
+            <param name="type">Type to create object from</param>
+            <returns>Constructed object</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.Construct(System.Type,System.Object[])">
+            <summary>
+            Creates an instance of <paramref name="type"/> with <paramref name="parameters"/> as constructor arguments.
+            </summary>
+            <param name="type">Type to create object from</param>
+            <param name="parameters">Constructor arguments</param>
+            <returns>Constructed object</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.CanConstructWith(System.Type,System.Type[])">
+            <summary>
+            Checks if we can construct the type using the supplied argumentTypes
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.CanConstructWithArguments(System.Type,System.Object[])">
+            <summary>
+            Checks if we can construct the type using the supplied arguments
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.CanConstructWith``1(System.Type)">
+            <summary>
+            Checks if type has a constructor that takes T.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.Is(System.Type,System.Type)">
+            <summary>
+            Checks if <paramref name="type"/> is the same as <paramref name="typeToCheck"/>.
+            </summary>
+            <param name="type">Type to check</param>
+            <param name="typeToCheck">Type to compare to</param>
+            <returns>Boolean indicating if <paramref name="type"/> and <paramref name="typeToCheck"/> are the same type</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.Is``1(System.Type)">
+            <summary>
+            Checks if <paramref name="type"/> is the same as <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type to compare to</typeparam>
+            <param name="type">Type to check</param>
+            <returns>Boolean indicating if <paramref name="type"/> and <typeparamref name="T"/> are the same type</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgument``1(``0,System.Predicate{``0},System.Func{``0,System.Exception})">
+            <summary>
+            Validates argument to see if it passes the condition. Throws exception from validationFailedExceptionFunc when it fails validation.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="condition">Condition that argument needs to pass</param>
+            <param name="validationFailedExceptionFunc">Func that creates exception when validation fails. First arg is supplied argument</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgument``1(``0,System.Predicate{``0},System.String)">
+            <summary>
+            Validates argument to see if it passes the condition. Throws ArgumentException with validationFailedMessage when it fails validation.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="condition">Condition that argument needs to pass</param>
+            <param name="validationFailedMessage">Message for ArgumentException when validation fails</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgument``1(``0,System.String)">
+            <summary>
+            Validates if argument is not null. Throws ArgumentNullException when argument is null.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentNotNullOrEmpty(System.String,System.String)">
+            <summary>
+            Validates if argument is not null, empty or whitespace. Throws ArgumentException when it is.
+            </summary>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentNotNullOrWhitespace(System.String,System.String)">
+            <summary>
+            Validates if argument is not null or empty. Throws ArgumentException when it is.
+            </summary>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentLarger``1(``0,System.String,``0)">
+            <summary>
+            Validates if argument is larger than comparator. Throws ArgumentException when it is not.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <typeparam name="TCompare">Type of comparator</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="comparator">Value to compare argument to</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentLargerOrEqual``1(``0,System.String,``0)">
+            <summary>
+            Validates if argument is larger or equal to comparator. Throws ArgumentException when it is not.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <typeparam name="TCompare">Type of comparator</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="comparator">Value to compare argument to</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentSmaller``1(``0,System.String,``0)">
+            <summary>
+            Validates if argument is smaller than comparator. Throws ArgumentException when it is not.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <typeparam name="TCompare">Type of comparator</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="comparator">Value to compare argument to</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentSmallerOrEqual``1(``0,System.String,``0)">
+            <summary>
+            Validates if argument is smaller or equal to comparator. Throws ArgumentException when it is not.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <typeparam name="TCompare">Type of comparator</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="comparator">Value to compare argument to</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentInRange``1(``0,System.String,``0,``0)">
+            <summary>
+            Validates if argument in range of startRange and endRange. Throws ArgumentException when it is not.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <typeparam name="TCompare">Type of comparator</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="startRange">Start value of range</param>
+            <param name="endRange">End value of range</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentNotNullOrEmpty``2(``0,System.String)">
+            <summary>
+            Validates if argument is not null and contains at least 1 item. Throws ArgumentException when it does not.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <typeparam name="TItem">Type of item in collection</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentNotNullOrEmpty``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+            <summary>
+            Validates if argument is not null and contains at least 1 item. Throws ArgumentException when it does not.
+            </summary>
+            <typeparam name="T">Type of item in collection</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentNotNullOrEmpty``1(``0[],System.String)">
+            <summary>
+            Validates if argument is not null and contains at least 1 item. Throws ArgumentException when it does not.
+            </summary>
+            <typeparam name="T">Type of item in collection</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentAssignableFrom``1(``0,System.String,System.Type)">
+            <summary>
+            Validates if argument is not null and is assignable from assignableType. Throws ArgumentException when it is not.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="assignableType">Type to check against</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentAssignableTo``1(``0,System.String,System.Type)">
+            <summary>
+            Validates if argument is not null and assignableType is assignable from the type of argument. Throws ArgumentException when it is not.
+            </summary>
+            <typeparam name="T">Type of argument</typeparam>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="assignableType">Type to check against</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentAssignableFrom(System.Type,System.String,System.Type)">
+            <summary>
+            Validates if argument is not null and is assignable from assignableType. Throws ArgumentException when it is not.
+            </summary>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="assignableType">Type to check against</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentAssignableTo(System.Type,System.String,System.Type)">
+            <summary>
+            Validates if argument is not null and assignableType is assignable from the argument. Throws ArgumentException when it is not.
+            </summary>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="assignableType">Type to check against</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentCanBeContructedWith(System.Type,System.String,System.Type[])">
+            <summary>
+            Validates if an instance can be constructed from <paramref name="argument"/> using the supplied <paramref name="parameterTypes"/>.
+            </summary>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="parameterTypes">Contructor argument types in order</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentCanBeContructedWithArguments(System.Type,System.String,System.Object[])">
+            <summary>
+            Validates if an instance can be constructed from <paramref name="argument"/> using the supplied <paramref name="arguments"/>.
+            </summary>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <param name="arguments">Contructor arguments in order</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentExists``1(``0,System.String)">
+            <summary>
+            Validates if <paramref name="argument"/> is not null and exists on the file system.
+            </summary>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="validationFailedMessage">Message for ArgumentException when validation fails</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="M:Sels.Core.Helper.App.SetCurrentDirectoryToProcess">
+            <summary>
+            Sets the current directory to the directory of the executing process. This is to fix the config files when publishing as a self-contained app.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Helper.App.SetCurrentDirectoryToExecutingAssembly">
+            <summary>
+            Sets the current directory to the directory of the executing process. This is to fix the config files when publishing as a self-contained app.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Helper.App.BuildDefaultConfigurationFile">
+            <summary>
+            Builds a new instance of <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/> using the default AppSettings.json file that resides besides the application exe.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Helper.Lists.Combine``1(``0[])">
+            <summary>
+            Creates a new list using <paramref name="values"/>.
+            </summary>
+            <typeparam name="T">Type of values to add to list</typeparam>
+            <param name="values">Values to add to list</param>
+            <returns>List whose elements are equal to <paramref name="values"/></returns>
+        </member>
+        <member name="M:Sels.Core.Helper.Lists.Merge``1(System.Collections.Generic.IEnumerable{``0}[])">
+            <summary>
+            Merges all elements from the collections in <paramref name="values"/> into a single list.
+            </summary>
+            <typeparam name="T">Type of values to add to list</typeparam>
+            <param name="values">Collection of collections whose values to add to the list</param>
+            <returns>List whose elements are equal to the elements in the <paramref name="values"/> collections</returns>
+        </member>
+        <member name="M:Sels.Core.Helper.Program.Run(System.String,System.String,System.String@,System.String@,System.Threading.CancellationToken,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.Int32)">
+            <summary>
+            Runs program at <paramref name="programFileName"/> with <paramref name="arguments"/>.
+            </summary>
+            <param name="programFileName">Filename of program to run</param>
+            <param name="arguments">Arguments for program</param>
+            <param name="output">Standard output from program execution</param>
+            <param name="error">Error output from program execution</param>
+            <param name="killWaitTime">How long to wait for the process to exit after killing it. This is only applicable when the cancellation token is used</param>
+            <param name="token">CancellationToken for stopping the execution of the process</param>
+            <returns>Program exit code</returns>
+        </member>
+        <member name="T:Sels.Core.Templates.FileSizes.BinaryFileSize">
+            <summary>
+            File size that displays in binary. Uses a unit size of <see cref="F:Sels.Core.Templates.FileSizes.BinaryFileSize.BinaryUnitSize"/> instead of the default <see cref="F:Sels.Core.Templates.FileSizes.FileSize.DefaultUnitSize"/>.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Templates.FileSizes.Bit.BitBinaryFileSize">
+            <summary>
+            Displays size in bit format.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Templates.FileSizes.Bit.BitFileSize">
+            <summary>
+            Displays size in bit format.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Templates.FileSizes.Byte.ByteBinaryFileSize">
+            <summary>
+            Displays size in byte format.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Templates.FileSizes.Byte.ByteFileSize">
+            <summary>
+            Displays size in byte format.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Templates.FileSizes.FileSize">
+            <summary>
+            Base class for creating file sizes and allows for easy conversion between other file sizes.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSizes.FileSize.UnitSize">
+            <summary>
+            Divide size we need to get to the next size. For example to go from 1 byte to 1 kilobyte/kebibyte we divide by 1000/1024.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSizes.FileSize.DisplayName">
+            <summary>
+            Full display name of this file size.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSizes.FileSize.ByteSize">
+            <summary>
+            File size in bytes.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSizes.FileSize.Size">
+            <summary>
+            File size.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.ToSize``1">
+            <summary>
+            Converts this file size to file size <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">File size to convert to</typeparam>
+            <returns>Converted file size</returns>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.ToSize(System.Type)">
+            <summary>
+            Converts this file size to file size <paramref name="type"/>.
+            </summary>
+            <param name="type">File size to convert to</param>
+            <returns>Converted file size</returns>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.GetRoundedSize(System.Int32)">
+            <summary>
+            Returns <see cref="P:Sels.Core.Templates.FileSizes.FileSize.Size"/> rounded to <paramref name="decimals"/>.
+            </summary>
+            <param name="decimals">The number of decimal places in the return value</param>
+            <returns>Rounded <see cref="P:Sels.Core.Templates.FileSizes.FileSize.Size"/></returns>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.GetRoundedBytes(System.Double)">
+            <summary>
+            Converts <paramref name="bytes"/> in <see cref="T:System.Double"/> to <see cref="T:System.Int64"/>.
+            </summary>
+            <returns>Rounded bytes</returns>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.GetRoundedBytes(System.Decimal)">
+            <summary>
+            Converts <paramref name="bytes"/> in <see cref="T:System.Decimal"/> to <see cref="T:System.Int64"/>.
+            </summary>
+            <returns>Rounded bytes</returns>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSizes.FileSize.Abbreviation">
+            <summary>
+            The abbreviation for this filesize.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSizes.FileSize.IsByteSize">
+            <summary>
+            True if sized in bytes, false if sized in bits.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSizes.FileSize.SizeMultiplier">
+            <summary>
+            How many times we need to use <see cref="P:Sels.Core.Templates.FileSizes.FileSize.UnitSize"/> to convert from bytes to current size.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.ToByteString">
+            <summary>
+            Displays this file size in bytes.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.ToDisplayString">
+            <summary>
+            Displays the current file size with the display name instead of the abbreviation.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.ToDisplayByteString">
+            <summary>
+            Displays this file size in bytes with the display name instead of the abbreviation.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.CreateFromBytes``1(System.Int64)">
+            <summary>
+            Creates a new instance of <typeparamref name="T"/> with <paramref name="bytes"/> as the <see cref="P:Sels.Core.Templates.FileSizes.FileSize.ByteSize"/>.
+            </summary>
+            <typeparam name="T">File size to create</typeparam>
+            <param name="bytes">Byte size of new file size</param>
+            <returns>New file size</returns>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.CreateFromSize``1(System.Decimal)">
+            <summary>
+            Creates a new instance of <typeparamref name="T"/> with <paramref name="size"/> as the <see cref="P:Sels.Core.Templates.FileSizes.FileSize.Size"/>.
+            </summary>
+            <typeparam name="T">File size to create</typeparam>
+            <param name="size">Size of new file size</param>
+            <returns>New file size</returns>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.CreateFromBytes(System.Int64,System.Type)">
+            <summary>
+            Creates a new instance of <paramref name="type"/> with <paramref name="bytes"/> as the <see cref="P:Sels.Core.Templates.FileSizes.FileSize.ByteSize"/>.
+            </summary>
+            <param name="type">File size to create</param>
+            <param name="bytes">Byte size of new file size</param>
+            <returns>New file size</returns>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSizes.FileSize.CreateFromSize(System.Decimal,System.Type)">
+            <summary>
+            Creates a new instance of <paramref name="type"/> with <paramref name="size"/> as the <see cref="P:Sels.Core.Templates.FileSizes.FileSize.Size"/>.
+            </summary>
+            <param name="type">File size to create</param>
+            <param name="size">Size of new file size</param>
+            <returns>New file size</returns>
+        </member>
+        <member name="T:Sels.Core.Templates.FileSystem.CrossPlatformDirectory">
+            <summary>
+            Wrapper around DirectoryInfo that exposes additional information that is fetched differently on other platforms.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.Source">
+            <summary>
+            Info about a directory on the filesystem.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.Name">
+            <inheritdoc cref="P:System.IO.FileSystemInfo.Name"/>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.FullName">
+            <inheritdoc cref="P:System.IO.FileSystemInfo.FullName"/>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.Exists">
+            <inheritdoc cref="P:System.IO.FileSystemInfo.Exists"/>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.Attributes">
+            <inheritdoc cref="P:System.IO.FileSystemInfo.Attributes"/>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.LastWriteTime">
+            <inheritdoc cref="P:System.IO.FileSystemInfo.LastWriteTime"/>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.LastWriteTimeUtc">
+            <inheritdoc cref="P:System.IO.FileSystemInfo.LastWriteTimeUtc"/>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.LastAccessTimeUtc">
+            <inheritdoc cref="P:System.IO.FileSystemInfo.LastAccessTimeUtc"/>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.LastAccessTime">
+            <inheritdoc cref="P:System.IO.FileSystemInfo.LastAccessTime"/>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.CreationTime">
+            <inheritdoc cref="P:System.IO.FileSystemInfo.CreationTime"/>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.CreationTimeUtc">
+            <inheritdoc cref="P:System.IO.FileSystemInfo.CreationTimeUtc"/>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.FreeSpace">
+            <summary>
+            Amount of free space on this directory
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.MountPoint">
+            <summary>
+            Mount point for this directory. 
+            </summary>
+        </member>
+        <member name="M:System.IO.DirectoryInfoExtensions.Clear(System.IO.DirectoryInfo)">
+            <summary>
+            Deletes all files and sub directories.
+            </summary>
+            <param name="directory">Directory to clear</param>
+        </member>
+        <member name="M:System.IO.FileInfoExtensions.Read(System.IO.FileInfo)">
+            <summary>
+            Reads the file content from <paramref name="file"/>.
+            </summary>
+            <param name="file">File to read content from</param>
+            <returns>File content of <paramref name="file"/></returns>
+        </member>
+        <member name="M:System.IO.FileInfoExtensions.Create(System.IO.FileInfo,System.String,System.Boolean)">
+            <summary>
+            Creates a new file using the filename of <paramref name="file"/> and writes <paramref name="content"/> into the file.
+            </summary>
+            <param name="file">File to write</param>
+            <param name="content">Content to write into the file</param>
+            <param name="overwrite">If we can overwrite the file if it already exists</param>
+            <returns>Boolean indicating if the file was created</returns>
+        </member>
+        <member name="M:System.IO.FileInfoExtensions.CopyTo(System.IO.FileInfo,System.IO.DirectoryInfo,System.Boolean)">
+            <summary>
+            Copies <paramref name="file"/> to directory <paramref name="destinationDirectory"/>.
+            </summary>
+            <param name="file">File to copy</param>
+            <param name="destinationDirectory">Directory to copy file to</param>
+            <returns>FileInfo of copied file</returns>
+        </member>
+        <member name="M:System.IO.FileInfoExtensions.CopyTo(System.IO.FileInfo,System.IO.DirectoryInfo,System.String,System.Boolean)">
+            <summary>
+            Copies <paramref name="file"/> to directory <paramref name="destinationDirectory"/> with <paramref name="fileName"/> as the new file name.
+            </summary>
+            <param name="file">File to copy</param>
+            <param name="destinationDirectory">Directory to copy file to</param>
+            <param name="fileName">Filename of copied file</param>
+            <returns>FileInfo of copied file</returns>
+        </member>
+        <member name="M:System.IO.FileInfoExtensions.MoveTo(System.IO.FileInfo,System.IO.DirectoryInfo)">
+            <summary>
+            Moves <paramref name="file"/> to directory <paramref name="destinationDirectory"/>.
+            </summary>
+            <param name="file">File to move</param>
+            <param name="destinationDirectory">Directory to move file to</param>
+            <returns>FileInfo of moved file</returns>
+        </member>
+        <member name="M:System.IO.FileInfoExtensions.MoveTo(System.IO.FileInfo,System.IO.DirectoryInfo,System.String)">
+            <summary>
+            Moves <paramref name="file"/> to directory <paramref name="destinationDirectory"/> with <paramref name="fileName"/> as the new file name.
+            </summary>
+            <param name="file">File to move</param>
+            <param name="destinationDirectory">Directory to move file to</param>
+            <param name="fileName">Filename of moved file</param>
+            <returns>FileInfo of moved file</returns>
+        </member>
+        <member name="M:System.IO.FileSystemInfoExtensions.GetFreeSpace(System.IO.FileSystemInfo)">
+            <summary>
+            Returns the amount of free space on the drive that <paramref name="info"/> is located on. 
+            </summary>
+            <param name="info">Location to check</param>
+            <returns>Free size in <see cref="T:Sels.Core.Components.FileSizes.Byte.SingleByte"/></returns>
+        </member>
+        <member name="M:System.IO.FileSystemInfoExtensions.GetFreeSpaceOnWindows(System.IO.FileSystemInfo)">
+            <summary>
+            Returns the amount of free space on the drive that <paramref name="info"/> is located on. Only works on windows as it relies on a windows dll.
+            </summary>
+            <param name="info">Location to check</param>
+            <returns>Free size in <see cref="T:Sels.Core.Components.FileSizes.Byte.SingleByte"/></returns>
+        </member>
+        <member name="M:System.IO.FileSystemInfoExtensions.GetDriveInfo(System.IO.FileSystemInfo)">
+            <summary>
+            Returns the drive info for the <paramref name="info"/> object.
+            </summary>
+            <param name="info">File system object to get drive info from</param>
+            <returns>Drive info for <paramref name="info"/></returns>
+        </member>
+        <member name="M:System.IDisposableExtensions.TryDispose(System.IDisposable,System.Action{System.Exception})">
+            <summary>
+            Try to dispose <paramref name="disposable"/>. Returns true when <paramref name="disposable"/> is disposed without throwing exceptions.
+            </summary>
+            <param name="disposable">Object to dispose</param>
+            <param name="exceptionHandler">Optional exception handler</param>
+            <returns>True if <paramref name="disposable"/> is not null and if dispose could be called without exceptions</returns>
+        </member>
+        <member name="T:System.Collections.Generic.ListExtensions">
+            <summary>
+            Contains extensions for System.Collections.Generic.List
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.ListExtensions.InsertBefore``1(System.Collections.Generic.List{``0},System.Predicate{``0},``0)">
+            <summary>
+            Inserts <paramref name="value"/> in <paramref name="list"/> before the first item matching <paramref name="predicate"/>. If no matching item is found it added to <paramref name="list"/>. 
+            </summary>
+            <typeparam name="T">Element type of list</typeparam>
+            <param name="list">List to add element in</param>
+            <param name="predicate">Predicate for finding object to insert before</param>
+            <param name="value">Object to insert</param>
+        </member>
+        <member name="M:System.Collections.Generic.ListExtensions.UpdateFirst``1(System.Collections.Generic.List{``0},Sels.Core.Delegates.Comparator{``0},``0)">
+            <summary>
+            Updates the first object in <paramref name="list"/> matching the <paramref name="comparator"/> and replaces it with <paramref name="value"/>.
+            </summary>
+            <typeparam name="T">Item type of <paramref name="list"/></typeparam>
+            <param name="list">List to update value in</param>
+            <param name="comparator">Comparator that tells which object to update</param>
+            <param name="value">Value to update</param>
+            <returns>Boolean indicating if <paramref name="list"/> was updated</returns>
+        </member>
+        <member name="M:System.Collections.Generic.ListExtensions.UpdateAll``1(System.Collections.Generic.List{``0},Sels.Core.Delegates.Comparator{``0},``0)">
+            <summary>
+            Updates the all objects in <paramref name="list"/> matching the <paramref name="comparator"/> and replaces it with <paramref name="value"/>.
+            </summary>
+            <typeparam name="T">Item type of <paramref name="list"/></typeparam>
+            <param name="list">List to update values in</param>
+            <param name="comparator">Comparator that tells which objects to update</param>
+            <param name="value">Value to update</param>
+            <returns>Boolean indicating if <paramref name="list"/> was updated</returns>
+        </member>
+        <member name="M:System.Collections.Generic.ListExtensions.DeleteFirst``1(System.Collections.Generic.List{``0},Sels.Core.Delegates.Comparator{``0},``0)">
+            <summary>
+            Deletes the first object in <paramref name="list"/> matching the <paramref name="comparator"/>.
+            </summary>
+            <typeparam name="T">Item type of <paramref name="list"/></typeparam>
+            <param name="list">List to delete value in</param>
+            <param name="comparator">Comparator that tells which object to delete</param>
+            <param name="value">Value to delete</param>
+            <returns>Boolean indicating if item in <paramref name="list"/> was deleted</returns>
+        </member>
+        <member name="M:System.Collections.Generic.ListExtensions.DeleteAll``1(System.Collections.Generic.List{``0},Sels.Core.Delegates.Comparator{``0},``0)">
+            <summary>
+            Deletes the all objects in <paramref name="list"/> matching the <paramref name="comparator"/>.
+            </summary>
+            <typeparam name="T">Item type of <paramref name="list"/></typeparam>
+            <param name="list">List to delete values in</param>
+            <param name="comparator">Comparator that tells which objects to delete</param>
+            <param name="value">Value to delete</param>
+            <returns>Boolean indicating if items in <paramref name="list"/> were deleted</returns>
+        </member>
+        <member name="M:System.NumberExtensions.ToNegative(System.Int32)">
+            <summary>
+            Converts <paramref name="number"/> to the negative value.
+            </summary>
+            <param name="number">Number to convert</param>
+            <returns>A number equal or below 0</returns>
+        </member>
+        <member name="M:System.StringExtensions.EscapeStrings(System.String,System.String,System.String[])">
+            <summary>
+            Escapes all <paramref name="stringsToEscape"/> in <paramref name="source"/> by prefixing <paramref name="escapeString"/> to each <paramref name="stringsToEscape"/>.
+            </summary>
+            <param name="source">String to escape string in</param>
+            <param name="escapeString">String to prefix in front of <paramref name="stringsToEscape"/></param>
+            <param name="stringsToEscape">Array with strings to escape</param>
+            <returns><paramref name="source"/> with string escaped</returns>
+        </member>
+    </members>
+</doc>

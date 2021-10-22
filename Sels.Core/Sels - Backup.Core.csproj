@@ -7,15 +7,12 @@
     <Authors>Jens Sels</Authors>
     <Company>Homebrew IT</Company>
     <Product>Core Library</Product>
-    <Description>Library containing generic code components for creating other libraries/applications.
+    <Description>Library containing generic components for creating other libraries/applications.
 Used by projects maintained here: https://github.com/Jenssels1998</Description>
     <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
     <Copyright>Jens Sels</Copyright>
     <PackageTags>Sels</PackageTags>
     <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
-	<!--For NuGet package-->
-	<DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
-	<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
 	<!--Exclude pdb files from release build-->
@@ -23,20 +20,9 @@ Used by projects maintained here: https://github.com/Jenssels1998</Description>
 		<DebugType>None</DebugType>
 		<DebugSymbols>false</DebugSymbols>
 	</PropertyGroup>
-
-	<!--Include non-NuGet package projects in NuGet package-->
-	<Target Name="PrePackage" BeforeTargets="BuildPackage">
-		<PropertyGroup>
-			<BuildCommand>$(BuildCommand) -IncludeReferencedProjects</BuildCommand>
-		</PropertyGroup>
-	</Target>
-
-	<!--Clear local versions if already added and add NuGet package to local repository-->
-	<Target Name="NuGetPushToLocal" AfterTargets="Pack" Condition="'$(OS)' == 'Windows_NT' And Exists('C:\NuGet\nuget.exe')">
-		<RemoveDir Directories="%USERPROFILE%\.nuget\packages\$(PackageId)\$(PackageVersion)" />
-		<RemoveDir Directories="C:\NuGet\$(PackageId)\$(PackageVersion)" />
-		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
-	</Target>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <DocumentationFile>X:\Cloud\Development\Solutions\Sels.Core\Sels.Core\Sels.Core.xml</DocumentationFile>
+	</PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Components\Execution\**" />
