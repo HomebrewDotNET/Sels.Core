@@ -16,6 +16,9 @@
 		<PackageTags>Sels</PackageTags>
 		<!--For NuGet package-->
 		<VersionPrefix>1.0.0</VersionPrefix>
+		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">0</BuildNumber>
+		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$(BUILD_NUMBER)</BuildNumber>
+		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
 		<DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 	</PropertyGroup>
