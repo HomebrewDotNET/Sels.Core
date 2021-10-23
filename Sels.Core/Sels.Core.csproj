@@ -1,22 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Authors>Jens Sels</Authors>
-    <Company>Homebrew IT</Company>
-    <Product>Core Library</Product>
-    <Description>Library containing generic code components for creating other libraries/applications.
-Used by projects maintained here: https://github.com/Jenssels1998</Description>
-    <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
-    <Copyright>Jens Sels</Copyright>
-    <PackageTags>Sels</PackageTags>
-    <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
-	<!--For NuGet package-->
-	<DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
-	<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<Authors>Jens Sels</Authors>
+		<Company>Homebrew IT</Company>
+		<Product>Core Library</Product>
+		<Description>
+			Library containing generic code components for creating other libraries/applications.
+			Used by projects maintained here: https://github.com/Jenssels1998
+		</Description>
+		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
+		<Copyright>Jens Sels</Copyright>
+		<PackageTags>Sels</PackageTags>
+		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
+		<!--For NuGet package-->
+		<VersionPrefix>1.0.0</VersionPrefix>
+		<DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
+		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+	</PropertyGroup>
 
 	<!--Exclude pdb files from release build-->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -38,28 +41,28 @@ Used by projects maintained here: https://github.com/Jenssels1998</Description>
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
 
-  <ItemGroup>
-    <Compile Remove="Components\Execution\**" />
-    <Compile Remove="Components\Newtonsoft\**" />
-    <EmbeddedResource Remove="Components\Execution\**" />
-    <EmbeddedResource Remove="Components\Newtonsoft\**" />
-    <None Remove="Components\Execution\**" />
-    <None Remove="Components\Newtonsoft\**" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Components\Execution\**" />
+		<Compile Remove="Components\Newtonsoft\**" />
+		<EmbeddedResource Remove="Components\Execution\**" />
+		<EmbeddedResource Remove="Components\Newtonsoft\**" />
+		<None Remove="Components\Execution\**" />
+		<None Remove="Components\Newtonsoft\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Components\Parameters\Exceptions\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Components\Parameters\Exceptions\" />
+	</ItemGroup>
 
 </Project>
