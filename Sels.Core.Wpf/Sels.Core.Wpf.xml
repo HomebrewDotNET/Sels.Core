@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Wpf</name>
+    </assembly>
+    <members>
+        <member name="P:Sels.Core.Wpf.Components.ViewModel.BaseViewModel.InitializeControlCommandAsync">
+            <summary>
+            Command that gets called when the control loads
+            </summary>
+        </member>
+        <member name="E:Sels.Core.Wpf.Components.ViewModel.BaseViewModel.ExceptionOccured">
+            <summary>
+            Raised when an exception gets thrown by viewmodel. Can be used to send exceptions to upper viewmodels. First parameter is sender, second is message from viewmodel and third is the exception thrown.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Wpf.Components.ViewModel.BaseViewModel.InitializeControl">
+            <summary>
+            Can be used to perform actions when the control gets loaded
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Sels.Core.Wpf.Templates.Crud.CrudContainer`5.CreateObjectRequestCommand">
+            <summary>
+            Command to trigger request that user wants to create an object
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Wpf.Templates.Crud.CrudContainer`5.RefreshCommand">
+            <summary>
+            Used to refresh the current view model
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudContainer`5.CancelEdit(`0)">
+            <summary>
+            Used to cancel the editing of the supplied object.
+            </summary>
+            <param name="objectEditCanceled">Object that was cancelled editing</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudContainer`5.Initialize">
+            <summary>
+            Code that runs when control gets rendered
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudContainer`5.LoadObjects">
+            <summary>
+            Method that should load the Objects when the page loads
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudContainer`5.RefreshObject(`0)">
+            <summary>
+            Used to refresh any changes done to object
+            </summary>
+            <param name="objectToRefresh">Object that needs to be refreshed</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudContainer`5.DeleteObject(`0)">
+            <summary>
+            Used to delete the supplied object
+            </summary>
+            <param name="objectToDelete">Object to delete</param>
+            <returns>Was object deleted</returns>
+        </member>
+        <member name="P:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.SaveObjectCommand">
+            <summary>
+            Command to trigger the saving of the current Object
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.CancelEditCommand">
+            <summary>
+            Command to raise an event that the user wants to cancel editing the current object
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.DeleteObjectCommand">
+            <summary>
+            Command that triggers request that the user wants to delete the current DetailObject
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.SetupForCreate">
+            <summary>
+            Sets up viewmodel for creation of object
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.SetupForUpdate(`0)">
+            <summary>
+            Sets up viewmodel for updating of object
+            </summary>
+            <param name="objectToEdit">Object that needs to be edited</param>
+            <returns></returns>
+        </member>
+        <member name="E:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.ObjectPersistedEvent">
+            <summary>
+            Events that triggers when an object was persisted
+            </summary>
+        </member>
+        <member name="E:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.CancelEditRequest">
+            <summary>
+            Raised when used wants to cancel editing the current object
+            </summary>
+        </member>
+        <member name="E:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.DeleteObjectRequest">
+            <summary>
+            Raised when used wants to delete the current object
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.PreSaveAction(`0)">
+            <summary>
+            Executed before validation and persistance of object
+            </summary>
+            <param name="objectToPersist">Object to save</param>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.InitializeForCreate">
+            <summary>
+            Setup viewmodel for creation of object
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.InitializeForEdit(`0)">
+            <summary>
+            Setup viewmodel for updating of object
+            </summary>
+            <param name="objectToEdit"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.ValidateObject(`0)">
+            <summary>
+            Validates object before saving
+            </summary>
+            <param name="objectToValidate">Object to be validated</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudCreateOrEdit`2.PersistObject(`0)">
+            <summary>
+            Creates or updates current Object
+            </summary>
+            <param name="objectToPersist">Object that needs to be persisted</param>
+            <returns></returns>
+        </member>
+        <member name="P:Sels.Core.Wpf.Templates.Crud.CrudDetail`1.EditObjectCommand">
+            <summary>
+            Command that triggers request that the user wants to edit the current DetailObject
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Wpf.Templates.Crud.CrudDetail`1.DeleteObjectCommand">
+            <summary>
+            Command that triggers request that the user wants to delete the current DetailObject
+            </summary>
+        </member>
+        <member name="E:Sels.Core.Wpf.Templates.Crud.CrudDetail`1.EditObjectRequest">
+            <summary>
+            Events that gets raised when the user whats to edit the current DetailObject
+            </summary>
+        </member>
+        <member name="E:Sels.Core.Wpf.Templates.Crud.CrudDetail`1.DeleteObjectRequest">
+            <summary>
+            Events that gets raised when the user whats to delete the current DetailObject
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.Crud.CrudDetail`1.DetailObjectChanged(System.Boolean,`0)">
+            <summary>
+            Triggers when the DetailObject changes. Can be used to fetch additional information
+            </summary>
+            <param name="detailObjectChanged">Current DetailObject</param>
+        </member>
+        <member name="E:Sels.Core.Wpf.Templates.Crud.CrudList`1.SelectedObjectChanged">
+            <summary>
+            Events that gets raised when the SelectedObject changes
+            </summary>
+        </member>
+        <member name="E:Sels.Core.Wpf.Templates.Crud.CrudList`1.ObjectDeleted">
+            <summary>
+            Raised when an object gets deleted from the list
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.MainWindow.Navigation.NavigatableViewModel`1.Initialize">
+            <summary>
+            Initialize view model
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.MainWindow.Navigation.NavigatableViewModel`1.ResolveNavigationContext(System.String)">
+            <summary>
+            Resolves context object by name
+            </summary>
+            <param name="contextName">Name of context</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.MainWindow.Navigation.NavigatableViewModel`1.ResolveViewModel(System.String)">
+            <summary>
+            Used to resolve the view model
+            </summary>
+            <param name="viewModelName">View model to resolve</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Wpf.Templates.MainWindow.Navigation.NavigatableViewModel`1.ResolveViewModel``1">
+            <summary>
+            Resolve view model by type
+            </summary>
+            <typeparam name="TViewModel">Type of view model to resolve</typeparam>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

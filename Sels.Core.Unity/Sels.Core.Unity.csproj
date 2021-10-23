@@ -6,16 +6,15 @@
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
 		<Product>Unity Core Library</Product>
-		<Description>
-			Uses the Unity IoC container to implement abstractions in Sels.Core.
-			Used by projects maintained here: https://github.com/Jenssels1998
+		<Description>Uses the Unity IoC container to implement abstractions in Sels.Core.
+Used by projects maintained here: https://github.com/Jenssels1998
 		</Description>
 		<Copyright>Jens Sels</Copyright>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 		<PackageTags>Sels</PackageTags>
 		<!--For NuGet package-->
-		<VersionPrefix>1.0.0</VersionPrefix>
+		<VersionPrefix>1.0.1</VersionPrefix>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">0</BuildNumber>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$(BUILD_NUMBER)</BuildNumber>
 		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
