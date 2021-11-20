@@ -16,6 +16,9 @@ using Unity.Lifetime;
 
 namespace Sels.Core.Unity.Components.Containers
 {
+    /// <summary>
+    /// <see cref="IServiceFactory"/> implementation using Unity.
+    /// </summary>
     public class UnityServiceFactory : IServiceFactory
     {
         // Properties
@@ -45,28 +48,36 @@ namespace Sels.Core.Unity.Components.Containers
         /// </summary>
         public IUnityContainer Container { get; }
 
+        /// <summary>
+        /// <see cref="IServiceFactory"/> implementation using Unity. Uses <see cref="DefaultContainer"/>.
+        /// </summary>
         public UnityServiceFactory() : this(DefaultContainer.Value)
         {
             
         }
 
+        /// <summary>
+        /// <see cref="IServiceFactory"/> implementation using Unity.
+        /// </summary>
+        /// <param name="container">Container to use</param>
         public UnityServiceFactory(IUnityContainer container)
         {
             Container = container.ValidateArgument(nameof(container));
         }
 
+        /// <inheritdoc/>
         public bool IsRegistered(Type type)
         {
             type.ValidateArgument(nameof(type));
 
             return Container.IsRegistered(type);
         }
-
+        /// <inheritdoc/>
         public bool IsRegistered<T>()
         {
             return IsRegistered(typeof(T));
         }
-
+        /// <inheritdoc/>
         public bool IsRegistered(Type type, string name)
         {
             type.ValidateArgument(nameof(type));
@@ -74,14 +85,14 @@ namespace Sels.Core.Unity.Components.Containers
 
             return Container.IsRegistered(type, name);
         }
-
+        /// <inheritdoc/>
         public bool IsRegistered<T>(string name)
         {
             name.ValidateArgumentNotNullOrWhitespace(nameof(name));
 
             return IsRegistered(typeof(T), name);
         }
-
+        /// <inheritdoc/>
         public IServiceCollection LoadFrom(IServiceCollection collection)
         {
             collection.ValidateArgument(nameof(collection));
@@ -91,26 +102,26 @@ namespace Sels.Core.Unity.Components.Containers
 
             return collection;
         }
-
+        /// <inheritdoc/>
         public T Resolve<T>()
         {
             return Resolve(typeof(T)).As<T>();
         }
-
+        /// <inheritdoc/>
         public T Resolve<T>(string name)
         {
             name.ValidateArgumentNotNullOrWhitespace(nameof(name));
 
             return Resolve(typeof(T), name).As<T>();
         }
-
+        /// <inheritdoc/>
         public object Resolve(Type type)
         {
             type.ValidateArgument(nameof(type));
 
             return Container.Resolve(type);
         }
-
+        /// <inheritdoc/>
         public object Resolve(Type type, string name)
         {
             type.ValidateArgument(nameof(type));
@@ -118,19 +129,19 @@ namespace Sels.Core.Unity.Components.Containers
 
             return Container.Resolve(type, name);
         }
-
+        /// <inheritdoc/>
         public IEnumerable<T> ResolveAll<T>()
         {
             return Container.ResolveAll<T>();
         }
-
+        /// <inheritdoc/>
         public IEnumerable<object> ResolveAll(Type type)
         {
             type.ValidateArgument(nameof(type));
 
             return Container.ResolveAll(type);
         }
-
+        /// <inheritdoc/>
         public void Register(ServiceScope scope, Type type)
         {
             type.ValidateArgument(nameof(type));
@@ -148,7 +159,7 @@ namespace Sels.Core.Unity.Components.Containers
                     break;
             }
         }
-
+        /// <inheritdoc/>
         public void Register<T>(ServiceScope scope)
         {
             switch (scope)
@@ -164,7 +175,7 @@ namespace Sels.Core.Unity.Components.Containers
                     break;
             }
         }
-
+        /// <inheritdoc/>
         public void Register(ServiceScope scope, Type type, string name)
         {
             type.ValidateArgument(nameof(type));
@@ -183,7 +194,7 @@ namespace Sels.Core.Unity.Components.Containers
                     break;
             }
         }
-
+        /// <inheritdoc/>
         public void Register<T>(ServiceScope scope, string name)
         {
             name.ValidateArgumentNotNullOrWhitespace(nameof(name));
@@ -201,7 +212,7 @@ namespace Sels.Core.Unity.Components.Containers
                     break;
             }
         }
-
+        /// <inheritdoc/>
         public void Register(ServiceScope scope, Type serviceType, Type implementationType, string name)
         {
             serviceType.ValidateArgument(nameof(serviceType));
@@ -222,7 +233,7 @@ namespace Sels.Core.Unity.Components.Containers
             }
 
         }
-
+        /// <inheritdoc/>
         public void Register<TService, TImplementation>(ServiceScope scope, string name) where TImplementation : TService
         {
             name.ValidateArgumentNotNullOrWhitespace(nameof(name));

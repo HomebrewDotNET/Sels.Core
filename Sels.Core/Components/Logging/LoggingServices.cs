@@ -3,8 +3,10 @@ using Sels.Core.Components.Serialization;
 using Sels.Core.Components.Serialization.Providers;
 using Sels.Core.Contracts.Serialization;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Execution;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging;
+using Sels.Core.Extensions.Logging.Advanced;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -66,20 +68,14 @@ namespace Sels.Core.Components.Logging
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="args">Optional logging parameters</param>
-        public static void Debug(string message, params object[] args)
-        {
-            Log(LogLevel.Debug, message, args);
-        }
+        public static void Debug(string message, params object[] args) => _loggers.Debug(message, args);
 
         /// <summary>
         /// Logs a message using severity <see cref="LogLevel.Warning"/>.
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="args">Optional logging parameters</param>
-        public static void Warning(string message, params object[] args)
-        {
-            Log(LogLevel.Warning, message, args);
-        }
+        public static void Warning(string message, params object[] args) => _loggers.Warning(message, args);
         #endregion
 
         #region Log
@@ -99,47 +95,33 @@ namespace Sels.Core.Components.Logging
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="args">Optional logging parameters</param>
-        public static void Log(string message, params object[] args)
-        {
-            Log(LogLevel.Information, message, args);
-        }
+        public static void Log(string message, params object[] args) => _loggers.Log(message, args);
         /// <summary>
         /// Logs a message.
         /// </summary>
         /// <param name="level">Severity level for log</param>
         /// <param name="message">Message to log</param>
         /// <param name="args">Optional logging parameters</param>
-        public static void Log(LogLevel level, string message, params object[] args)
-        {
-            Log(x => x.LogMessage(level, message, args));
-        }
+        public static void Log(LogLevel level, string message, params object[] args) => Log(x => x.LogMessage(level, message, args));
         /// <summary>
         /// Logs an exception with severity <see cref="LogLevel.Error"/>.
         /// </summary>
         /// <param name="exception">Exception to log</param>
-        public static void Log(Exception exception)
-        {
-            Log(LogLevel.Error, exception);
-        }
+        public static void Log(Exception exception) => _loggers.Log(exception);
         /// <summary>
         /// Logs an exception.
         /// </summary>
         /// <param name="level">Severity level for log</param>
         /// <param name="exception">Exception to log</param>
-        public static void Log(LogLevel level, Exception exception)
-        {
-            Log(x => x.LogException(level, exception));
-        }
+        public static void Log(LogLevel level, Exception exception) => Log(x => x.LogException(level, exception));
+
         /// <summary>
         /// Logs a exception with an extra message with severity <see cref="LogLevel.Error"/>.
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="exception">Exception to log</param>
         /// <param name="args">Optional logging parameters</param>
-        public static void Log(string message, Exception exception, params object[] args)
-        {
-            Log(LogLevel.Error, message, exception, args);
-        }
+        public static void Log(string message, Exception exception, params object[] args) => _loggers.Log(message, exception, args);
         /// <summary>
         /// Logs a exception with an extra message.
         /// </summary>
@@ -147,10 +129,7 @@ namespace Sels.Core.Components.Logging
         /// <param name="message">Message to log</param>
         /// <param name="exception">Exception to log</param>
         /// <param name="args">Optional logging parameters</param>
-        public static void Log(LogLevel level, string message, Exception exception, params object[] args)
-        {
-            Log(x => x.LogException(level, message, exception, args));
-        }
+        public static void Log(LogLevel level, string message, Exception exception, params object[] args) => Log(x => x.LogException(level, message, exception, args));
         #endregion
 
         #region Trace
@@ -159,75 +138,51 @@ namespace Sels.Core.Components.Logging
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="args">Optional logging parameters</param>
-        public static void Trace(string message, params object[] args)
-        {
-            Log(LogLevel.Trace, message, args);
-        }
+        public static void Trace(string message, params object[] args) => Log(LogLevel.Trace, message, args);
         /// <summary>
         /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider with severity <see cref="LogLevel.Trace"/>.
         /// </summary>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject(object objectToTrace)
-        {
-            TraceObject<JsonProvider>(LogLevel.Trace, objectToTrace);
-        }
+        public static void TraceObject(object objectToTrace) => _loggers.TraceObject(objectToTrace);
         /// <summary>
         /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider.
         /// </summary>
         /// <param name="level">Severity level for log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject(LogLevel level, object objectToTrace)
-        {
-            TraceObject<JsonProvider>(level, objectToTrace);
-        }
+        public static void TraceObject(LogLevel level, object objectToTrace) => _loggers.TraceObject(level, objectToTrace);
         /// <summary>
         /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider with an extra message with severity <see cref="LogLevel.Trace"/>.
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject(string message, object objectToTrace)
-        {
-            TraceObject<JsonProvider>(LogLevel.Trace, message, objectToTrace);
-        }
+        public static void TraceObject(string message, object objectToTrace) => _loggers.TraceObject(message, objectToTrace);
         /// <summary>
         /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider with an extra message.
         /// </summary>
         /// <param name="level">Severity level for log</param>
         /// <param name="message">Message to log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject(LogLevel level, string message, object objectToTrace)
-        {
-            TraceObject<JsonProvider>(level, message, objectToTrace);
-        }
+        public static void TraceObject(LogLevel level, string message, object objectToTrace) => _loggers.TraceObject(level, message, objectToTrace);
         /// <summary>
         /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with severity <see cref="LogLevel.Trace"/>.
         /// </summary>
         /// <typeparam name="TProvider">Type of serialization provider</typeparam>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(object objectToTrace) where TProvider : ISerializationProvider, new()
-        {
-            TraceObject<TProvider>(LogLevel.Trace, objectToTrace);
-        }
+        public static void TraceObject<TProvider>(object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(objectToTrace);
         /// <summary>
         /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider.
         /// </summary>
         /// <typeparam name="TProvider">Type of serialization provider</typeparam>
         /// <param name="level">Severity level for log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(LogLevel level, object objectToTrace) where TProvider : ISerializationProvider, new()
-        {
-            Log(x => x.LogObject<TProvider>(level, objectToTrace));
-        }
+        public static void TraceObject<TProvider>(LogLevel level, object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(level, objectToTrace);
         /// <summary>
         /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with an extra message with severity <see cref="LogLevel.Trace"/>.
         /// </summary>
         /// <typeparam name="TProvider">Type of serialization provider</typeparam>
         /// <param name="message">Message to log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(string message, object objectToTrace) where TProvider : ISerializationProvider, new()
-        {
-            TraceObject<TProvider>(LogLevel.Trace, message, objectToTrace);
-        }
+        public static void TraceObject<TProvider>(string message, object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(message, objectToTrace);
         /// <summary>
         /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with an extra message.
         /// </summary>
@@ -235,19 +190,13 @@ namespace Sels.Core.Components.Logging
         /// <param name="level">Severity level for log</param>
         /// <param name="message">Message to log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(LogLevel level, string message, object objectToTrace) where TProvider : ISerializationProvider, new()
-        {
-            Log(x => x.LogObject<TProvider>(level, message, objectToTrace));
-        }
+        public static void TraceObject<TProvider>(LogLevel level, string message, object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(level, message, objectToTrace);
         /// <summary>
         /// Traces how long an action took to execute with severity <see cref="LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
         /// <param name="action">Action to trace</param>
         /// <returns>Timing scope</returns>
-        public static IDisposable TraceAction(string action)
-        {
-            return TraceAction(LogLevel.Information, action);
-        }
+        public static IDisposable TraceAction(string action) => _loggers.TraceAction(action);
         /// <summary>
         /// Traces how long an action took to execute with severity <see cref="LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
@@ -255,10 +204,7 @@ namespace Sels.Core.Components.Logging
         /// <param name="actionStartMessage">Log message when action starts</param>
         /// <param name="actionFinishedMessage">Log message when action is finished</param>
         /// <returns>Timing scope</returns>
-        public static IDisposable TraceAction(string actionStartMessage, Func<TimeSpan, string> actionFinishedMessage)
-        {
-            return TraceAction(LogLevel.Information, actionStartMessage, actionFinishedMessage);
-        }
+        public static IDisposable TraceAction(string actionStartMessage, Func<TimeSpan, string> actionFinishedMessage) => _loggers.TraceAction(actionStartMessage, actionFinishedMessage);
         /// <summary>
         /// Traces how long an action took to execute. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
@@ -266,30 +212,21 @@ namespace Sels.Core.Components.Logging
         /// <param name="actionStartMessage">Log message when action starts</param>
         /// <param name="actionFinishedMessage">Log message when action is finished</param>
         /// <returns>Timing scope</returns>
-        public static IDisposable TraceAction(LogLevel level, string actionStartMessage, Func<TimeSpan, string> actionFinishedMessage)
-        {
-            return CreateTimedLogger(level, () => actionStartMessage, actionFinishedMessage);
-        }
+        public static IDisposable TraceAction(LogLevel level, string actionStartMessage, Func<TimeSpan, string> actionFinishedMessage) => _loggers.TraceAction(level, actionStartMessage, actionFinishedMessage);
         /// <summary>
         /// Traces how long an action took to execute. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
         /// <param name="level">Severity level for log</param>
         /// <param name="action">Action to trace</param>
         /// <returns>Timing scope</returns>
-        public static IDisposable TraceAction(LogLevel level, string action)
-        {
-            return CreateTimedLogger(level, () => $"Executing action <{action}>", x => $"Executed action <{action}> in {x.PrintTotalMs()}");
-        }
+        public static IDisposable TraceAction(LogLevel level, string action) => _loggers.TraceAction(level, action);
         /// <summary>
         /// Traces how long a method took to execute with severity <see cref="LogLevel.Trace"/>. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
         /// <param name="caller">Object that wants it's method execution traced</param>
         /// <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
         /// <returns>Timing scope</returns>
-        public static IDisposable TraceMethod(object caller, [CallerMemberName] string method = null)
-        {
-            return TraceMethod(LogLevel.Trace, caller, method);
-        }
+        public static IDisposable TraceMethod(object caller, [CallerMemberName] string method = null) => _loggers.TraceMethod(caller, method);
         /// <summary>
         /// Traces how long a method took to execute. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
@@ -297,10 +234,7 @@ namespace Sels.Core.Components.Logging
         /// <param name="caller">Object that wants it's method execution traced</param>
         /// <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
         /// <returns>Timing scope</returns>
-        public static IDisposable TraceMethod(LogLevel level, object caller, [CallerMemberName] string method = null)
-        {
-            return TraceMethod(level, caller?.GetType(), method);
-        }
+        public static IDisposable TraceMethod(LogLevel level, object caller, [CallerMemberName] string method = null) => _loggers.TraceMethod(level, caller, method);
 
         /// <summary>
         /// Traces how long a method took to execute with severity <see cref="LogLevel.Trace"/>. Timer starts when calling method and stops when return value is disposed.
@@ -308,10 +242,7 @@ namespace Sels.Core.Components.Logging
         /// <param name="caller">Type of object that wants it's method execution traced</param>
         /// <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
         /// <returns>Timing scope</returns>
-        public static IDisposable TraceMethod(Type caller, [CallerMemberName] string method = null)
-        {
-            return TraceMethod(LogLevel.Trace, caller, method);
-        }
+        public static IDisposable TraceMethod(Type caller, [CallerMemberName] string method = null) => _loggers.TraceMethod(caller, method);
         /// <summary>
         /// Traces how long a method took to execute. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
@@ -319,12 +250,7 @@ namespace Sels.Core.Components.Logging
         /// <param name="caller">Type of object that wants it's method execution traced</param>
         /// <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
         /// <returns>Timing scope</returns>
-        public static IDisposable TraceMethod(LogLevel level, Type caller, [CallerMemberName] string method = null)
-        {
-            var fullMethodName = $"{(caller.HasValue() ? caller.FullName : "Null")}.{method}";
-
-            return CreateTimedLogger(level, () => $"Calling method <{fullMethodName}>", x => $"Called method <{fullMethodName}> in {x.PrintTotalMs()}");
-        }
+        public static IDisposable TraceMethod(LogLevel level, Type caller, [CallerMemberName] string method = null) => _loggers.TraceMethod(level, caller, method);
         #endregion
 
         /// <summary>

@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Sels.Core.Extensions.Linq
 {
+    /// <summary>
+    /// Extra extension methods that follow the same setup as Linq.
+    /// </summary>
     public static class LinqExtensions
     {
         public static IEnumerable<T> WherePredicate<T>(this IEnumerable<T> items, Predicate<T> predicate)
@@ -28,305 +31,28 @@ namespace Sels.Core.Extensions.Linq
             }
         }
 
-        #region Execution
-        public static IEnumerable<T> Execute<T>(this IEnumerable<T> items, Action<T> action)
+        #region Count
+        /// <summary>
+        /// Checks how many items are in <paramref name="source"/>. Checks common collection types first to avoid having to enumerate <paramref name="source"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of items in <paramref name="source"/></typeparam>
+        /// <param name="source">Enumerator to check</param>
+        /// <returns>Item count of <paramref name="source"/></returns>
+        public static int GetCount<T>(this IEnumerable<T> source)
         {
-            // Parse to array to avoid triggering the enumerator multiple times.
-            items = items.ToArrayOrDefault();
+            source.ValidateArgument(nameof(source));
 
-            if (items.HasValue())
+            if(source is IReadOnlyCollection<T> collection)
             {
-                foreach (var item in items)
-                {
-                    action(item);
-                }
+                return collection.Count;
             }
 
-            return items;
-        }
-
-        public static IEnumerable<T> Execute<T>(this IEnumerable<T> items, Action<T> action, Action<T, Exception> exceptionHandler)
-        {
-            // Parse to array to avoid triggering the enumerator multiple times.
-            items = items.ToArrayOrDefault();
-
-            if (items.HasValue())
+            if (source is T[] array)
             {
-                foreach (var item in items)
-                {
-                    try
-                    {
-                        action(item);
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptionHandler(item, ex);
-                        throw;
-                    }
-                }
+                return array.Length;
             }
 
-            return items;
-        }
-
-        public static async Task<IEnumerable<T>> ExecuteAsync<T>(this IEnumerable<T> items, Func<T, Task> action)
-        {
-            // Parse to array to avoid triggering the enumerator multiple times.
-            items = items.ToArrayOrDefault();
-
-            if (items.HasValue())
-            {
-                foreach (var item in items)
-                {
-                    await action(item);
-                }
-            }
-
-            return items;
-        }
-
-        public static IEnumerable<T> ForceExecute<T>(this IEnumerable<T> items, Action<T> action)
-        {
-            // Parse to array to avoid triggering the enumerator multiple times.
-            items = items.ToArrayOrDefault();
-
-            if (items.HasValue())
-            {
-                foreach (var item in items)
-                {
-                    action.ForceExecute(item);
-                }
-            }
-
-            return items;
-        }
-
-        public static IEnumerable<T> ForceExecute<T>(this IEnumerable<T> items, Action<T> action, Action<T, Exception> exceptionHandler)
-        {
-            // Parse to array to avoid triggering the enumerator multiple times.
-            items = items.ToArrayOrDefault();
-
-            if (items.HasValue())
-            {
-                foreach (var item in items)
-                {
-                    try
-                    {
-                        action(item);
-                    }
-                    catch (Exception ex)
-                    {
-                        exceptionHandler.ForceExecute(item, ex);
-                    }
-
-                }
-            }
-
-            return items;
-        }
-
-        #region  ForceExecuteAction
-        public static void ForceExecute<T>(this Action<T> action, T item)
-        {
-            try
-            {
-                action(item);
-            }
-            catch { }
-        }
-
-        public static void ForceExecute<TOne, TTwo>(this Action<TOne, TTwo> action, TOne itemOne, TTwo itemTwo)
-        {
-            try
-            {
-                action(itemOne, itemTwo);
-            }
-            catch { }
-        }
-
-        public static void ForceExecute<T>(this Action<T> action, T item, Action<T, Exception> exceptionHandler)
-        {
-            try
-            {
-                action(item);
-            }
-            catch (Exception ex)
-            {
-                exceptionHandler.ForceExecute(item, ex);
-            }
-        }
-
-        public static void ForceExecute<TOne, TTwo>(this Action<TOne, TTwo> action, TOne itemOne, TTwo itemTwo, Action<TOne, TTwo, Exception> exceptionHandler)
-        {
-            try
-            {
-                action(itemOne, itemTwo);
-            }
-            catch (Exception ex)
-            {
-                try
-                {
-                    exceptionHandler(itemOne, itemTwo, ex);
-                }
-                catch { }
-            }
-        }
-        #endregion
-
-        #region ExecuteOrDefault
-        public static void ExecuteOrDefault(this Action action)
-        {
-            if (action.HasValue())
-            {
-                action();
-            }
-        }
-        public static void ExecuteOrDefault<T>(this Action<T> action, T item)
-        {
-            if (action.HasValue())
-            {
-                action(item);
-            }
-        }
-        #endregion
-
-        #region ExecuteOrDefault
-        public static void ForceExecuteOrDefault(this Action action)
-        {
-            try
-            {
-                if (action.HasValue())
-                {
-                    action();
-                }
-            }
-            catch { }
-        }
-        public static void ForceExecuteOrDefault<T>(this Action<T> action, T item)
-        {
-            try
-            {
-                if (action.HasValue())
-                {
-                    action(item);
-                }
-            }
-            catch { }
-        }
-        #endregion
-
-        #endregion
-
-        #region IfContains
-        public static void IfContains<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Action<TValue> action)
-        {
-            action.ValidateVariable(nameof(action));
-
-            if (dictionary.HasValue() && key != null)
-            {
-                if (dictionary.ContainsKey(key))
-                {
-                    action(dictionary[key]);
-                }
-            }
-        }
-        #endregion
-
-        #region IfBool
-        public static void IfTrue(this bool boolean, Action action)
-        {
-            action.ValidateVariable(nameof(action));
-
-            if (boolean)
-            {
-                action();
-            }
-        }
-
-        public static void IfFalse(this bool boolean, Action action)
-        {
-            action.ValidateVariable(nameof(action));
-
-            if (!boolean)
-            {
-                action();
-            }
-        }
-        #endregion
-
-        #region IfHasValue
-        public static void IfHasValue<T>(this T value, Action action)
-        {
-            if (value.HasValue())
-            {
-                action();
-            }
-        }
-
-        public static void IfHasValue<T>(this T value, Predicate<T> requiredValueChecker, Action action)
-        {
-            if (requiredValueChecker(value))
-            {
-                action();
-            }
-        }
-
-        public static T IfHasValue<T>(this T value, Func<T> func)
-        {
-            if (value.HasValue())
-            {
-                return func();
-            }
-
-            return value;
-        }
-
-        public static T IfHasValue<T>(this T value, Predicate<T> requiredValueChecker, Func<T> func)
-        {
-            if (requiredValueChecker(value))
-            {
-                return func();
-            }
-
-            return value;
-        }
-        #endregion
-
-        #region IfHasNoValue
-        public static void IfHasNoValue<T>(this T value, Action action)
-        {
-            if (!value.HasValue())
-            {
-                action();
-            }
-        }
-
-        public static void IfHasNoValue<T>(this T value, Predicate<T> requiredValueChecker, Action action)
-        {
-            if (!requiredValueChecker(value))
-            {
-                action();
-            }
-        }
-
-        public static T IfHasNoValue<T>(this T value, Func<T> func)
-        {
-            if (!value.HasValue())
-            {
-                return func();
-            }
-
-            return value;
-        }
-
-        public static T IfHasNoValue<T>(this T value, Predicate<T> requiredValueChecker, Func<T> func)
-        {
-            if (!requiredValueChecker(value))
-            {
-                return func();
-            }
-
-            return value;
+            return source.Count();
         }
         #endregion
 
@@ -364,7 +90,7 @@ namespace Sels.Core.Extensions.Linq
 
         #region ForceSelect
         /// <summary>
-        /// Projects each element of a sequence into a new form.. Exception are caught so execution doesn't stop.
+        /// Projects each element of a sequence into a new form. Exception are caught so execution doesn't stop.
         /// </summary>
         /// <typeparam name="TSource">The type of the elements of source.</typeparam>
         /// <typeparam name="TSelect">The type of the value returned by selector.</typeparam>
@@ -410,8 +136,8 @@ namespace Sels.Core.Extensions.Linq
         /// </summary>
         public static T[] ModifyItemIf<T>(this T[] source, Predicate<T> condition, Func<T,T> modifier)
         {
-            condition.ValidateVariable(nameof(condition));
-            modifier.ValidateVariable(nameof(modifier));
+            condition.ValidateArgument(nameof(condition));
+            modifier.ValidateArgument(nameof(modifier));
 
             if (source.HasValue())
             {
@@ -434,8 +160,8 @@ namespace Sels.Core.Extensions.Linq
         /// </summary>
         public static IEnumerable<T> ModifyItemIf<T>(this IEnumerable<T> source, Predicate<T> condition, Func<T, T> modifier)
         {
-            condition.ValidateVariable(nameof(condition));
-            modifier.ValidateVariable(nameof(modifier));
+            condition.ValidateArgument(nameof(condition));
+            modifier.ValidateArgument(nameof(modifier));
 
             if (source.HasValue())
             {
@@ -458,8 +184,8 @@ namespace Sels.Core.Extensions.Linq
         /// </summary>
         public static T ModifyIf<T>(this T item, Predicate<T> condition, Func<T, T> modifier)
         {
-            condition.ValidateVariable(nameof(condition));
-            modifier.ValidateVariable(nameof(modifier));
+            condition.ValidateArgument(nameof(condition));
+            modifier.ValidateArgument(nameof(modifier));
 
             if (condition(item))
             {
@@ -485,18 +211,6 @@ namespace Sels.Core.Extensions.Linq
                     yield return item;
                 }
             }
-        }
-        #endregion
-
-        #region Trim
-        /// <summary>
-        /// Returns an enumerator that trims the values in <paramref name="source"/>.
-        /// </summary>
-        /// <param name="source">Strings to trim</param>
-        /// <returns>An enumerator that trims each element</returns>
-        public static IEnumerable<string> Trim(this IEnumerable<string> source)
-        {
-            return source.Select(x => x.Trim());
         }
         #endregion
     }
