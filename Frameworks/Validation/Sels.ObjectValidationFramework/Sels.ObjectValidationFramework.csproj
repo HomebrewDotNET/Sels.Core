@@ -7,8 +7,8 @@
     <Company>Homebrew IT</Company>
     <Product>Object Validation Framework</Product>
     <Description>Framework that allows for creating validation profiles for objects using a fluent syntax.</Description>
-    <PackageProjectUrl>https://github.com/Jenssels1998/Sels.ObjectValidationFramework</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Jenssels1998/Sels.ObjectValidationFramework</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
     <Copyright>Jens Sels</Copyright>
     <PackageTags>Sels</PackageTags>
 	  <!--For NuGet package-->

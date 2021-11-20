@@ -14,7 +14,7 @@ Used by projects maintained here: https://github.com/Jenssels1998
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 		<PackageTags>Sels</PackageTags>
 		<!--For NuGet package-->
-		<VersionPrefix>1.0.1</VersionPrefix>
+		<VersionPrefix>1.0.2</VersionPrefix>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">0</BuildNumber>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$(BUILD_NUMBER)</BuildNumber>
 		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>

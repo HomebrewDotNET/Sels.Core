@@ -283,7 +283,12 @@ namespace Sels.Core.Extensions
 
             return argument.ValidateArgument(x => argument != null && assignableType.IsAssignableFrom(argument), $"{parameterName} cannot be null && Type <{assignableType}> must be assignable from the type of argument");
         }
-
+        /// <summary>
+        /// Validates if argument is not null and is not an interface type.
+        /// </summary>
+        /// <param name="argument">Method/Constructor argument</param>
+        /// <param name="parameterName">Method/Constructor parameter name</param>
+        /// <returns><paramref name="argument"/></returns>
         public static Type ValidateArgumentNotInterface(this Type argument, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");

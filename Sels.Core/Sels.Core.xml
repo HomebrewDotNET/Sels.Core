@@ -1454,6 +1454,37 @@
             <param name="values">String values to deserialize</param>
             <returns>Property value</returns>
         </member>
+        <member name="T:Sels.Core.Contracts.Validation.IValidator`2">
+            <summary>
+            Validator that can validate objects of type <typeparamref name="TEntity"/> and returns validation errors of type <typeparamref name="TError"/>.
+            </summary>
+            <typeparam name="TEntity">Type of objects to validate</typeparam>
+            <typeparam name="TError">Type of validation errors to returns</typeparam>
+        </member>
+        <member name="T:Sels.Core.Contracts.Validation.IValidator`3">
+            <summary>
+            Validator that can validate objects of type <typeparamref name="TEntity"/> and returns validation errors of type <typeparamref name="TError"/>.
+            </summary>
+            <typeparam name="TEntity">Type of objects to validate</typeparam>
+            <typeparam name="TError">Type of validation errors to returns</typeparam>
+            <typeparam name="TContext">Type of optional context to moddify the behaviour of this validator</typeparam>
+        </member>
+        <member name="M:Sels.Core.Contracts.Validation.IValidator`3.Validate(`0,`2)">
+            <summary>
+            Validates <paramref name="entity"/> and returns all validation errors.
+            </summary>
+            <param name="entity">Entity to validate</param>
+            <param name="context">Optional context to modify the behaviour of the validator</param>
+            <returns>All validation errors for <paramref name="entity"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Validation.IValidator`3.Validate(System.Collections.Generic.IEnumerable{`0},`2)">
+            <summary>
+            Validates <paramref name="entities"/> and returns all validation errors.
+            </summary>
+            <param name="entities">Entities to validate</param>
+            <param name="context">Optional context to modify the behaviour of the validator</param>
+            <returns>All validation errors for <paramref name="entities"/></returns>
+        </member>
         <member name="T:Sels.Core.Delegates">
             <summary>
             Contains delegate definitions.
@@ -3062,6 +3093,80 @@
             <param name="value">String to check</param>
             <param name="strings">Substrings to check that <paramref name="value"/> contains</param>
             <returns>If <paramref name="value"/> contains all substrings in <paramref name="strings"/></returns>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions">
+            <summary>
+            Contains extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,System.Type,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <paramref name="serviceType"/> with an implementation of type <paramref name="implementationType"/>.
+            </summary>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceType">Type of service to add to the collection</param>
+            <param name="implementationType">Implementation for <paramref name="serviceType"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/> with an implementation of type <typeparamref name="TImplementation"/>.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <typeparam name="TImplementation">Implementation for <typeparamref name="TService"/></typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <paramref name="serviceType"/>.
+            </summary>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceType">Type of service to add to the collection</param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,System.Func{System.IServiceProvider,System.Object},Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <paramref name="serviceType"/> with <paramref name="implementationFactory"/> to create the instances.
+            </summary>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceType">Type of service to add to the collection</param>
+            <param name="implementationFactory">Factory that creates instances that implement <paramref name="serviceType"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``1},Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/> with <paramref name="implementationFactory"/> to create the instances.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <typeparam name="TImplementation">Implementation for <typeparamref name="TService"/></typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="implementationFactory">Factory that creates instances that implement <typeparamref name="TImplementation"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``0},Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/> with <paramref name="serviceFactory"/> to create the instances.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceFactory">Factory that creates instances of type <typeparamref name="TService"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
         </member>
     </members>
 </doc>

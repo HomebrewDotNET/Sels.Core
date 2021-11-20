@@ -18,7 +18,7 @@ namespace Sels.Core.Contracts.Validation
     /// </summary>
     /// <typeparam name="TEntity">Type of objects to validate</typeparam>
     /// <typeparam name="TError">Type of validation errors to returns</typeparam>
-    /// <typeparam name="TContext">Tyope of optional context to moddify the behaviour of this validator</typeparam>
+    /// <typeparam name="TContext">Type of optional context to moddify the behaviour of this validator</typeparam>
     public interface IValidator<in TEntity, out TError, in TContext>
     {
         /// <summary>
