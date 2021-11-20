@@ -34,6 +34,7 @@ using Sels.Core.Linux.Components.LinuxCommand.Commands.PackageManager;
 using Sels.Core.Linux.Components.LinuxCommand.Commands.Core;
 using Sels.Core.Linux.Components.LinuxCommand.Commands;
 using Sels.Core.Linux.Components.LinuxCommand.Commands.Screen;
+using Sels.Core.Extensions.Execution;
 
 namespace Sels.Core.TestTool
 {

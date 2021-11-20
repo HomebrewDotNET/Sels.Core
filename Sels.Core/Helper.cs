@@ -14,6 +14,9 @@ using Sels.Core.Extensions.Logging;
 
 namespace Sels.Core
 {
+    /// <summary>
+    /// Static class with generic helper methods
+    /// </summary>
     public static class Helper
     {
         #region Enums
@@ -27,6 +30,9 @@ namespace Sels.Core
         #endregion
 
         #region FileSystem
+        /// <summary>
+        /// Contains static helper methods for working with the filesystem.
+        /// </summary>
         public static class FileSystem
         {
             public static bool IsValidDirectoryPath(string path) 

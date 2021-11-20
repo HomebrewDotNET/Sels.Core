@@ -80,6 +80,7 @@ namespace Sels.Core.Contracts.Factory
         /// <returns>Boolean indicating if the factory can resolve services of Type <typeparamref name="T"/> with Name <paramref name="name"/></returns>
         bool IsRegistered<T>(string name);
         #endregion
+
         #region Registering
         /// <summary>
         /// Adds a new service of Type <paramref name="type"/> to the factory.
@@ -131,11 +132,5 @@ namespace Sels.Core.Contracts.Factory
         /// <returns><paramref name="collection"/></returns>
         IServiceCollection LoadFrom(IServiceCollection collection);
         #endregion
-
-
-
-
-
-
     }
 }

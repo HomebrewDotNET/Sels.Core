@@ -869,6 +869,23 @@
             Returns value for the internal value when any of the Getter Set conditions return true
             </summary>
         </member>
+        <member name="T:Sels.Core.Components.ScopedActions.ScopedAction">
+            <summary>
+            Executed an action when this object gets created and an action when this object gets disposed.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.ScopedActions.ScopedAction.#ctor(System.Action,System.Action)">
+            <summary>
+            Creates a new action and executed <paramref name="startAction"/> when this action is constructed.
+            </summary>
+            <param name="startAction">Action to execute when object is constructed</param>
+            <param name="stopAction">Action to execute when object is disposed</param>
+        </member>
+        <member name="M:Sels.Core.Components.ScopedActions.ScopedAction.Dispose">
+            <summary>
+            Triggers the stop action.
+            </summary>
+        </member>
         <member name="T:Sels.Core.Components.Serialization.KeyValue.Attributes.KeyValueCollectionAttribute">
             <summary>
             Used to configure the serialization between the property this is defined on and the string value. This attribute adds extra options for collection properties.
@@ -1437,6 +1454,37 @@
             <param name="values">String values to deserialize</param>
             <returns>Property value</returns>
         </member>
+        <member name="T:Sels.Core.Contracts.Validation.IValidator`2">
+            <summary>
+            Validator that can validate objects of type <typeparamref name="TEntity"/> and returns validation errors of type <typeparamref name="TError"/>.
+            </summary>
+            <typeparam name="TEntity">Type of objects to validate</typeparam>
+            <typeparam name="TError">Type of validation errors to returns</typeparam>
+        </member>
+        <member name="T:Sels.Core.Contracts.Validation.IValidator`3">
+            <summary>
+            Validator that can validate objects of type <typeparamref name="TEntity"/> and returns validation errors of type <typeparamref name="TError"/>.
+            </summary>
+            <typeparam name="TEntity">Type of objects to validate</typeparam>
+            <typeparam name="TError">Type of validation errors to returns</typeparam>
+            <typeparam name="TContext">Type of optional context to moddify the behaviour of this validator</typeparam>
+        </member>
+        <member name="M:Sels.Core.Contracts.Validation.IValidator`3.Validate(`0,`2)">
+            <summary>
+            Validates <paramref name="entity"/> and returns all validation errors.
+            </summary>
+            <param name="entity">Entity to validate</param>
+            <param name="context">Optional context to modify the behaviour of the validator</param>
+            <returns>All validation errors for <paramref name="entity"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Validation.IValidator`3.Validate(System.Collections.Generic.IEnumerable{`0},`2)">
+            <summary>
+            Validates <paramref name="entities"/> and returns all validation errors.
+            </summary>
+            <param name="entities">Entities to validate</param>
+            <param name="context">Optional context to modify the behaviour of the validator</param>
+            <returns>All validation errors for <paramref name="entities"/></returns>
+        </member>
         <member name="T:Sels.Core.Delegates">
             <summary>
             Contains delegate definitions.
@@ -1450,6 +1498,114 @@
             <param name="arg1">Object to compare</param>
             <param name="arg2">Object to compare</param>
             <returns>Boolean indicating if <param name="arg1"/> is equal, matching, ... to <param name="arg2"/></returns>
+        </member>
+        <member name="T:Sels.Core.Delegates.Condition">
+            <summary>
+            Encapsulates a method that defines a condition that is checked when calling this delegate.
+            </summary>
+            <returns>Whether or not this condition passes</returns>
+        </member>
+        <member name="T:Sels.Core.Delegates.Condition`1">
+            <summary>
+            Encapsulates a method that defines a condition that is checked using the provided arguments when calling this delegate.
+            </summary>
+            <typeparam name="T">Condition argument</typeparam>
+            <returns>Whether or not this condition passes</returns>
+        </member>
+        <member name="T:Sels.Core.Delegates.Condition`2">
+            <summary>
+            Encapsulates a method that defines a condition that is checked using the provided arguments when calling this delegate.
+            </summary>
+            <typeparam name="T1">Condition argument</typeparam>
+            <typeparam name="T2">Condition argument</typeparam>
+            <returns>Whether or not this condition passes</returns>
+        </member>
+        <member name="T:Sels.Core.Delegates.Condition`3">
+            <summary>
+            Encapsulates a method that defines a condition that is checked using the provided arguments when calling this delegate.
+            </summary>
+            <typeparam name="T1">Condition argument</typeparam>
+            <typeparam name="T2">Condition argument</typeparam>
+            <typeparam name="T3">Condition argument</typeparam>
+            <returns>Whether or not this condition passes</returns>
+        </member>
+        <member name="T:Sels.Core.Delegates.Condition`4">
+            <summary>
+            Encapsulates a method that defines a condition that is checked using the provided arguments when calling this delegate.
+            </summary>
+            <typeparam name="T1">Condition argument</typeparam>
+            <typeparam name="T2">Condition argument</typeparam>
+            <typeparam name="T3">Condition argument</typeparam>
+            <typeparam name="T4">Condition argument</typeparam>
+            <returns>Whether or not this condition passes</returns>
+        </member>
+        <member name="T:Sels.Core.Delegates.Condition`5">
+            <summary>
+            Encapsulates a method that defines a condition that is checked using the provided arguments when calling this delegate.
+            </summary>
+            <typeparam name="T1">Condition argument</typeparam>
+            <typeparam name="T2">Condition argument</typeparam>
+            <typeparam name="T3">Condition argument</typeparam>
+            <typeparam name="T4">Condition argument</typeparam>
+            <typeparam name="T5">Condition argument</typeparam>
+            <returns>Whether or not this condition passes</returns>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncPredicate`1">
+            <inheritdoc cref="T:System.Predicate`1"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncCondition">
+            <inheritdoc cref="T:Sels.Core.Delegates.Condition"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncCondition`1">
+            <inheritdoc cref="T:Sels.Core.Delegates.Condition`1"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncCondition`2">
+            <inheritdoc cref="T:Sels.Core.Delegates.Condition`2"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncCondition`3">
+            <inheritdoc cref="T:Sels.Core.Delegates.Condition`3"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncCondition`4">
+            <inheritdoc cref="T:Sels.Core.Delegates.Condition`4"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncCondition`5">
+            <inheritdoc cref="T:Sels.Core.Delegates.Condition`5"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncAction">
+            <inheritdoc cref="T:System.Action"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncAction`1">
+            <inheritdoc cref="T:System.Action`1"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncAction`2">
+            <inheritdoc cref="T:System.Action`2"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncAction`3">
+            <inheritdoc cref="T:System.Action`3"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncAction`4">
+            <inheritdoc cref="T:System.Action`4"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.AsyncAction`5">
+            <inheritdoc cref="T:System.Action`5"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.Func`1">
+            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`1"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.Func`2">
+            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`2"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.Func`3">
+            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`3"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.Func`4">
+            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`4"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.Func`5">
+            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`5"/>
+        </member>
+        <member name="T:Sels.Core.Delegates.Async.Func`6">
+            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`6"/>
         </member>
         <member name="T:Sels.Core.Exceptions.Configuration.ConfigurationMissingException">
             <summary>
@@ -1723,9 +1879,75 @@
             <param name="injectables">Values to set on <paramref name="source"/></param>
             <returns><paramref name="source"/></returns>
         </member>
+        <member name="T:Sels.Core.Extensions.Execution.AsyncExecutionExtensions">
+            <summary>
+            Provides additional extension methods for executing async code based on the source object.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Execution.AsyncExecutionExtensions.ExecuteAsync``1(System.Collections.Generic.IEnumerable{``0},Sels.Core.Delegates.Async.AsyncAction{``0})">
+            <summary>
+            Executes <paramref name="action"/> for each element in <paramref name="source"/> in parallel.
+            </summary>
+            <typeparam name="T">Type of element</typeparam>
+            <param name="source">Enumerator that return the elements</param>
+            <param name="action">Async action to execute for each element</param>
+            <returns><paramref name="source"/></returns>
+        </member>
+        <member name="T:Sels.Core.Extensions.Execution.AsyncLinqExtensions">
+            <summary>
+            Extends the Linq extension methods with async variants
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Execution.AsyncLinqExtensions.AnyAsync``1(System.Collections.Generic.IEnumerable{``0},Sels.Core.Delegates.Async.AsyncPredicate{``0})">
+            <inheritdoc cref="M:System.Linq.Enumerable.Any``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean})"/>
+        </member>
+        <member name="T:Sels.Core.Extensions.Execution.ExecutionExtensions">
+            <summary>
+            Provides additional extension methods for executing code based on the source object.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Execution.ExecutionExtensions.Execute``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+            <summary>
+            Executes <paramref name="action"/> for each element in <paramref name="source"/>.
+            </summary>
+            <typeparam name="T">Type of element</typeparam>
+            <param name="source">Enumerator that return the elements</param>
+            <param name="action">Action to execute for each element</param>
+            <returns><paramref name="source"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Execution.ExecutionExtensions.Execute``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},System.Action{``0,System.Exception})">
+            <summary>
+            Executes <paramref name="action"/> for each element in <paramref name="source"/>.
+            </summary>
+            <typeparam name="T">Type of element</typeparam>
+            <param name="source">Enumerator that return the elements</param>
+            <param name="action">Action to execute for each element</param>
+            <param name="exceptionHandler">Delegate that handles exceptions thrown by <paramref name="action"/> before the exception is rethrown</param>
+            <returns><paramref name="source"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Execution.ExecutionExtensions.Trim(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Returns an enumerator that trims the values in <paramref name="source"/>.
+            </summary>
+            <param name="source">Strings to trim</param>
+            <returns>An enumerator that trims each element</returns>
+        </member>
+        <member name="T:Sels.Core.Extensions.Linq.LinqExtensions">
+            <summary>
+            Extra extension methods that follow the same setup as Linq.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Linq.LinqExtensions.GetCount``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Checks how many items are in <paramref name="source"/>. Checks common collection types first to avoid having to enumerate <paramref name="source"/>.
+            </summary>
+            <typeparam name="T">Type of items in <paramref name="source"/></typeparam>
+            <param name="source">Enumerator to check</param>
+            <returns>Item count of <paramref name="source"/></returns>
+        </member>
         <member name="M:Sels.Core.Extensions.Linq.LinqExtensions.ForceSelect``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1},System.Action{``0,System.Exception})">
             <summary>
-            Projects each element of a sequence into a new form.. Exception are caught so execution doesn't stop.
+            Projects each element of a sequence into a new form. Exception are caught so execution doesn't stop.
             </summary>
             <typeparam name="TSource">The type of the elements of source.</typeparam>
             <typeparam name="TSelect">The type of the value returned by selector.</typeparam>
@@ -1755,13 +1977,6 @@
             </summary>
             <param name="source">Collection to get items from</param>
             <returns>Objects in <paramref name="source"/></returns>
-        </member>
-        <member name="M:Sels.Core.Extensions.Linq.LinqExtensions.Trim(System.Collections.Generic.IEnumerable{System.String})">
-            <summary>
-            Returns an enumerator that trims the values in <paramref name="source"/>.
-            </summary>
-            <param name="source">Strings to trim</param>
-            <returns>An enumerator that trims each element</returns>
         </member>
         <member name="M:Sels.Core.Extensions.FileSizes.FileSizeExtensions.ToFileSize``1(System.Int64)">
             <summary>
@@ -1804,6 +2019,207 @@
             </summary>
             <param name="value">Object to check</param>
             <returns>Boolean indicating that <paramref name="value"/> is not null, empty or whitespace</returns>
+        </member>
+        <member name="T:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions">
+            <summary>
+            Exposes some more advanced logging methods.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Debug(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Debug"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Warning(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Warning"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Log(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Information"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Log(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.Exception)">
+            <summary>
+            Logs an exception with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Error"/>.
+            </summary>
+            <param name="exception">Exception to log</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Log(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.String,System.Exception,System.Object[])">
+            <summary>
+            Logs a exception with an extra message with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Error"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="exception">Exception to log</param>
+            <param name="args">Optional logging parameters</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Trace(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceObject(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.Object)">
+            <summary>
+            Traces an object to the logs using the <see cref="T:Sels.Core.Components.Serialization.Providers.JsonProvider"/> serialization provider with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <param name="objectToTrace">Object to serialize and log</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceObject(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},Microsoft.Extensions.Logging.LogLevel,System.Object)">
+            <summary>
+            Traces an object to the logs using the <see cref="T:Sels.Core.Components.Serialization.Providers.JsonProvider"/> serialization provider.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceObject(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.String,System.Object)">
+            <summary>
+            Traces an object to the logs using the <see cref="T:Sels.Core.Components.Serialization.Providers.JsonProvider"/> serialization provider with an extra message with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceObject(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},Microsoft.Extensions.Logging.LogLevel,System.String,System.Object)">
+            <summary>
+            Traces an object to the logs using the <see cref="T:Sels.Core.Components.Serialization.Providers.JsonProvider"/> serialization provider with an extra message.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="message">Message to log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceObject``1(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.Object)">
+            <summary>
+            Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <typeparam name="TProvider">Type of serialization provider</typeparam>
+            <param name="objectToTrace">Object to serialize and log</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceObject``1(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},Microsoft.Extensions.Logging.LogLevel,System.Object)">
+            <summary>
+            Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider.
+            </summary>
+            <typeparam name="TProvider">Type of serialization provider</typeparam>
+            <param name="level">Severity level for log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceObject``1(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.String,System.Object)">
+            <summary>
+            Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with an extra message with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <typeparam name="TProvider">Type of serialization provider</typeparam>
+            <param name="message">Message to log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceObject``1(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},Microsoft.Extensions.Logging.LogLevel,System.String,System.Object)">
+            <summary>
+            Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with an extra message.
+            </summary>
+            <typeparam name="TProvider">Type of serialization provider</typeparam>
+            <param name="level">Severity level for log</param>
+            <param name="message">Message to log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceAction(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.String)">
+            <summary>
+            Traces how long an action took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="action">Action to trace</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceAction(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.String,System.Func{System.TimeSpan,System.String})">
+            <summary>
+            Traces how long an action took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="actionStartMessage">Log message when action starts</param>
+            <param name="actionFinishedMessage">Log message when action is finished</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceAction(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},Microsoft.Extensions.Logging.LogLevel,System.String,System.Func{System.TimeSpan,System.String})">
+            <summary>
+            Traces how long an action took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="actionStartMessage">Log message when action starts</param>
+            <param name="actionFinishedMessage">Log message when action is finished</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceAction(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},Microsoft.Extensions.Logging.LogLevel,System.String)">
+            <summary>
+            Traces how long an action took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="action">Action to trace</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceMethod(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.Object,System.String)">
+            <summary>
+            Traces how long a method took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="caller">Object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceMethod(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},Microsoft.Extensions.Logging.LogLevel,System.Object,System.String)">
+            <summary>
+            Traces how long a method took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="caller">Object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceMethod(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.Type,System.String)">
+            <summary>
+            Traces how long a method took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="caller">Type of object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceMethod(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},Microsoft.Extensions.Logging.LogLevel,System.Type,System.String)">
+            <summary>
+            Traces how long a method took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="caller">Type of object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="T:Sels.Core.Extensions.Logging.LoggingExtensions">
+            <summary>
+            Exposes some simple additonal logging methods on ILoggers.
+            </summary>
         </member>
         <member name="M:Sels.Core.Extensions.CollectionExtensions.Copy``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
@@ -1883,6 +2299,33 @@
             <summary>
             Gets the value of the <see cref="T:Sels.Core.Components.Enumeration.Value.EnumValue"/> attribute if it's defined. Otherwise return enumeration as string.
             </summary>
+        </member>
+        <member name="T:Sels.Core.Extensions.Reflection.ReflectionExtensions">
+            <summary>
+            Contains extra extension methods for helping with reflection.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.ReflectionExtensions.GetTypeName(System.Object)">
+            <summary>
+            Returns the full type name for <paramref name="value"/>.
+            </summary>
+            <param name="value">Object to get type name from</param>
+            <returns>The full type name for <paramref name="value"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.ReflectionExtensions.IsDefault``1(``0)">
+            <summary>
+            If <paramref name="value"/> has the default value for type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of object to check</typeparam>
+            <param name="value">Object to check</param>
+            <returns>If <paramref name="value"/> equals the default value for <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.ReflectionExtensions.IsDefault(System.Object)">
+            <summary>
+            If <paramref name="value"/> has the default value for it's type.
+            </summary>
+            <param name="value">Object to check</param>
+            <returns>If <paramref name="value"/> equals the default value for it's type</returns>
         </member>
         <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.GetTypeOrDefault(System.Object)">
             <summary>
@@ -2211,6 +2654,16 @@
             <param name="argument">Method/Constructor argument</param>
             <param name="validationFailedMessage">Message for ArgumentException when validation fails</param>
             <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="T:Sels.Core.Helper">
+            <summary>
+            Static class with generic helper methods
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Helper.FileSystem">
+            <summary>
+            Contains static helper methods for working with the filesystem.
+            </summary>
         </member>
         <member name="M:Sels.Core.Helper.App.SetCurrentDirectoryToProcess">
             <summary>
@@ -2608,6 +3061,112 @@
             <param name="escapeString">String to prefix in front of <paramref name="stringsToEscape"/></param>
             <param name="stringsToEscape">Array with strings to escape</param>
             <returns><paramref name="source"/> with string escaped</returns>
+        </member>
+        <member name="M:System.StringExtensions.Contains(System.String,System.Char[])">
+            <summary>
+            Checks if <paramref name="value"/> contains one of the chars in <paramref name="chars"/>.
+            </summary>
+            <param name="value">String to check</param>
+            <param name="chars">Chars to check that <paramref name="value"/> contains</param>
+            <returns>If <paramref name="value"/> contains at one of the chars in <paramref name="chars"/></returns>
+        </member>
+        <member name="M:System.StringExtensions.ContainsAll(System.String,System.Char[])">
+            <summary>
+            Checks if <paramref name="value"/> contains all chars in <paramref name="chars"/>.
+            </summary>
+            <param name="value">String to check</param>
+            <param name="chars">Chars to check that <paramref name="value"/> contains</param>
+            <returns>If <paramref name="value"/> contains all chars in <paramref name="chars"/></returns>
+        </member>
+        <member name="M:System.StringExtensions.Contains(System.String,System.String[])">
+            <summary>
+            Checks if <paramref name="value"/> contains at least one substring in <paramref name="strings"/>.
+            </summary>
+            <param name="value">String to check</param>
+            <param name="strings">Substrings to check that <paramref name="value"/> contains</param>
+            <returns>If <paramref name="value"/> contains at least one substring in <paramref name="strings"/></returns>
+        </member>
+        <member name="M:System.StringExtensions.ContainsAll(System.String,System.String[])">
+            <summary>
+            Checks if <paramref name="value"/> contains all substrings in <paramref name="strings"/>
+            </summary>
+            <param name="value">String to check</param>
+            <param name="strings">Substrings to check that <paramref name="value"/> contains</param>
+            <returns>If <paramref name="value"/> contains all substrings in <paramref name="strings"/></returns>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions">
+            <summary>
+            Contains extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,System.Type,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <paramref name="serviceType"/> with an implementation of type <paramref name="implementationType"/>.
+            </summary>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceType">Type of service to add to the collection</param>
+            <param name="implementationType">Implementation for <paramref name="serviceType"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/> with an implementation of type <typeparamref name="TImplementation"/>.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <typeparam name="TImplementation">Implementation for <typeparamref name="TService"/></typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <paramref name="serviceType"/>.
+            </summary>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceType">Type of service to add to the collection</param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,System.Func{System.IServiceProvider,System.Object},Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <paramref name="serviceType"/> with <paramref name="implementationFactory"/> to create the instances.
+            </summary>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceType">Type of service to add to the collection</param>
+            <param name="implementationFactory">Factory that creates instances that implement <paramref name="serviceType"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``1},Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/> with <paramref name="implementationFactory"/> to create the instances.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <typeparam name="TImplementation">Implementation for <typeparamref name="TService"/></typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="implementationFactory">Factory that creates instances that implement <typeparamref name="TImplementation"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``0},Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/> with <paramref name="serviceFactory"/> to create the instances.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceFactory">Factory that creates instances of type <typeparamref name="TService"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
         </member>
     </members>
 </doc>

@@ -5,6 +5,7 @@ using Sels.Core.Components.Serialization.Providers;
 using Sels.Core.Contracts.Serialization;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Execution;
 using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,9 @@ using System.Threading.Tasks;
 
 namespace Sels.Core.Extensions.Logging
 {
+    /// <summary>
+    /// Exposes some simple additonal logging methods on ILoggers.
+    /// </summary>
     public static class LoggingExtensions
     {
         #region Logger

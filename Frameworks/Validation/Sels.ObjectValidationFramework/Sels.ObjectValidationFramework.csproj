@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Jens Sels</Authors>
+    <Company>Homebrew IT</Company>
+    <Product>Object Validation Framework</Product>
+    <Description>
+      Framework that allows for creating validation profiles for objects using a fluent syntax.
+Used by projects maintained here: https://github.com/Jenssels1998
+    </Description>
+    <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
+    <Copyright>Jens Sels</Copyright>
+    <PackageTags>Sels</PackageTags>
+	  <!--For NuGet package-->
+	  <VersionPrefix>2.0.0</VersionPrefix>
+	  <BuildNumber Condition="'$(BUILD_NUMBER)' == ''">0</BuildNumber>
+	  <BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$(BUILD_NUMBER)</BuildNumber>
+	  <VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
+	  <DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
+	  <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+	<!--Exclude pdb files from release build-->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<DebugType>None</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
+
+	<!--Include non-NuGet package projects in NuGet package-->
+	<Target Name="PrePackage" BeforeTargets="BuildPackage">
+		<PropertyGroup>
+			<BuildCommand>$(BuildCommand) -IncludeReferencedProjects</BuildCommand>
+		</PropertyGroup>
+	</Target>
+
+	<!--Clear local versions if already added and add NuGet package to local repository-->
+	<Target Name="NuGetPushToLocal" AfterTargets="Pack" Condition="'$(OS)' == 'Windows_NT' And Exists('C:\NuGet\nuget.exe')">
+    <Exec Command="if exist %USERPROFILE%\.nuget\packages\$(PackageId)\$(PackageVersion) rmdir /s /q %USERPROFILE%\.nuget\packages\$(PackageId)\$(PackageVersion)" />
+    <Exec Command="if exist C:\NuGet\$(PackageId)\$(PackageVersion) rmdir /s /q C:\NuGet\$(PackageId)\$(PackageVersion)" />
+		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
+	</Target>
+  
+	<ItemGroup>
+	  <Compile Remove="Exceptions\**" />
+	  <EmbeddedResource Remove="Exceptions\**" />
+	  <None Remove="Exceptions\**" />
+	</ItemGroup>
+  
+	<ItemGroup>
+	  <None Remove="Extensions\Configuration\ComparableValidationExtensions.cs~RF1794ed.TMP" />
+	  <None Remove="Extensions\Configuration\FileSystemValidationExtensions.cs~RF418512.TMP" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Sels.Core\Sels.Core.csproj" />
+	</ItemGroup>
+
+</Project>

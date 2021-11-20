@@ -4,6 +4,7 @@ using Sels.Core.Excel.Export.Definitions;
 using Sels.Core.Excel.Export.Definitions.Tables;
 using Sels.Core.Excel.Extensions;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Execution;
 using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections.Generic;

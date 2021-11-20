@@ -54,10 +54,16 @@ namespace System
         }
 
         #region Contains
+        /// <summary>
+        /// Checks if <paramref name="value"/> contains one of the chars in <paramref name="chars"/>.
+        /// </summary>
+        /// <param name="value">String to check</param>
+        /// <param name="chars">Chars to check that <paramref name="value"/> contains</param>
+        /// <returns>If <paramref name="value"/> contains at one of the chars in <paramref name="chars"/></returns>
         public static bool Contains(this string value, params char[] chars)
         {
-            value.ValidateVariable(nameof(value));
-            chars.ValidateVariable(nameof(chars));
+            value.ValidateArgument(nameof(value));
+            chars.ValidateArgument(nameof(chars));
 
             var stringChars = value.ToCharArray();
 
@@ -71,11 +77,16 @@ namespace System
 
             return false;
         }
-
+        /// <summary>
+        /// Checks if <paramref name="value"/> contains all chars in <paramref name="chars"/>.
+        /// </summary>
+        /// <param name="value">String to check</param>
+        /// <param name="chars">Chars to check that <paramref name="value"/> contains</param>
+        /// <returns>If <paramref name="value"/> contains all chars in <paramref name="chars"/></returns>
         public static bool ContainsAll(this string value, params char[] chars)
         {
-            value.ValidateVariable(nameof(value));
-            chars.ValidateVariable(nameof(chars));
+            value.ValidateArgument(nameof(value));
+            chars.ValidateArgument(nameof(chars));
 
             var stringChars = value.ToCharArray();
 
@@ -90,10 +101,16 @@ namespace System
             return true;
         }
 
+        /// <summary>
+        /// Checks if <paramref name="value"/> contains at least one substring in <paramref name="strings"/>.
+        /// </summary>
+        /// <param name="value">String to check</param>
+        /// <param name="strings">Substrings to check that <paramref name="value"/> contains</param>
+        /// <returns>If <paramref name="value"/> contains at least one substring in <paramref name="strings"/></returns>
         public static bool Contains(this string value, params string[] strings)
         {
-            value.ValidateVariable(nameof(value));
-            strings.ValidateVariable(nameof(strings));
+            value.ValidateArgument(nameof(value));
+            strings.ValidateArgument(nameof(strings));
 
             foreach (var stringValue in strings)
             {
@@ -105,11 +122,16 @@ namespace System
 
             return false;
         }
-
+        /// <summary>
+        /// Checks if <paramref name="value"/> contains all substrings in <paramref name="strings"/>
+        /// </summary>
+        /// <param name="value">String to check</param>
+        /// <param name="strings">Substrings to check that <paramref name="value"/> contains</param>
+        /// <returns>If <paramref name="value"/> contains all substrings in <paramref name="strings"/></returns>
         public static bool ContainsAll(this string value, params string[] strings)
         {
-            value.ValidateVariable(nameof(value));
-            strings.ValidateVariable(nameof(strings));
+            value.ValidateArgument(nameof(value));
+            strings.ValidateArgument(nameof(strings));
 
             foreach (var stringValue in strings)
             {

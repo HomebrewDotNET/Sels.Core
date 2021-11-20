@@ -13,7 +13,7 @@
 Used by projects maintained here: https://github.com/Jenssels1998
 		</Description>
 		<!--For NuGet package-->
-		<VersionPrefix>1.0.1</VersionPrefix>
+		<VersionPrefix>1.0.2</VersionPrefix>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">0</BuildNumber>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$(BUILD_NUMBER)</BuildNumber>
 		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
@@ -36,8 +36,8 @@ Used by projects maintained here: https://github.com/Jenssels1998
 
 	<!--Clear local versions if already added and add NuGet package to local repository-->
 	<Target Name="NuGetPushToLocal" AfterTargets="Pack" Condition="'$(OS)' == 'Windows_NT' And Exists('C:\NuGet\nuget.exe')">
-		<RemoveDir Directories="%USERPROFILE%\.nuget\packages\$(PackageId)\$(PackageVersion)" />
-		<RemoveDir Directories="C:\NuGet\$(PackageId)\$(PackageVersion)" />
+		<Exec Command="if exist %USERPROFILE%\.nuget\packages\$(PackageId)\$(PackageVersion) rmdir /s /q %USERPROFILE%\.nuget\packages\$(PackageId)\$(PackageVersion)" />
+		<Exec Command="if exist C:\NuGet\$(PackageId)\$(PackageVersion) rmdir /s /q C:\NuGet\$(PackageId)\$(PackageVersion)" />
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
 

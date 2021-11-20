@@ -10,16 +10,45 @@ using System.Text;
 
 namespace Sels.Core.Extensions.Reflection
 {
+    /// <summary>
+    /// Contains extra extension methods for helping with reflection.
+    /// </summary>
     public static class ReflectionExtensions
     {
+        /// <summary>
+        /// Returns the full type name for <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">Object to get type name from</param>
+        /// <returns>The full type name for <paramref name="value"/></returns>
         public static string GetTypeName(this object value)
         {
-            return value.GetType().ToString();
+            value.ValidateArgument(nameof(value));
+            return value.GetType().FullName;
         }
 
+        /// <summary>
+        /// If <paramref name="value"/> has the default value for type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of object to check</typeparam>
+        /// <param name="value">Object to check</param>
+        /// <returns>If <paramref name="value"/> equals the default value for <typeparamref name="T"/></returns>
         public static bool IsDefault<T>(this T value)
         {
             return EqualityComparer<T>.Default.Equals(value, default);
+        }
+
+        /// <summary>
+        /// If <paramref name="value"/> has the default value for it's type.
+        /// </summary>
+        /// <param name="value">Object to check</param>
+        /// <returns>If <paramref name="value"/> equals the default value for it's type</returns>
+        public static bool IsDefault(this object value)
+        {
+            if (value == null) {
+                return true;
+            }
+
+            return value.GetType().Construct() == value;
         }
 
         #region Attributes
