@@ -6,7 +6,10 @@
     <Authors>Jens Sels</Authors>
     <Company>Homebrew IT</Company>
     <Product>Object Validation Framework</Product>
-    <Description>Framework that allows for creating validation profiles for objects using a fluent syntax.</Description>
+    <Description>
+      Framework that allows for creating validation profiles for objects using a fluent syntax.
+Used by projects maintained here: https://github.com/Jenssels1998
+    </Description>
     <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
     <Copyright>Jens Sels</Copyright>
