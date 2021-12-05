@@ -179,6 +179,21 @@ namespace System
         #endregion
 
         #region Split
+        /// <summary>
+        /// Splits <paramref name="source"/> on <paramref name="splitValue"/>.
+        /// </summary>
+        /// <param name="source">String to split</param>
+        /// <param name="splitValue">What value to split <paramref name="source"/> on</param>
+        /// <param name="options">Option to omit empty string values from the return value</param>
+        /// <returns>Substrings after splitting <paramref name="source"/></returns>
+        public static string[] Split(this string source, string splitValue, StringSplitOptions options = StringSplitOptions.None)
+        {
+            source.ValidateArgumentNotNullOrEmpty(nameof(source));
+            splitValue.ValidateArgument(nameof(splitValue));
+
+            return source.Split(new string[] { splitValue }, options);
+        }
+
         public static string TrySplitFirstOrDefault(this string source, object splitValue, out string splitResult, StringSplitOptions splitOption = StringSplitOptions.None)
         {
             splitValue.ValidateVariable(nameof(splitValue));

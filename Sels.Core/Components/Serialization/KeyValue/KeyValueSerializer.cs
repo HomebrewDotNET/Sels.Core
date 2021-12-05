@@ -138,18 +138,18 @@ namespace Sels.Core.Components.Serialization.KeyValue
 
                     var key = serializerAttribute.Key ?? property.Name;
 
-                    profile.Add(new ItemSerializer(key, property, (type, propertyValue) => serializerAttribute.Serialize(type, propertyValue), (type, propertyValue, values) => serializerAttribute.Deserialize(type, values, propertyValue)));
+                    profile.Add(new ItemSerializer(key, property, (serializeType, propertyValue) => serializerAttribute.Serialize(serializeType, propertyValue), (serializeType, propertyValue, values) => serializerAttribute.Deserialize(serializeType, values, propertyValue)));
                 }
                 // Serialize/deserialize each item with converter and use collection factory to create or update property collection.
                 else if (!_excludedCollectionTypes.Any(x => property.PropertyType.IsAssignableTo(x)) && property.PropertyType.IsItemContainer())
                 {
-                    profile.Add(new ItemSerializer(property.Name, property, (type, propertyValue) => 
+                    profile.Add(new ItemSerializer(property.Name, property, (serializeType, propertyValue) => 
                     {
                         var collectionElementType = property.PropertyType.GetItemTypeFromContainer();
 
                         return _defaultCollectionFactory.ParseItems(propertyValue.AsOrDefault<IEnumerable>().Enumerate().Select(x => _defaultElementConverter.ConvertTo(collectionElementType, typeof(string), x).As<string>()));
                     }, 
-                    (type, propertyValue, values) => 
+                    (serializeType, propertyValue, values) => 
                     {
                         return _defaultCollectionFactory.CreateCollection(type, values.Select(x => _defaultElementConverter.ConvertTo(typeof(string) ,type, x)), propertyValue);
                     }));
@@ -157,11 +157,11 @@ namespace Sels.Core.Components.Serialization.KeyValue
                 // Default type converter which can handle most base types.
                 else
                 {
-                    profile.Add(new ItemSerializer(property.Name, property, (type, propertyValue) =>
+                    profile.Add(new ItemSerializer(property.Name, property, (serializeType, propertyValue) =>
                     {
                         return _defaultTypeConverter.ConvertTo(type, propertyValue);
                     },
-                    (type, propertyValue, values) =>
+                    (serializeType, propertyValue, values) =>
                     {
                         return _defaultTypeConverter.ConvertTo(type, values);
                     }));

@@ -9,6 +9,18 @@
             Provides extra options when executing a <see cref="T:Sels.Core.Contracts.Commands.ICommand"/>.
             </summary>
         </member>
+        <member name="M:Sels.Core.Components.Commands.CommandExecutionOptions.#ctor(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Provides extra options when executing a <see cref="T:Sels.Core.Contracts.Commands.ICommand"/>.
+            </summary>
+            <param name="loggers">Optional loggers for tracing command executions</param>
+        </member>
+        <member name="M:Sels.Core.Components.Commands.CommandExecutionOptions.#ctor(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Provides extra options when executing a <see cref="T:Sels.Core.Contracts.Commands.ICommand"/>.
+            </summary>
+            <param name="logger">Optional logger for tracing command executions</param>
+        </member>
         <member name="P:Sels.Core.Components.Commands.CommandExecutionOptions.Token">
             <summary>
             Token for cancelling the execution of long running <see cref="T:Sels.Core.Contracts.Commands.ICommand"/>.
@@ -28,6 +40,33 @@
             <summary>
             Allows <see cref="T:Sels.Core.Contracts.Commands.ICommand"/> to log.
             </summary>
+        </member>
+        <member name="T:Sels.Core.Components.Commands.MultiCommandBuilder`1">
+            <summary>
+            Builder for <see cref="T:Sels.Core.Contracts.Commands.IMultiCommandStartSetup`1"/>, <see cref="T:Sels.Core.Contracts.Commands.IMultiCommandSetup`1"/> and <see cref="T:Sels.Core.Contracts.Commands.IMultiCommandChain`1"/>
+            </summary>
+            <typeparam name="TChain"></typeparam>
+        </member>
+        <member name="P:Sels.Core.Components.Commands.MultiCommandBuilder`1.StartCommand">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Components.Commands.MultiCommandBuilder`1.IntermediateCommands">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Components.Commands.MultiCommandBuilder`1.FinalChain">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Components.Commands.MultiCommandBuilder`1.FinalCommand">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.Commands.MultiCommandBuilder`1.StartWith(Sels.Core.Contracts.Commands.ICommand)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.Commands.MultiCommandBuilder`1.ContinueWith(`0,Sels.Core.Contracts.Commands.ICommand)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.Commands.MultiCommandBuilder`1.EndWith(`0,Sels.Core.Contracts.Commands.ICommand)">
+            <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Components.Conversion.Converters.DateTimeConverter">
             <summary>
@@ -201,6 +240,23 @@
             Object factory that uses type aliases as identifier to create new objects. Aliases are loaded from config. Uses <see cref="T:Sels.Core.Components.Factory.ObjectConstructionConfig"/> as the config section.
             </summary>
         </member>
+        <member name="F:Sels.Core.Components.Factory.AliasTypeFactory._aliases">
+            <summary>
+            Dictionary to map aliases to their type.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.AliasTypeFactory.#ctor(Sels.Core.Contracts.Configuration.IConfigProvider,Sels.Core.Contracts.Conversion.IGenericTypeConverter,System.String,System.String[])">
+            <summary>
+            Object factory that uses type aliases as identifier to create new objects. Aliases are loaded from config. Uses <see cref="T:Sels.Core.Components.Factory.ObjectConstructionConfig"/> as the config section.
+            </summary>
+            <param name="configurationProvider">Service for accessing configuration.</param>
+            <param name="typeConverter">Service for converting types.</param>
+            <param name="aliasSection">Name of the section that contains the alias mappings</param>
+            <param name="parentSections">Optional parent section for <paramref name="parentSections"/></param>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.AliasTypeFactory.GetTypeFromIdentifier(System.String)">
+            <inheritdoc/>
+        </member>
         <member name="T:Sels.Core.Components.Factory.GenericFactory`1">
             <summary>
             Factory that creates new instances by calling the right constructor based on supplied arguments.
@@ -211,6 +267,12 @@
             <summary>
             Type of new instances that factory can create.
             </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.GenericFactory`1.Create(System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.GenericFactory`1.CreateNewInstance``1(System.Object[])">
+            <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Components.Factory.ObjectConstructionConfig">
             <summary>
@@ -246,6 +308,48 @@
             <summary>
             Object factory that uses type names as identifier to create new objects. Uses <see cref="T:Sels.Core.Components.Factory.ObjectConstructionConfig"/> as the config section.
             </summary>
+        </member>
+        <member name="F:Sels.Core.Components.Factory.TypeFactory._configurationProvider">
+            <summary>
+            Service for accessing configuration.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Components.Factory.TypeFactory._typeConverter">
+            <summary>
+            Service for converting types.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.TypeFactory.#ctor(Sels.Core.Contracts.Configuration.IConfigProvider,Sels.Core.Contracts.Conversion.IGenericTypeConverter)">
+            <summary>
+            Object factory that uses type names as identifier to create new objects. Uses <see cref="T:Sels.Core.Components.Factory.ObjectConstructionConfig"/> as the config section.
+            </summary>
+            <param name="configurationProvider">Service for accessing configuration.</param>
+            <param name="typeConverter">Service for converting types.</param>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.TypeFactory.Build(System.String,System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.TypeFactory.Build``1(System.String,System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.TypeFactory.BuildAllFromConfig(System.String,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.TypeFactory.BuildAllFromConfig``1(System.String,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.TypeFactory.BuildFromConfig(System.String,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.TypeFactory.BuildFromConfig``1(System.String,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.Factory.TypeFactory.GetTypeFromIdentifier(System.String)">
+            <summary>
+            Gets the mapped type for <paramref name="identifier"/>.
+            </summary>
+            <param name="identifier">Identifier to get the type for</param>
+            <returns>The mapped type for <paramref name="identifier"/></returns>
         </member>
         <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit">
             <summary>
@@ -421,6 +525,24 @@
             <summary>
             Windows specific wrapper for <see cref="T:Sels.Core.Templates.FileSystem.CrossPlatformDirectory"/>
             </summary>
+        </member>
+        <member name="P:Sels.Core.Components.FileSystem.WindowsDirectory.FreeSpace">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Components.FileSystem.WindowsDirectory.MountPoint">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.FileSystem.WindowsDirectory.#ctor(System.String)">
+            <summary>
+            Windows specific wrapper for <see cref="T:Sels.Core.Templates.FileSystem.CrossPlatformDirectory"/>
+            </summary>
+            <param name="path">Path to the directory</param>
+        </member>
+        <member name="M:Sels.Core.Components.FileSystem.WindowsDirectory.#ctor(System.IO.DirectoryInfo)">
+            <summary>
+            Windows specific wrapper for <see cref="T:Sels.Core.Templates.FileSystem.CrossPlatformDirectory"/>
+            </summary>
+            <param name="info">Directory info to wrap</param>
         </member>
         <member name="M:Sels.Core.Components.Filtering.ObjectFilter.ObjectFilter`2.CreateExplicitMap(System.Linq.Expressions.Expression{System.Action{`0}},System.Linq.Expressions.Expression{System.Action{`1}})">
             <summary>
@@ -678,6 +800,11 @@
             <param name="endMessageFunc">Func that creates the stop message</param>
             <returns>Logger that keeps start of elapsed time since it was created</returns>
         </member>
+        <member name="T:Sels.Core.Components.Parameters.GlobalParameters">
+            <summary>
+            User to modify the default values used by <see cref="T:Sels.Core.Components.Parameters.Parameterizer"/>.
+            </summary>
+        </member>
         <member name="M:Sels.Core.Components.Parameters.GlobalParameters.AddParameter(System.String,System.Func{System.Object,System.String,System.String},System.Func{System.Object})">
             <summary>
             Adds a global parameter that gets loaded into any Parameterizer that has loadGlobalParameters enabled
@@ -758,6 +885,37 @@
             Generate bew value with argument
             </summary>
         </member>
+        <member name="T:Sels.Core.Components.Parameters.Parameterizer">
+            <summary>
+            Service that replaces text parameters in a string using parameters who can perform custom code when resolving a parameter value.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Components.Parameters.Parameterizer.ArgumentSplit">
+            <summary>
+            The string used to split up a parameter name and it's optional argument.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Parameters.Parameterizer.Parameters">
+            <summary>
+            The parameters that this service will use to resolve parameters in the supplied text.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Parameters.Parameterizer.ParameterPrefix">
+            <summary>
+            The prefix added in front of the parameters.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.Parameters.Parameterizer.ParameterSuffix">
+            <summary>
+            The suffix added to close a parameter.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Parameters.Parameterizer.#ctor(System.Boolean)">
+            <summary>
+            Service that replaces text parameters in a string using parameters who can perform custom code when resolving a parameter value.
+            </summary>
+            <param name="loadGlobalParameters">If this service should add the parameters from <see cref="P:Sels.Core.Components.Parameters.GlobalParameters.Parameters"/></param>
+        </member>
         <member name="M:Sels.Core.Components.Parameters.Parameterizer.AddParameter(System.String,System.Func{System.Object,System.String,System.String},System.Func{System.Object})">
             <summary>
             Adds parameter that the parameterizer can use
@@ -795,8 +953,10 @@
         </member>
         <member name="M:Sels.Core.Components.Parameters.Parameterizer.Apply(System.String)">
             <summary>
-            Applies any parameters that are registered in this parameterizer to the supplied text
+            Replaces all parameters in <paramref name="source"/> that this service knows.
             </summary>
+            <param name="source">The string to replace the parameters in</param>
+            <returns><paramref name="source"/> will all known parameters replaced</returns>
         </member>
         <member name="T:Sels.Core.Components.Parameters.Parameters.CachedParameter">
             <summary>
@@ -868,6 +1028,51 @@
             <summary>
             Returns value for the internal value when any of the Getter Set conditions return true
             </summary>
+        </member>
+        <member name="T:Sels.Core.Components.ScheduledAction.RecurringTimerAction">
+            <summary>
+            Runs code on a schedule using a timer.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Components.ScheduledAction.RecurringTimerAction.LastRunTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Components.ScheduledAction.RecurringTimerAction.EstimatedNextRunTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Components.ScheduledAction.RecurringTimerAction.IsRunning">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Components.ScheduledAction.RecurringTimerAction.Action">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Components.ScheduledAction.RecurringTimerAction.ExceptionHandler">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Components.ScheduledAction.RecurringTimerAction.HaltOnException">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.ScheduledAction.RecurringTimerAction.#ctor(System.Int32)">
+            <summary>
+            Runs code on a schedule using a timer.
+            </summary>
+            <param name="schedule">Interval in milliseconds when to run <see cref="P:Sels.Core.Components.ScheduledAction.RecurringTimerAction.Action"/></param>
+        </member>
+        <member name="M:Sels.Core.Components.ScheduledAction.RecurringTimerAction.#ctor(System.Action{System.Threading.CancellationToken},System.Int32)">
+            <summary>
+            Runs code on a schedule using a timer.
+            </summary>
+            <param name="schedule">Interval in milliseconds when to run <see cref="P:Sels.Core.Components.ScheduledAction.RecurringTimerAction.Action"/></param>
+            <param name="action">The action to execute</param>
+        </member>
+        <member name="M:Sels.Core.Components.ScheduledAction.RecurringTimerAction.Start">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.ScheduledAction.RecurringTimerAction.Stop">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Components.ScheduledAction.RecurringTimerAction.ExecuteAndStart">
+            <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Components.ScopedActions.ScopedAction">
             <summary>
@@ -1040,16 +1245,109 @@
         </member>
         <member name="M:Sels.Core.Contracts.Commands.ICommand.RunCommand(System.String@,System.String@,System.Int32@,Sels.Core.Components.Commands.CommandExecutionOptions)">
             <summary>
-            Runs the command and gets the stout, sterr and exit code.
+            Executed the current command and returns it's output.
             </summary>
-            <param name="output">Stout of command</param>
-            <param name="error">Sterr of command</param>
-            <param name="exitCode">Exit code of command</param>
-            <returns>Boolean indicating if the command executed succesfully</returns>
+            <param name="output">Standard output received from executing the command. Equals the Stout</param>
+            <param name="error">Error output received from executing the command. Equals the Sterr</param>
+            <param name="exitCode">The exit returned by the command process</param>
+            <param name="options">Optional options for modifying the execution behaviour</param>
+            <returns>If the command was succesfully executed</returns>
         </member>
         <member name="M:Sels.Core.Contracts.Commands.ICommand.BuildCommand">
             <summary>
-            Builds the command string.
+            Builds a string that represents the command that will be executed.
+            </summary>
+            <returns>The command string that will be executed if <see cref="M:Sels.Core.Contracts.Commands.ICommand.RunCommand(System.String@,System.String@,System.Int32@,Sels.Core.Components.Commands.CommandExecutionOptions)"/> is called</returns>
+        </member>
+        <member name="T:Sels.Core.Contracts.Commands.ICommand`1">
+            <summary>
+            Used to execute command and return
+            </summary>
+            <typeparam name="TCommandResult">Type of result returned by the command</typeparam>
+        </member>
+        <member name="M:Sels.Core.Contracts.Commands.ICommand`1.Execute(Sels.Core.Components.Commands.CommandExecutionOptions)">
+            <summary>
+            Executes this command and parses it's command output to <typeparamref name="TCommandResult"/>.
+            </summary>
+            <param name="options">Optional options for modifying the execution behaviour</param>
+            <returns>The parsed command output from executing this command</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Commands.ICommand`1.Execute(System.Int32@,Sels.Core.Components.Commands.CommandExecutionOptions)">
+            <summary>
+            Executes this command and parses it's command output to <typeparamref name="TCommandResult"/>.
+            </summary>
+            <param name="exitCode">Exit code from executing the command</param>
+            <param name="options">Optional options for modifying the execution behaviour</param>
+            <returns>The parsed command output from executing this command</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Commands.ICommand`1.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Parses <paramref name="exitCode"/> and <paramref name="error"/> from command execution to an object of type <typeparamref name="TCommandResult"/>.
+            </summary>
+            <param name="exitCode">Exit code of command execution</param>
+            <param name="error">Sterr of command execution</param>
+            <param name="output">Stout of command execution</param>
+            <param name="wasSuccesful">Boolean indicating if command execution was successful</param>
+            <param name="loggers">Optional loggers for tracing</param>
+            <returns>Result from command execution</returns>
+        </member>
+        <member name="T:Sels.Core.Contracts.Commands.IMultiCommandStartSetup`1">
+            <summary>
+            Used to start to setup a command chain for a command that consists of multiple commands.
+            </summary>
+            <typeparam name="TChain">Type of objects that tells how commands should be chained</typeparam>
+        </member>
+        <member name="M:Sels.Core.Contracts.Commands.IMultiCommandStartSetup`1.StartWith(Sels.Core.Contracts.Commands.ICommand)">
+            <summary>
+            Sets <paramref name="startCommand"/> as the first command to be executed.
+            </summary>
+            <param name="startCommand">Command to execute first</param>
+            <returns>Setup object to continue building the command chain or returns the <see cref="T:Sels.Core.Contracts.Commands.IMultiCommandChain`1"/></returns>
+        </member>
+        <member name="T:Sels.Core.Contracts.Commands.IMultiCommandSetup`1">
+            <summary>
+            Used to setup and build a command chain for a command that consists of multiple commands.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Commands.IMultiCommandSetup`1.ContinueWith(`0,Sels.Core.Contracts.Commands.ICommand)">
+            <summary>
+            Continues the previous command with <paramref name="command"/>.
+            </summary>
+            <param name="chain">How the previous <see cref="T:Sels.Core.Contracts.Commands.ICommand"/> should be chained with <paramref name="command"/></param>
+            <param name="command">Command to chain</param>
+            <returns>Object to continue building the chain</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Commands.IMultiCommandSetup`1.EndWith(`0,Sels.Core.Contracts.Commands.ICommand)">
+            <summary>
+            Finished the command chain with <paramref name="finalCommand"/> and returns the full command chain.
+            </summary>
+            <param name="finalChain">How the previous <see cref="T:Sels.Core.Contracts.Commands.ICommand"/> should be chained with <paramref name="finalCommand"/></param>
+            <param name="finalCommand">Final command in the chain that will be executed</param>
+            <returns>The configured command chain</returns>
+        </member>
+        <member name="T:Sels.Core.Contracts.Commands.IMultiCommandChain`1">
+            <summary>
+            Represents the order in which command are executed for a command that consists of multiple commands.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.Commands.IMultiCommandChain`1.StartCommand">
+            <summary>
+            First command in the chain that will be executed first.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.Commands.IMultiCommandChain`1.IntermediateCommands">
+            <summary>
+            List of ordered commands that will be executed in order after <see cref="P:Sels.Core.Contracts.Commands.IMultiCommandChain`1.StartCommand"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.Commands.IMultiCommandChain`1.FinalChain">
+            <summary>
+            How <see cref="P:Sels.Core.Contracts.Commands.IMultiCommandChain`1.StartCommand"/> or the last command in <see cref="P:Sels.Core.Contracts.Commands.IMultiCommandChain`1.IntermediateCommands"/> should be linked to <see cref="P:Sels.Core.Contracts.Commands.IMultiCommandChain`1.FinalCommand"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.Commands.IMultiCommandChain`1.FinalCommand">
+            <summary>
+            Final command in the chain that will be executed.
             </summary>
         </member>
         <member name="M:Sels.Core.Contracts.Configuration.IConfigProvider.GetConnectionString(System.String,System.Boolean)">
@@ -1173,6 +1471,13 @@
             Factory that is able to create new instances of <typeparamref name="T"/> based on supplied arguments.
             </summary>
             <typeparam name="T">Type of new instances that factory can create</typeparam>
+        </member>
+        <member name="M:Sels.Core.Contracts.Factory.IFactory`1.Create(System.Object[])">
+            <summary>
+            Creates a new instance of <paramref name="arguments"/>.
+            </summary>
+            <param name="arguments">Optional arguments to create a new instance of <typeparamref name="T"/></param>
+            <returns>A new instance of <typeparamref name="T"/></returns>
         </member>
         <member name="T:Sels.Core.Contracts.Factory.IObjectFactory">
             <summary>
@@ -1362,6 +1667,56 @@
             <param name="collection">Collection with registered services</param>
             <returns><paramref name="collection"/></returns>
         </member>
+        <member name="T:Sels.Core.Contracts.ScheduledAction.IScheduledAction">
+            <summary>
+            Code that is ran based on a schedule.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.ScheduledAction.IScheduledAction.LastRunTime">
+            <summary>
+            Time when this action last ran. Null if it hasn't run once.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.ScheduledAction.IScheduledAction.EstimatedNextRunTime">
+            <summary>
+            Estimated time when this action will execute. Null if not running.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.ScheduledAction.IScheduledAction.IsRunning">
+            <summary>
+            If this action is currently running and is executing code on a schedule.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.ScheduledAction.IScheduledAction.Action">
+            <summary>
+            The action to execute. The arg is the cancellation token that will be used when calling <see cref="M:Sels.Core.Contracts.ScheduledAction.IScheduledAction.Stop"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.ScheduledAction.IScheduledAction.ExceptionHandler">
+            <summary>
+            Optional delegate to handle any exceptions that are thrown.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Contracts.ScheduledAction.IScheduledAction.HaltOnException">
+            <summary>
+            If this action should stop running when an uncaught exception is thrown.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.ScheduledAction.IScheduledAction.Start">
+            <summary>
+            Starts this action so code starts running on the internally defined schedule.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.ScheduledAction.IScheduledAction.ExecuteAndStart">
+            <summary>
+            Execute <see cref="P:Sels.Core.Contracts.ScheduledAction.IScheduledAction.Action"/> and then start executing on the internally defined schedule.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.ScheduledAction.IScheduledAction.Stop">
+            <summary>
+            Stops this action and waits if it still executing.
+            </summary>
+        </member>
         <member name="T:Sels.Core.Contracts.Serialization.ISerializationProvider">
             <summary>
             Service that can serialize and deserialize objects
@@ -1393,7 +1748,6 @@
             Creates a collection containing the deserializedItems.
             </summary>
             <param name="collectionType">Type of collection</param>
-            <param name="propertyCollection">Property value</param>
             <param name="deserializedItems">Deserialized items</param>
             <param name="factoryArgument">Optional argument from KeyValueCollectionAttribute</param>
             <returns>Collection</returns>
@@ -2243,6 +2597,7 @@
             </summary>
             <typeparam name="T">Collection element type</typeparam>
             <param name="collection">Collection to check</param>
+            <param name="valueSelector">Func that selects the value from <typeparamref name="T"/> to compare</param>
             <returns>Boolean indicating if all elements in <paramref name="collection"/> are unique</returns>
         </member>
         <member name="M:Sels.Core.Extensions.CollectionExtensions.AddValueToList``2(System.Collections.Generic.Dictionary{``0,System.Collections.Generic.List{``1}},``0,``1)">
@@ -2629,6 +2984,14 @@
             <param name="assignableType">Type to check against</param>
             <returns><paramref name="argument"/></returns>
         </member>
+        <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentNotInterface(System.Type,System.String)">
+            <summary>
+            Validates if argument is not null and is not an interface type.
+            </summary>
+            <param name="argument">Method/Constructor argument</param>
+            <param name="parameterName">Method/Constructor parameter name</param>
+            <returns><paramref name="argument"/></returns>
+        </member>
         <member name="M:Sels.Core.Extensions.ArgumentValidationExtensions.ValidateArgumentCanBeContructedWith(System.Type,System.String,System.Type[])">
             <summary>
             Validates if an instance can be constructed from <paramref name="argument"/> using the supplied <paramref name="parameterTypes"/>.
@@ -2897,6 +3260,18 @@
         <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.CreationTimeUtc">
             <inheritdoc cref="P:System.IO.FileSystemInfo.CreationTimeUtc"/>
         </member>
+        <member name="M:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.#ctor(System.String)">
+            <summary>
+            Wrapper around DirectoryInfo that exposes additional information that is fetched differently on other platforms.
+            </summary>
+            <param name="path">Path to the directory</param>
+        </member>
+        <member name="M:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.#ctor(System.IO.DirectoryInfo)">
+            <summary>
+            Wrapper around DirectoryInfo that exposes additional information that is fetched differently on other platforms.
+            </summary>
+            <param name="info">Directory info to wrap</param>
+        </member>
         <member name="P:Sels.Core.Templates.FileSystem.CrossPlatformDirectory.FreeSpace">
             <summary>
             Amount of free space on this directory
@@ -3093,6 +3468,15 @@
             <param name="value">String to check</param>
             <param name="strings">Substrings to check that <paramref name="value"/> contains</param>
             <returns>If <paramref name="value"/> contains all substrings in <paramref name="strings"/></returns>
+        </member>
+        <member name="M:System.StringExtensions.Split(System.String,System.String,System.StringSplitOptions)">
+            <summary>
+            Splits <paramref name="source"/> on <paramref name="splitValue"/>.
+            </summary>
+            <param name="source">String to split</param>
+            <param name="splitValue">What value to split <paramref name="source"/> on</param>
+            <param name="options">Option to omit empty string values from the return value</param>
+            <returns>Substrings after splitting <paramref name="source"/></returns>
         </member>
         <member name="T:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions">
             <summary>

@@ -7,6 +7,7 @@ using System.Text;
 using Sels.Core.Linux.Components.LinuxCommand.Commands.Core;
 using Sels.Core.Linux.Contracts.LinuxCommand.Commands;
 using Sels.Core.Linux.Components.LinuxCommand.Commands;
+using Sels.Core.Contracts.Commands;
 
 namespace Sels.Core.Linux.Extensions
 {
@@ -32,7 +33,7 @@ namespace Sels.Core.Linux.Extensions
         /// <param name="command">Command to execute</param>
         /// <param name="exitCode">Exit code returned from executing the command</param>
         /// <returns>Command result</returns>
-        public static TResult ExecuteAsSuperUser<TResult>(this ILinuxCommand<TResult> command, out int exitCode)
+        public static TResult ExecuteAsSuperUser<TResult>(this ICommand<TResult> command, out int exitCode)
         {
             command.ValidateArgument(nameof(command));
             return new SudoCommand<TResult>(command).Execute(out exitCode);
@@ -44,7 +45,7 @@ namespace Sels.Core.Linux.Extensions
         /// <typeparam name="TResult">Type of command result</typeparam>
         /// <param name="command">Command to execute</param>
         /// <returns>Command result</returns>
-        public static TResult ExecuteAsSuperUser<TResult>(this ILinuxCommand<TResult> command)
+        public static TResult ExecuteAsSuperUser<TResult>(this ICommand<TResult> command)
         {
             return command.ExecuteAsSuperUser(out _);
         }
@@ -57,7 +58,7 @@ namespace Sels.Core.Linux.Extensions
         /// <param name="password">Password for sudo</param>
         /// <param name="exitCode">Exit code returned from executing the command</param>
         /// <returns>Command result</returns>
-        public static TResult ExecuteAsSuperUser<TResult>(this ILinuxCommand<TResult> command, string password, out int exitCode)
+        public static TResult ExecuteAsSuperUser<TResult>(this ICommand<TResult> command, string password, out int exitCode)
         {
             command.ValidateArgument(nameof(command));
             password.ValidateArgumentNotNullOrWhitespace(nameof(password));
@@ -79,7 +80,7 @@ namespace Sels.Core.Linux.Extensions
         /// <param name="password">Password for sudo</param>
         /// <param name="command">Command to execute</param>
         /// <returns>Command result</returns>
-        public static TResult ExecuteAsSuperUser<TResult>(this ILinuxCommand<TResult> command, string password)
+        public static TResult ExecuteAsSuperUser<TResult>(this ICommand<TResult> command, string password)
         {
             return command.ExecuteAsSuperUser(password, out _);
         }

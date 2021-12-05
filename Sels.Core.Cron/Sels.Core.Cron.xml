@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Cron</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction">
+            <summary>
+            Runs code on a schedule using a timer.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.LastRunTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.EstimatedNextRunTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.IsRunning">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.Action">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.ExceptionHandler">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.HaltOnException">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.#ctor(System.String)">
+            <summary>
+            Runs code on a schedule using a timer.
+            </summary>
+            <param name="schedule">Schedule in the cron format</param>
+        </member>
+        <member name="M:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.#ctor(System.Action{System.Threading.CancellationToken},System.String)">
+            <summary>
+            Runs code on a schedule using a timer.
+            </summary>
+            <param name="schedule">Schedule in the cron format</param>
+            <param name="action">The action to execute</param>
+        </member>
+        <member name="M:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.Start">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.Stop">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cron.Components.ScheduledAction.RecurringCronAction.ExecuteAndStart">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

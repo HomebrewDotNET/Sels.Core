@@ -13,6 +13,10 @@ namespace Sels.Core.Components.Commands
     /// </summary>
     public class CommandExecutionOptions
     {
+        /// <summary>
+        /// Provides extra options when executing a <see cref="ICommand"/>.
+        /// </summary>
+        /// <param name="loggers">Optional loggers for tracing command executions</param>
         public CommandExecutionOptions(IEnumerable<ILogger> loggers = null)
         {
             if(loggers != null)
@@ -20,7 +24,10 @@ namespace Sels.Core.Components.Commands
                 Loggers.AddRange(loggers);
             }
         }
-
+        /// <summary>
+        /// Provides extra options when executing a <see cref="ICommand"/>.
+        /// </summary>
+        /// <param name="logger">Optional logger for tracing command executions</param>
         public CommandExecutionOptions(ILogger logger = null) : this(logger.AsArrayOrDefault())
         {
 

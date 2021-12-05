@@ -49,11 +49,18 @@ namespace Sels.Core.Templates.FileSystem
         /// <inheritdoc cref="FileSystemInfo.CreationTimeUtc"/>
         public DateTime CreationTimeUtc => Source.CreationTimeUtc;
 
+        /// <summary>
+        /// Wrapper around DirectoryInfo that exposes additional information that is fetched differently on other platforms.
+        /// </summary>
+        /// <param name="path">Path to the directory</param>
         public CrossPlatformDirectory(string path) : this(new DirectoryInfo(path.ValidateArgumentNotNullOrWhitespace(nameof(path))))
         {
 
         }
-
+        /// <summary>
+        /// Wrapper around DirectoryInfo that exposes additional information that is fetched differently on other platforms.
+        /// </summary>
+        /// <param name="info">Directory info to wrap</param>
         public CrossPlatformDirectory(DirectoryInfo info)
         {
             Source = info.ValidateArgument(nameof(info));

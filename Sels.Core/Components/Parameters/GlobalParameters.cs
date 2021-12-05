@@ -9,6 +9,9 @@ using System.Text;
 
 namespace Sels.Core.Components.Parameters
 {
+    /// <summary>
+    /// User to modify the default values used by <see cref="Parameterizer"/>.
+    /// </summary>
     public static class GlobalParameters
     {
         // Constants

@@ -42,7 +42,7 @@ namespace Sels.Core.TestTool
     {
         static void Main(string[] args)
         {
-            ConsoleHelper.Run(TestLinuxDirectory);
+            ConsoleHelper.Run(TestParameterizer);
         }
 
         private static void DoRecurrentStuff()
@@ -224,13 +224,16 @@ namespace Sels.Core.TestTool
 
             // Create parameterizer and add some test parameters
             var parameterizer = new Parameterizer()
-                                        .AddParameter(TesterName, "Jens Sels");
+                                        .AddParameter("TesterName", "Jens")
+                                        .AddParameter("TesterFamilyName", "Sels")
+                                        .AddParameter(TesterName, "${{TesterName}} ${{TesterFamilyName}}");
 
             var text = @$"Hello from ${{{{{TesterName}}}}} in Environment ${{{{{EnvironmentName}}}}}.
-            Today is ${{{{{DateTimeNowParameter.ParameterName}_dd/MM/yyyy}}}}.
-            You request id is: ${{{{{NewGuidParameter.ParameterName}_One}}}}.
-            You correlation id is: ${{{{{NewGuidParameter.ParameterName}}}}}.
-            Remember to save your request id: ${{{{{NewGuidParameter.ParameterName}_One}}}}.";
+Today is ${{{{{DateTimeNowParameter.ParameterName}_dd/MM/yyyy}}}}.
+You request id is: ${{{{{NewGuidParameter.ParameterName}_One}}}}.
+You correlation id is: ${{{{{NewGuidParameter.ParameterName}_${{{{TesterName}}}}}}}}.
+Remember to save your request id: ${{{{{NewGuidParameter.ParameterName}_One}}}}.
+Also don't forget your correlation id: ${{{{{NewGuidParameter.ParameterName}_${{{{TesterName}}}}}}}}.";
 
             text = parameterizer.Apply(text);
 

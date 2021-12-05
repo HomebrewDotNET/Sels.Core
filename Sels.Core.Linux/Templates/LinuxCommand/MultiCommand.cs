@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Components.Commands;
 using Sels.Core.Contracts.Commands;
 using Sels.Core.Extensions;
 using Sels.Core.Linux.Components.LinuxCommand.Commands;
@@ -19,14 +20,18 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
     /// <typeparam name="TCommandResult">Result from executing the command</typeparam>
     public abstract class MultiCommand<TCommandResult> : ShellCommand<TCommandResult>
     {
+        /// <summary>
+        /// Template for creating commands that consists of other commands.
+        /// </summary>
         public MultiCommand() 
         {
 
         }
 
+        /// <inheritdoc/>
         protected override string BuildArguments(IEnumerable<ILogger> loggers = null)
         {
-            var commandChain = BuildCommandChain(new MultiCommandBuilder());
+            var commandChain = BuildCommandChain(new MultiCommandBuilder<CommandChainer>());
 
             commandChain.ValidateArgument(x => x.HasValue(), x => new NotSupportedException($"{nameof(BuildCommandChain)} cannot return null"));
 
@@ -39,7 +44,7 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
         /// </summary>
         /// <param name="chainSetup">Object to start building the chain</param>
         /// <returns>Chain of command to execute</returns>
-        protected abstract IMultiCommandChain BuildCommandChain(IMultiCommandStartSetup chainSetup);
+        protected abstract IMultiCommandChain<CommandChainer> BuildCommandChain(IMultiCommandStartSetup<CommandChainer> chainSetup);
     }
 
     /// <summary>
@@ -47,54 +52,12 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
     /// </summary>
     public abstract class MultiCommand : MultiCommand<ILinuxCommandResult<string, string>>, ILinuxCommand
     {
+        /// <inheritdoc/>
         public override ILinuxCommandResult<string, string> CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
             return new LinuxCommandResult<string, string>(!wasSuccesful, output, error, exitCode);
         }
     }
 
-    internal class MultiCommandBuilder : IMultiCommandStartSetup, IMultiCommandSetup, IMultiCommandChain
-    {
-        // Fields
-        private readonly List<(CommandChainer Chain, ICommand Command)> _intermediateCommands = new List<(CommandChainer Chain, ICommand Command)>();
 
-        // Properties
-        public ICommand StartCommand { get; private set; }
-
-        public ReadOnlyCollection<(CommandChainer Chain, ICommand Command)> IntermediateCommands => new ReadOnlyCollection<(CommandChainer Chain, ICommand Command)>(_intermediateCommands);
-
-        public CommandChainer FinalChain { get; private set; }
-
-        public ICommand FinalCommand { get; private set; }
-
-        public IMultiCommandSetup StartWith(ICommand startCommand)
-        {
-            startCommand.ValidateArgument(nameof(startCommand));
-
-            StartCommand = startCommand;
-
-            return this;
-        }
-
-        public IMultiCommandSetup ContinueWith(CommandChainer chain, ICommand command)
-        {
-            command.ValidateArgument(nameof(command));
-
-            _intermediateCommands.Add((chain, command));
-
-            return this;
-        }
-
-        public IMultiCommandChain EndWith(CommandChainer finalChain, ICommand finalCommand)
-        {
-            finalCommand.ValidateArgument(nameof(finalCommand));
-
-            FinalChain = finalChain;
-            FinalCommand = finalCommand;
-
-            return this;
-        }
-
-
-    }
 }

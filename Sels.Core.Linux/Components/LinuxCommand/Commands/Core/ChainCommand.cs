@@ -38,42 +38,42 @@ namespace Sels.Core.Linux.Components.LinuxCommand.Commands.Core
         /// <summary>
         /// Final command in the chain that will be executed and will parse the result for this command.
         /// </summary>
-        public ILinuxCommand<TCommandResult> FinalCommand { get; protected set; }
+        public ICommand<TCommandResult> FinalCommand { get; protected set; }
 
-        public ChainCommand(ICommand startCommand, CommandChainer finalChain, ILinuxCommand<TCommandResult> finalCommand) : base()
+        public ChainCommand(ICommand startCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : base()
         {
             StartCommand = startCommand.ValidateArgument(nameof(startCommand));
             FinalChain = finalChain;
             FinalCommand = finalCommand;
         }
 
-        public ChainCommand(ICommand startCommand, IEnumerable<(CommandChainer Chain, ICommand Command)> intermediateCommands, CommandChainer finalChain, ILinuxCommand<TCommandResult> finalCommand) : this(startCommand, finalChain, finalCommand)
+        public ChainCommand(ICommand startCommand, IEnumerable<(CommandChainer Chain, ICommand Command)> intermediateCommands, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, finalChain, finalCommand)
         {
             intermediateCommands.ValidateArgument(nameof(intermediateCommands));
             IntermediateCommands = new ReadOnlyCollection<(CommandChainer Chain, ICommand Command)>(intermediateCommands.ValidateArgument(x => !x.Any(c => c.Command == null), $"Command cannot be null").ToList());
         }
 
-        public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer finalChain, ILinuxCommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand)), finalChain, finalCommand)
+        public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand)), finalChain, finalCommand)
         {
 
         }
 
-        public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer finalChain, ILinuxCommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand)), finalChain, finalCommand)
+        public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand)), finalChain, finalCommand)
         {
 
         }
 
-        public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer finalChain, ILinuxCommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand), (thirdChain, thirdCommand)), finalChain, finalCommand)
+        public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand), (thirdChain, thirdCommand)), finalChain, finalCommand)
         {
 
         }
 
-        public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer fourthChain, ICommand fourthCommand, CommandChainer finalChain, ILinuxCommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand), (thirdChain, thirdCommand), (fourthChain, fourthCommand)), finalChain, finalCommand)
+        public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer fourthChain, ICommand fourthCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand), (thirdChain, thirdCommand), (fourthChain, fourthCommand)), finalChain, finalCommand)
         {
 
         }
 
-        public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer fourthChain, ICommand fourthCommand, CommandChainer fifthChain, ICommand fifthCommand, CommandChainer finalChain, ILinuxCommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand), (thirdChain, thirdCommand), (fourthChain, fourthCommand), (fifthChain, fifthCommand)), finalChain, finalCommand)
+        public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer fourthChain, ICommand fourthCommand, CommandChainer fifthChain, ICommand fifthCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand), (thirdChain, thirdCommand), (fourthChain, fourthCommand), (fifthChain, fifthCommand)), finalChain, finalCommand)
         {
 
         }

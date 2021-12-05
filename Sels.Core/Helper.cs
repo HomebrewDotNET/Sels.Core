@@ -226,65 +226,68 @@ namespace Sels.Core
             /// <returns>Program exit code</returns>
             public static int Run(string programFileName, string arguments, out string output, out string error, CancellationToken token = default, IEnumerable<ILogger> loggers = null, int killWaitTime = 10000)
             {
-                using var logger = loggers.CreateTimedLogger(LogLevel.Debug, $"Executing program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)}", x => $"Executed program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)} in {x.PrintTotalMs()}");
-                programFileName.ValidateArgument(nameof(programFileName));
+                using (var logger = loggers.CreateTimedLogger(LogLevel.Debug, $"Executing program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)}", x => $"Executed program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)} in {x.PrintTotalMs()}")) {
+                    programFileName.ValidateArgument(nameof(programFileName));
 
-                var process = new Process()
-                {
-                    StartInfo = new ProcessStartInfo(programFileName, arguments)
+                    var process = new Process()
                     {
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-
-                try
-                {
-                    process.Start();
-                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Started process {process.Id} ({time.PrintTotalMs()})"));
-
-                    // Wait for process to finish
-                    while (!process.HasExited)
-                    {
-                        logger.Log((time, log) => log.LogMessage(LogLevel.Trace, $"Waiting for process {process.Id} to exit ({time.PrintTotalMs()})"));
-                        Thread.Sleep(250);
-
-                        // Wait for process to exit
-                        if (token.IsCancellationRequested)
+                        StartInfo = new ProcessStartInfo(programFileName, arguments)
                         {
-                            logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killing process {process.Id} ({time.PrintTotalMs()})"));
-                            var killTask = Task.Run(process.Kill);
-                            logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Sent kill signal to process {process.Id} and will now wait for maximum {killWaitTime}ms for it to exit ({time.PrintTotalMs()})"));
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        }
+                    };
 
-                            if (!process.WaitForExit(killWaitTime)) {
-                                logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killed process {process.Id} could not gracefully exit within {killWaitTime}ms ({time.PrintTotalMs()})"));
-                                throw new TaskCanceledException($"Process {process.Id} could not properly stop in {killWaitTime}ms");
-                            }
-                            else
+                    try
+                    {
+                        process.Start();
+                        logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Started process {process.Id} ({time.PrintTotalMs()})"));
+
+                        // Wait for process to finish
+                        while (!process.HasExited)
+                        {
+                            logger.Log((time, log) => log.LogMessage(LogLevel.Trace, $"Waiting for process {process.Id} to exit ({time.PrintTotalMs()})"));
+                            Thread.Sleep(250);
+
+                            // Wait for process to exit
+                            if (token.IsCancellationRequested)
                             {
-                                logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killed process {process.Id} exited gracefully ({time.PrintTotalMs()})"));
-                                killTask.Wait();
-                                break;
+                                logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killing process {process.Id} ({time.PrintTotalMs()})"));
+                                var killTask = Task.Run(process.Kill);
+                                logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Sent kill signal to process {process.Id} and will now wait for maximum {killWaitTime}ms for it to exit ({time.PrintTotalMs()})"));
+
+                                if (!process.WaitForExit(killWaitTime))
+                                {
+                                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killed process {process.Id} could not gracefully exit within {killWaitTime}ms ({time.PrintTotalMs()})"));
+                                    throw new TaskCanceledException($"Process {process.Id} could not properly stop in {killWaitTime}ms");
+                                }
+                                else
+                                {
+                                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killed process {process.Id} exited gracefully ({time.PrintTotalMs()})"));
+                                    killTask.Wait();
+                                    break;
+                                }
                             }
                         }
+
+                        logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Process {process.Id} has exited. Collecting output ({time.PrintTotalMs()})"));
+
+                        output = process.StandardOutput.ReadToEnd();
+                        error = process.StandardError.ReadToEnd();
+
+                        logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Process {process.Id} output collected and has exited with code {process.ExitCode} ({time.PrintTotalMs()})"));
+
+                        return process.ExitCode;
                     }
-
-                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Process {process.Id} has exited. Collecting output ({time.PrintTotalMs()})"));
-
-                    output = process.StandardOutput.ReadToEnd();
-                    error = process.StandardError.ReadToEnd();
-
-                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Process {process.Id} output collected and has exited with code {process.ExitCode} ({time.PrintTotalMs()})"));
-
-                    return process.ExitCode;
+                    finally
+                    {
+                        logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Disposing process {process.Id} ({time.PrintTotalMs()})"));
+                        process.Dispose();
+                    }
                 }
-                finally
-                {
-                    logger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Disposing process {process.Id} ({time.PrintTotalMs()})"));
-                    process.Dispose();
-                }
+                
             }
         }
         #endregion
