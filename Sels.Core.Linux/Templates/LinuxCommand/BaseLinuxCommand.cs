@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Components.Commands;
+using Sels.Core.Contracts.Commands;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Logging;
@@ -23,6 +24,10 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
     /// </summary>
     public abstract class BaseLinuxCommand : BaseLinuxCommand<string>
     {
+        /// <summary>
+        /// Used to run linux commands or build linux command strings.
+        /// </summary>
+        /// <param name="name">The name of the command to execute</param>
         public BaseLinuxCommand(string name) : base(name)
         {
 
@@ -35,10 +40,15 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
     /// <typeparam name="TName">Type of object that represents the command name</typeparam>
     public abstract class BaseLinuxCommand<TName> : BaseLinuxCommand<TName, ILinuxCommandResult<string, string>>, ILinuxCommand
     {
+        /// <summary>
+        /// Used to run linux commands or build linux command strings.
+        /// </summary>
+        /// <param name="name">The name of the command to execute</param>
         public BaseLinuxCommand(TName name) : base(name)
         {
         }
 
+        /// <inheritdoc/>
         public override ILinuxCommandResult<string, string> CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null)
         {
             loggers.LogMessage(LogLevel.Trace, $"Creating command result for {LoggerName} who {(wasSuccesful ? "executed successfully" : "failed execution")} with exit code {exitCode}, output length of {output?.Length} and error length of {error?.Length}");
@@ -51,17 +61,27 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
     /// </summary>
     /// <typeparam name="TName">Type of object that represents the command name</typeparam>
     /// <typeparam name="TCommandResult">Type of result that the command returns</typeparam>
-    public abstract class BaseLinuxCommand<TName, TCommandResult> : ILinuxCommand<TCommandResult>
+    public abstract class BaseLinuxCommand<TName, TCommandResult> : ICommand<TCommandResult>
     {
+        /// <summary>
+        /// The name of the command to execute.
+        /// </summary>
         public TName Name { get; }
-
+        /// <summary>
+        /// Name that can be used for logging.
+        /// </summary>
         protected string LoggerName => GetType().Name;
 
+        /// <summary>
+        /// Used to run linux commands or build linux command strings.
+        /// </summary>
+        /// <param name="name">The name of the command to execute</param>
         public BaseLinuxCommand(TName name) 
         {
             Name = name.ValidateArgument(nameof(name));
         }
 
+        /// <inheritdoc/>
         public virtual bool RunCommand(out string output, out string error, out int exitCode, CommandExecutionOptions options = null)
         {
             using var loggers = (options.HasValue() ? options.Loggers : null).CreateTimedLogger(LogLevel.Debug, $"Running command {LoggerName}", x => $"Ran command {LoggerName} in {x.PrintTotalMs()}");
@@ -80,6 +100,7 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
             return result;
         }
 
+        /// <inheritdoc/>
         public virtual string BuildCommand()
         {
             return $"{Name} {BuildArguments()}";
@@ -88,6 +109,7 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
         /// <summary>
         /// Builds arguments for running the linux command.
         /// </summary>
+        /// <param name="loggers">Optional loggers for tracing</param>
         protected virtual string BuildArguments(IEnumerable<ILogger> loggers = null)
         {
             loggers.LogMessage(LogLevel.Debug, $"Building arguments for command {LoggerName}");
@@ -97,6 +119,7 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
         /// <summary>
         /// Optional method for providing additional arguments who aren't created from properties.
         /// </summary>
+        /// <param name="loggers">Optional loggers for tracing</param>
         /// <returns>List of additional properties</returns>
         protected virtual IEnumerable<(string Argument, int Order)> GetStaticArguments(IEnumerable<ILogger> loggers = null)
         {
@@ -104,11 +127,13 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
             return null;
         }
 
+        /// <inheritdoc/>
         public TCommandResult Execute(CommandExecutionOptions options = null)
         {
             return Execute(out _, options);
         }
 
+        /// <inheritdoc/>
         public TCommandResult Execute(out int exitCode, CommandExecutionOptions options = null)
         {
             using var loggers = (options.HasValue() ? options.Loggers : null).CreateTimedLogger(LogLevel.Debug, $"Executing command {LoggerName}", x => $"Executed command {LoggerName} in {x.PrintTotalMs()}");
@@ -131,20 +156,14 @@ namespace Sels.Core.Linux.Templates.LinuxCommand
         /// Default exit code returned from executing the command that indicates it executed succesfully.
         /// </summary>
         protected virtual int SuccessExitCode => LinuxConstants.SuccessExitCode;
-
+        /// <inheritdoc/>
         public abstract TCommandResult CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger> loggers = null);
 
         // Overrides
+        /// <inheritdoc/>
         public override string ToString()
         {
-            try
-            {
-                return BuildCommand();
-            }
-            catch(Exception ex)
-            {
-                return "Could not build command: " + ex.Message;
-            }
+            return BuildCommand();
         }
     }
 }

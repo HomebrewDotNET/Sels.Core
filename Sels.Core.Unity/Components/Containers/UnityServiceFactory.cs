@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Sels.Core.Contracts.Factory;
 using Sels.Core.Components.IoC;
 using Unity.Lifetime;
+using System.Reflection;
 
 namespace Sels.Core.Unity.Components.Containers
 {
@@ -33,7 +34,8 @@ namespace Sels.Core.Unity.Components.Containers
                                                                                                                                 // Try load config
                                                                                                                                 try
                                                                                                                                 {
-                                                                                                                                    container.LoadConfiguration();
+                                                                                                                                    // Only try to load if the assembly has a location because it doesn't work with .NET 6 single file publish
+                                                                                                                                    if(Assembly.GetExecutingAssembly().Location.HasValue()) container.LoadConfiguration();
                                                                                                                                 }
                                                                                                                                 catch (ArgumentException)
                                                                                                                                 {

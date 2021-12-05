@@ -22,11 +22,11 @@ namespace Sels.ObjectValidationFramework.Contracts.Rules
         /// <summary>
         /// Hierarchy of object if property fallthrough is enabled. The previous element is always the parent of the next element.
         /// </summary>
-        public Parent[] Parents { get; }
+        Parent[] Parents { get; }
         /// <summary>
         /// The parent of the value that's being validated. Is null when property fallthough is disabled or when <see cref="Source"/> is the first object in the hierarchy.
         /// </summary>
-        public Parent CurrentParent { get; }
+        Parent CurrentParent { get; }
         /// <summary>
         /// Optional context that can be supplied to a validation rule.
         /// </summary>

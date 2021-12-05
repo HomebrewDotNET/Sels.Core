@@ -2,31 +2,27 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
-using Sels.Core.Contracts.Commands;
-using Sels.Core.Linux.Components.LinuxCommand.Commands;
-using Sels.Core.Linux.Components.LinuxCommand.Commands.Core;
-using Sels.Core.Linux.Contracts.LinuxCommand;
-using Sels.Core.Linux.Templates.LinuxCommand.Commands;
 
-namespace Sels.Core.Linux.Contracts.LinuxCommand
+namespace Sels.Core.Contracts.Commands
 {
     /// <summary>
-    /// Used to start to setup a command chain for a <see cref="MultiCommand{TCommandResult}"/>.
+    /// Used to start to setup a command chain for a command that consists of multiple commands.
     /// </summary>
-    public interface IMultiCommandStartSetup
+    /// <typeparam name="TChain">Type of objects that tells how commands should be chained</typeparam>
+    public interface IMultiCommandStartSetup<TChain>
     {
         /// <summary>
         /// Sets <paramref name="startCommand"/> as the first command to be executed.
         /// </summary>
         /// <param name="startCommand">Command to execute first</param>
-        /// <returns>Setup object to continue building the command chain or returns the <see cref="IMultiCommandChain"/></returns>
-        IMultiCommandSetup StartWith(ICommand startCommand);
+        /// <returns>Setup object to continue building the command chain or returns the <see cref="IMultiCommandChain{TChain}"/></returns>
+        IMultiCommandSetup<TChain> StartWith(ICommand startCommand);
     }
 
     /// <summary>
-    /// Used to setup and build a command chain for a <see cref="MultiCommand{TCommandResult}"/>.
+    /// Used to setup and build a command chain for a command that consists of multiple commands.
     /// </summary>
-    public interface IMultiCommandSetup
+    public interface IMultiCommandSetup<TChain>
     {
         /// <summary>
         /// Continues the previous command with <paramref name="command"/>.
@@ -34,7 +30,7 @@ namespace Sels.Core.Linux.Contracts.LinuxCommand
         /// <param name="chain">How the previous <see cref="ICommand"/> should be chained with <paramref name="command"/></param>
         /// <param name="command">Command to chain</param>
         /// <returns>Object to continue building the chain</returns>
-        IMultiCommandSetup ContinueWith(CommandChainer chain, ICommand command);
+        IMultiCommandSetup<TChain> ContinueWith(TChain chain, ICommand command);
 
         /// <summary>
         /// Finished the command chain with <paramref name="finalCommand"/> and returns the full command chain.
@@ -42,29 +38,29 @@ namespace Sels.Core.Linux.Contracts.LinuxCommand
         /// <param name="finalChain">How the previous <see cref="ICommand"/> should be chained with <paramref name="finalCommand"/></param>
         /// <param name="finalCommand">Final command in the chain that will be executed</param>
         /// <returns>The configured command chain</returns>
-        IMultiCommandChain EndWith(CommandChainer finalChain, ICommand finalCommand);
+        IMultiCommandChain<TChain> EndWith(TChain finalChain, ICommand finalCommand);
     }
 
     /// <summary>
-    /// Represents the order in which command are executed for a <see cref="MultiCommand{TCommandResult}"/>
+    /// Represents the order in which command are executed for a command that consists of multiple commands.
     /// </summary>
-    public interface IMultiCommandChain
+    public interface IMultiCommandChain<TChain>
     {
         /// <summary>
         /// First command in the chain that will be executed first.
         /// </summary>
-        public ICommand StartCommand { get; }
+        ICommand StartCommand { get; }
         /// <summary>
         /// List of ordered commands that will be executed in order after <see cref="StartCommand"/>.
         /// </summary>
-        public ReadOnlyCollection<(CommandChainer Chain, ICommand Command)> IntermediateCommands { get;}
+        ReadOnlyCollection<(TChain Chain, ICommand Command)> IntermediateCommands { get; }
         /// <summary>
         /// How <see cref="StartCommand"/> or the last command in <see cref="IntermediateCommands"/> should be linked to <see cref="FinalCommand"/>.
         /// </summary>
-        public CommandChainer FinalChain { get; }
+        TChain FinalChain { get; }
         /// <summary>
         /// Final command in the chain that will be executed.
         /// </summary>
-        public ICommand FinalCommand { get; }
+        ICommand FinalCommand { get; }
     }
 }

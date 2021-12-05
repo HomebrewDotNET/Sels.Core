@@ -61,6 +61,7 @@ namespace Sels.Core.Extensions
         /// </summary>
         /// <typeparam name="T">Collection element type</typeparam>
         /// <param name="collection">Collection to check</param>
+        /// <param name="valueSelector">Func that selects the value from <typeparamref name="T"/> to compare</param>
         /// <returns>Boolean indicating if all elements in <paramref name="collection"/> are unique</returns>
         public static bool AreAllUnique<T>(this IEnumerable<T> collection, Func<T, object> valueSelector)
         {

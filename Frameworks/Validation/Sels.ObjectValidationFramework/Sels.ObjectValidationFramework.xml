@@ -749,6 +749,31 @@
             <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
             <returns>Current configurator</returns>
         </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.CollectionValidationExtensions.AllMustBeUnique``5(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,``1,``2,``3,``4},System.Func{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{``0,``2,``3,``4},``1})">
+            <summary>
+            Value is only valid when all elements are unique. Values are compared using <see cref="M:System.Object.Equals(System.Object)"/>.
+            </summary>
+            <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+            <typeparam name="TError">Type of validation error that this rule returns</typeparam>
+            <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+            <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+            <typeparam name="TValue">Type of value that is being validated</typeparam>
+            <param name="configurator">Configurator to configure validation</param>
+            <param name="errorConstructor">Delegate that creates a validation error when <see cref="P:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext`4.Value"/> is not a valid value</param>
+            <returns>Current configurator</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.CollectionValidationExtensions.AllMustBeUnique``4(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,System.String,``1,``2,``3},System.Boolean)">
+            <summary>
+            Value is only valid when all elements are unique. Values are compared using <see cref="M:System.Object.Equals(System.Object)"/>.
+            </summary>
+            <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+            <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+            <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+            <typeparam name="TValue">Type of value that is being validated</typeparam>
+            <param name="configurator">Configurator to configure validation</param>
+            <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
+            <returns>Current configurator</returns>
+        </member>
         <member name="T:Sels.ObjectValidationFramework.Templates.Profile.ComparableValidationExtensions">
             <summary>
             Contains generic configuration extensions for comparable types.

@@ -18,12 +18,13 @@ namespace Sels.Core.Components.Factory
         /// </summary>
         public Type InstanceType => typeof(T);
 
+        /// <inheritdoc/>
         public T Create(params object[] arguments)
         {
             return CreateNewInstance<T>(arguments);
         }
-
-        protected virtual TInstance CreateNewInstance<TInstance>(params object[] arguments) where TInstance : T
+        /// <inheritdoc/>
+        protected virtual T CreateNewInstance<TInstance>(params object[] arguments) where TInstance : T
         {
             typeof(TInstance).ValidateArgumentCanBeContructedWithArguments(nameof(arguments), arguments);
 

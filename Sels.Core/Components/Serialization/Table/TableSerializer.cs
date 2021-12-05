@@ -203,7 +203,8 @@ namespace Sels.Core.Components.Serialization.Table
         
         private string[] GetRows(string table)
         {
-            return table.Split(RowSplitter, StringSplitOptions.RemoveEmptyEntries).Skip(SkipDataRow).SkipLast(SkipLastDataRow).ToArray();
+            var rows = table.Split(RowSplitter, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            return rows.Skip(SkipDataRow).Take(rows.Length - SkipDataRow - SkipLastDataRow).ToArray();
         }
 
         private string[] GetColumns(string row)

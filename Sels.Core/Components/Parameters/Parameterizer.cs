@@ -9,21 +9,39 @@ using System.Text;
 
 namespace Sels.Core.Components.Parameters
 {
+    /// <summary>
+    /// Service that replaces text parameters in a string using parameters who can perform custom code when resolving a parameter value.
+    /// </summary>
     public class Parameterizer
     {
         // Constants
+        /// <summary>
+        /// The string used to split up a parameter name and it's optional argument.
+        /// </summary>
         public const string ArgumentSplit = "_";
 
         // Fields
         private readonly Dictionary<string, Parameter> _parameters = new Dictionary<string, Parameter>();
 
         // Properties
+        /// <summary>
+        /// The parameters that this service will use to resolve parameters in the supplied text.
+        /// </summary>
         public ReadOnlyCollection<Parameter> Parameters => new ReadOnlyCollection<Parameter>(_parameters.Select(x => x.Value).ToList());
 
+        /// <summary>
+        /// The prefix added in front of the parameters.
+        /// </summary>
         public static Property<string> ParameterPrefix { get; } = new Property<string>().AddGetterSetCondition(x => !x.HasValue()).AddGetterSetter(() => GlobalParameters.Prefix.Value).AddSetterValidation(x => x.HasValue(), $"{nameof(ParameterPrefix)} cannot be null, empty or whitespace");
-
+        /// <summary>
+        /// The suffix added to close a parameter.
+        /// </summary>
         public static Property<string> ParameterSuffix { get; } = new Property<string>().AddGetterSetCondition(x => !x.HasValue()).AddGetterSetter(() => GlobalParameters.Suffix.Value).AddSetterValidation(x => x.HasValue(), $"{nameof(ParameterSuffix)} cannot be null, empty or whitespace");
 
+        /// <summary>
+        /// Service that replaces text parameters in a string using parameters who can perform custom code when resolving a parameter value.
+        /// </summary>
+        /// <param name="loadGlobalParameters">If this service should add the parameters from <see cref="GlobalParameters.Parameters"/></param>
         public Parameterizer(bool loadGlobalParameters = true)
         {
             if (loadGlobalParameters)
@@ -131,8 +149,10 @@ namespace Sels.Core.Components.Parameters
         #endregion
 
         /// <summary>
-        /// Applies any parameters that are registered in this parameterizer to the supplied text
+        /// Replaces all parameters in <paramref name="source"/> that this service knows.
         /// </summary>
+        /// <param name="source">The string to replace the parameters in</param>
+        /// <returns><paramref name="source"/> will all known parameters replaced</returns>
         public string Apply(string source)
         {
             if (source.HasValue())
@@ -152,12 +172,19 @@ namespace Sels.Core.Components.Parameters
                         var scope = scopedParameter.Scope;
                         var parameter = scopedParameter.Parameter;
 
-                        if(TryFindNextParameter(sourceText, parameter.Name, out string fullParameter, out string argument))
+                        var matches = FindParameters(sourceText, parameter.Name);
+                        foreach(var match in matches)
                         {
-                            // We found a parameter so we generate a new value using the argument and replace the parameter in the source string
-                            var paramaterValue = parameter.GenerateNewValue(scope, argument);
-                            builder.Replace(fullParameter, paramaterValue);
                             modified = true;
+                            // Ignore if argument contains a parameter
+                            if(match.Argument.HasValue() && _parameters.Any(x => ContainsParameter(match.Argument, x.Key)))
+                            {
+                                continue;
+                            }
+
+                            // We found a parameter so we generate a new value using the argument and replace the parameter in the source string
+                            var paramaterValue = parameter.GenerateNewValue(scope, match.Argument);
+                            builder.Replace(match.FullParameter, paramaterValue);
                         }
                     }                   
                 }
@@ -170,50 +197,74 @@ namespace Sels.Core.Components.Parameters
             }
         }
 
-        private bool TryFindNextParameter(string sourceText, string parameterName, out string fullParameter, out string argument)
+        private (string FullParameter, string Argument)[] FindParameters(string sourceText, string parameterName, int maxMatches = 0)
         {
-            sourceText.ValidateVariable(nameof(sourceText));
-            parameterName.ValidateVariable(nameof(parameterName));
-            fullParameter = null;
-            argument = null;
+            sourceText.ValidateArgument(nameof(sourceText));
+            parameterName.ValidateArgument(nameof(parameterName));
+            var matches = new List<(string FullParameter, string Argument)>();
 
             var parameterStart = ParameterPrefix.Value + parameterName;
-            var currentStartIndex = sourceText.IndexOf(parameterStart);
+            var currentIndex = 0;
 
             while (true)
             {
-                if(currentStartIndex >= 0)
+                // Find next occurance
+                var indexOfParameter = sourceText.IndexOf(parameterStart, currentIndex);
+
+                // No start index found so we return
+                if (indexOfParameter == -1) break;
+
+                // Search for the parameter suffix for the current parameter taking into account sub parameters
+                var currentLevel = 1;
+                var currentEndIndex = indexOfParameter+1;
+                int indexOfParameterEnd = 0;
+                while (true)
                 {
-                    // Find next parameter start
-                    var nextStartIndex = sourceText.IndexOf(ParameterPrefix.Value, currentStartIndex + 1);
-                    // Find next parameter end
-                    var nextEndIndex = sourceText.IndexOf(ParameterSuffix.Value, currentStartIndex + 1);
-                   
-                    if(nextEndIndex >= 0)
+                    var nextPrefixIndex = sourceText.IndexOf(ParameterPrefix.Value, currentEndIndex);
+                    var nextSuffixIndex = sourceText.IndexOf(ParameterSuffix.Value, currentEndIndex);
+
+                    // No end parameter found so we return
+                    if (nextSuffixIndex == -1) matches.ToArray();
+
+                    // We have the start of a parameter before the next end so we have a sub parameter.
+                    if (nextPrefixIndex != -1 && nextPrefixIndex < nextSuffixIndex)
                     {
-                        // If we have a next parameter start and it falls before the next parameter end we have a sub parameter so we skip otherwise we found a parameter when we have a next parameter end
-                        if (nextStartIndex < 1 || nextStartIndex > nextEndIndex)
-                        {
-                            fullParameter = sourceText.Substring(currentStartIndex, nextEndIndex - currentStartIndex + ParameterSuffix.Value.Length);
-                            fullParameter.Substring(ParameterPrefix.Value.Length, fullParameter.Length - ParameterPrefix.Value.Length - ParameterSuffix.Value.Length).TrySplitFirstOrDefault(ArgumentSplit, out argument);
-                            return true;
-                        }
-                        else
-                        {
-                            currentStartIndex = sourceText.IndexOf(parameterStart, nextEndIndex);
-                        }
-                        
+                        currentLevel++;
+                        currentEndIndex = nextPrefixIndex + ParameterPrefix.Value.Length;
                     }
+                    // We have the end of a parameter before the next start which means the previous parameter was closed.
                     else
                     {
-                        return false;
+                        currentLevel--;
+                        currentEndIndex = nextSuffixIndex + ParameterSuffix.Value.Length;
+                    }
+
+                    // We found the parameter suffix for the current parameter.
+                    if (currentLevel == 0)
+                    {
+                        indexOfParameterEnd = nextSuffixIndex;
+                        break;
                     }
                 }
-                else
-                {
-                    return false;
-                }
+
+                var fullParameter = sourceText.Substring(indexOfParameter, (indexOfParameterEnd-indexOfParameter)+ParameterSuffix.Value.Length);
+                fullParameter.Substring(ParameterPrefix.Value.Length, fullParameter.Length - ParameterPrefix.Value.Length - ParameterSuffix.Value.Length).TrySplitFirstOrDefault(ArgumentSplit, out var argument);
+
+                matches.Add((fullParameter, argument));
+
+                // Return if we have the required amount of matches
+                if (maxMatches != 0 && matches.Count == maxMatches) return matches.ToArray();
+
+                currentIndex = indexOfParameter + ParameterPrefix.Value.Length;
             }
+
+            
+            return matches.ToArray();
+        }
+
+        private bool ContainsParameter(string sourceText, string parameterName)
+        {
+            return FindParameters(sourceText, parameterName, 1).HasValue();
         }
     }
 }
