@@ -24,7 +24,7 @@ namespace Sels.Core.Extensions
         #region GetBytes
         public static byte[] GetBytes(this object sourceObject)
         {
-            sourceObject.ValidateVariable(nameof(sourceObject));
+            sourceObject.ValidateArgument(nameof(sourceObject));
 
             BinaryFormatter formatter = new BinaryFormatter();
             using (var stream = new MemoryStream())

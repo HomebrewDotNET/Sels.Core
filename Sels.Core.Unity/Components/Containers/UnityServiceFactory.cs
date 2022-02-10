@@ -26,24 +26,7 @@ namespace Sels.Core.Unity.Components.Containers
         /// <summary>
         /// Default container used when calling the no arg constructor.
         /// </summary>
-        public static ThreadSafeReadOnlyProperty<IUnityContainer> DefaultContainer { get; } = new ThreadSafeReadOnlyProperty<IUnityContainer>()
-                                                                                                                            .AddGetterSetter(() => {
-                                                                                                                                // Create new container
-                                                                                                                                var container = new UnityContainer();
-
-                                                                                                                                // Try load config
-                                                                                                                                try
-                                                                                                                                {
-                                                                                                                                    // Only try to load if the assembly has a location because it doesn't work with .NET 6 single file publish
-                                                                                                                                    if(Assembly.GetExecutingAssembly().Location.HasValue()) container.LoadConfiguration();
-                                                                                                                                }
-                                                                                                                                catch (ArgumentException)
-                                                                                                                                {
-                                                                                                                                    // No config defined so we skip the loading
-                                                                                                                                }
-
-                                                                                                                                return container;
-                                                                                                                            });
+        public static IUnityContainer DefaultContainer => CreateDefaultContainer();
 
         /// <summary>
         /// Container with the registered services.
@@ -53,7 +36,7 @@ namespace Sels.Core.Unity.Components.Containers
         /// <summary>
         /// <see cref="IServiceFactory"/> implementation using Unity. Uses <see cref="DefaultContainer"/>.
         /// </summary>
-        public UnityServiceFactory() : this(DefaultContainer.Value)
+        public UnityServiceFactory() : this(DefaultContainer)
         {
             
         }
@@ -95,26 +78,26 @@ namespace Sels.Core.Unity.Components.Containers
             return IsRegistered(typeof(T), name);
         }
         /// <inheritdoc/>
-        public IServiceCollection LoadFrom(IServiceCollection collection)
+        public IServiceFactory LoadFrom(IServiceCollection collection)
         {
             collection.ValidateArgument(nameof(collection));
 
             // This transfers registrations from collection to container
             _ = collection.BuildServiceProvider(Container);
 
-            return collection;
+            return this;
         }
         /// <inheritdoc/>
         public T Resolve<T>()
         {
-            return Resolve(typeof(T)).As<T>();
+            return Resolve(typeof(T)).Cast<T>();
         }
         /// <inheritdoc/>
         public T Resolve<T>(string name)
         {
             name.ValidateArgumentNotNullOrWhitespace(nameof(name));
 
-            return Resolve(typeof(T), name).As<T>();
+            return Resolve(typeof(T), name).Cast<T>();
         }
         /// <inheritdoc/>
         public object Resolve(Type type)
@@ -252,6 +235,25 @@ namespace Sels.Core.Unity.Components.Containers
                     Container.RegisterSingleton<TService, TImplementation>(name);
                     break;
             }
+        }
+
+        private static IUnityContainer CreateDefaultContainer()
+        {
+            // Create new container
+            var container = new UnityContainer();
+
+            // Try load config
+            try
+            {
+                // Only try to load if the assembly has a location because it doesn't work with .NET 6 single file publish
+                if (Assembly.GetExecutingAssembly().Location.HasValue()) container.LoadConfiguration();
+            }
+            catch (ArgumentException)
+            {
+                // No config defined so we skip the loading
+            }
+
+            return container;
         }
     }
 }

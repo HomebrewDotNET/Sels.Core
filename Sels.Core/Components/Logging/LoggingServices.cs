@@ -1,9 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Components.Serialization;
-using Sels.Core.Components.Serialization.Providers;
-using Sels.Core.Contracts.Serialization;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Execution;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Logging.Advanced;
@@ -15,6 +11,9 @@ using System.Text;
 
 namespace Sels.Core.Components.Logging
 {
+    /// <summary>
+    /// Static class that makes it easier to log in projects. Only required to be setup during startup.
+    /// </summary>
     public static class LoggingServices
     {
         // Fields
@@ -87,7 +86,11 @@ namespace Sels.Core.Components.Logging
         {
             if (_loggers.HasValue() && logAction.HasValue())
             {
-                logAction.ForceExecute(_loggers);
+                try
+                {
+                    logAction(_loggers);
+                }
+                catch { }
             }
         }
         /// <summary>
@@ -164,34 +167,6 @@ namespace Sels.Core.Components.Logging
         /// <param name="objectToTrace">Object to serialize and log</param>
         public static void TraceObject(LogLevel level, string message, object objectToTrace) => _loggers.TraceObject(level, message, objectToTrace);
         /// <summary>
-        /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with severity <see cref="LogLevel.Trace"/>.
-        /// </summary>
-        /// <typeparam name="TProvider">Type of serialization provider</typeparam>
-        /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(objectToTrace);
-        /// <summary>
-        /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider.
-        /// </summary>
-        /// <typeparam name="TProvider">Type of serialization provider</typeparam>
-        /// <param name="level">Severity level for log</param>
-        /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(LogLevel level, object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(level, objectToTrace);
-        /// <summary>
-        /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with an extra message with severity <see cref="LogLevel.Trace"/>.
-        /// </summary>
-        /// <typeparam name="TProvider">Type of serialization provider</typeparam>
-        /// <param name="message">Message to log</param>
-        /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(string message, object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(message, objectToTrace);
-        /// <summary>
-        /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with an extra message.
-        /// </summary>
-        /// <typeparam name="TProvider">Type of serialization provider</typeparam>
-        /// <param name="level">Severity level for log</param>
-        /// <param name="message">Message to log</param>
-        /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(LogLevel level, string message, object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(level, message, objectToTrace);
-        /// <summary>
         /// Traces how long an action took to execute with severity <see cref="LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
         /// <param name="action">Action to trace</param>
@@ -200,7 +175,6 @@ namespace Sels.Core.Components.Logging
         /// <summary>
         /// Traces how long an action took to execute with severity <see cref="LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
-        /// <param name="level">Severity level for log</param>
         /// <param name="actionStartMessage">Log message when action starts</param>
         /// <param name="actionFinishedMessage">Log message when action is finished</param>
         /// <returns>Timing scope</returns>

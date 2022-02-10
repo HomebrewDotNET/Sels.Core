@@ -12,7 +12,7 @@ namespace Sels.Core.Extensions.Reflection
         public static bool TryExtractProperty<T>(this Expression<T> expression, out PropertyInfo property)
         {
             property = null;
-            expression.ValidateVariable(nameof(expression));
+            expression.ValidateArgument(nameof(expression));
 
             MemberExpression memberExpression = null;
 

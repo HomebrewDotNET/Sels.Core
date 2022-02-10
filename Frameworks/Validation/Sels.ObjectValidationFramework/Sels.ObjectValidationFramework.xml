@@ -305,6 +305,12 @@
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
             <inheritdoc/>
         </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
+            <inheritdoc/>
+        </member>
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.CanValidate(System.Object,System.Object,System.Nullable{System.Int32},Sels.ObjectValidationFramework.Components.Validators.Parent[])">
             <inheritdoc/>
         </member>
@@ -553,6 +559,21 @@
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
             <param name="configurator">Configurator for creating validation rules</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}})">
+            <summary>
+            All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes.
+            </summary>
+            <param name="condition">Delegate that checks if validation rules can be executed</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
+            <summary>
+            All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TContext"/>.
+            </summary>
+            <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+            <param name="condition">Delegate that checks if validation rules can be executed</param>
             <returns>Configurator for creating validation rules</returns>
         </member>
         <member name="T:Sels.ObjectValidationFramework.Templates.Profile.CollectionValidationExtensions">
@@ -2054,6 +2075,12 @@
             <inhericdoc />
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
             <inhericdoc />
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.CanValidate(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object})">

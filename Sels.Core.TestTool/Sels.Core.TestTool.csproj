@@ -8,11 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sels.Core.Excel\Sels.Core.Excel.csproj" />
     <ProjectReference Include="..\Sels.Core.Linux\Sels.Core.Linux.csproj" />
     <ProjectReference Include="..\Sels.Core.Unity\Sels.Core.Unity.csproj" />
     <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />

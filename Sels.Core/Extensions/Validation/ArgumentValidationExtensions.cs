@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Sels.Core.Extensions
 {
+    /// <summary>
+    /// Contains extensions for validating the argumetns supplied to methods/constructors.
+    /// </summary>
     public static class ArgumentValidationExtensions
     {
         /// <summary>
@@ -85,6 +88,74 @@ namespace Sels.Core.Extensions
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
 
             return argument.ValidateArgument(x => !string.IsNullOrWhiteSpace(x), $"{parameterName} cannot be null, empty or whitespace");
+        }
+
+        /// <summary>
+        /// Validates that <paramref name="argument"/> is not null and ends with <paramref name="comparator"/>.
+        /// </summary>
+        /// <param name="argument">Method/Constructor argument</param>
+        /// <param name="parameterName">Method/Constructor parameter name</param>
+        /// <param name="comparator">What <paramref name="argument"/> must end with</param>
+        /// <param name="option">How the strings should be compared</param>
+        /// <returns><paramref name="argument"/></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static string ValidateArgumentEndsWith(this string argument, string parameterName, string comparator, StringComparison option = StringComparison.OrdinalIgnoreCase)
+        {
+            if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
+            if (string.IsNullOrWhiteSpace(comparator)) throw new ArgumentException($"{nameof(comparator)} cannot be null, empty or whitespace");
+
+            return argument.ValidateArgument(x => x != null && x.EndsWith(comparator, option), $"{parameterName} must end with {comparator}");
+        }
+
+        /// <summary>
+        /// Validates that <paramref name="argument"/> is not null and does not end with <paramref name="comparator"/>.
+        /// </summary>
+        /// <param name="argument">Method/Constructor argument</param>
+        /// <param name="parameterName">Method/Constructor parameter name</param>
+        /// <param name="comparator">What <paramref name="argument"/> can't end with</param>
+        /// <param name="option">How the strings should be compared</param>
+        /// <returns><paramref name="argument"/></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static string ValidateArgumentDoesNotEndWith(this string argument, string parameterName, string comparator, StringComparison option = StringComparison.OrdinalIgnoreCase)
+        {
+            if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
+            if (string.IsNullOrWhiteSpace(comparator)) throw new ArgumentException($"{nameof(comparator)} cannot be null, empty or whitespace");
+
+            return argument.ValidateArgument(x => x != null && !x.EndsWith(comparator, option), $"{parameterName} can't end with {comparator}");
+        }
+
+        /// <summary>
+        /// Validates that <paramref name="argument"/> is not null and starts with <paramref name="comparator"/>.
+        /// </summary>
+        /// <param name="argument">Method/Constructor argument</param>
+        /// <param name="parameterName">Method/Constructor parameter name</param>
+        /// <param name="comparator">What <paramref name="argument"/> must start with</param>
+        /// <param name="option">How the strings should be compared</param>
+        /// <returns><paramref name="argument"/></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static string ValidateArgumentStartsWith(this string argument, string parameterName, string comparator, StringComparison option = StringComparison.OrdinalIgnoreCase)
+        {
+            if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
+            if (string.IsNullOrWhiteSpace(comparator)) throw new ArgumentException($"{nameof(comparator)} cannot be null, empty or whitespace");
+
+            return argument.ValidateArgument(x => x != null && x.StartsWith(comparator, option), $"{parameterName} must start with {comparator}");
+        }
+
+        /// <summary>
+        /// Validates that <paramref name="argument"/> is not null and does not start with <paramref name="comparator"/>.
+        /// </summary>
+        /// <param name="argument">Method/Constructor argument</param>
+        /// <param name="parameterName">Method/Constructor parameter name</param>
+        /// <param name="comparator">What <paramref name="argument"/> can't start with</param>
+        /// <param name="option">How the strings should be compared</param>
+        /// <returns><paramref name="argument"/></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static string ValidateArgumentDoesNotStartWith(this string argument, string parameterName, string comparator, StringComparison option = StringComparison.OrdinalIgnoreCase)
+        {
+            if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
+            if (string.IsNullOrWhiteSpace(comparator)) throw new ArgumentException($"{nameof(comparator)} cannot be null, empty or whitespace");
+
+            return argument.ValidateArgument(x => x != null && !x.StartsWith(comparator, option), $"{parameterName} can't start with {comparator}");
         }
         #endregion
 

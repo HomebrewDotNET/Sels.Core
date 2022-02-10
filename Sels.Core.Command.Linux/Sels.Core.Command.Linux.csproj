@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\" />
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sels.Core.Command\Sels.Core.Command.csproj" />
+    <ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
+    <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
+  </ItemGroup>
+
+</Project>

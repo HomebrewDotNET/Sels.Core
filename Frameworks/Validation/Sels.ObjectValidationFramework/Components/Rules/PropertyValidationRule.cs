@@ -62,7 +62,7 @@ namespace Sels.ObjectValidationFramework.Components.Rules
                 value = default;
                 if(objectToValidate != null)
                 {
-                    var propertyValue = _property.GetValue(objectToValidate).AsOrDefault<TPropertyValue>();
+                    var propertyValue = _property.GetValue(objectToValidate).CastOrDefault<TPropertyValue>();
 
                     if(propertyValue != null)
                     {
@@ -71,7 +71,7 @@ namespace Sels.ObjectValidationFramework.Components.Rules
                     }
                     // Nulls are allowed when there is no subselection
                     else if (!_isSubSelection){
-                        value = propertyValue.AsOrDefault<TValue>();
+                        value = propertyValue.CastOrDefault<TValue>();
                         return true;
                     }
                     

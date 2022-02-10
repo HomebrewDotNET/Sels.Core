@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Sels.Core.Components.Logging;
-using Sels.Core.Components.Serialization;
-using Sels.Core.Components.Serialization.Providers;
-using Sels.Core.Contracts.Serialization;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Extensions.Execution;
 using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections.Generic;
@@ -86,121 +83,61 @@ namespace Sels.Core.Extensions.Logging
         #endregion
 
         #region Object
-        public static void LogObject<TSerializer>(this ILogger logger, LogLevel level, params object[] objects) where TSerializer : ISerializationProvider, new()
-        {
-            var serializer = new TSerializer();
-            logger.LogObject(level, serializer, objects);
-        }
-
-        public static void LogObject<TSerializer>(this ILogger logger, LogLevel level, string message, params object[] objects) where TSerializer : ISerializationProvider, new()
-        {
-            var serializer = new TSerializer();
-            logger.LogObject(level, serializer, message, objects);
-        }
-
-        public static void LogObject<TSerializer>(this ILogger logger, LogLevel level, string message, Exception exception, params object[] objects) where TSerializer : ISerializationProvider, new()
-        {
-            var serializer = new TSerializer();
-            logger.LogObject(level, serializer, message, exception, objects);
-        }
-
-        public static void LogObject<TSerializer>(this ILogger logger, LogLevel level, Func<string> messageFunc, params object[] objects) where TSerializer : ISerializationProvider, new()
-        {
-            var serializer = new TSerializer();
-            logger.LogObject(level, serializer, messageFunc, objects);
-        }
-
-        public static void LogObject<TSerializer>(this ILogger logger, LogLevel level, Func<string> messageFunc, Exception exception, params object[] objects) where TSerializer : ISerializationProvider, new()
-        {
-            var serializer = new TSerializer();
-            logger.LogObject(level, serializer, messageFunc, exception, objects);
-        }
-
-        public static void LogObject(this ILogger logger, LogLevel level, SerializationProvider provider, params object[] objects)
-        {
-            var serializer = provider.CreateProvider();
-            logger.LogObject(level, serializer, objects);
-        }
-
-        public static void LogObject(this ILogger logger, LogLevel level, SerializationProvider provider, string message, params object[] objects)
-        {
-            var serializer = provider.CreateProvider();
-            logger.LogObject(level, serializer, message, objects);
-        }
-
-        public static void LogObject(this ILogger logger, LogLevel level, SerializationProvider provider, string message, Exception exception, params object[] objects)
-        {
-            var serializer = provider.CreateProvider();
-            logger.LogObject(level, serializer, message, exception, objects);
-        }
-
-        public static void LogObject(this ILogger logger, LogLevel level, SerializationProvider provider, Func<string> messageFunc, params object[] objects)
-        {
-            var serializer = provider.CreateProvider();
-            logger.LogObject(level, serializer, messageFunc(), objects);
-        }
-
-        public static void LogObject(this ILogger logger, LogLevel level, SerializationProvider provider, Func<string> messageFunc, Exception exception, params object[] objects)
-        {
-            var serializer = provider.CreateProvider();
-            logger.LogObject(level, serializer, messageFunc(), exception, objects);
-        }
-
-        public static void LogObject(this ILogger logger, LogLevel level, ISerializationProvider serializer, params object[] objects)
+        public static void LogObject(this ILogger logger, LogLevel level, params object[] objects)
         {
             try
             {
-                if (logger.HasValue() && logger.IsEnabled(level) & objects.HasValue() && serializer.HasValue())
+                if (logger.HasValue() && logger.IsEnabled(level) & objects.HasValue())
                 {
-                    logger.Log(level, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine());
+                    logger.Log(level, objects.Where(x => x.HasValue()).Select(x => JsonConvert.SerializeObject(x)).JoinStringNewLine());
                 }
             }
             catch { }
         }
 
-        public static void LogObject(this ILogger logger, LogLevel level, ISerializationProvider serializer, string message, params object[] objects)
+        public static void LogObject(this ILogger logger, LogLevel level, string message, params object[] objects)
         {
             try
             {
                 if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    logger.Log(level, Helper.Strings.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
+                    logger.Log(level, Helper.Strings.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => JsonConvert.SerializeObject(x)).JoinStringNewLine()));
                 }
             }
             catch { }
         }
 
-        public static void LogObject(this ILogger logger, LogLevel level, ISerializationProvider serializer, string message, Exception exception, params object[] objects)
+        public static void LogObject(this ILogger logger, LogLevel level, string message, Exception exception, params object[] objects)
         {
             try
             {
                 if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    logger.Log(level, exception, Helper.Strings.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
+                    logger.Log(level, exception, Helper.Strings.JoinStringsNewLine(message, objects.Where(x => x.HasValue()).Select(x => JsonConvert.SerializeObject(x)).JoinStringNewLine()));
                 }
             }
             catch { }
         }
 
-        public static void LogObject(this ILogger logger, LogLevel level, ISerializationProvider serializer, Func<string> messageFunc, params object[] objects)
+        public static void LogObject(this ILogger logger, LogLevel level, Func<string> messageFunc, params object[] objects)
         {
             try
             {
                 if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    logger.Log(level, Helper.Strings.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
+                    logger.Log(level, Helper.Strings.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => JsonConvert.SerializeObject(x)).JoinStringNewLine()));
                 }
             }
             catch { }
         }
 
-        public static void LogObject(this ILogger logger, LogLevel level, ISerializationProvider serializer, Func<string> messageFunc, Exception exception, params object[] objects)
+        public static void LogObject(this ILogger logger, LogLevel level, Func<string> messageFunc, Exception exception, params object[] objects)
         {
             try
             {
                 if (logger.HasValue() && logger.IsEnabled(level))
                 {
-                    logger.Log(level, exception, Helper.Strings.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => serializer.Serialize(x)).JoinStringNewLine()));
+                    logger.Log(level, exception, Helper.Strings.JoinStringsNewLine(messageFunc(), objects.Where(x => x.HasValue()).Select(x => JsonConvert.SerializeObject(x)).JoinStringNewLine()));
                 }
             }
             catch { }
@@ -239,89 +176,29 @@ namespace Sels.Core.Extensions.Logging
         #endregion
 
         #region Object
-        public static void LogObject<TSerializer>(this IEnumerable<ILogger> loggers, LogLevel level, params object[] objects) where TSerializer : ISerializationProvider, new()
+        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, params object[] objects)
         {
-            var serializer = new TSerializer();
-            loggers.LogObject(level, serializer, objects);
+            loggers.ForceExecute(x => x.LogObject(level, objects));
         }
 
-        public static void LogObject<TSerializer>(this IEnumerable<ILogger> loggers, LogLevel level, string message, params object[] objects) where TSerializer : ISerializationProvider, new()
+        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, string message, params object[] objects)
         {
-            var serializer = new TSerializer();
-            loggers.LogObject(level, serializer, message, objects);
+            loggers.ForceExecute(x => x.LogObject(level, message, objects));
         }
 
-        public static void LogObject<TSerializer>(this IEnumerable<ILogger> loggers, LogLevel level, string message, Exception exception, params object[] objects) where TSerializer : ISerializationProvider, new()
+        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, string message, Exception exception, params object[] objects)
         {
-            var serializer = new TSerializer();
-            loggers.LogObject(level, serializer, message, exception, objects);
+            loggers.ForceExecute(x => x.LogObject(level, message, exception, objects));
         }
 
-        public static void LogObject<TSerializer>(this IEnumerable<ILogger> loggers, LogLevel level, Func<string> messageFunc, params object[] objects) where TSerializer : ISerializationProvider, new()
+        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, Func<string> messageFunc, params object[] objects)
         {
-            var serializer = new TSerializer();
-            loggers.LogObject(level, serializer, messageFunc, objects);
+            loggers.ForceExecute(x => x.LogObject(level, messageFunc, objects));
         }
 
-        public static void LogObject<TSerializer>(this IEnumerable<ILogger> loggers, LogLevel level, Func<string> messageFunc, Exception exception, params object[] objects) where TSerializer : ISerializationProvider, new()
+        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, Func<string> messageFunc, Exception exception, params object[] objects)
         {
-            var serializer = new TSerializer();
-            loggers.LogObject(level, serializer, messageFunc, exception, objects);
-        }
-
-        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, SerializationProvider provider, params object[] objects)
-        {
-            var serializer = provider.CreateProvider();
-            loggers.LogObject(level, serializer, objects);
-        }
-
-        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, SerializationProvider provider, string message, params object[] objects)
-        {
-            var serializer = provider.CreateProvider();
-            loggers.LogObject(level, serializer, message, objects);
-        }
-
-        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, SerializationProvider provider, string message, Exception exception, params object[] objects)
-        {
-            var serializer = provider.CreateProvider();
-            loggers.LogObject(level, serializer, message, exception, objects);
-        }
-
-        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, SerializationProvider provider, Func<string> messageFunc, params object[] objects)
-        {
-            var serializer = provider.CreateProvider();
-            loggers.LogObject(level, serializer, messageFunc(), objects);
-        }
-
-        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, SerializationProvider provider, Func<string> messageFunc, Exception exception, params object[] objects)
-        {
-            var serializer = provider.CreateProvider();
-            loggers.LogObject(level, serializer, messageFunc(), exception, objects);
-        }
-
-        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, ISerializationProvider serializer, params object[] objects)
-        {
-            loggers.ForceExecute(x => x.LogObject(level, serializer, objects));
-        }
-
-        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, ISerializationProvider serializer, string message, params object[] objects)
-        {
-            loggers.ForceExecute(x => x.LogObject(level, serializer, message, objects));
-        }
-
-        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, ISerializationProvider serializer, string message, Exception exception, params object[] objects)
-        {
-            loggers.ForceExecute(x => x.LogObject(level, serializer, message, exception, objects));
-        }
-
-        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, ISerializationProvider serializer, Func<string> messageFunc, params object[] objects)
-        {
-            loggers.ForceExecute(x => x.LogObject(level, serializer, messageFunc, objects));
-        }
-
-        public static void LogObject(this IEnumerable<ILogger> loggers, LogLevel level, ISerializationProvider serializer, Func<string> messageFunc, Exception exception, params object[] objects)
-        {
-            loggers.ForceExecute(x => x.LogObject(level, serializer, messageFunc, exception, objects));
+            loggers.ForceExecute(x => x.LogObject(level, messageFunc, exception, objects));
         }
         #endregion
         #endregion

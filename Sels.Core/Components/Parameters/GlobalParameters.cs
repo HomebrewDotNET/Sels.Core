@@ -1,5 +1,4 @@
 ﻿using Sels.Core.Components.Parameters.Parameters;
-using Sels.Core.Components.Properties;
 using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
@@ -50,16 +49,16 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public static void AddParameter(string name, Func<object, string, string> generateValueAction, Func<object> beginScopeAction = null)
         {
-            name.ValidateVariable(nameof(name));
-            generateValueAction.ValidateVariable(nameof(generateValueAction));
+            name.ValidateArgument(nameof(name));
+            generateValueAction.ValidateArgument(nameof(generateValueAction));
 
             AddParameter(new DelegateParameter(name, generateValueAction, beginScopeAction));
         }
 
         public static void AddParameter(string name, Func<string> generateValueAction, Func<object> beginScopeAction = null)
         {
-            name.ValidateVariable(nameof(name));
-            generateValueAction.ValidateVariable(nameof(generateValueAction));
+            name.ValidateArgument(nameof(name));
+            generateValueAction.ValidateArgument(nameof(generateValueAction));
 
             AddParameter(name, (x, y) => generateValueAction(), beginScopeAction);
         }
@@ -69,7 +68,7 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public static void AddParameter(string name, string parameterValue)
         {
-            name.ValidateVariable(nameof(name));
+            name.ValidateArgument(nameof(name));
 
             AddParameter(name, (x, y) => parameterValue);
         }
@@ -79,8 +78,8 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public static void AddParameter(Parameter parameter)
         {
-            parameter.ValidateVariable(nameof(parameter));
-            parameter.Name.ValidateVariable(nameof(parameter.Name));
+            parameter.ValidateArgument(nameof(parameter));
+            parameter.Name.ValidateArgument(nameof(parameter.Name));
 
             lock (_threadLock)
             {
@@ -93,7 +92,7 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public static void AddParameters(params Parameter[] parameters)
         {
-            parameters.ValidateVariable(nameof(parameters));
+            parameters.ValidateArgument(nameof(parameters));
 
             foreach (var parameter in parameters)
             {
@@ -105,7 +104,7 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public static void AddParameters(IEnumerable<Parameter> parameters)
         {
-            parameters.ValidateVariable(nameof(parameters));
+            parameters.ValidateArgument(nameof(parameters));
 
             foreach (var parameter in parameters)
             {
@@ -117,7 +116,7 @@ namespace Sels.Core.Components.Parameters
         #region RemoveParameter
         public static void RemoveParameterIfExists(string name)
         {
-            name.ValidateVariable(nameof(name));
+            name.ValidateArgument(nameof(name));
 
             lock (_threadLock)
             {

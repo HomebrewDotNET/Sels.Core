@@ -215,7 +215,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                     }                   
 
                     return false;
-                }); ;
+                });
             }
         }
         #endregion
@@ -233,13 +233,13 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             {
                 profile.ValidateArgument(nameof(profile));
 
-                if(options == ImportOptions.Configuration)
+                if(options.HasFlag(ImportOptions.Configuration))
                 {
                     _loggers.Debug($"Importing configuration from <{profile}>");
                     _validators.AddRange(profile._validators);
                 }
 
-                if (options == ImportOptions.IgnoreConditions)
+                if (options.HasFlag(ImportOptions.IgnoreConditions))
                 {
                     _loggers.Debug($"Importing ignore conditions from <{profile}>");
                     _ignoredPropertyConditions.AddRange(profile._ignoredPropertyConditions);
@@ -298,11 +298,11 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                     Validate(profileContext, objectToValidate, null);
 
                     var objectType = objectToValidate.GetType();
-                    if (!_specialIgnoredCollectionTypes.Any(x => objectType.IsAssignableTo(x)) && objectType.IsItemContainer())
+                    if (!_specialIgnoredCollectionTypes.Any(x => objectType.IsAssignableTo(x)) && objectType.IsContainer())
                     {
                         _loggers.Debug($"Root object <{objectToValidate}> is a collection. Triggering validation for the elements");
                         var counter = 0;
-                        foreach (var element in objectToValidate.As<IEnumerable>())
+                        foreach (var element in objectToValidate.Cast<IEnumerable>())
                         {
                             Validate(profileContext, element, counter);
                         }
@@ -347,7 +347,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                 }
 
                 // Execute fallthrough
-                foreach(var property in objectToValidate.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                foreach(var property in objectToValidate.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters().Length == 0))
                 {
                     var value = property.GetValue(objectToValidate);
 
@@ -360,15 +360,14 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                             continue;
                         }
 
-                        var parent = new Parent(objectToValidate, property, elementIndex);
-
                         // Allowed if property is a collection but not any of the special collection types
-                        var isAllowedForCollectionFallthough = !_specialIgnoredCollectionTypes.Any(x => property.PropertyType.IsAssignableTo(x)) && property.PropertyType.IsItemContainer();
+                        var isAllowedForCollectionFallthough = !_specialIgnoredCollectionTypes.Any(x => property.PropertyType.IsAssignableTo(x)) && property.PropertyType.IsContainer();
                         // Allowed if the property doesn't have a validator explicitly defined and isn't a default ignored type
                         var isAllowedForPropertyFallthough = !_validators.Any(x => x.CanValidate(value, profileContext.Context, null, currentParents)) && !_defaultIgnoredPropertyConditions.Any(x => x((value, property, profileContext.Context)));
 
                         if(isAllowedForCollectionFallthough || isAllowedForPropertyFallthough)
                         {
+                            var parent = new Parent(objectToValidate, property, elementIndex);
                             using (new ScopedAction(() => profileContext.CurrentParents.Add(parent), () => profileContext.CurrentParents.Remove(parent)))
                             {                              
                                 if (isAllowedForCollectionFallthough)
@@ -376,7 +375,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                                     // Loop over elements in collection and trigger validation for the elements
                                     _loggers.Debug($"Property {property.Name} on <{objectToValidate}> is a collection. Triggering validation for the elements");
                                     var counter = 0;
-                                    foreach (var element in value.As<IEnumerable>())
+                                    foreach (var element in value.Cast<IEnumerable>())
                                     {
                                         Validate(profileContext, element, counter);
                                     }

@@ -17,7 +17,7 @@ namespace Sels.Core
         /// <typeparam name="T">Type of objects to compare</typeparam>
         /// <param name="arg1">Object to compare</param>
         /// <param name="arg2">Object to compare</param>
-        /// <returns>Boolean indicating if <param name="arg1"/> is equal, matching, ... to <param name="arg2"/></returns>
+        /// <returns>Boolean indicating if arg1 is equal, matching, ... to arg2</returns>
         public delegate bool Comparator<T>(T arg1, T arg2);
         #endregion
 
@@ -74,6 +74,9 @@ namespace Sels.Core
         public delegate bool Condition<T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
         #endregion
 
+        /// <summary>
+        /// Contains async version of existing delegates
+        /// </summary>
         public static class Async
         {
             #region Predicate

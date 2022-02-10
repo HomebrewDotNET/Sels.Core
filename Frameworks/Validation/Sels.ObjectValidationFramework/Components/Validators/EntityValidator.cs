@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Sels.Core.Components.ScopedActions;
+using Sels.Core.Components.Scope;
 using System.Linq.Expressions;
 
 namespace Sels.ObjectValidationFramework.Components.Validators
@@ -152,6 +152,30 @@ namespace Sels.ObjectValidationFramework.Components.Validators
                 }, configurator);
             }
         }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, object>> condition)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+
+                _currentConditions.Add(condition);
+
+                return this;
+            }
+        }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+
+                _currentConditions.Add(x => condition(new ValidationRuleContext<TEntity, TContext>(x.Source, x.Context, x.ElementIndex, x.Parents)));
+
+                return this;
+            }
+        }
         #endregion
 
         #region Validation
@@ -171,7 +195,7 @@ namespace Sels.ObjectValidationFramework.Components.Validators
             {
                 objectToValidate.ValidateArgument(x => CanValidate(objectToValidate, context, elementIndex, parents), x => new NotSupportedException($"Current validator cannot validate <{(objectToValidate == null ? "null references" : objectToValidate.GetType().ToString())}>"));
 
-                var typedObjectToValidate = objectToValidate.As<TEntity>();
+                var typedObjectToValidate = objectToValidate.Cast<TEntity>();
                 var validationRuleContext = new ValidationRuleContext<TEntity, object>(typedObjectToValidate, context, elementIndex, parents);
 
                 return _rules.Where(rule => rule.CanValidate(validationRuleContext)).SelectMany(rule => rule.Validate(typedObjectToValidate, context, elementIndex, parents) ?? new TError[0]).ToArray();

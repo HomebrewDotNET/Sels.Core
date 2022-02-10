@@ -67,7 +67,7 @@ namespace Sels.ObjectValidationFramework.Components.Rules
 
                 if(objectToValidate != null)
                 {
-                    var elements = _property.GetValue(objectToValidate).AsOrDefault<IEnumerable<TElement>>();
+                    var elements = _property.GetValue(objectToValidate).CastOrDefault<IEnumerable<TElement>>();
 
                     if(elements != null)
                     {

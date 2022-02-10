@@ -51,82 +51,11 @@ namespace Sels.Core.Extensions.Reflection
             return value.GetType().Construct() == value;
         }
 
-        #region Attributes
-        public static T GetAttribute<T>(this object source) where T : Attribute
-        {
-            source.ValidateVariable(nameof(source));
-
-            var attribute = source.GetAttributeOrDefault<T>();
-
-            if (!attribute.HasValue())
-            {
-                throw new InvalidOperationException($"Attribute {typeof(T)} was not present on object {source.GetType()}");
-            }
-
-            return attribute;
-        }
-        public static T GetAttribute<T>(this Enum source) where T : Attribute
-        {
-            source.ValidateVariable(nameof(source));
-
-            var attribute = source.GetAttributeOrDefault<T>();
-
-            if (!attribute.HasValue())
-            {
-                throw new InvalidOperationException($"Attribute {typeof(T)} was not present on object {source.GetType()}");
-            }
-
-            return attribute;
-        }
-
-        public static T GetAttribute<T>(this MemberInfo source) where T : Attribute
-        {
-            source.ValidateVariable(nameof(source));
-
-            var attribute = source.GetAttributeOrDefault<T>();
-
-            if (!attribute.HasValue())
-            {
-                throw new InvalidOperationException($"Attribute {typeof(T)} was not present on object {source.GetType()}");
-            }
-
-            return attribute;
-        }
-
-        public static T GetAttributeOrDefault<T>(this object source) where T : Attribute
-        {
-            source.ValidateVariable(nameof(source));
-
-            var sourceType = source.GetType();
-
-            return sourceType.GetCustomAttribute<T>();
-        }
-
-        public static T GetAttributeOrDefault<T>(this MemberInfo source) where T : Attribute
-        {
-            source.ValidateVariable(nameof(source));
-
-            return source.GetCustomAttribute<T>();
-        }
-
-        public static T GetAttributeOrDefault<T>(this Enum source) where T : Attribute
-        {
-            source.ValidateVariable(nameof(source));
-
-            var sourceType = source.GetType();
-
-            var enumMember = sourceType.GetMember(source.ToString());
-
-            return enumMember[0].GetCustomAttribute<T>();
-        }
-
-        #endregion
-
         #region Delegates
         public static Delegate CreateDelegateForMethod(this object value, string methodName)
         {
-            methodName.ValidateVariable(nameof(methodName));
-            value.ValidateVariable(nameof(value));
+            methodName.ValidateArgument(nameof(methodName));
+            value.ValidateArgument(nameof(value));
 
             var objectType = value.GetType();
 
@@ -142,8 +71,8 @@ namespace Sels.Core.Extensions.Reflection
 
         public static T CreateDelegateForMethod<T>(this object value, string methodName) where T : Delegate
         {
-            methodName.ValidateVariable(nameof(methodName));
-            value.ValidateVariable(nameof(value));
+            methodName.ValidateArgument(nameof(methodName));
+            value.ValidateArgument(nameof(value));
 
             var objectType = value.GetType();
 
@@ -159,14 +88,14 @@ namespace Sels.Core.Extensions.Reflection
 
         public static T Invoke<T>(this Delegate delegateFunction, params object[] parameters)
         {
-            delegateFunction.ValidateVariable(nameof(delegateFunction));
+            delegateFunction.ValidateArgument(nameof(delegateFunction));
 
             return (T)delegateFunction.DynamicInvoke(parameters);
         }
 
         public static void Invoke(this Delegate delegateFunction, params object[] parameters)
         {
-            delegateFunction.ValidateVariable(nameof(delegateFunction));
+            delegateFunction.ValidateArgument(nameof(delegateFunction));
 
             delegateFunction.DynamicInvoke(parameters);
         }
@@ -211,120 +140,6 @@ namespace Sels.Core.Extensions.Reflection
                     delegateFunc.InvokeOrDefault(parameters);
                 }
             }
-        }
-        #endregion
-
-        #region Properties
-        public static PropertyInfo[] GetProperties(this object value)
-        {
-            return value.GetType().GetProperties();
-        }
-
-        public static PropertyInfo[] GetProperties(this object value, BindingFlags bindingFlags)
-        {
-            return value.GetType().GetProperties(bindingFlags);
-        }
-
-        public static PropertyInfo[] GetPublicProperties(this object value)
-        {
-            return value.GetProperties(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public);
-        }
-
-        public static PropertyInfo[] GetPublicProperties(this Type type)
-        {
-            return type.GetProperties(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public);
-        }
-
-        public static bool AreEqual(this PropertyInfo property, PropertyInfo propertyToCompare)
-        {
-            property.ValidateVariable(nameof(property));
-            propertyToCompare.ValidateVariable(nameof(propertyToCompare));
-
-            if(property.Equals(propertyToCompare) || property.Name.Equals(propertyToCompare.Name))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public static T GetValue<T>(this PropertyInfo property, object sourceObject)
-        {
-            property.ValidateVariable(nameof(property));
-            sourceObject.ValidateVariable(nameof(sourceObject));
-
-            return (T)property.GetValue(sourceObject);
-        }
-
-        public static bool CanAssign<T>(this PropertyInfo property)
-        {
-            property.ValidateVariable(nameof(property));
-            var typeToCheck = typeof(T);
-            var propertyType = property.PropertyType;
-
-            return propertyType.IsAssignableFrom(typeToCheck);
-        }
-
-        public static bool TryGetPropertyInfo(this object sourceObject, string propertyName, out PropertyInfo property)
-        {
-            sourceObject.ValidateVariable(nameof(sourceObject));
-            propertyName.ValidateVariable(nameof(propertyName));
-
-            property = sourceObject.GetType().GetProperty(propertyName);
-
-            return property != null;
-        }
-
-        public static bool TryGetPropertyInfo(this Type sourceType, string propertyName, out PropertyInfo property)
-        {
-            sourceType.ValidateVariable(nameof(sourceType));
-            propertyName.ValidateVariable(nameof(propertyName));
-
-            property = sourceType.GetProperty(propertyName);
-
-            return property != null;
-        }
-
-        public static PropertyInfo GetPropertyInfo(this object sourceObject, string propertyName)
-        {
-            sourceObject.ValidateVariable(nameof(sourceObject));
-            propertyName.ValidateVariable(nameof(propertyName));
-
-            if(sourceObject.TryGetPropertyInfo(propertyName, out var property))
-            {
-                return property;
-            }
-            else
-            {
-                throw new InvalidOperationException($"Could not find property <{propertyName}> on object <{sourceObject.GetType()}>");
-            }
-        }
-
-        public static PropertyInfo GetPropertyInfo(this Type sourceType, string propertyName)
-        {
-            sourceType.ValidateVariable(nameof(sourceType));
-            propertyName.ValidateVariable(nameof(propertyName));
-
-            if (sourceType.TryGetPropertyInfo(propertyName, out var property))
-            {
-                return property;
-            }
-            else
-            {
-                throw new InvalidOperationException($"Could not find property <{propertyName}> on type <{sourceType}>");
-            }
-        }
-
-        public static void SetDefault(this PropertyInfo property, object sourceObject)
-        {
-            property.ValidateVariable(nameof(property));
-            sourceObject.ValidateVariable(nameof(sourceObject));
-
-            var propertyType = property.PropertyType;
-
-            var defaultValue = propertyType.GetDefaultValue();
-
-            property.SetValue(sourceObject, defaultValue);
         }
         #endregion
     }

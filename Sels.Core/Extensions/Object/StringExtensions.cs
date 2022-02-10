@@ -9,6 +9,9 @@ using System.Text.RegularExpressions;
 
 namespace System
 {
+    /// <summary>
+    /// Contains extension methods for strings.
+    /// </summary>
     public static class StringExtensions
     {
         public static string FormatString(this string value, params object[] parameters)
@@ -146,10 +149,12 @@ namespace System
         #endregion
 
         #region Join
-
-        public static string JoinString<T>(this IEnumerable<T> values, string joinValue)
+        public static string JoinString<T>(this IEnumerable<T> values, object joinValue)
         {
-            return values.HasValue() ? string.Join(joinValue, values) : string.Empty;
+            values.ValidateArgument(nameof(values));
+            joinValue.ValidateArgument(nameof(joinValue));
+
+            return string.Join(joinValue.ToString(), values);
         }
 
         public static string JoinString<T>(this IEnumerable<T> values)
@@ -194,19 +199,27 @@ namespace System
             return source.Split(new string[] { splitValue }, options);
         }
 
-        public static string TrySplitFirstOrDefault(this string source, object splitValue, out string splitResult, StringSplitOptions splitOption = StringSplitOptions.None)
+        /// <summary>
+        /// Splits <paramref name="source"/> on the first occurance of <paramref name="splitValue"/>.
+        /// </summary>
+        /// <param name="source">String to split</param>
+        /// <param name="splitValue">Value to split string with</param>
+        /// <param name="other">The other values after splitting</param>
+        /// <param name="options">Optional options for splitting the strings</param>
+        /// <returns>The first value after splitting or the <paramref name="source"/> if the value could not be split</returns>
+        public static string SplitOnFirstOrDefault(this string source, object splitValue, out string other, StringSplitOptions options = StringSplitOptions.None)
         {
-            splitValue.ValidateVariable(nameof(splitValue));
+            splitValue.ValidateArgument(nameof(splitValue));
 
-            splitResult = null;
+            other = null;
 
             if (source.HasValue())
             {
-                var split = source.Split(splitValue.ToString(), splitOption);
+                var split = source.Split(splitValue.ToString(), options);
 
                 if(split.Length > 1)
                 {
-                    splitResult = split.Skip(1).JoinString(splitValue.ToString());
+                    other = split.Skip(1).JoinString(splitValue.ToString());
                     return split[0];
                 }
             }
@@ -214,7 +227,71 @@ namespace System
             return source;
         }
 
-        public static string[] SplitStringOnNewLine(this string source)
+        /// <summary>
+        /// Splits <paramref name="source"/> on the first occurance of <paramref name="splitValue"/>. Throws <see cref="InvalidOperationException"/> if <paramref name="source"/> could not be split on <paramref name="splitValue"/>.
+        /// </summary>
+        /// <param name="source">String to split</param>
+        /// <param name="splitValue">Value to split string with</param>
+        /// <param name="other">The other values after splitting</param>
+        /// <param name="options">Optional options for splitting the strings</param>
+        /// <returns>The first value after splitting/returns>
+        public static string SplitOnFirst(this string source, object splitValue, out string other, StringSplitOptions options = StringSplitOptions.None)
+        {
+            splitValue.ValidateArgument(nameof(splitValue));
+
+            other = null;
+
+            if (source.HasValue())
+            {
+                var split = source.Split(splitValue.ToString(), options);
+
+                if (split.Length > 1)
+                {
+                    other = split.Skip(1).JoinString(splitValue.ToString());
+                    return split[0];
+                }
+            }
+
+            throw new InvalidOperationException($"Could not split <{source}> on <{splitValue}>");
+        }
+
+        /// <summary>
+        /// Splits <paramref name="source"/> on the first occurance of <paramref name="splitValue"/>.
+        /// </summary>
+        /// <param name="source">String to split</param>
+        /// <param name="splitValue">Value to split string with</param>
+        /// <param name="first">The first value after splitting</param>
+        /// <param name="other">The other values after splitting</param>
+        /// <param name="options">Optional options for splitting the strings</param>
+        /// <returns>If <paramref name="source"/> could be split on <paramref name="splitValue"/></returns>
+        public static bool TrySplitOnFirst(this string source, object splitValue, out string first, out string other, StringSplitOptions options = StringSplitOptions.None)
+        {
+            splitValue.ValidateArgument(nameof(splitValue));
+
+            first = null;
+            other = null;
+
+            if (source.HasValue())
+            {
+                var split = source.Split(splitValue.ToString(), StringSplitOptions.None);
+
+                if (split.Length > 1)
+                {
+                    other = split.Skip(1).JoinString(splitValue.ToString());
+                    first = split[0];
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Splits <paramref name="source"/> using <see cref="Environment.NewLine"/>.
+        /// </summary>
+        /// <param name="source">String to split</param>
+        /// <returns><paramref name="source"/> split up using <see cref="Environment.NewLine"/></returns>
+        public static string[] SplitOnNewLine(this string source)
         {
             return source.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
         }
@@ -223,7 +300,7 @@ namespace System
         #region Builder
         public static StringBuilder AppendSpace(this StringBuilder builder)
         {
-            builder.ValidateVariable(nameof(builder));
+            builder.ValidateArgument(nameof(builder));
 
             builder.Append(Constants.Strings.Space);
 
@@ -232,11 +309,37 @@ namespace System
 
         public static StringBuilder AppendTab(this StringBuilder builder)
         {
-            builder.ValidateVariable(nameof(builder));
+            builder.ValidateArgument(nameof(builder));
 
             builder.Append(Constants.Strings.Tab);
 
             return builder;
+        }
+        #endregion
+
+        #region Filter
+        /// <summary>
+        /// Modifies <paramref name="value"/> by calling <paramref name="filterFunction"/> for each filter in <paramref name="source"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of filter</typeparam>
+        /// <param name="source">The filters to use</param>
+        /// <param name="value">The value to modify</param>
+        /// <param name="filterFunction">The function that will be called for each filter in <paramref name="source"/>. First arg is the filter, second arg is the current string value</param>
+        /// <returns></returns>
+        public static string Filter<T>(this IEnumerable<T> source, string value, Func<T, string, string> filterFunction)
+        {
+            value.ValidateArgument(nameof(value));
+            filterFunction.ValidateArgument(nameof(filterFunction));
+
+            if (source.HasValue())
+            {
+                foreach(var filter in source)
+                {
+                    value = filterFunction(filter, value);
+                }
+            }
+
+            return value;
         }
         #endregion
     }

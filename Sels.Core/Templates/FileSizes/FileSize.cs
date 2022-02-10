@@ -236,7 +236,7 @@ namespace Sels.Core.Templates.FileSizes
         {
             bytes.ValidateArgumentLargerOrEqual(nameof(bytes), 0);
 
-            return CreateFromBytes(bytes, typeof(T)).As<T>();
+            return CreateFromBytes(bytes, typeof(T)).Cast<T>();
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace Sels.Core.Templates.FileSizes
         {
             size.ValidateArgumentLargerOrEqual(nameof(size), 0);
 
-            return CreateFromSize(size, typeof(T)).As<T>();
+            return CreateFromSize(size, typeof(T)).Cast<T>();
         }
 
         /// <summary>
@@ -408,7 +408,7 @@ namespace Sels.Core.Templates.FileSizes
 
         public bool Equals(FileSize other)
         {
-            return Equals(other.AsOrDefault<object>());
+            return Equals(other.CastOrDefault<object>());
         }
         #endregion
     }

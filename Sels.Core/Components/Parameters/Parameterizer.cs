@@ -1,5 +1,4 @@
 ﻿using Sels.Core.Components.Parameters.Parameters;
-using Sels.Core.Components.Properties;
 using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
@@ -139,7 +138,7 @@ namespace Sels.Core.Components.Parameters
         #region RemoveParameter
         public void RemoveParameterIfExists(string name)
         {
-            name.ValidateVariable(nameof(name));
+            name.ValidateArgument(nameof(name));
 
             if (_parameters.ContainsKey(name))
             {

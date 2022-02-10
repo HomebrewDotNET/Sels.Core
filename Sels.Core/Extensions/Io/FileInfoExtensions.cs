@@ -89,7 +89,7 @@ namespace System.IO
 
             var sizeType = typeof(TSize).Is<FileSize>() ? typeof(SingleByte) : typeof(TSize);
 
-            return FileSize.CreateFromBytes(file.Length, sizeType).As<TSize>();
+            return FileSize.CreateFromBytes(file.Length, sizeType).Cast<TSize>();
         }
 
         #region Backup

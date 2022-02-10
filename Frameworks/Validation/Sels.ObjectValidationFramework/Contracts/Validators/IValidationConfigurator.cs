@@ -80,5 +80,18 @@ namespace Sels.ObjectValidationFramework.Contracts.Validators
         /// <param name="configurator">Configurator for creating validation rules</param>
         /// <returns>Configurator for creating validation rules</returns>
         IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator);
+        /// <summary>
+        /// All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes.
+        /// </summary>
+        /// <param name="condition">Delegate that checks if validation rules can be executed</param>
+        /// <returns>Configurator for creating validation rules</returns>
+        IValidationConfigurator<TEntity, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, object>> condition);
+        /// <summary>
+        /// All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TContext"/>.
+        /// </summary>
+        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="condition">Delegate that checks if validation rules can be executed</param>
+        /// <returns>Configurator for creating validation rules</returns>
+        IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition);
     }
 }

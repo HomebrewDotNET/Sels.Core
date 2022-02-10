@@ -129,6 +129,26 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
                 return _validator.ValidateWhen(condition, configurator);
             }
         }
+        /// <inhericdoc />
+        public IValidationConfigurator<TEntity, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, object>> condition)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+
+                return _validator.ValidateWhen(condition);
+            }
+        }
+        /// <inhericdoc />
+        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+
+                return _validator.ValidateWhen(condition);
+            }
+        }
         #endregion
 
         #region Validation

@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Extensions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,11 +9,30 @@ using System.Text;
 
 namespace Sels.Core.Extensions
 {
+    /// <summary>
+    /// Contains extension for working with the various .NET collections.
+    /// </summary>
     public static class CollectionExtensions
     {
         private static Random _random = new Random();
 
         #region IEnumerable
+        /// <summary>
+        /// Yield return any object in <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">Collection to get items from</param>
+        /// <returns>Objects in <paramref name="source"/></returns>
+        public static IEnumerable<object> Enumerate(this IEnumerable source)
+        {
+            if (source != null)
+            {
+                foreach (var item in source)
+                {
+                    yield return item;
+                }
+            }
+        }
+
         /// <summary>
         /// Creates a new list from the elements in <paramref name="collection"/>.
         /// </summary>
@@ -127,8 +147,8 @@ namespace Sels.Core.Extensions
         #region Dictionary
         public static void Merge<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, Dictionary<TKey, List<TItem>> dictionaryToMerge)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            dictionaryToMerge.ValidateVariable(nameof(dictionaryToMerge));
+            dictionary.ValidateArgument(nameof(dictionary));
+            dictionaryToMerge.ValidateArgument(nameof(dictionaryToMerge));
 
             foreach(var pair in dictionaryToMerge)
             {
@@ -139,8 +159,8 @@ namespace Sels.Core.Extensions
         #region AddValue
         public static void AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
 
             if (dictionary.ContainsKey(key))
             {
@@ -155,8 +175,8 @@ namespace Sels.Core.Extensions
         [Obsolete]
         public static void AddValueToCollection<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
 
             if (dictionary.ContainsKey(key))
             {
@@ -182,8 +202,8 @@ namespace Sels.Core.Extensions
         /// <param name="item">Item to add</param>
         public static void AddValueToList<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
 
             if (dictionary.ContainsKey(key))
             {
@@ -200,9 +220,9 @@ namespace Sels.Core.Extensions
         [Obsolete]
         public static void AddValues<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, IEnumerable<TItem> items)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-            items.ValidateVariable(nameof(items));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            items.ValidateArgument(nameof(items));
 
             if (dictionary.ContainsKey(key))
             {
@@ -226,9 +246,9 @@ namespace Sels.Core.Extensions
         /// <param name="items">Items to add</param>
         public static void AddValues<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, IEnumerable<TItem> items)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-            items.ValidateVariable(nameof(items));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            items.ValidateArgument(nameof(items));
 
             if (dictionary.ContainsKey(key))
             {
@@ -244,16 +264,16 @@ namespace Sels.Core.Extensions
         #region TryGetOrSet
         public static TValue TryGetOrSet<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
 
             return dictionary.TryGetOrSet(key, () => value);
         }
 
         public static TValue TryGetOrSet<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TValue> valueFunc)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
 
             if (dictionary.ContainsKey(key))
             {
@@ -269,8 +289,8 @@ namespace Sels.Core.Extensions
 
         public static TValue TryGetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
 
             return dictionary.TryGetOrSet(key, default(TValue));
         }
@@ -280,9 +300,9 @@ namespace Sels.Core.Extensions
         #region ContainsItem
         public static bool ContainsItem<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-            item.ValidateVariable(nameof(item));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            item.ValidateArgument(nameof(item));
 
             if (dictionary.ContainsKey(key))
             {
@@ -294,9 +314,9 @@ namespace Sels.Core.Extensions
 
         public static bool ContainsItem<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-            item.ValidateVariable(nameof(item));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            item.ValidateArgument(nameof(item));
 
             if (dictionary.ContainsKey(key))
             {
@@ -308,9 +328,9 @@ namespace Sels.Core.Extensions
 
         public static bool ContainsItem<TKey, TItem>(this Dictionary<TKey, Collection<TItem>> dictionary, TKey key, TItem item)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-            item.ValidateVariable(nameof(item));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            item.ValidateArgument(nameof(item));
 
             if (dictionary.ContainsKey(key))
             {
@@ -354,66 +374,6 @@ namespace Sels.Core.Extensions
 
             return biggestLength;
         }        
-        #endregion
-
-        #region Manipulation
-        public static IList<T> UpdateFirst<T>(this IList<T> source, Func<T, T> valueUpdater)
-        {
-            valueUpdater.ValidateVariable(nameof(valueUpdater));
-
-            var oldValue = source.FirstOrDefault();
-
-            if (oldValue != null)
-            {
-                var newValue = valueUpdater(oldValue);
-
-                source.Remove(oldValue);
-                source.Insert(0, newValue);
-            }
-
-            return source;
-        }
-
-        public static ICollection<T> UpdateLast<T>(this ICollection<T> source, Func<T, T> valueUpdater)
-        {
-            valueUpdater.ValidateVariable(nameof(valueUpdater));
-
-            var oldValue = source.LastOrDefault();
-
-            if (oldValue != null)
-            {
-                var newValue = valueUpdater(oldValue);
-
-                source.Remove(oldValue);
-                source.Add(newValue);
-            }
-
-            return source;
-        }
-
-        public static ICollection<T> RemoveLast<T>(this ICollection<T> source)
-        {
-            var oldValue = source.LastOrDefault();
-
-            if (oldValue != null)
-            {
-                source.Remove(oldValue);
-            }
-
-            return source;
-        }
-
-        public static ICollection<T> RemoveFirst<T>(this ICollection<T> source)
-        {
-            var oldValue = source.FirstOrDefault();
-
-            if (oldValue != null)
-            {
-                source.Remove(oldValue);
-            }
-
-            return source;
-        }
         #endregion
     }
 }
