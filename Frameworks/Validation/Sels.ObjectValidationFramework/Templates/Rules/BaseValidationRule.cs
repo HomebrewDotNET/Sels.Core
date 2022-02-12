@@ -11,6 +11,7 @@ using Sels.ObjectValidationFramework.Components;
 using Sels.ObjectValidationFramework.Components.Validators;
 using System.Linq;
 using System.Linq.Expressions;
+using Sels.ObjectValidationFramework.Models;
 
 namespace Sels.ObjectValidationFramework.Templates.Rules
 {
@@ -26,16 +27,21 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         protected readonly List<Predicate<IValidationRuleContext<TEntity, object>>> _globalConditions = new List<Predicate<IValidationRuleContext<TEntity, object>>>();
         protected readonly IEnumerable<ILogger> _loggers;
 
+        // Properties
+        internal bool IgnoreExceptions { get; }
+
         /// <summary>
         /// Creates a new instance.
         /// </summary>
         /// <param name="validator">Validator to delegate <see cref="IValidationConfigurator{TEntity, TError}"/> calls to</param>
+        /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        internal BaseValidationRule(EntityValidator<TEntity, TError> validator, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null)
+        internal BaseValidationRule(EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null)
         {
             _validator = validator.ValidateArgument(nameof(validator));
             _loggers = loggers;
+            IgnoreExceptions = settings.HasFlag(RuleSettings.IgnoreExceptions);
 
             if (globalConditions.HasValue())
             {
@@ -45,64 +51,64 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
 
         #region Validator
         /// <inhericdoc />
-        public IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TElement> ForElements<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property)
+        public IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TElement> ForElements<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, RuleSettings settings = RuleSettings.None)
         {
             using (_loggers.TraceMethod(this))
             {
                 property.ValidateArgument(nameof(property));
 
-                return _validator.ForElements(property);
+                return _validator.ForElements(property, settings);
             }
         }
         /// <inhericdoc />
-        public IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TValue1> ForElements<TElement, TValue1>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Func<TElement, TValue1> valueSelector)
-        {
-            using (_loggers.TraceMethod(this))
-            {
-                property.ValidateArgument(nameof(property));
-                valueSelector.ValidateArgument(nameof(valueSelector));
-
-                return _validator.ForElements(property, valueSelector);
-            }
-        }
-        /// <inhericdoc />
-        public IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TPropertyValue> ForProperty<TPropertyValue>(Expression<Func<TEntity, TPropertyValue>> property)
-        {
-            using (_loggers.TraceMethod(this))
-            {
-                property.ValidateArgument(nameof(property));
-
-                return _validator.ForProperty(property);
-            }
-        }
-        /// <inhericdoc />
-        public IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TValue1> ForProperty<TPropertyValue, TValue1>(Expression<Func<TEntity, TPropertyValue>> property, Func<TPropertyValue, TValue1> valueSelector)
+        public IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TValue1> ForElements<TElement, TValue1>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Func<TElement, TValue1> valueSelector, RuleSettings settings = RuleSettings.None)
         {
             using (_loggers.TraceMethod(this))
             {
                 property.ValidateArgument(nameof(property));
                 valueSelector.ValidateArgument(nameof(valueSelector));
 
-                return _validator.ForProperty(property, valueSelector);
+                return _validator.ForElements(property, valueSelector, settings);
             }
         }
         /// <inhericdoc />
-        public IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TEntity> ForSource()
+        public IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TPropertyValue> ForProperty<TPropertyValue>(Expression<Func<TEntity, TPropertyValue>> property, RuleSettings settings = RuleSettings.None)
         {
             using (_loggers.TraceMethod(this))
             {
-                return _validator.ForSource();
+                property.ValidateArgument(nameof(property));
+
+                return _validator.ForProperty(property, settings);
+            }
+        }
+        /// <inhericdoc />
+        public IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TValue1> ForProperty<TPropertyValue, TValue1>(Expression<Func<TEntity, TPropertyValue>> property, Func<TPropertyValue, TValue1> valueSelector, RuleSettings settings = RuleSettings.None)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                property.ValidateArgument(nameof(property));
+                valueSelector.ValidateArgument(nameof(valueSelector));
+
+                return _validator.ForProperty(property, valueSelector, settings);
+            }
+        }
+        /// <inhericdoc />
+        public IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TEntity> ForSource(RuleSettings settings = RuleSettings.None)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                return _validator.ForSource(settings);
             }
         }
 
         /// <inhericdoc />
-        public IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TValue1> ForSource<TValue1>(Func<TEntity, TValue1> valueSelector)
+        public IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TValue1> ForSource<TValue1>(Func<TEntity, TValue1> valueSelector, RuleSettings settings = RuleSettings.None)
         {
             using (_loggers.TraceMethod(this))
             {
                 valueSelector.ValidateArgument(nameof(valueSelector));
 
-                return _validator.ForSource(valueSelector);
+                return _validator.ForSource(valueSelector, settings);
             }
         }
 

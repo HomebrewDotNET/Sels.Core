@@ -13,6 +13,8 @@ using System.Linq;
 using System.Text;
 using Sels.Core.Components.Scope;
 using System.Linq.Expressions;
+using Sels.ObjectValidationFramework.Models;
+using Sels.Core.Extensions.Logging;
 
 namespace Sels.ObjectValidationFramework.Components.Validators
 {
@@ -51,17 +53,18 @@ namespace Sels.ObjectValidationFramework.Components.Validators
         }
 
         #region Configuration
-        public IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TElement> ForElements<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property)
+        /// <inheritdoc/>
+        public IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TElement> ForElements<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, RuleSettings settings = RuleSettings.None)
         {
             using (_loggers.TraceMethod(this))
             {
                 property.ValidateArgument(nameof(property));
 
-                return ForElements(property, x => x);
+                return ForElements(property, x => x, settings);
             }
         }
         /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TValue> ForElements<TElement, TValue>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Func<TElement, TValue> valueSelector)
+        public IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TValue> ForElements<TElement, TValue>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Func<TElement, TValue> valueSelector, RuleSettings settings = RuleSettings.None)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -72,11 +75,11 @@ namespace Sels.ObjectValidationFramework.Components.Validators
                     throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
                 }
 
-                return new CollectionPropertyValidationRule<TEntity, TError, TElement, TValue>(propertyInfo, valueSelector, this, _currentConditions, _loggers);
+                return new CollectionPropertyValidationRule<TEntity, TError, TElement, TValue>(propertyInfo, valueSelector, this, settings, _currentConditions, _loggers);
             }
         }
         /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TPropertyValue> ForProperty<TPropertyValue>(Expression<Func<TEntity, TPropertyValue>> property)
+        public IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TPropertyValue> ForProperty<TPropertyValue>(Expression<Func<TEntity, TPropertyValue>> property, RuleSettings settings = RuleSettings.None)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -86,11 +89,11 @@ namespace Sels.ObjectValidationFramework.Components.Validators
                     throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
                 }
 
-                return new PropertyValidationRule<TEntity, TError, TPropertyValue, TPropertyValue>(propertyInfo, false, x => x, this, _currentConditions, _loggers);
+                return new PropertyValidationRule<TEntity, TError, TPropertyValue, TPropertyValue>(propertyInfo, false, x => x, this, settings, _currentConditions, _loggers);
             }
         }
         /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TValue> ForProperty<TPropertyValue, TValue>(Expression<Func<TEntity, TPropertyValue>> property, Func<TPropertyValue, TValue> valueSelector)
+        public IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TValue> ForProperty<TPropertyValue, TValue>(Expression<Func<TEntity, TPropertyValue>> property, Func<TPropertyValue, TValue> valueSelector, RuleSettings settings = RuleSettings.None)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -101,25 +104,25 @@ namespace Sels.ObjectValidationFramework.Components.Validators
                     throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
                 }
 
-                return new PropertyValidationRule<TEntity, TError, TPropertyValue, TValue>(propertyInfo, true, valueSelector, this, _currentConditions, _loggers);
+                return new PropertyValidationRule<TEntity, TError, TPropertyValue, TValue>(propertyInfo, true, valueSelector, this, settings, _currentConditions, _loggers);
             }
         }
         /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TEntity> ForSource()
+        public IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TEntity> ForSource(RuleSettings settings = RuleSettings.None)
         {
             using (_loggers.TraceMethod(this))
             {
-                return ForSource(x => x);
+                return ForSource(x => x, settings);
             }
         }
         /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TValue> ForSource<TValue>(Func<TEntity, TValue> valueSelector)
+        public IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TValue> ForSource<TValue>(Func<TEntity, TValue> valueSelector, RuleSettings settings = RuleSettings.None)
         {
             using (_loggers.TraceMethod(this))
             {
                 valueSelector.ValidateArgument(nameof(valueSelector));
                 
-                return new SourceValidationRule<TEntity, TError, TValue>(valueSelector, this, _currentConditions, _loggers);
+                return new SourceValidationRule<TEntity, TError, TValue>(valueSelector, this, settings, _currentConditions, _loggers);
             }
         }
         /// <inheritdoc/>
@@ -198,7 +201,25 @@ namespace Sels.ObjectValidationFramework.Components.Validators
                 var typedObjectToValidate = objectToValidate.Cast<TEntity>();
                 var validationRuleContext = new ValidationRuleContext<TEntity, object>(typedObjectToValidate, context, elementIndex, parents);
 
-                return _rules.Where(rule => rule.CanValidate(validationRuleContext)).SelectMany(rule => rule.Validate(typedObjectToValidate, context, elementIndex, parents) ?? new TError[0]).ToArray();
+                return _rules.Where(rule => rule.CanValidate(validationRuleContext)).SelectMany(rule =>
+                {
+                    try
+                    {
+                        return rule.Validate(typedObjectToValidate, context, elementIndex, parents) ?? new TError[0];
+                    }
+                    catch(Exception ex)
+                    {
+                        if (rule.IgnoreExceptions)
+                        {
+                            _loggers.LogException(LogLevel.Warning, $"Rule has ignore exception enabled. Ignoring", ex);
+                            return new TError[0];
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }).ToArray();
             }
         }
         #endregion

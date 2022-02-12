@@ -5,6 +5,7 @@ using Sels.Core.Extensions.Logging.Advanced;
 using Sels.ObjectValidationFramework.Components.Validators;
 using Sels.ObjectValidationFramework.Contracts.Rules;
 using Sels.ObjectValidationFramework.Contracts.Validators;
+using Sels.ObjectValidationFramework.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,8 +27,9 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         /// </summary>
         /// <param name="validator">Validator to delegate <see cref="IValidationConfigurator{TEntity, TError}"/> calls to </param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
+        /// <param name="settings">Extra settings for the rule</param>
         /// <param name="loggers">Option loggers for logging</param>
-        internal BaseSingleValueValidationRule(EntityValidator<TEntity, TError> validator, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, globalConditions, loggers)
+        internal BaseSingleValueValidationRule(EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
         }
 
@@ -94,6 +96,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
                         catch(Exception ex)
                         {
                             _loggers.LogException(LogLevel.Warning, $"Error occured while executing validator delegate {i + 1} for value <{value}> on <{objectToValidate}>", ex);
+                            throw;
                         }                       
                     }
                 }
@@ -108,7 +111,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
 
         // Abstractions
         /// <summary>
-        /// Tries to get the value to validate. Returns false when the value can't returned (in case off null references).
+        /// Tries to get the value to validate. Returns false when the value can't be returned (in case of null references).
         /// </summary>
         /// <param name="objectToValidate">Object to get the value from</param>
         /// <param name="value">The value to validate</param>

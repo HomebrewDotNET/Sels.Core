@@ -31,7 +31,7 @@ namespace System.IO
 
         public static bool CreateIfNotExistAndValidate(this FileInfo file, string parameterName)
         {
-            return file.CreateIfNotExistAndValidate(parameterName);
+            return file.CreateIfNotExistAndValidate(String.Empty, parameterName);
         }
 
         public static bool CreateIfNotExistAndValidate(this FileInfo file, object content, string parameterName)
