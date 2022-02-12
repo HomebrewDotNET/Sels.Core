@@ -5,6 +5,7 @@ using Sels.Core.Extensions.Logging.Advanced;
 using Sels.ObjectValidationFramework.Components.Validators;
 using Sels.ObjectValidationFramework.Contracts.Rules;
 using Sels.ObjectValidationFramework.Contracts.Validators;
+using Sels.ObjectValidationFramework.Models;
 using Sels.ObjectValidationFramework.Templates.Rules;
 using System;
 using System.Collections.Generic;
@@ -35,9 +36,10 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         /// <param name="isSubSelection">If <paramref name="valueSelector"/> selects a value from property. False if it just returns the property value</param>
         /// <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
         /// <param name="validator">Validator to delegate <see cref="IValidationConfigurator{TEntity, TError}"/> calls to </param>
+        /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        public PropertyValidationRule(PropertyInfo property, bool isSubSelection, Func<TPropertyValue, TValue> valueSelector, EntityValidator<TEntity, TError> validator, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, globalConditions, loggers)
+        public PropertyValidationRule(PropertyInfo property, bool isSubSelection, Func<TPropertyValue, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
             _valueSelector = valueSelector.ValidateArgument(nameof(valueSelector));
             _property = property.ValidateArgument(nameof(property));
@@ -103,9 +105,10 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         /// <param name="isSubSelection">If <paramref name="valueSelector"/> selects a value from property. False if it just returns the property value</param>
         /// <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
         /// <param name="validator">Validator to delegate <see cref="IValidationConfigurator{TEntity, TError}"/> calls to </param>
+        /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        public PropertyValidationRule(PropertyInfo property, bool isSubSelection, Func<TPropertyValue, TValue> valueSelector, EntityValidator<TEntity, TError> validator, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, globalConditions, loggers)
+        public PropertyValidationRule(PropertyInfo property, bool isSubSelection, Func<TPropertyValue, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
             _valueSelector = valueSelector.ValidateArgument(nameof(valueSelector));
             _property = property.ValidateArgument(nameof(property));
@@ -118,7 +121,7 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         {
             using (_loggers.TraceMethod(this))
             {
-                return new PropertyValidationRule<TEntity, TError, TContext, TPropertyValue, TValue>(_property, _isSubSelection, _valueSelector, _validator, _globalConditions, _loggers);
+                return new PropertyValidationRule<TEntity, TError, TContext, TPropertyValue, TValue>(_property, _isSubSelection, _valueSelector, _validator, _settings, _globalConditions, _loggers);
             }
         }
     }

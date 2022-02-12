@@ -6,6 +6,7 @@ using Sels.ObjectValidationFramework.Components.Rules;
 using Sels.ObjectValidationFramework.Components.Validators;
 using Sels.ObjectValidationFramework.Contracts.Rules;
 using Sels.ObjectValidationFramework.Contracts.Validators;
+using Sels.ObjectValidationFramework.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,9 +32,10 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         /// Creates a new instance.
         /// </summary>
         /// <param name="validator">Validator to delegate <see cref="IValidationConfigurator{TEntity, TError}"/> calls to </param>
+        /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        internal BaseContextValidationRule(EntityValidator<TEntity, TError> validator, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, globalConditions, loggers)
+        internal BaseContextValidationRule(EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
         }
 

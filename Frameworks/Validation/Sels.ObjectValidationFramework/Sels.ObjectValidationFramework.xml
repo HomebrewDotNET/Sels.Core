@@ -29,13 +29,14 @@
             <typeparam name="TElement">Type of the elements from the property</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.CollectionPropertyValidationRule`5.#ctor(System.Reflection.PropertyInfo,System.Func{`3,`4},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.CollectionPropertyValidationRule`5.#ctor(System.Reflection.PropertyInfo,System.Func{`3,`4},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
             <param name="property">The property that is being validated</param>
             <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to </param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
@@ -48,13 +49,14 @@
             <typeparam name="TElement">Type of the elements from the property</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.CollectionPropertyValidationRule`4.#ctor(System.Reflection.PropertyInfo,System.Func{`2,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.CollectionPropertyValidationRule`4.#ctor(System.Reflection.PropertyInfo,System.Func{`2,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
             <param name="property">The property that is being validated</param>
             <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to </param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
@@ -93,7 +95,7 @@
             <typeparam name="TPropertyValue">Type of the property</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.PropertyValidationRule`5.#ctor(System.Reflection.PropertyInfo,System.Boolean,System.Func{`3,`4},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.PropertyValidationRule`5.#ctor(System.Reflection.PropertyInfo,System.Boolean,System.Func{`3,`4},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -101,6 +103,7 @@
             <param name="isSubSelection">If <paramref name="valueSelector"/> selects a value from property. False if it just returns the property value</param>
             <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to </param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
@@ -119,7 +122,7 @@
             <typeparam name="TPropertyValue">Type of the property</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.PropertyValidationRule`4.#ctor(System.Reflection.PropertyInfo,System.Boolean,System.Func{`2,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.PropertyValidationRule`4.#ctor(System.Reflection.PropertyInfo,System.Boolean,System.Func{`2,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -127,6 +130,7 @@
             <param name="isSubSelection">If <paramref name="valueSelector"/> selects a value from property. False if it just returns the property value</param>
             <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to </param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
@@ -142,12 +146,13 @@
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.SourceValidationRule`4.#ctor(System.Func{`0,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.SourceValidationRule`4.#ctor(System.Func{`0,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
             <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to </param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
@@ -165,12 +170,13 @@
             <typeparam name="TError">Type of validation error that this rule returns</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.SourceValidationRule`3.#ctor(System.Func{`0,`2},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.SourceValidationRule`3.#ctor(System.Func{`0,`2},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
             <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to </param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
@@ -284,19 +290,22 @@
             </summary>
             <param name="rule">Rule to add</param>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForElements``2(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},System.Func{``0,``1})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForElements``1(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForElements``2(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},System.Func{``0,``1},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForProperty``2(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{``0,``1})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForSource">
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForProperty``2(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{``0,``1},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForSource``1(System.Func{`0,``0})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForSource(Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForSource``1(System.Func{`0,``0},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inheritdoc/>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
@@ -488,52 +497,58 @@
             <typeparam name="TEntity">Type of object to create validation rules for</typeparam>
             <typeparam name="TError">Type of validation error that this rule returns</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForSource">
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForSource(Sels.ObjectValidationFramework.Models.RuleSettings)">
             <summary>
             Creates a configurator for creating validation rules for <typeparamref name="TEntity"/>.
             </summary>
+            <param name="settings">Extra settings for the rule</param>
             <returns>Configurator for creating validation rules</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForSource``1(System.Func{`0,``0})">
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForSource``1(System.Func{`0,``0},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <summary>
             Creates a configurator for creating validation rules for <typeparamref name="TValue"/> selected from <typeparamref name="TEntity"/>.
             </summary>
             <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
+            <param name="settings">Extra settings for the rule</param>
             <typeparam name="TValue">Type of value to validate</typeparam>
             <returns>Configurator for creating validation rules</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <summary>
             Creates a configurator for creating validation rules for <paramref name="property"/> on <typeparamref name="TEntity"/>.
             </summary>
             <param name="property">Delegate that selects which property to validate. Will throw an <see cref="T:System.ArgumentException"/> when anything but a property is selected</param>
+            <param name="settings">Extra settings for the rule</param>
             <typeparam name="TPropertyValue">Type of property to validate</typeparam>
             <returns>Configurator for creating validation rules</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForProperty``2(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{``0,``1})">
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForProperty``2(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{``0,``1},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <summary>
             Creates a configurator for creating validation rules for the value selected by <paramref name="valueSelector"/> from <paramref name="property"/> on <typeparamref name="TEntity"/>.
             </summary>
             <param name="property">Delegate that selects which property to validate. Will throw an <see cref="T:System.ArgumentException"/> when anything but a property is selected</param>
             <param name="valueSelector">Delegate that selects the value to validate on <paramref name="property"/></param>
+            <param name="settings">Extra settings for the rule</param>
             <typeparam name="TPropertyValue">Type of property to validate</typeparam>
             <typeparam name="TValue">Type of value to validate</typeparam>
             <returns>Configurator for creating validation rules</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForElements``1(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}})">
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForElements``1(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <summary>
             Creates a configurator for creating validation rules for the elements in <paramref name="property"/> on <typeparamref name="TEntity"/>.
             </summary>
             <param name="property">Delegate that selects which property to validate. Will throw an <see cref="T:System.ArgumentException"/> when anything but a property is selected</param>
+            <param name="settings">Extra settings for the rule</param>
             <typeparam name="TElement">Type of element to validate</typeparam>
             <returns>Configurator for creating validation rules</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForElements``2(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},System.Func{``0,``1})">
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ForElements``2(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},System.Func{``0,``1},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <summary>
             Creates a configurator for creating validation rules for the value selected by <paramref name="valueSelector"/> for each element in <paramref name="property"/> on <typeparamref name="TEntity"/>.
             </summary>
             <param name="property">Delegate that selects which property to validate. Will throw an <see cref="T:System.ArgumentException"/> when anything but a property is selected</param>
             <param name="valueSelector">Delegate that selects the value to validate on each element in <paramref name="property"/></param>
+            <param name="settings">Extra settings for the rule</param>
             <typeparam name="TElement">Type of element to validate</typeparam>
             <typeparam name="TValue">Type of value to validate</typeparam>
             <returns>Configurator for creating validation rules</returns>
@@ -544,6 +559,7 @@
             </summary>
             <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
             <param name="configurator">Configurator for creating validation rules</param>
+            <param name="settings">Extra settings for the rule</param>
             <returns>Configurator for creating validation rules</returns>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
@@ -553,6 +569,7 @@
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
             <param name="configurator">Configurator for creating validation rules</param>
+            <param name="settings">Extra settings for the rule</param>
             <returns>Configurator for creating validation rules</returns>
         </member>
         <member name="T:Sels.ObjectValidationFramework.Templates.Profile.CollectionValidationExtensions">
@@ -1847,11 +1864,12 @@
             <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to </param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
@@ -1887,11 +1905,12 @@
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to </param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
@@ -1961,11 +1980,12 @@
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseMultiValueValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseMultiValueValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to </param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
@@ -1998,12 +2018,13 @@
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseSingleValueValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseSingleValueValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to </param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseSingleValueValidationRule`5.Validate(`0,System.Object,System.Nullable{System.Int32},Sels.ObjectValidationFramework.Components.Validators.Parent[])">
@@ -2011,7 +2032,7 @@
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseSingleValueValidationRule`5.TryGetValueToValidate(`0,`4@)">
             <summary>
-            Tries to get the value to validate. Returns false when the value can't returned (in case off null references).
+            Tries to get the value to validate. Returns false when the value can't be returned (in case of null references).
             </summary>
             <param name="objectToValidate">Object to get the value from</param>
             <param name="value">The value to validate</param>
@@ -2024,30 +2045,31 @@
             <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
             <typeparam name="TError">Type of validation error that this rule returns</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
             <param name="validator">Validator to delegate <see cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2"/> calls to</param>
+            <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForElements``1(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForElements``1(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inhericdoc />
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForElements``2(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},System.Func{``0,``1})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForElements``2(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},System.Func{``0,``1},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inhericdoc />
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inhericdoc />
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForProperty``2(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{``0,``1})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForProperty``2(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{``0,``1},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inhericdoc />
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForSource">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForSource(Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inhericdoc />
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForSource``1(System.Func{`0,``0})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ForSource``1(System.Func{`0,``0},Sels.ObjectValidationFramework.Models.RuleSettings)">
             <inhericdoc />
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
@@ -2086,6 +2108,21 @@
             <param name="objectToValidate">Object to validate</param>
             <param name="context">Type of optional context to moddify the behaviour of this validator</param>
             <returns>All validation errors for <paramref name="objectToValidate"/></returns>
+        </member>
+        <member name="T:Sels.ObjectValidationFramework.Models.RuleSettings">
+            <summary>
+            Exposes extra settings for a validation rule.
+            </summary>
+        </member>
+        <member name="F:Sels.ObjectValidationFramework.Models.RuleSettings.None">
+            <summary>
+            No settings selected.
+            </summary>
+        </member>
+        <member name="F:Sels.ObjectValidationFramework.Models.RuleSettings.IgnoreExceptions">
+            <summary>
+            Ignore any exceptions throw by the rule. Rule will returns valid instead.
+            </summary>
         </member>
         <member name="T:Microsoft.Extensions.DependencyInjection.ServiceRegistrations">
             <summary>

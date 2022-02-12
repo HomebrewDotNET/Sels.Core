@@ -4,6 +4,7 @@ using Sels.Core.Extensions.Logging.Advanced;
 using Sels.ObjectValidationFramework.Components.Validators;
 using Sels.ObjectValidationFramework.Contracts.Rules;
 using Sels.ObjectValidationFramework.Contracts.Validators;
+using Sels.ObjectValidationFramework.Models;
 using Sels.ObjectValidationFramework.Templates.Rules;
 using System;
 using System.Collections.Generic;
@@ -28,9 +29,10 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         /// </summary>
         /// <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
         /// <param name="validator">Validator to delegate <see cref="IValidationConfigurator{TEntity, TError}"/> calls to </param>
+        /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        public SourceValidationRule(Func<TEntity, TValue> valueSelector, EntityValidator<TEntity, TError> validator, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, globalConditions, loggers)
+        public SourceValidationRule(Func<TEntity, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
             _valueSelector = valueSelector.ValidateArgument(nameof(valueSelector));
         }
@@ -78,9 +80,10 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         /// </summary>
         /// <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
         /// <param name="validator">Validator to delegate <see cref="IValidationConfigurator{TEntity, TError}"/> calls to </param>
+        /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        public SourceValidationRule(Func<TEntity, TValue> valueSelector, EntityValidator<TEntity, TError> validator, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, globalConditions, loggers)
+        public SourceValidationRule(Func<TEntity, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
             _valueSelector = valueSelector.ValidateArgument(nameof(valueSelector));
         }
@@ -90,7 +93,7 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         {
             using (_loggers.TraceMethod(this))
             {
-                return new SourceValidationRule<TEntity, TError, TContext, TValue>(_valueSelector, _validator, _globalConditions, _loggers);
+                return new SourceValidationRule<TEntity, TError, TContext, TValue>(_valueSelector, _validator, _settings, _globalConditions, _loggers);
             }
         }
     }
