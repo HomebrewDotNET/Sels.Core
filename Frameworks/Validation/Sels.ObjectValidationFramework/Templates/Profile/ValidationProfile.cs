@@ -330,6 +330,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                 else
                 {
                     _loggers.Debug($"Starting validation for <{objectToValidate}>");
+                    profileContext.History.Add(objectToValidate);
                 }
 
                 var currentParents = profileContext.CurrentParents.ToArray();
