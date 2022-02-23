@@ -49,7 +49,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data", "Sels.Core
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.FileSystem.Test", "Tests\Sels.Core.FileSystem.Test\Sels.Core.FileSystem.Test.csproj", "{9751CC25-A3E5-464A-929F-02F9032D047F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.SQL", "Sels.Core.Data.Sql\Sels.Core.Data.SQL.csproj", "{1553D8DC-3FE7-47FD-AA7C-95903ADDE8C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.SQL", "Sels.Core.Data.SQL\Sels.Core.Data.SQL.csproj", "{1553D8DC-3FE7-47FD-AA7C-95903ADDE8C0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Processing", "Sels.Core.Processing\Sels.Core.Processing.csproj", "{3C245DE4-0519-4451-8F2D-929A9E62E0CD}"
 EndProject
