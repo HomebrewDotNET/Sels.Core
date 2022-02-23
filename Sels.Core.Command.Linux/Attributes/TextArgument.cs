@@ -1,7 +1,6 @@
 ﻿using Sels.Core.Attributes.Enumeration.Value;
 using Sels.Core.Command.Linux.Templates.Attributes;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Object;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections;
@@ -94,10 +93,10 @@ namespace Sels.Core.Command.Linux.Attributes
         {
             if (Prefix.HasValue())
             {
-                return Format.Replace(PrefixFormat, Prefix).Replace(ValueFormat, ParsingOption.GetValue().FormatString(value));
+                return Format.Replace(PrefixFormat, Prefix).Replace(ValueFormat, ParsingOption.GetStringValue().FormatString(value));
             }
 
-            return ParsingOption.GetValue().FormatString(value);
+            return ParsingOption.GetStringValue().FormatString(value);
         }
 
         /// <inheritdoc/>
@@ -129,13 +128,24 @@ namespace Sels.Core.Command.Linux.Attributes
             return ParseValue(value.GetArgumentValue() ?? String.Empty);
         }
     }
-
+    /// <summary>
+    /// Extra parsing objects for arguments.
+    /// </summary>
     public enum TextParsingOptions
     {
+        /// <summary>
+        /// No options selected.
+        /// </summary>
         [StringEnumValue("{0}")]
         None,
+        /// <summary>
+        /// Add single quotes around argument value.
+        /// </summary>
         [StringEnumValue("'{0}'")]
         Quotes,
+        /// <summary>
+        /// Add double quotes around argument value.
+        /// </summary>
         [StringEnumValue("\"{0}\"")]
         DoubleQuotes
     }

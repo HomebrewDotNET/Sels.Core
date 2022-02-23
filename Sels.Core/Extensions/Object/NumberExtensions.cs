@@ -4,6 +4,9 @@ using System.Text;
 
 namespace System
 {
+    /// <summary>
+    /// Contains extension methods for working with numeric types.
+    /// </summary>
     public static class NumberExtensions
     {
         #region ToNegative

@@ -22,7 +22,7 @@ namespace Sels.Core.Conversion.Converters.Simple
 
             return AreTypePair(convertableType, convertType, x => IsConvertableType(x), x => IsConvertableType(x));
         }
-        /// <inheritdoc
+        /// <inheritdoc/>
         protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
         {
             convertType = Nullable.GetUnderlyingType(convertType) ?? convertType;

@@ -7,7 +7,9 @@ using Sels.Core.Command.Linux.Attributes;
 
 namespace Sels.Core.Command.Linux.Commands.Awk
 {
-
+    /// <summary>
+    /// Command for executing a script with awk.
+    /// </summary>
     public class DynamicAwkCommand : AwkCommand
     {
         // Properties
@@ -21,12 +23,12 @@ namespace Sels.Core.Command.Linux.Commands.Awk
         /// </summary>
         [ObjectArgument(Selector.Method, nameof(FileInfo.FullName), order:2, required:false)]
         public FileInfo InputFile { get; set; }
-
+        /// <inheritdoc cref="DynamicAwkCommand"/>
         public DynamicAwkCommand(string script)
         {
             Script = script;
         }
-
+        /// <inheritdoc cref="DynamicAwkCommand"/>
         public DynamicAwkCommand()
         {
 

@@ -106,9 +106,8 @@ namespace Sels.Core.Conversion.Components.Serialization.Profile
                 else
                 {
                     _loggers.Debug($"No filters defined for property <{Property.Name}>. Skipping.");
-                }
-
-                return source;
+                    return source;
+                }               
             }
         }
 
@@ -156,6 +155,10 @@ namespace Sels.Core.Conversion.Components.Serialization.Profile
                 else
                 {
                     _loggers.Debug($"No element filters defined for property <{Property.Name}>. Skipping.");
+                    foreach(var element in source.Where(x => x != null))
+                    {
+                        yield return element;
+                    }
                 }
             }
         }

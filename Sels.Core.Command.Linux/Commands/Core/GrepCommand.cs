@@ -15,6 +15,9 @@ namespace Sels.Core.Command.Linux.Commands.Core
     public class GrepCommand : BaseLinuxCommand<string, ILinuxCommandResult<string[], string>>
     {
         // Properties
+        /// <summary>
+        /// The pattern used to filter.
+        /// </summary>
         [TextArgument(order: 1, required: true)]
         public string Pattern { get; set; }
 
@@ -52,12 +55,13 @@ namespace Sels.Core.Command.Linux.Commands.Core
 
         [TextArgument(prefix: "-m", format: TextArgument.PrefixFormat + TextArgument.ValueFormat, order: 0)]
         public int? MaxResults { get; set; }
-
+        /// <inheritdoc cref="GrepCommand"/>
+        /// <param name="pattern">The pattern for the grep command</param>
         public GrepCommand(string pattern) : this()
         {
             Pattern = pattern;
         }
-
+        /// <inheritdoc cref="GrepCommand"/>
         public GrepCommand() : base(LinuxCommandConstants.Commands.Grep)
         {
 

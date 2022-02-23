@@ -38,17 +38,22 @@ namespace Sels.Core.Command.Linux.Commands.Screen
         [FlagArgument(flag: "-m", order: 1)]
         public bool EnforcedCreation { get; set; } = true;
 
+        /// <inheritdoc cref="ScreenRunCommand"/>
+        /// <param name="command">The command to run</param>
+        /// <param name="sessionName">Optional name for the screen session</param>
         public ScreenRunCommand(string command, string? sessionName = null) : this(new DynamicCommand(command.ValidateArgumentNotNullOrWhitespace(nameof(command))), sessionName)
         {
 
         }
-
+        /// <inheritdoc cref="ScreenRunCommand"/>
+        /// <param name="command">The command to run</param>
+        /// <param name="sessionName">Optional name for the screen session</param>
         public ScreenRunCommand(ICommand command, string? sessionName = null)
         {
             Command = command.ValidateArgument(nameof(command));
             SessionName = sessionName;
         }
-
+        /// <inheritdoc cref="ScreenRunCommand"/>
         public ScreenRunCommand()
         {
 

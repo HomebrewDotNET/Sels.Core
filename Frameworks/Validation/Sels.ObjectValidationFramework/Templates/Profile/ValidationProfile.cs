@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Components.ScopedActions;
+using Sels.Core.Components.Scope;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Extensions.Execution;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Reflection;

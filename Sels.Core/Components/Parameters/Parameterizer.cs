@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Components.Parameters.Parameters;
+using Sels.Core.Components.Properties;
 using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
@@ -31,11 +32,11 @@ namespace Sels.Core.Components.Parameters
         /// <summary>
         /// The prefix added in front of the parameters.
         /// </summary>
-        public static Property<string> ParameterPrefix { get; } = new Property<string>().AddGetterSetCondition(x => !x.HasValue()).AddGetterSetter(() => GlobalParameters.Prefix.Value).AddSetterValidation(x => x.HasValue(), $"{nameof(ParameterPrefix)} cannot be null, empty or whitespace");
+        public static ThreadSafeProperty<string> ParameterPrefix { get; } = new ThreadSafeProperty<string>().UseGetter(x => x.HasValue() ? x : GlobalParameters.Prefix.Value).ValidIf(x => x.HasValue(), x => $"{nameof(ParameterPrefix)} cannot be null, empty or whitespace");
         /// <summary>
         /// The suffix added to close a parameter.
         /// </summary>
-        public static Property<string> ParameterSuffix { get; } = new Property<string>().AddGetterSetCondition(x => !x.HasValue()).AddGetterSetter(() => GlobalParameters.Suffix.Value).AddSetterValidation(x => x.HasValue(), $"{nameof(ParameterSuffix)} cannot be null, empty or whitespace");
+        public static ThreadSafeProperty<string> ParameterSuffix { get; } = new ThreadSafeProperty<string>().UseGetter(x => x.HasValue() ? x : GlobalParameters.Suffix.Value).ValidIf(x => x.HasValue(), x => $"{nameof(ParameterSuffix)} cannot be null, empty or whitespace");
 
         /// <summary>
         /// Service that replaces text parameters in a string using parameters who can perform custom code when resolving a parameter value.
@@ -247,7 +248,7 @@ namespace Sels.Core.Components.Parameters
                 }
 
                 var fullParameter = sourceText.Substring(indexOfParameter, (indexOfParameterEnd-indexOfParameter)+ParameterSuffix.Value.Length);
-                fullParameter.Substring(ParameterPrefix.Value.Length, fullParameter.Length - ParameterPrefix.Value.Length - ParameterSuffix.Value.Length).TrySplitFirstOrDefault(ArgumentSplit, out var argument);
+                fullParameter.Substring(ParameterPrefix.Value.Length, fullParameter.Length - ParameterPrefix.Value.Length - ParameterSuffix.Value.Length).SplitOnFirstOrDefault(ArgumentSplit, out var argument);
 
                 matches.Add((fullParameter, argument));
 

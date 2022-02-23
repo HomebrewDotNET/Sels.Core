@@ -16,8 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sels.Core.Linux\Sels.Core.Linux.csproj" />
-    <ProjectReference Include="..\Sels.Core.Unity\Sels.Core.Unity.csproj" />
+    <ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
     <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
   </ItemGroup>
 

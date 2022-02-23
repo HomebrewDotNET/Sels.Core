@@ -76,7 +76,6 @@ namespace Sels.ObjectValidationFramework.Contracts.Validators
         /// </summary>
         /// <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
         /// <param name="configurator">Configurator for creating validation rules</param>
-        /// <param name="settings">Extra settings for the rule</param>
         /// <returns>Configurator for creating validation rules</returns>
         IValidationConfigurator<TEntity, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, object>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator);
 
@@ -86,7 +85,6 @@ namespace Sels.ObjectValidationFramework.Contracts.Validators
         /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
         /// <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
         /// <param name="configurator">Configurator for creating validation rules</param>
-        /// <param name="settings">Extra settings for the rule</param>
         /// <returns>Configurator for creating validation rules</returns>
         IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator);
         /// <summary>

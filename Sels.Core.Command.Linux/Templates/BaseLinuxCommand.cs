@@ -77,6 +77,7 @@ namespace Sels.Core.Command.Linux.Templates
         /// <param name="name">The name of the command to execute</param>
         public BaseLinuxCommand(TName name) 
         {
+            if (!OperatingSystem.IsLinux()) throw new NotSupportedException($"{GetType()} is not supported on a non linux system");
             Name = name.ValidateArgument(nameof(name));
         }
 

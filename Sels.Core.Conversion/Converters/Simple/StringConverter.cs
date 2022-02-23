@@ -16,7 +16,7 @@ namespace Sels.Core.Conversion.Converters.Simple
         {
             return convertType.Equals(typeof(string));
         }
-        /// <inheritdoc
+        /// <inheritdoc/>
         protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
         {
             return value.ToString();

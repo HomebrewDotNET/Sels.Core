@@ -14,21 +14,23 @@ namespace Sels.Core.Command.Linux.Commands.Core
     public class DynamicCommand : ShellCommand
     {
         /// <summary>
-        /// Command to run.
+        /// Command to execute.
         /// </summary>
         [TextArgument(required: true)]
         public string Command { get; set; }
-
+        /// <inheritdoc cref="DynamicCommand"/>
         public DynamicCommand() 
         {
 
         }
-
+        /// <inheritdoc cref="DynamicCommand"/>
+        /// <param name="command">The command to execute</param>
         public DynamicCommand(string command) 
         {
             Command = command;
         }
-
+        /// <inheritdoc cref="DynamicCommand"/>
+        /// <param name="command">The command to execute</param>
         public DynamicCommand(ICommand command) 
         {
             Command = command.ValidateArgument(nameof(command)).BuildCommand();

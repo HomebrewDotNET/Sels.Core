@@ -40,6 +40,35 @@ namespace Sels.Core.Extensions.Conversion
             return default;
         }
 
+        #region ChangeType
+        /// <summary>
+        /// Attempts to convert <paramref name="source"/> to an instance of type <typeparamref name="TNew"/>.
+        /// </summary>
+        /// <typeparam name="TNew">The type to convert to</typeparam>
+        /// <param name="source">The object to convert</param>
+        /// <returns>The converted value</returns>
+        public static TNew ChangeType<TNew>(this object source)
+        {
+            source.ValidateArgument(nameof(source));
+
+            return source.ChangeType(typeof(TNew)).Cast<TNew>();
+        }
+
+        /// <summary>
+        /// Attempts to convert <paramref name="source"/> to an instance of type <paramref name="newType"/>.
+        /// </summary>
+        /// <param name="source">The object to convert</param>
+        /// <param name="newType">The type to convert to</param>
+        /// <returns>The converted value</returns>
+        public static object ChangeType(this object source, Type newType)
+        {
+            source.ValidateArgument(nameof(source));
+            newType.ValidateArgument(nameof(newType));
+
+            return Convert.ChangeType(source, Nullable.GetUnderlyingType(newType) ?? newType);
+        }
+        #endregion
+
         #region ToArray
         /// <summary>
         /// Tranforms <paramref name="items"/> into an array. If <paramref name="items"/> is null an empty array will be created

@@ -6,9 +6,18 @@ using System.Text;
 
 namespace Sels.Core.Extensions.Hashing
 {
+    /// <summary>
+    /// Contains extension methods for generating hashes.
+    /// </summary>
     public static class HashingExtensions
     {
         #region GenerateHash
+        /// <summary>
+        /// Generates a hash from the bytes of <paramref name="sourceObject"/>.
+        /// </summary>
+        /// <typeparam name="THash">The hashing algorithm to use</typeparam>
+        /// <param name="sourceObject">The object to generate the hash for</param>
+        /// <returns>The hash string for <paramref name="sourceObject"/></returns>
         public static string GenerateHash<THash>(this object sourceObject) where THash : HashAlgorithm
         {
             sourceObject.ValidateArgument(nameof(sourceObject));

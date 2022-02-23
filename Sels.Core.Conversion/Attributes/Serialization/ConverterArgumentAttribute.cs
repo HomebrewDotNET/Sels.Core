@@ -35,7 +35,7 @@ namespace Sels.Core.Conversion.Attributes.Serialization
             arguments.ValidateArgumentNotNullOrEmpty(nameof(arguments));
             arguments.Execute((i, x) => x.ValidateArgument(a => a.HasValue() && a.Contains(KeyValueSplitter), $"Argument {i} cannot be null, empty or whitespace and must contain <{KeyValueSplitter}>"));
 
-            arguments.Execute(x => { var key = x.SplitOnFirst(KeyValueSplitter, out var value); Arguments.Add(key, value); });
+            arguments.Execute(x => { var key = x.SplitOnFirst(KeyValueSplitter, out var value); Arguments.Add(key.Trim(), value.Trim()); });
         }
     }
     /// <summary>

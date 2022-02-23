@@ -1,11 +1,11 @@
 ﻿using Sels.Core.Command.Linux.Templates.Attributes;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Object;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Sels.Core.Attributes.Enumeration.Value;
 
 namespace Sels.Core.Command.Linux.Attributes
 {
@@ -15,6 +15,9 @@ namespace Sels.Core.Command.Linux.Attributes
     public class TextListArgument : TextArgument
     {
         // Constants
+        /// <summary>
+        /// The default value for <see cref="ElementJoinVlaue"/>.
+        /// </summary>
         public const string DefaultJoinValue = Constants.Strings.Space;
 
         // Properties
@@ -27,7 +30,7 @@ namespace Sels.Core.Command.Linux.Attributes
         /// Joins list values using a single format. So the end result becomes "{Flag} {Value} {Value} {Value} {Value}".
         /// </summary>
         /// <param name="prefix">Optional prefix that will be placed along side the property value based on <paramref name="format"/></param>
-        /// <param name="format">How the <paramref name="prefix"/> and the element values should be formatted. Use <see cref="PrefixFormat"/> for the <paramref name="prefix"/> and <see cref="ValueFormat"/> for the joined element values</param>
+        /// <param name="format">How the <paramref name="prefix"/> and the element values should be formatted. Use <see cref="TextArgument.PrefixFormat"/> for the <paramref name="prefix"/> and <see cref="TextArgument.ValueFormat"/> for the joined element values</param>
         /// <param name="elementJoinValue">String that will join together all the elements in the property collection</param>
         /// <param name="parsingOption">Optional parsing for the element value</param>
         /// <param name="allowEmpty">If the argument should be generated when the property collection is empty</param>
@@ -37,7 +40,7 @@ namespace Sels.Core.Command.Linux.Attributes
         {
             ElementJoinVlaue = elementJoinValue.ValidateArgument(nameof(elementJoinValue));
         }
-
+        /// <inheritdoc />
         public override string? CreateArgument(object? value = null)
         {
             if(value != null && !value.GetType().IsString() && value.GetType().IsContainer())
@@ -46,7 +49,7 @@ namespace Sels.Core.Command.Linux.Attributes
 
                 foreach (var item in (IEnumerable)value)
                 {
-                    values.Add(ParsingOption.GetValue().FormatString(item.GetArgumentValue()));
+                    values.Add(ParsingOption.GetStringValue().FormatString(item.GetArgumentValue()));
                 }
 
                 if (!values.HasValue() && !AllowEmpty)

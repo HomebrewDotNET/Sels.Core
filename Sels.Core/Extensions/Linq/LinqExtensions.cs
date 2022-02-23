@@ -288,7 +288,6 @@ namespace Sels.Core.Extensions.Linq
 
             return source;
         }
-
         /// <summary>
         /// Executes <paramref name="action"/> for each element in <paramref name="source"/>.
         /// </summary>

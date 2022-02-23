@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.FileSystem.Linux</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Linux.Components.FileSystem.LinuxDirectory">
+            <summary>
+            Linux specific implementation for <see cref="T:Sels.Core.FileSystem.Templates.FileSystem.CrossPlatformDirectory"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Linux.Components.FileSystem.LinuxDirectory.FreeSpace">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Linux.Components.FileSystem.LinuxDirectory.MountPoint">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Linux.Components.FileSystem.LinuxDirectory.#ctor(System.String)">
+            <summary>
+            Linux specific implementation for <see cref="T:Sels.Core.FileSystem.Templates.FileSystem.CrossPlatformDirectory"/>.
+            </summary>
+            <param name="path">Path to the directory</param>
+        </member>
+        <member name="M:Sels.Core.Linux.Components.FileSystem.LinuxDirectory.#ctor(System.IO.DirectoryInfo)">
+            <summary>
+            Linux specific implementation for <see cref="T:Sels.Core.FileSystem.Templates.FileSystem.CrossPlatformDirectory"/>.
+            </summary>
+            <param name="info">Directory info to wrap</param>
+        </member>
+    </members>
+</doc>

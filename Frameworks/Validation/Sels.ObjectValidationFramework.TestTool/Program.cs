@@ -1,4 +1,4 @@
-﻿using Sels.Core.Components.Console;
+﻿using Sels.Core;
 using Sels.Core.Extensions;
 using Sels.ObjectValidationFramework.TestTool.Objects;
 using Sels.ObjectValidationFramework.TestTool.ValidationProfiles;
@@ -11,7 +11,7 @@ namespace Sels.ObjectValidationFramework.TestTool
     {
         static void Main(string[] args)
         {
-            ConsoleHelper.Run(() =>
+            Helper.Console.Run(() =>
             {
                 Console.WriteLine("Testing person validation");
 

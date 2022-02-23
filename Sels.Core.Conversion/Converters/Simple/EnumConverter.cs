@@ -18,17 +18,18 @@ namespace Sels.Core.Conversion.Converters.Simple
             var convertableType = value.GetType();
             return AreTypePair(convertableType, convertType, x => x.IsAssignableTo<Enum>(), x => x.IsAssignableTo<string>() || x.IsAssignableTo<int>());
         }
-        /// <inheritdoc
+        /// <inheritdoc/>
         protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
         {
-            var convertableType = value.GetType();
-            if (convertableType.IsAssignableTo<Enum>())
+            convertType = Nullable.GetUnderlyingType(convertType) ?? convertType;
+
+            if (convertType.IsAssignableTo<Enum>())
             {
-                return Convert.ChangeType(value, convertType);
+                return Enum.Parse(convertType, value.ToString(), true);
             }
             else
             {
-                return Enum.Parse(convertType, value.ToString(), true);
+                return Convert.ChangeType(value, convertType);
             }
         }
     }

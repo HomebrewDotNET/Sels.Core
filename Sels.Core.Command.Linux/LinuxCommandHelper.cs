@@ -1,6 +1,5 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Extensions.Object;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
@@ -14,6 +13,7 @@ using Sels.Core.Extensions.Logging;
 using Sels.Core.Command.Contracts.Commands;
 using Sels.Core.Command.Linux.Templates.Attributes;
 using Sels.Core.Command.Linux.Commands;
+using Sels.Core.Attributes.Enumeration.Value;
 
 namespace Sels.Core.Command.Linux
 {
@@ -22,6 +22,9 @@ namespace Sels.Core.Command.Linux
     /// </summary>
     public static class LinuxCommandHelper
     {
+        /// <summary>
+        /// Contains static helper methods for working with linux commands.
+        /// </summary>
         public static class Command
         {
             /// <summary>
@@ -29,7 +32,7 @@ namespace Sels.Core.Command.Linux
             /// </summary>
             /// <param name="command">Bash command to build arguments for</param>
             /// <param name="additionalArguments">Optional arguments that should also be added</param>
-            /// <typeparam name="TName">Type of object that represents the command name</typeparam>
+            /// <param name="loggers">Optional loggers for tracing</param>
             public static string BuildLinuxArguments(ICommand command, IEnumerable<(string Argument, int Order)>? additionalArguments = null, IEnumerable <ILogger>? loggers = null)
             {
                 command.ValidateArgument(nameof(command));
@@ -97,16 +100,18 @@ namespace Sels.Core.Command.Linux
                 {
                     foreach (var chainedCommand in intermediateCommands)
                     {
-                        builder.Append(chainedCommand.Chain.GetValue()).AppendSpace().Append(chainedCommand.Command.BuildCommand()).AppendSpace();
+                        builder.Append(chainedCommand.Chain.GetStringValue()).AppendSpace().Append(chainedCommand.Command.BuildCommand()).AppendSpace();
                     }
                 }
 
-                builder.Append(chain.GetValue()).AppendSpace().Append(finalCommand.BuildCommand());
+                builder.Append(chain.GetStringValue()).AppendSpace().Append(finalCommand.BuildCommand());
 
                 return builder.ToString();
             }
         }
-
+        /// <summary>
+        /// Contains static helper methods for running processes on linux.
+        /// </summary>
         public static class Program
         {
             private static string EscapeString { get; } = "\\";
@@ -121,6 +126,8 @@ namespace Sels.Core.Command.Linux
             /// <param name="error">Sterr of command</param>
             /// <param name="exitCode">Exit code of command</param>
             /// <param name="succesExitCode">Exit code indicating succesful execution</param>
+            /// <param name="loggers">Optional loggers for tracing</param>
+            /// <param name="token">Optional token for cancelling the process</param>
             /// <returns>Boolean indicating if the command was executed successfully</returns>
             public static bool Run(string program, string arguments, out string output, out string error, out int exitCode, int succesExitCode = CommandConstants.SuccessExitCode, CancellationToken token = default, IEnumerable<ILogger>? loggers = null)
             {
@@ -139,6 +146,8 @@ namespace Sels.Core.Command.Linux
             /// <param name="error">Sterr of command</param>
             /// <param name="exitCode">Exit code of command</param>
             /// <param name="succesExitCode">Exit code indicating succesful execution</param>
+            /// <param name="loggers">Optional loggers for tracing</param>
+            /// <param name="token">Optional token for cancelling the process</param>
             /// <returns>Boolean indicating if the command was executed successfully</returns>
             public static bool Run(string command, out string output, out string error, out int exitCode, int succesExitCode = CommandConstants.SuccessExitCode, CancellationToken token = default, IEnumerable<ILogger>? loggers = null)
             {
@@ -160,6 +169,9 @@ namespace Sels.Core.Command.Linux
             }
 
             #region Bash
+            /// <summary>
+            /// Contains static helper methods for working with bash.
+            /// </summary>
             public static class Bash
             {
                 /// <summary>
@@ -170,6 +182,8 @@ namespace Sels.Core.Command.Linux
                 /// <param name="error">Sterr of command</param>
                 /// <param name="exitCode">Exit code of command</param>
                 /// <param name="succesExitCode">Exit code indicating succesful execution</param>
+                /// <param name="loggers">Optional loggers for tracing</param>
+                /// <param name="token">Optional token for cancelling the process</param>
                 /// <returns>Boolean indicating if the command was executed successfully</returns>
                 public static bool Run(string command, out string output, out string error, out int exitCode, int succesExitCode = CommandConstants.SuccessExitCode, CancellationToken token = default, IEnumerable<ILogger>? loggers = null)
                 {

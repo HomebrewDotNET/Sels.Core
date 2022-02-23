@@ -482,6 +482,18 @@ namespace Sels.Core
 
                 return _random.Next(min, max+1);
             }
+            /// <summary>
+            /// Returns a random double larger or equal to <paramref name="min"/> and smaller or equal to <paramref name="max"/>.
+            /// </summary>
+            /// <param name="min">The lowest possible value to generate</param>
+            /// <param name="max">The highest possible value to generate</param>
+            /// <returns>A random double in range of <paramref name="min"/> and <paramref name="max"/></returns>
+            public static double GetRandomDouble(double min, double max)
+            {
+                max.ValidateArgumentLarger(nameof(max), min);
+
+                return _random.NextDouble() * (max - min) + min;
+            }
         }
         #endregion
     }

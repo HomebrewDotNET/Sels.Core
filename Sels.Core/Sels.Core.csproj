@@ -46,10 +46,13 @@ Used by projects maintained here: https://github.com/Jenssels1998
 	<ItemGroup>
 		<Compile Remove="Components\Execution\**" />
 		<Compile Remove="Components\Newtonsoft\**" />
+		<Compile Remove="Contracts\Conversion\**" />
 		<EmbeddedResource Remove="Components\Execution\**" />
 		<EmbeddedResource Remove="Components\Newtonsoft\**" />
+		<EmbeddedResource Remove="Contracts\Conversion\**" />
 		<None Remove="Components\Execution\**" />
 		<None Remove="Components\Newtonsoft\**" />
+		<None Remove="Contracts\Conversion\**" />
 	</ItemGroup>
 
   <ItemGroup>
@@ -64,7 +67,7 @@ Used by projects maintained here: https://github.com/Jenssels1998
   </ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Contracts\Conversion\" />
+		<Folder Include="Templates\" />
 	</ItemGroup>
 
 </Project>

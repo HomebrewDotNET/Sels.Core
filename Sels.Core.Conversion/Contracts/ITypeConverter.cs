@@ -19,7 +19,7 @@ namespace Sels.Core.Conversion.Contracts
         /// <param name="convertType">Type to convert to</param>
         /// <param name="value">Value to convert</param>
         /// <param name="arguments">Arguments to modify the behaviour of this converter</param>
-        /// <returns>Boolean indicating if this converter can convert from <paramref name="convertableType"/> to <paramref name="convertType"/></returns>
+        /// <returns>Boolean indicating if this converter can convert from <paramref name="value"/> to <paramref name="convertType"/></returns>
         bool CanConvert(object value, Type convertType, IDictionary<string, string> arguments = null);
 
         /// <summary>

@@ -7,21 +7,42 @@ using System.Text;
 
 namespace Sels.Core.Extensions
 {
+    /// <summary>
+    /// Contains extension methods for working with <see cref="byte"/>.
+    /// </summary>
     public static class ByteExtensions
     {
-        public static string ToBase64String(this byte[] item)
+        /// <summary>
+        /// Converts <paramref name="source"/> to a base 64 string.
+        /// </summary>
+        /// <param name="source">The bytes to convert</param>
+        /// <returns>The base 64 string from <paramref name="source"/></returns>
+        public static string ToBase64String(this byte[] source)
         {
-            return Convert.ToBase64String(item);
-        }
+            source.ValidateArgument(nameof(source));
 
-        public static string ToString<TEncoding>(this byte[] item) where TEncoding : Encoding, new()
+            return Convert.ToBase64String(source);
+        }
+        /// <summary>
+        /// Converts <paramref name="source"/> to a string decoded using encoding of type <typeparamref name="TEncoding"/>.
+        /// </summary>
+        /// <typeparam name="TEncoding">The encoding to use</typeparam>
+        /// <param name="source">The bytes to convert</param>
+        /// <returns>The decoded string from <paramref name="source"/></returns>
+        public static string ToString<TEncoding>(this byte[] source) where TEncoding : Encoding, new()
         {
+            source.ValidateArgument(nameof(source));
             var encoding = new TEncoding();
 
-            return encoding.GetString(item);
+            return encoding.GetString(source);
         }
 
         #region GetBytes
+        /// <summary>
+        /// Gets the bytes from object <paramref name="sourceObject"/>.
+        /// </summary>
+        /// <param name="sourceObject">The object to get the bytes from</param>
+        /// <returns>The bytes from <paramref name="sourceObject"/></returns>
         public static byte[] GetBytes(this object sourceObject)
         {
             sourceObject.ValidateArgument(nameof(sourceObject));
@@ -33,38 +54,68 @@ namespace Sels.Core.Extensions
                 return stream.ToArray();
             }
         }
-
-        public static byte[] GetBytes(this string sourceString)
+        /// <summary>
+        /// Encodes <paramref name="source"/> using <see cref="UTF8Encoding"/>.
+        /// </summary>
+        /// <param name="source">The string to encode</param>
+        /// <returns>The encoded string as bytes</returns>
+        public static byte[] GetBytes(this string source)
         {
-            return sourceString.GetBytes<UTF8Encoding>();
+            source.ValidateArgument(nameof(source));
+
+            return source.GetBytes<UTF8Encoding>();
         }
-
-        public static byte[] GetBytesFromBase64(this string sourceString)
+        /// <summary>
+        /// Encodes <paramref name="source"/> from base 64.
+        /// </summary>
+        /// <param name="source">The string to encode</param>
+        /// <returns>The encoded string as bytes</returns>
+        public static byte[] GetBytesFromBase64(this string source)
         {
-            return Convert.FromBase64String(sourceString);
+            source.ValidateArgument(nameof(source));
+
+            return Convert.FromBase64String(source);
         }
-
-        public static byte[] GetBytes<TEncoding>(this string sourceString) where TEncoding : Encoding, new()
+        /// <summary>
+        /// Encodes <paramref name="source"/> using encoding of type <typeparamref name="TEncoding"/>.
+        /// </summary>
+        /// <typeparam name="TEncoding">The encoding to use</typeparam>
+        /// <param name="source">The string to encode</param>
+        /// <returns>The encoded string as bytes</returns>
+        public static byte[] GetBytes<TEncoding>(this string source) where TEncoding : Encoding, new()
         {
+            source.ValidateArgument(nameof(source));
+
             var encoding = new TEncoding();
-            return encoding.GetBytes(sourceString);
+            return encoding.GetBytes(source);
         }
-
+        /// <summary>
+        /// Gets the bytes representing <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">The double to get the bytes from</param>
+        /// <returns>The bytes representing <paramref name="source"/></returns>
         public static byte[] GetBytes(this double source)
         {
             return BitConverter.GetBytes(source);
         }
-
+        /// <summary>
+        /// Gets the bytes representing <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">The bool to get the bytes from</param>
+        /// <returns>The bytes representing <paramref name="source"/></returns>
         public static byte[] GetBytes(this bool source)
         {
             return BitConverter.GetBytes(source);
         }
-
+        /// <summary>
+        /// Gets the bytes representing <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">The char to get the bytes from</param>
+        /// <returns>The bytes representing <paramref name="source"/></returns>
         public static byte[] GetBytes(this char source)
         {
             return BitConverter.GetBytes(source);
         }
         #endregion
-
     }
 }

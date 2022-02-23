@@ -1,5 +1,4 @@
 ﻿using Sels.Core.Extensions;
-using Sels.Core.Extensions.Object;
 using Sels.Core.Command.Linux.Contracts;
 using Sels.Core.Command.Linux.Templates.Commands.Bash;
 using Sels.Core.Command.Linux.Templates;
@@ -36,40 +35,40 @@ namespace Sels.Core.Command.Linux.Commands.Core
         /// Final command in the chain that will be executed and will parse the result for this command.
         /// </summary>
         public ICommand<TCommandResult> FinalCommand { get; protected set; }
-
+        /// <inheritdoc cref="ChainCommand{TCommandResult}"/>
         public ChainCommand(ICommand startCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : base()
         {
             StartCommand = startCommand.ValidateArgument(nameof(startCommand));
             FinalChain = finalChain;
             FinalCommand = finalCommand;
         }
-
+        /// <inheritdoc cref="ChainCommand{TCommandResult}"/>
         public ChainCommand(ICommand startCommand, IEnumerable<(CommandChainer Chain, ICommand Command)> intermediateCommands, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, finalChain, finalCommand)
         {
             intermediateCommands.ValidateArgument(nameof(intermediateCommands));
             IntermediateCommands = new ReadOnlyCollection<(CommandChainer Chain, ICommand Command)>(intermediateCommands.ValidateArgument(x => !x.Any(c => c.Command == null), $"Command cannot be null").ToList());
         }
-
+        /// <inheritdoc cref="ChainCommand{TCommandResult}"/>
         public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand)), finalChain, finalCommand)
         {
 
         }
-
+        /// <inheritdoc cref="ChainCommand{TCommandResult}"/>
         public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand)), finalChain, finalCommand)
         {
 
         }
-
+        /// <inheritdoc cref="ChainCommand{TCommandResult}"/>
         public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand), (thirdChain, thirdCommand)), finalChain, finalCommand)
         {
 
         }
-
+        /// <inheritdoc cref="ChainCommand{TCommandResult}"/>
         public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer fourthChain, ICommand fourthCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand), (thirdChain, thirdCommand), (fourthChain, fourthCommand)), finalChain, finalCommand)
         {
 
         }
-
+        /// <inheritdoc cref="ChainCommand{TCommandResult}"/>
         public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer fourthChain, ICommand fourthCommand, CommandChainer fifthChain, ICommand fifthCommand, CommandChainer finalChain, ICommand<TCommandResult> finalCommand) : this(startCommand, Helper.Lists.Combine((firstChain, firstCommand), (secondChain, secondCommand), (thirdChain, thirdCommand), (fourthChain, fourthCommand), (fifthChain, fifthCommand)), finalChain, finalCommand)
         {
 
@@ -92,37 +91,37 @@ namespace Sels.Core.Command.Linux.Commands.Core
     /// </summary>
     public class ChainCommand : ChainCommand<ILinuxCommandResult<string, string>>, ILinuxCommand
     {
-
+        /// <inheritdoc cref="ChainCommand"/>
         public ChainCommand(ICommand startCommand, CommandChainer finalChain, ILinuxCommand finalCommand) : base(startCommand, finalChain, finalCommand)
         {
 
         }
-
+        /// <inheritdoc cref="ChainCommand"/>
         public ChainCommand(ICommand startCommand, IEnumerable<(CommandChainer Chain, ICommand Command)> intermediateCommands, CommandChainer finalChain, ILinuxCommand finalCommand) : base(startCommand, intermediateCommands, finalChain, finalCommand)
         {
            
         }
-
+        /// <inheritdoc cref="ChainCommand"/>
         public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer finalChain, ILinuxCommand finalCommand) : base(startCommand, firstChain, firstCommand, finalChain, finalCommand)
         {
 
         }
-
+        /// <inheritdoc cref="ChainCommand"/>
         public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer finalChain, ILinuxCommand finalCommand) : base(startCommand, firstChain, firstCommand, secondChain, secondCommand, finalChain, finalCommand)
         {
 
         }
-
+        /// <inheritdoc cref="ChainCommand"/>
         public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer finalChain, ILinuxCommand finalCommand) : base(startCommand, firstChain, firstCommand, secondChain, secondCommand, thirdChain, thirdCommand, finalChain, finalCommand)
         {
 
         }
-
+        /// <inheritdoc cref="ChainCommand"/>
         public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer fourthChain, ICommand fourthCommand, CommandChainer finalChain, ILinuxCommand finalCommand) : base(startCommand, firstChain, firstCommand, secondChain, secondCommand, thirdChain, thirdCommand, fourthChain, fourthCommand, finalChain, finalCommand)
         {
 
         }
-
+        /// <inheritdoc cref="ChainCommand"/>
         public ChainCommand(ICommand startCommand, CommandChainer firstChain, ICommand firstCommand, CommandChainer secondChain, ICommand secondCommand, CommandChainer thirdChain, ICommand thirdCommand, CommandChainer fourthChain, ICommand fourthCommand, CommandChainer fifthChain, ICommand fifthCommand, CommandChainer finalChain, ILinuxCommand finalCommand) : base(startCommand, firstChain, firstCommand, secondChain, secondCommand, thirdChain, thirdCommand, fourthChain, fourthCommand, fifthChain, fifthCommand, finalChain, finalCommand)
         {
 

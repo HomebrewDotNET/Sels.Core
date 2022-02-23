@@ -15,7 +15,7 @@ namespace Sels.ObjectValidationFramework.Models
         /// </summary>
         None = 0,
         /// <summary>
-        /// Ignore any exceptions throw by the rule. Rule will returns valid instead.
+        /// Ignore any exceptions throw by the rule. Rule will return valid instead.
         /// </summary>
         IgnoreExceptions = 1
     }

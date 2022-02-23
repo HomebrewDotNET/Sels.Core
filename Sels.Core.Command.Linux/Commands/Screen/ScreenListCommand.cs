@@ -14,6 +14,7 @@ namespace Sels.Core.Command.Linux.Commands.Screen
     /// </summary>
     public class ScreenListCommand : ScreenCommand<ILinuxCommandResult<string[], string>>
     {
+        /// <inheritdoc/>
         public override ILinuxCommandResult<string[], string> CreateResult(bool wasSuccesful, int exitCode, string? output, string? error, IEnumerable<ILogger>? loggers = null)
         {
             if (wasSuccesful)
@@ -38,7 +39,7 @@ namespace Sels.Core.Command.Linux.Commands.Screen
                 return new LinuxCommandResult<string[], string>(error, exitCode);
             }
         }
-
+        /// <inheritdoc/>
         protected override string BuildArguments(IEnumerable<ILogger>? loggers = null)
         {
             return "-ls";

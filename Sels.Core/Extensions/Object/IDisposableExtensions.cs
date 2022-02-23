@@ -5,6 +5,9 @@ using System.Text;
 
 namespace System
 {
+    /// <summary>
+    /// Contains extension methods for <see cref="IDisposable"/>.
+    /// </summary>
     public static class IDisposableExtensions
     {
         /// <summary>
@@ -12,10 +15,10 @@ namespace System
         /// </summary>
         /// <param name="disposable">Object to dispose</param>
         /// <param name="exceptionHandler">Optional exception handler</param>
-        /// <returns>True if <paramref name="disposable"/> is not null and if dispose could be called without exceptions</returns>
+        /// <returns>True if <paramref name="disposable"/> is not null and if <see cref="IDisposable.Dispose"/> could be called without any exceptions, otherwise false</returns>
         public static bool TryDispose(this IDisposable disposable, Action<Exception> exceptionHandler = null)
         {
-            if (disposable.HasValue())
+            if (disposable != null)
             {
                 try
                 {

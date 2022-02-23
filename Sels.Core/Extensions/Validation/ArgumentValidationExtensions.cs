@@ -164,7 +164,6 @@ namespace Sels.Core.Extensions
         /// Validates if argument is larger than comparator. Throws ArgumentException when it is not.
         /// </summary>
         /// <typeparam name="T">Type of argument</typeparam>
-        /// <typeparam name="TCompare">Type of comparator</typeparam>
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
@@ -181,7 +180,6 @@ namespace Sels.Core.Extensions
         /// Validates if argument is larger or equal to comparator. Throws ArgumentException when it is not.
         /// </summary>
         /// <typeparam name="T">Type of argument</typeparam>
-        /// <typeparam name="TCompare">Type of comparator</typeparam>
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
@@ -198,7 +196,6 @@ namespace Sels.Core.Extensions
         /// Validates if argument is smaller than comparator. Throws ArgumentException when it is not.
         /// </summary>
         /// <typeparam name="T">Type of argument</typeparam>
-        /// <typeparam name="TCompare">Type of comparator</typeparam>
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
@@ -215,7 +212,6 @@ namespace Sels.Core.Extensions
         /// Validates if argument is smaller or equal to comparator. Throws ArgumentException when it is not.
         /// </summary>
         /// <typeparam name="T">Type of argument</typeparam>
-        /// <typeparam name="TCompare">Type of comparator</typeparam>
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
@@ -232,7 +228,6 @@ namespace Sels.Core.Extensions
         /// Validates if argument in range of startRange and endRange. Throws ArgumentException when it is not.
         /// </summary>
         /// <typeparam name="T">Type of argument</typeparam>
-        /// <typeparam name="TCompare">Type of comparator</typeparam>
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="startRange">Start value of range</param>

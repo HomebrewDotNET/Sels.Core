@@ -25,8 +25,10 @@ namespace Sels.Core.Extensions.Reflection
         };
 
         /// <summary>
-        /// Returns source type of it's not null, otherwise return null
+        ///  Returns the type of <paramref name="source"/> if it's not null, otherwise return null.
         /// </summary>
+        /// <param name="source">The object to get the type from</param>
+        /// <returns>The type of <paramref name="source"/> if it is not null, otherwise false</returns>
         public static Type GetTypeOrDefault(this object source)
         {
             return source != null ? source.GetType() : null;
@@ -230,49 +232,29 @@ namespace Sels.Core.Extensions.Reflection
             return type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(x => x.IsLiteral && !x.IsInitOnly);
         }
 
-        #region Property Finder
-        public static PropertyInfo FindProperty(this Type type, string propertyName)
-        {
-            return type.GetProperties().Where(x => x.Name.Equals(propertyName)).FirstOrDefault();
-        }
-
-        public static bool TryFindProperty(this Type type, string propertyName, out PropertyInfo property)
-        {
-            property = type.GetProperties().Where(x => x.Name.Equals(propertyName)).FirstOrDefault();
-
-            return property != null;
-        }
-
-        public static PropertyInfo FindProperty(this object source, string propertyName)
-        {
-            if (source.HasValue())
-            {
-                return source.GetType().FindProperty(propertyName);
-            }
-
-            return null;
-        }
-
-        public static bool TryFindProperty(this object source, string propertyName, out PropertyInfo property)
-        {
-            property = null;
-            if (source.HasValue())
-            {
-                return source.GetType().TryFindProperty(propertyName, out property);
-            }
-
-            return false;
-        }
-
+        #region Delegate Types 
+        /// <summary>
+        /// Returns the return type and the parameter types in the right order so they can be used to create a delegate.
+        /// </summary>
+        /// <param name="method">The method to get the types from</param>
+        /// <returns>The return type and the parameter types in the right order so they can be used to create a delegate</returns>
         public static Type[] GetDelegateTypes(this MethodInfo method)
         {
+            method.ValidateArgument(nameof(method));
+
             return (from parameter in method.GetParameters() select parameter.ParameterType)
             .Concat(new[] { method.ReturnType })
             .ToArray();
         }
-
+        /// <summary>
+        /// Gets the generic <see cref="Action"/> or <see cref="Func{T, TResult}"/> type that is equal to the definition of <paramref name="method"/>.
+        /// </summary>
+        /// <param name="method">The method to get the type for</param>
+        /// <returns>The generic <see cref="Action"/> or <see cref="Func{T, TResult}"/> type that is equal to the definition of <paramref name="method"/></returns>
         public static Type GetAsDelegateType(this MethodInfo method)
         {
+            method.ValidateArgument(nameof(method));
+
             return Expression.GetDelegateType(method.GetDelegateTypes());
         }
         #endregion

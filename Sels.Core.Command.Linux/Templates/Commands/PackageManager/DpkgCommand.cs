@@ -11,6 +11,7 @@ namespace Sels.Core.Command.Linux.Templates.Commands.PackageManager
     /// <typeparam name="TCommandResult">Type of command result</typeparam>
     public abstract class DpkgCommand<TCommandResult> : BaseLinuxCommand<string, TCommandResult>
     {
+        /// <inheritdoc cref="DpkgCommand{TCommandResult}"/>
         public DpkgCommand() : base(LinuxCommandConstants.Commands.Dpkg)
         {
 

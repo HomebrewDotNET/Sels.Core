@@ -80,5 +80,19 @@ namespace Sels.Core.Contracts.Factory
         /// <returns>Boolean indicating if the factory can resolve services of Type <typeparamref name="T"/> with Name <paramref name="name"/></returns>
         bool IsRegistered<T>(string name);
         #endregion
+
+        #region Loading
+        /// <summary>
+        /// Loads all services fron <paramref name="collection"/> into the factory.
+        /// </summary>
+        /// <param name="collection">The collection with the services to add</param>
+        /// <returns>Current factory for method chaning</returns>
+        IServiceFactory LoadFrom(IServiceCollection collection);
+        /// <summary>
+        /// Creates a copy of the current factory.
+        /// </summary>
+        /// <returns>The new factory</returns>
+        IServiceFactory CreateChild();
+        #endregion
     }
 }

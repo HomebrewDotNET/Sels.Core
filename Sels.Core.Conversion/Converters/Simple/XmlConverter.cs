@@ -32,7 +32,7 @@ namespace Sels.Core.Conversion.Converters.Simple
 
             return false;
         }
-        /// <inheritdoc
+        /// <inheritdoc/>
         protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
         {
 
@@ -40,7 +40,7 @@ namespace Sels.Core.Conversion.Converters.Simple
             // Convert from xml string to object.
             if (convertableType.Equals(typeof(string)) && !convertType.IsPrimitive && value != null)
             {
-                return value.ToString().DeserializeFromXml(convertableType);
+                return value.ToString().DeserializeFromXml(convertType);
             }
             // Convert object to xml string
             else if (!convertableType.IsPrimitive && convertType.Equals(typeof(string)) && value != null)

@@ -21,7 +21,7 @@ namespace Sels.Core.Conversion.Converters.Simple
 
             return AreTypePair<string, FileInfo>(convertableType, convertType);
         }
-        /// <inheritdoc
+        /// <inheritdoc/>
         protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
         {
             var convertableType = value.GetType();

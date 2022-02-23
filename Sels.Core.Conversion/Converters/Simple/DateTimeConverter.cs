@@ -27,10 +27,12 @@ namespace Sels.Core.Conversion.Converters.Simple
 
             return AreTypePair<string, DateTime>(convertableType, convertType);
         }
-        /// <inheritdoc
+        /// <inheritdoc/>
         protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
         {
             string format = arguments.HasValue() && arguments.TryGetValue(FormatArgument, out var formatValue) ? formatValue : null;
+
+            convertType = Nullable.GetUnderlyingType(convertType) ?? convertType;
 
             // Convert string to date
             if (convertType.IsAssignableTo<DateTime>())

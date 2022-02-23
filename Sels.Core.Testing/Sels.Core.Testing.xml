@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Testing</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Testing.Models.ExamResult">
+            <summary>
+            Simple model for testing serialization.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.ExamResult.Name">
+            <summary>
+            Name of the student who took the exam.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.ExamResult.FamilyName">
+            <summary>
+            Family name of the student who took the exam.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.ExamResult.Course">
+            <summary>
+            What course the exam was for.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.ExamResult.ExecutionDate">
+            <summary>
+            When the exam was taken.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.ExamResult.ResultDate">
+            <summary>
+            When the exam result was published.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.ExamResult.Score">
+            <summary>
+            The score of the student for this exam.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.ExamResult.Signatures">
+            <summary>
+            What professors signed this result.
+            </summary>
+        </member>
+    </members>
+</doc>

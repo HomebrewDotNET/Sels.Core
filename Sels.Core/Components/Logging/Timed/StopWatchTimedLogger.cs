@@ -10,6 +10,9 @@ using System.Text;
 
 namespace Sels.Core.Components.Logging
 {
+    /// <summary>
+    /// Implements <see cref="TimedLogger"/> using a <see cref="Stopwatch"/>.
+    /// </summary>
     public class StopWatchTimedLogger : TimedLogger
     {
         // Fields
@@ -24,11 +27,20 @@ namespace Sels.Core.Components.Logging
         // Delegates
         private readonly Func<TimeSpan, string> _endMessageFunc;
 
+        /// <inheritdoc cref="StopWatchTimedLogger"/>
+        /// <param name="logger">The logger to use for tracing</param>
+        /// <param name="logLevel">What log level to use for the begin and end messages</param>
+        /// <param name="beginMessageFunc">The delegate that returns the message to log when the timers starts</param>
+        /// <param name="endMessageFunc">The delegate that returns the message to log when the end message needs to be logged</param>
         public StopWatchTimedLogger(ILogger logger, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc) : this(logger.AsArrayOrDefault(), logLevel, beginMessageFunc, endMessageFunc)
         {
 
         }
-
+        /// <inheritdoc cref="StopWatchTimedLogger"/>
+        /// <param name="loggers">The loggers to use for tracing</param>
+        /// <param name="logLevel">What log level to use for the begin and end messages</param>
+        /// <param name="beginMessageFunc">The delegate that returns the message to log when the timers starts</param>
+        /// <param name="endMessageFunc">The delegate that returns the message to log when the end message needs to be logged</param>
         public StopWatchTimedLogger(IEnumerable<ILogger> loggers, LogLevel logLevel, Func<string> beginMessageFunc, Func<TimeSpan, string> endMessageFunc)
         {
             beginMessageFunc.ValidateArgument(nameof(beginMessageFunc));
@@ -37,7 +49,7 @@ namespace Sels.Core.Components.Logging
             _logLevel = logLevel;
             _endMessageFunc = endMessageFunc;
             
-            if (loggers.HasValue(logLevel))
+            if (loggers.HasValue(x => x.IsEnabled(logLevel)))
             {
                 _loggers = loggers.ToArray();
                 _stopWatch = new Stopwatch();
@@ -55,6 +67,7 @@ namespace Sels.Core.Components.Logging
             }            
         }
 
+        /// <inheritdoc/>
         public override void Log(Action<TimeSpan, IEnumerable<ILogger>> loggingAction)
         {
             loggingAction.ValidateArgument(nameof(loggingAction));
@@ -64,12 +77,12 @@ namespace Sels.Core.Components.Logging
                 loggingAction(_stopWatch.Elapsed, _loggers);
             }            
         }
-
+        /// <inheritdoc/>
         public override void Dispose()
         {
             EndLog((x, y) => y.LogMessage(_logLevel, _endMessageFunc(x)));
         }
-
+        /// <inheritdoc/>
         public override void EndLog(Action<TimeSpan, IEnumerable<ILogger>> loggingAction)
         {
             try

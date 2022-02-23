@@ -24,9 +24,12 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
     /// </summary>
     public class KeyValueSerializer : BaseSerializer<IEnumerable<KeyValuePair<string, string>>>
     {
+        // Fields
+        private readonly static Type[] _excludedCollectionTypes = new Type[] { typeof(string) };
+
         // Constants
         /// <summary>
-        /// The default substring that is used to separate the key and the value;
+        /// The default substring that is used to separate the key and the value.
         /// </summary>
         public const string KeyValueSeparator = ":";
         /// <summary>
@@ -50,11 +53,11 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            var keyValueConfig = new KeyValueSerializerConfiguration(settings);
-            configurator(keyValueConfig);
-            if (keyValueConfig.UseDefaultConverter) keyValueConfig.UseConverters(GenericConverter.DefaultConverter);
+            _configuration = new KeyValueSerializerConfiguration(settings);
+            configurator(_configuration);
+            if (_configuration.UseDefaultConverter) _configuration.UseConverters(GenericConverter.DefaultConverter);
 
-            _loggers = keyValueConfig.Loggers;
+            _loggers = _configuration.Loggers;
             CreateTypeHandlers();
         }
 
@@ -109,7 +112,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
             {
                 value.ValidateArgument(nameof(value));
 
-                return Deserialize(value, typeof(T)).Cast<T>();
+                return Deserialize(value, typeof(T)).CastOrDefault<T>();
             }
         }
 
@@ -193,7 +196,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
 
                             try
                             {                                
-                                if (profile.IsCollection)
+                                if (profile.IsCollection && !_excludedCollectionTypes.Contains(property.PropertyType))
                                 {
                                     _loggers.Debug($"Property <{property.Name}> on <{type}> is a collection. Serializing elements");
                                     var valueCollection = value.Cast<IEnumerable>();
@@ -235,7 +238,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
                                 {
                                     if (profile.Converters.TryConvertTo<string>(value, out var converted, profile.ConverterArguments))
                                     {
-                                        _loggers.Trace($"Serializing property <{property.Name}> on <{type}> to <{converted}>");
+                                        _loggers.Trace($"Serialized property <{property.Name}> on <{type}> to <{converted}>");
                                         pairs.Add(CreatePair(profile, key, converted));
                                     }
                                     else
@@ -294,7 +297,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
                         {
                             try
                             {
-                                if (profile.IsCollection)
+                                if (profile.IsCollection && !_excludedCollectionTypes.Contains(property.PropertyType))
                                 {
                                     _loggers.Debug($"Property <{property.Name}> on <{_type}> is a collection. Deserializing elements");
                                     IEnumerable<string> elementsToDeserialize = null;
@@ -386,14 +389,9 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
             }
         }
 
-        private class KeyValueSerializerConfiguration : IKeyValueSerializerConfigurator
+        private class KeyValueSerializerConfiguration : BaseSerializerConfigurator<IKeyValueSerializerConfigurator>, IKeyValueSerializerConfigurator
         {
             // Fields
-            private readonly List<ILogger> _loggers = new List<ILogger>();
-            private readonly List<ITypeConverter> _converters = new List<ITypeConverter>();
-            private readonly List<ISerializationFilter> _filters = new List<ISerializationFilter>();
-            private readonly List<ISerializationFilter> _elementFilters = new List<ISerializationFilter>();
-
             private Func<string, IEnumerable<string>> _rowSplitter = RowSplitter;
             private Func<IEnumerable<string>, string> _rowJoiner = RowJoiner;
             private Func<string, KeyValuePair<string, string>> _toPairFunc = ToPair;
@@ -403,11 +401,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
             // Properties
             public bool UseDefaultConverter { get;}
             public bool IgnoreFailedConversion { get; }
-            public ILogger[] Loggers => _loggers.ToArray();
-            public ITypeConverter[] Converters => _converters.ToArray();
-            public ISerializationFilter[] Filters => _filters.ToArray();
-            public ISerializationFilter[] ElementFilters => _elementFilters.ToArray();
-            public BindingFlags PropertyFlags { get; private set; } = BindingFlags.Instance | BindingFlags.Public;
+            public override IKeyValueSerializerConfigurator Instance => this;
 
             public KeyValueSerializerConfiguration(KeyValueSerializerSettings settings)
             {
@@ -438,7 +432,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
                     var value = splitAndJoinValue.ToString();
                     value.ValidateArgumentNotNullOrEmpty(nameof(value));
 
-                    _rowSplitter = x => x.Split(value);
+                    _rowSplitter = x => x.Split(value, StringSplitOptions.RemoveEmptyEntries);
                     _rowJoiner = x => x.JoinString(value);
 
                     return this;
@@ -475,67 +469,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
 
                     return this;
                 }
-            }
-
-            public IKeyValueSerializerConfigurator UseConverters(params ITypeConverter[] converters)
-            {
-                using (_loggers.TraceMethod(this))
-                {
-                    converters.ValidateArgument(nameof(converters));
-                    converters.Execute((i, x) => x.ValidateArgument(a => a != null, $"Converter <{i}> was null"));
-
-                    _converters.AddRange(converters);
-
-                    return this;
-                }
-            }
-
-            public IKeyValueSerializerConfigurator UseFilters(params ISerializationFilter[] filters)
-            {
-                using (_loggers.TraceMethod(this))
-                {
-                    filters.ValidateArgument(nameof(filters));
-                    filters.Execute((i, x) => x.ValidateArgument(a => a != null, $"Filter <{i}> was null"));
-
-                    _filters.AddRange(filters);
-
-                    return this;
-                }
-            }
-            public IKeyValueSerializerConfigurator UseElementFilters(params ISerializationFilter[] filters)
-            {
-                using (_loggers.TraceMethod(this))
-                {
-                    filters.ValidateArgument(nameof(filters));
-                    filters.Execute((i, x) => x.ValidateArgument(a => a != null, $"Filter <{i}> was null"));
-
-                    _elementFilters.AddRange(filters);
-
-                    return this;
-                }
-            }
-
-            public IKeyValueSerializerConfigurator UseLoggers(params ILogger[] loggers)
-            {
-                using (_loggers.TraceMethod(this))
-                {
-                    loggers.ValidateArgument(nameof(loggers));
-                    loggers.Execute((i, x) => x.ValidateArgument(a => a != null, $"Logger <{i}> was null"));
-
-                    _loggers.AddRange(_loggers);
-
-                    return this;
-                }
-            }
-
-            public IKeyValueSerializerConfigurator ForProperties(BindingFlags bindingFlags)
-            {
-                using (_loggers.TraceMethod(this))
-                {
-                    PropertyFlags = bindingFlags;
-                    return this;
-                }
-            }
+            }           
             #endregion
 
             public IEnumerable<KeyValuePair<string, string>> GetPairs(string source)
@@ -627,7 +561,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
     /// <summary>
     /// Exposes extra configuration for <see cref="KeyValueSerializer"/>.
     /// </summary>
-    public interface IKeyValueSerializerConfigurator
+    public interface IKeyValueSerializerConfigurator : ISerializerConfigurator<IKeyValueSerializerConfigurator>
     {
         /// <summary>
         /// Defines delegates for splitting the string to deserialize into multiple key/value pairs and joining the serialized key/value pairs.
@@ -656,36 +590,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
         /// <param name="splitAndJoinValue">The object to get the string to join/split from</param>
         /// <returns>Current configurator for method chaining</returns>
         IKeyValueSerializerConfigurator ConvertKeyValuePairUsing(object splitAndJoinValue);
-        /// <summary>
-        /// Defines extra converters that will be used to convert between the property values and the serialized strings.
-        /// </summary>
-        /// <param name="converters">The converters to use</param>
-        /// <returns>Current configurator for method chaining</returns>
-        IKeyValueSerializerConfigurator UseConverters(params ITypeConverter[] converters);
-        /// <summary>
-        /// Defines extra filters that will be used to filter the serialized / to be deserialized strings.
-        /// </summary>
-        /// <param name="filters">The filters to use</param>
-        /// <returns>Current configurator for method chaining</returns>
-        IKeyValueSerializerConfigurator UseFilters(params ISerializationFilter[] filters);
-        /// <summary>
-        /// Defines extra element filters that will be used to filter the serialized / to be deserialized strings.
-        /// </summary>
-        /// <param name="filters">The filters to use</param>
-        /// <returns>Current configurator for method chaining</returns>
-        IKeyValueSerializerConfigurator UseElementFilters(params ISerializationFilter[] filters);
-        /// <summary>
-        /// Defines loggers that allows the serializer to trace.
-        /// </summary>
-        /// <param name="loggers">The loggers to use</param>
-        /// <returns>Current configurator for method chaining</returns>
-        IKeyValueSerializerConfigurator UseLoggers(params ILogger[] loggers);
-        /// <summary>
-        /// Defines what properties will be used to serialize/deserialize.
-        /// </summary>
-        /// <param name="bindingFlags">The flags that tell what properties to use</param>
-        /// <returns>Current configurator for method chaining</returns>
-        IKeyValueSerializerConfigurator ForProperties(BindingFlags bindingFlags);
+
     }
 
     /// <summary>

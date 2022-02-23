@@ -17,9 +17,8 @@ namespace Sels.Core.Extensions.DependencyInjection
         /// <typeparam name="T">Type of object to inject</typeparam>
         /// <param name="source">Object to set properties on</param>
         /// <param name="injectables">Values to set on <paramref name="source"/></param>
-        /// <param name="typeConverter">Converter that converts the values in <paramref name="injectables"/> to the right property type</param>
         /// <returns><paramref name="source"/></returns>
-        public static T InjectProperties<T>(this T source, Dictionary<string, object> injectables)
+        public static T InjectProperties<T>(this T source, IDictionary<string, object> injectables)
         {
             source.ValidateArgument(nameof(source));
 

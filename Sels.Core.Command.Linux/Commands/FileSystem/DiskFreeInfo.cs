@@ -1,4 +1,6 @@
-﻿using Sels.Core.Templates.FileSizes;
+﻿using Sels.Core.Conversion.Attributes.Serialization;
+using Sels.Core.Conversion.Attributes.Table;
+using Sels.Core.FileSystem.Templates.FileSizes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,22 +16,24 @@ namespace Sels.Core.Command.Linux.Commands.FileSystem
         /// <summary>
         /// Mounted file system.
         /// </summary>
-        [TableColumn(0)]
+        [ColumnIndex(0)]
         public string FileSystem { get; set; }
         /// <summary>
         /// Amount of 1k blocks.
         /// </summary>
-        [TableColumn(1)]
+        [ColumnIndex(1)]
         public long Blocks { get; set; }
         /// <summary>
         /// Total used file size.
         /// </summary>
-        [TableColumn(2, typeof(DfFileSizeConverter))]
+        [Converter(typeof(DfFileSizeConverter))]
+        [ColumnIndex(2)]
         public FileSize UsedSpace { get; set; }
         /// <summary>
         /// Total amount of free space.
         /// </summary>
-        [TableColumn(3, typeof(DfFileSizeConverter))]
+        [Converter(typeof(DfFileSizeConverter))]
+        [ColumnIndex(3)]
         public FileSize FreeSpace { get; set; }
         /// <summary>
         /// Total file size.
@@ -38,7 +42,7 @@ namespace Sels.Core.Command.Linux.Commands.FileSystem
         /// <summary>
         /// Directory that file system is mounted on.
         /// </summary>
-        [TableColumn(5)]
+        [ColumnIndex(5)]
         public DirectoryInfo MountPoint { get; set; }
     }
 }

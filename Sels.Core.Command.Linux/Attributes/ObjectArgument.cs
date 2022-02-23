@@ -24,7 +24,7 @@ namespace Sels.Core.Command.Linux.Attributes
         /// <param name="target">Where to get argument value from</param>
         /// <param name="argument">Optional argument for method</param>
         /// <param name="prefix">Optional prefix that will be placed along side the property value based on <paramref name="format"/></param>
-        /// <param name="format">How the <paramref name="prefix"/> and property value should be formatted. Use <see cref="PrefixFormat"/> for the <paramref name="prefix"/> and <see cref="ValueFormat"/> for the property value</param>
+        /// <param name="format">How the <paramref name="prefix"/> and property value should be formatted. Use <see cref="TextArgument.PrefixFormat"/> for the <paramref name="prefix"/> and <see cref="TextArgument.ValueFormat"/> for the property value</param>
         /// <param name="parsingOption">Optional parsing for the property value</param>
         /// <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
         /// <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
@@ -34,7 +34,7 @@ namespace Sels.Core.Command.Linux.Attributes
             Target = target.ValidateArgumentNotNullOrWhitespace(nameof(target));
             Argument = argument;
         }
-
+        /// <inheritdoc/>
         public override string? CreateArgument(object? value = null)
         {
             if (value.HasValue())

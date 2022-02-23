@@ -32,7 +32,7 @@ namespace Sels.Core.Conversion.Converters
         /// <summary>
         /// Converter that can be configured with other converters. Converter will use first sub converter that can convert between the supplied types. 
         /// </summary>
-        public GenericConverter() : this(new GenericConverterSettings())
+        public GenericConverter() : this(GenericConverterSettings.None)
         {
 
         }
@@ -52,14 +52,14 @@ namespace Sels.Core.Conversion.Converters
             var convertableType = value.GetType();
             return convertableType.Equals(convertType) || (_converters.HasValue() && _converters.Any(x => x.CanConvert(value, convertType, arguments)));
         }
-        /// <inheritdoc
+        /// <inheritdoc/>
         protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
         {
             var convertableType = value.GetType();
 
             try
             {
-                if (convertableType.IsAssignableTo(convertType))
+                if (!Settings.HasFlag(GenericConverterSettings.AlwaysAttemptConversion) && convertableType.IsAssignableTo(convertType))
                 {
                     return value;
                 }
@@ -73,7 +73,7 @@ namespace Sels.Core.Conversion.Converters
             }
             catch
             {
-                if (Settings.ThrowOnFailedConversion)
+                if (!Settings.HasFlag(GenericConverterSettings.IgnoreUnconvertable))
                 {
                     throw;
                 }
@@ -119,10 +119,10 @@ namespace Sels.Core.Conversion.Converters
         /// <summary>
         /// Adds a sub converter with the supplied delegates that the <see cref="GenericConverter"/> can use.
         /// </summary>
-        /// <param name="convertFunc">Func that matches method signiture of <see cref="CanConvert(Type, Type, object)"/></param>
-        /// <param name="canConvertFunc">Func that matches method signiture of <see cref="ConvertTo(Type, Type, object)"/></param>
+        /// <param name="convertFunc">Func that matches method signiture of <see cref="ITypeConverter.ConvertTo(object, Type, IDictionary{string, string})"/></param>
+        /// <param name="canConvertFunc">Func that matches method signiture of <see cref="ITypeConverter.CanConvert(object, Type, IDictionary{string, string})"/></param>
         /// <returns>Self</returns>
-        public GenericConverter AddConverter(Func<object, Type, Dictionary<string, string>, object> convertFunc, Func<object, Type, Dictionary<string, string>, bool> canConvertFunc = null)
+        public GenericConverter AddConverter(Func<object, Type, IDictionary<string, string>, object> convertFunc, Func<object, Type, IDictionary<string, string>, bool> canConvertFunc = null)
         {
             convertFunc.ValidateArgument(nameof(convertFunc));
 
@@ -160,11 +160,11 @@ namespace Sels.Core.Conversion.Converters
         /// <summary>
         /// Adds a sub converter with the supplied delegates that the <see cref="GenericConverter"/> can use and adds it before the first converter with type <paramref name="type"/>.
         /// </summary>
-        /// <param name="convertFunc">Func that matches method signiture of <see cref="CanConvert(Type, Type, object)"/></param>
-        /// <param name="canConvertFunc">Func that matches method signiture of <see cref="ConvertTo(Type, Type, object)"/></param>
+        /// <param name="convertFunc">Func that matches method signiture of <see cref="ITypeConverter.ConvertTo(object, Type, IDictionary{string, string})"/></param>
+        /// <param name="canConvertFunc">Func that matches method signiture of <see cref="ITypeConverter.CanConvert(object, Type, IDictionary{string, string})"/></param>
         /// <param name="type">Type of converter to insert before</param>
         /// <returns>Self</returns>
-        public GenericConverter AddConverter(Type type, Func<object, Type, Dictionary<string, string>, object> convertFunc, Func<object, Type, Dictionary<string, string>, bool> canConvertFunc = null)
+        public GenericConverter AddConverter(Type type, Func<object, Type, IDictionary<string, string>, object> convertFunc, Func<object, Type, IDictionary<string, string>, bool> canConvertFunc = null)
         {
             type.ValidateArgument(nameof(type));
             convertFunc.ValidateArgument(nameof(convertFunc));
@@ -220,13 +220,22 @@ namespace Sels.Core.Conversion.Converters
     }
 
     /// <summary>
-    /// Contains settings that modifies the behaviour of <see cref="GenericConverter"/>.
+    /// Exposes extra settings for <see cref="GenericConverter"/>.
     /// </summary>
-    public class GenericConverterSettings
+    [Flags]
+    public enum GenericConverterSettings
     {
         /// <summary>
-        /// Rethrows any exception that gets thrown during conversion, set to false to return the default value of the convertType.
+        /// No settings selected.
         /// </summary>
-        public bool ThrowOnFailedConversion { get; set; } = true;
+        None = 0,
+        /// <summary>
+        /// Ignore any exceptions thrown by sub converters and will return the default value of the requested type instead.
+        /// </summary>
+        IgnoreUnconvertable = 1,
+        /// <summary>
+        /// Always trigger sub converters even when converting to the same type.
+        /// </summary>
+        AlwaysAttemptConversion = 2
     }
 }

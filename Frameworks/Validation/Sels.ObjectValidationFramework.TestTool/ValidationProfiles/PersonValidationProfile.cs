@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using Sels.Core.Components.Display.ObjectLabel;
 using Sels.ObjectValidationFramework.Templates.Profile;
 
 namespace Sels.ObjectValidationFramework.TestTool.ValidationProfiles

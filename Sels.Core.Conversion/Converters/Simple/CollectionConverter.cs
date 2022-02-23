@@ -23,7 +23,7 @@ namespace Sels.Core.Conversion.Converters.Simple
 
             if (convertableType.IsContainer() && convertType.IsContainer())
             {
-                return convertableType.GetElementTypeFromCollection().IsAssignableTo(convertType.GetElementTypeFromCollection()) && convertType.CanConstructWith(typeof(List<>).MakeGenericType(convertableType));
+                return convertableType.GetElementTypeFromCollection().IsAssignableTo(convertType.GetElementTypeFromCollection()) && convertType.CanConstructWithArguments(value) || convertType.CanConstructWith(typeof(List<>).MakeGenericType(convertableType.GetElementTypeFromCollection()));
             }
 
             return false;
@@ -33,8 +33,19 @@ namespace Sels.Core.Conversion.Converters.Simple
         {
             value.ValidateArgument(x => CanConvert(x, convertType, arguments), $"Converter <{this}> cannot convert using the provided value. Call <{nameof(CanConvert)}> first");
 
-            var list = value.Cast<IEnumerable>().CreateList(convertType.GetElementTypeFromCollection());
-            return convertType.Construct(list);
+            // Convert using source collection
+            if (convertType.CanConstructWithArguments(value))
+            {
+                return convertType.Construct(value);
+            }
+            // Convert using list
+            else
+            {
+                var list = value.Cast<IEnumerable>().CreateList(value.GetElementTypeFromCollection());
+                return convertType.Construct(list);
+            }
+
+           
         }
     }
 }

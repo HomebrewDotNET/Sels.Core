@@ -1,15 +1,15 @@
-﻿using Sels.Core.Components.FileSizes.Byte;
-using Sels.Core.Components.FileSizes.Byte.Binary;
-using Sels.Core.Conversion.Contracts;
+﻿using Sels.Core.Conversion.Contracts;
 using Sels.Core.Conversion.Templates;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
-using Sels.Core.Templates.FileSizes;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Sels.Core.Conversion.Extensions;
+using Sels.Core.Components.FileSizes.Byte.Binary;
+using Sels.Core.Components.FileSizes.Byte;
+using Sels.Core.FileSystem.Templates.FileSizes;
 
 namespace Sels.Core.Command.Linux.Commands.FileSystem
 {
@@ -22,7 +22,7 @@ namespace Sels.Core.Command.Linux.Commands.FileSystem
 
             return convertableType.Is<string>() && convertType.IsAssignableTo<FileSize>();
         }
-        /// <inheritdoc
+        /// <inheritdoc/>
         protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string>? arguments = null)
         {
             var kiloBytes = value.ToString().TrimEnd('K').ConvertTo<decimal>();

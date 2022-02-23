@@ -23,6 +23,7 @@ namespace Sels.Core.Command.Linux.Commands.Core
         [FlagArgument("-e", order: 1)]
         public bool DoInterpreteBackslash { get; set; }
 
+        /// <inheritdoc cref="EchoCommand"/>
         public EchoCommand() : base(LinuxCommandConstants.Commands.Echo)
         {
 

@@ -12,6 +12,9 @@ using Microsoft.CSharp;
 
 namespace Sels.Core.Extensions
 {
+    /// <summary>
+    /// Contains generic extension methods.
+    /// </summary>
     public static class GenericExtensions
     {
         #region HasValue
@@ -44,8 +47,23 @@ namespace Sels.Core.Extensions
         {
             return !string.IsNullOrWhiteSpace(value);
         }
+        /// <summary>
+        /// Checks if <paramref name="value"/> is null.
+        /// </summary>
+        /// <param name="value">The object to check</param>
+        /// <returns>True if <paramref name="value"/> is null, otherwise false</returns>
+        public static bool IsNull(this object value)
+        {
+            return value == null;
+        }
 
         #region Collection
+        /// <summary>
+        /// Checks if <paramref name="value"/> is not null and contains at least 1 element.
+        /// </summary>
+        /// <typeparam name="T">Type of the element</typeparam>
+        /// <param name="value">The value to check</param>
+        /// <returns>True if <paramref name="value"/> is not null and contains at least 1 element, otherwise false</returns>
         public static bool HasValue<T>(this IEnumerable<T> value)
         {
             if (value != null)
@@ -55,17 +73,29 @@ namespace Sels.Core.Extensions
 
             return false;
         }
-
-        public static bool HasValue<T>(this IEnumerable<T> value, Func<T, bool> condition)
+        /// <summary>
+        /// Checks if <paramref name="value"/> is not null and contains at least 1 element that satisfies <paramref name="condition"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the element</typeparam>
+        /// <param name="value">The value to check</param>
+        /// <param name="condition">The condition that at least 1 element must pass</param>
+        /// <returns>True if <paramref name="value"/> is not null and contains at least 1 element that satisfies <paramref name="condition"/>, otherwise false</returns>
+        public static bool HasValue<T>(this IEnumerable<T> value, Predicate<T> condition)
         {
+            condition.ValidateArgument(nameof(condition));
             if (value != null)
             {
-                return value.Any(condition);
+                return value.Any(x => condition(x));
             }
 
             return false;
         }
-
+        /// <summary>
+        /// Checks if <paramref name="value"/> is not null and contains at least 1 element.
+        /// </summary>
+        /// <typeparam name="T">Type of the element</typeparam>
+        /// <param name="value">The value to check</param>
+        /// <returns>True if <paramref name="value"/> is not null and contains at least 1 element, otherwise false</returns>
         public static bool HasValue<T>(this T[] value)
         {
             if (value != null)
@@ -75,61 +105,17 @@ namespace Sels.Core.Extensions
 
             return false;
         }
-
+        /// <summary>
+        /// Checks if <paramref name="value"/> is not null and contains at least 1 element.
+        /// </summary>
+        /// <typeparam name="T">Type of the element</typeparam>
+        /// <param name="value">The value to check</param>
+        /// <returns>True if <paramref name="value"/> is not null and contains at least 1 element, otherwise false</returns>
         public static bool HasValue<T>(this ICollection<T> value)
         {
             if (value != null)
             {
                 return value.Count > 0;
-            }
-
-            return false;
-        }
-        #endregion
-
-        #region Numeric
-        public static bool HasValue(this double value)
-        {
-            return value > 0;
-        }
-        public static bool HasValue(this decimal value)
-        {
-            return value > 0;
-        }
-        #endregion
-
-        #region Class Types
-        public static bool HasValue<TKey, TValue>(this KeyValuePair<TKey, TValue> pair)
-        {
-            return !pair.Key.IsDefault() || !pair.Value.IsDefault();
-        }
-
-        public static bool HasValue(this FileSystemInfo info)
-        {
-            return info != null && info.Exists;
-        }
-
-        public static bool HasValue(this ILogger logger, LogLevel logLevel)
-        {
-            if (logger.HasValue() && logger.IsEnabled(logLevel))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public static bool HasValue(this IEnumerable<ILogger> loggers, LogLevel logLevel)
-        {
-            if (loggers.HasValue())
-            {
-                foreach (var logger in loggers)
-                {
-                    if (logger.HasValue(logLevel))
-                    {
-                        return true;
-                    }
-                }
             }
 
             return false;

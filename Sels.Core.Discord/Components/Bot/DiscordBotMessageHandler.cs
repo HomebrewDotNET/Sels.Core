@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Sels.Core.Discord.Contracts.Bot;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Execution;
 using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Logging.Advanced;
 using System;

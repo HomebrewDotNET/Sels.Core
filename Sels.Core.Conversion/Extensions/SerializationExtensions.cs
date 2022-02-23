@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
-using Sels.Core.Components.Serialization;
-using Sels.Core.Contracts.Serialization;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;

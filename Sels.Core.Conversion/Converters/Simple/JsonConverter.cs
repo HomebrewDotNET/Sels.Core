@@ -32,7 +32,7 @@ namespace Sels.Core.Conversion.Converters.Simple
 
             return false;
         }
-        /// <inheritdoc
+        /// <inheritdoc/>
         protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
         {
             var convertableType = value.GetType();
@@ -40,7 +40,7 @@ namespace Sels.Core.Conversion.Converters.Simple
             // Convert from json string to object.
             if (convertableType.Equals(typeof(string)) && !convertType.IsPrimitive && value != null)
             {
-                return value.ToString().DeserializeFromJson(convertableType);
+                return value.ToString().DeserializeFromJson(convertType);
             }
             // Convert object to json string
             else if (!convertableType.IsPrimitive && convertType.Equals(typeof(string)) && value != null)

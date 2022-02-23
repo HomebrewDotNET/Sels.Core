@@ -27,6 +27,10 @@ namespace Sels.Core.Components.Logging
         public static IReadOnlyCollection<ILogger> Loggers => new ReadOnlyCollection<ILogger>(_loggers);
 
         #region Setup
+        /// <summary>
+        /// Registers the loggers to be used.
+        /// </summary>
+        /// <param name="loggers">The loggers to use</param>
         public static void RegisterLoggers(IEnumerable<ILogger> loggers)
         {
             loggers.ValidateArgumentNotNullOrEmpty(nameof(loggers));
@@ -36,8 +40,11 @@ namespace Sels.Core.Components.Logging
                 _loggers.AddRange(loggers);
             }
         }
-
-        public static void RegisterLoggers(ILogger logger)
+        /// <summary>
+        /// Registers a logger to be used.
+        /// </summary>
+        /// <param name="logger">The logger to use</param>
+        public static void RegisterLogger(ILogger logger)
         {
             logger.ValidateArgument(nameof(logger));
 
@@ -46,18 +53,6 @@ namespace Sels.Core.Components.Logging
                 _loggers.Add(logger);
             }
         }
-
-        public static void RegisterLoggers(ILoggerFactory factory, string category)
-        {
-            factory.ValidateArgument(nameof(factory));
-            category.ValidateArgumentNotNullOrWhitespace(nameof(category));
-
-            lock (_threadLock)
-            {
-                _loggers.Add(factory.CreateLogger(category));
-            }
-        }
-
         #endregion
 
         #region Logging
@@ -143,29 +138,29 @@ namespace Sels.Core.Components.Logging
         /// <param name="args">Optional logging parameters</param>
         public static void Trace(string message, params object[] args) => Log(LogLevel.Trace, message, args);
         /// <summary>
-        /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider with severity <see cref="LogLevel.Trace"/>.
+        /// Traces an object to the logs serialized to json with severity <see cref="LogLevel.Trace"/>.
         /// </summary>
         /// <param name="objectToTrace">Object to serialize and log</param>
         public static void TraceObject(object objectToTrace) => _loggers.TraceObject(objectToTrace);
         /// <summary>
-        /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider.
+        /// Traces an object to the logs serialized to json.
         /// </summary>
         /// <param name="level">Severity level for log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject(LogLevel level, object objectToTrace) => _loggers.TraceObject(level, objectToTrace);
+        public static void TraceObject(LogLevel level, object objectToTrace) => _loggers.LogObject(level, objectToTrace);
         /// <summary>
-        /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider with an extra message with severity <see cref="LogLevel.Trace"/>.
+        /// Traces an object to the logs serialized to json with an extra message with severity <see cref="LogLevel.Trace"/>.
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
         public static void TraceObject(string message, object objectToTrace) => _loggers.TraceObject(message, objectToTrace);
         /// <summary>
-        /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider with an extra message.
+        /// Traces an object to the logs serialized to json with an extra message.
         /// </summary>
         /// <param name="level">Severity level for log</param>
         /// <param name="message">Message to log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject(LogLevel level, string message, object objectToTrace) => _loggers.TraceObject(level, message, objectToTrace);
+        public static void TraceObject(LogLevel level, string message, object objectToTrace) => _loggers.LogObject(level, message, objectToTrace);
         /// <summary>
         /// Traces how long an action took to execute with severity <see cref="LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
@@ -230,7 +225,7 @@ namespace Sels.Core.Components.Logging
         /// <summary>
         /// Creates a logger that logs a message when created and a message when disposed using the elapsed time between creating and disposing the logger.
         /// </summary>
-        /// <param name="level">Severity level for log</param>
+        /// <param name="logLevel">Severity level for log</param>
         /// <param name="beginMessageFunc">Func that creates the start message</param>
         /// <param name="endMessageFunc">Func that creates the stop message</param>
         /// <returns>Logger that keeps start of elapsed time since it was created</returns>

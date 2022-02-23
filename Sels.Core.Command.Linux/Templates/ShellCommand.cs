@@ -17,11 +17,12 @@ namespace Sels.Core.Command.Linux.Templates
     /// <typeparam name="TCommandResult">Type of result that the command returns</typeparam>
     public abstract class ShellCommand<TCommandResult> : BaseLinuxCommand<string, TCommandResult>
     {
+        /// <inheritdoc cref="ShellCommand{TCommandResult}"/>
         public ShellCommand() : base(LinuxCommandConstants.Commands.Shell)
         {
 
         }
-
+        /// <inheritdoc/>
         public override bool RunCommand(out string output, out string error, out int exitCode, CommandExecutionOptions? options = null)
         {
             using var loggers = (options.HasValue() ? options.Loggers : null).CreateTimedLogger(LogLevel.Debug, $"Running command {LoggerName}", x => $"Ran command {LoggerName} in {x.PrintTotalMs()}");
@@ -39,7 +40,7 @@ namespace Sels.Core.Command.Linux.Templates
 
             return result;
         }
-
+        /// <inheritdoc/>
         public override string BuildCommand()
         {
             return BuildArguments();

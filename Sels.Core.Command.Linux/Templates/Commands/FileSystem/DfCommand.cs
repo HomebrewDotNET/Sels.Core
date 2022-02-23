@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Components.Conversion;
-using Sels.Core.Contracts.Conversion;
 using Sels.Core.Command.Linux.Templates;
-using Sels.Core.Templates.FileSizes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,7 +24,7 @@ namespace Sels.Core.Command.Linux.Templates.Commands.FileSystem
         /// </summary>
         [FlagArgument("-sync", order: 1)]
         public bool DoSync { get; set; }
-
+        /// <inheritdoc cref="DfCommand{TCommandResult}"/>
         public DfCommand() : base(LinuxCommandConstants.Commands.Df)
         {
 

@@ -11,6 +11,7 @@ namespace Sels.Core.Command.Linux.Templates.Commands.Screen
     /// <typeparam name="TCommandResult">Type of result returned by this command</typeparam>
     public abstract class ScreenCommand<TCommandResult> : BaseLinuxCommand<string, TCommandResult>
     {
+        /// <inheritdoc cref="ScreenCommand{TCommandResult}"/>
         public ScreenCommand() : base(LinuxCommandConstants.Commands.Screen)
         {
 

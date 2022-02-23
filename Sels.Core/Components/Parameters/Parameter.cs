@@ -47,7 +47,7 @@ namespace Sels.Core.Components.Parameters
         public Parameter AddDependency(string name)
         {
             name.ValidateArgument(nameof(name));
-            name.ValidateArgument(x => !_dependencies.Contains(name), () => $"Dependency to {name} already added");
+            name.ValidateArgument(x => !_dependencies.Contains(name), $"Dependency to {name} already added");
 
             _dependencies.Add(name);
 
@@ -81,7 +81,7 @@ namespace Sels.Core.Components.Parameters
         protected string GetParameterValue(string name, string argument = null)
         {
             name.ValidateArgument(nameof(name));
-            _parameterValueResolver.ValidateArgument(x => x.HasValue(), () => new NotSupportedException($"Parameter value resolver is not set"));
+            _parameterValueResolver.ValidateArgument(x => x.HasValue(), x => new NotSupportedException($"Parameter value resolver is not set"));
 
             return _parameterValueResolver(name, argument);
         }
@@ -116,7 +116,7 @@ namespace Sels.Core.Components.Parameters
         protected override string GenerateValue(object scope)
         {
             scope.ValidateArgument(nameof(scope));
-            scope.ValidateIfType<TContext>(nameof(scope));
+            scope.ValidateArgumentAssignableTo(nameof(scope), typeof(TContext));
             var typedScope = (TContext) scope;
 
             return GenerateValue(typedScope);
@@ -125,7 +125,7 @@ namespace Sels.Core.Components.Parameters
         protected override string GenerateValue(object scope, string argument)
         {
             scope.ValidateArgument(nameof(scope));
-            scope.ValidateIfType<TContext>(nameof(scope));
+            scope.ValidateArgumentAssignableTo(nameof(scope), typeof(TContext));
             var typedScope = (TContext)scope;
 
             return GenerateValue(typedScope, argument);

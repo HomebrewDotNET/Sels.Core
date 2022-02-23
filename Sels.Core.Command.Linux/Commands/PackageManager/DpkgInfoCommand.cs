@@ -16,19 +16,22 @@ namespace Sels.Core.Command.Linux.Commands.PackageManager
     /// </summary>
     public class DpkgInfoCommand : DpkgCommand<PackageInfo>
     {
+        /// <summary>
+        /// The name of the package to get more info about.
+        /// </summary>
         [TextArgument(order: 1, prefix: "-s", required: true)]
         public string PackageName { get; set; }
-
+        /// <inheritdoc cref="DpkgInfoCommand"/>
         public DpkgInfoCommand(string packageName)
         {
             PackageName = packageName;
         }
-
+        /// <inheritdoc cref="DpkgInfoCommand"/>
         public DpkgInfoCommand()
         {
 
         }
-
+        /// <inheritdoc/>
         public override PackageInfo CreateResult(bool wasSuccesful, int exitCode, string? output, string? error, IEnumerable<ILogger>? loggers = null)
         {
             if (wasSuccesful)

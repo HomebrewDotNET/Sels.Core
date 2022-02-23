@@ -18,6 +18,7 @@ namespace Sels.Core.Command.Linux.Templates.Commands.Bash
     /// <typeparam name="TCommandResult">Type of command result</typeparam>
     public abstract class BashCommand<TCommandResult> : BaseLinuxCommand<string, TCommandResult>
     {
+        ///<inheritdoc cref="BashCommand{TCommandResult}"/>
         public BashCommand() : base(LinuxCommandConstants.Commands.Bash)
         {
 
@@ -53,7 +54,8 @@ namespace Sels.Core.Command.Linux.Templates.Commands.Bash
     /// </summary>
     public abstract class BashCommand : BashCommand<ILinuxCommandResult<string, string>> , ILinuxCommand
     {
-        public override ILinuxCommandResult<string, string> CreateResult(bool wasSuccesful, int exitCode, string output, string error, IEnumerable<ILogger>? loggers = null)
+        ///<inheritdoc/>
+        public override ILinuxCommandResult<string, string> CreateResult(bool wasSuccesful, int exitCode, string? output, string? error, IEnumerable<ILogger>? loggers = null)
         {
             return new LinuxCommandResult<string, string>(!wasSuccesful, output, error, exitCode);
         }

@@ -16,11 +16,13 @@ namespace Sels.Core.Command.Linux.Commands.Bash
         /// </summary>
         [TextArgument]
         public string Command { get; set; }
-
+        /// <inheritdoc cref="DynamicBashCommand"/>
+        /// <param name="command">The command to execute</param>
         public DynamicBashCommand(string command)
         {
             Command = command;
         }
+        /// <inheritdoc cref="DynamicBashCommand"/>
         public DynamicBashCommand()
         {
 

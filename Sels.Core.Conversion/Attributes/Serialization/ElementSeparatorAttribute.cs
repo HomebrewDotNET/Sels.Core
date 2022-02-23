@@ -20,7 +20,7 @@ namespace Sels.Core.Conversion.Attributes.Serialization
         /// <summary>
         /// Splits the string into multiple sub string during deseialization that will be converted to a collection. During serialization the elements will be converted to strings and joined instead.
         /// </summary>
-        /// <param name="splitter">The string to split/join. If left to null, empty or whitespace the string will be split on char</param>
+        /// <param name="splitter">The string to split/join. If left to null, empty or whitespace the string will be split on whitespace characters</param>
         public ElementSeparatorAttribute(string splitter = null)
         {
             Separator = splitter;
@@ -35,19 +35,19 @@ namespace Sels.Core.Conversion.Attributes.Serialization
         {
             source.ValidateArgument(nameof(source));
 
-            return Separator.HasValue() ? source.Split(Separator) : source.ToCharArray().Select(x => x.ToString());
+            return Separator.HasValue() ? source.Split(Separator) : source.Split();
         }
 
         /// <summary>
         /// Joins <paramref name="source"/> after being serialized.
         /// </summary>
         /// <param name="source">The strings to join</param>
-        /// <returns>THe joined string</returns>
+        /// <returns>The joined string</returns>
         public string Join(IEnumerable<string> source)
         {
             source.ValidateArgument(nameof(source));
 
-            return Separator.HasValue() ? source.JoinString(Separator) : source.JoinString();
+            return Separator.HasValue() ? source.JoinString(Separator) : source.JoinString(Constants.Strings.Space);
         }
     }
 }

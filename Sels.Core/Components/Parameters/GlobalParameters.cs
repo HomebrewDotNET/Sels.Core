@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Components.Parameters.Parameters;
+using Sels.Core.Components.Properties;
 using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
@@ -34,9 +35,9 @@ namespace Sels.Core.Components.Parameters
                 }
             }
         }
-        public static ThreadSafeProperty<string> Prefix { get; } = new ThreadSafeProperty<string>().AddGetterSetCondition(x => !x.HasValue()).AddGetterSetter(() => DefaultParameterPrefix).AddSetterValidation(x => x.HasValue(), $"{nameof(Prefix)} cannot be null, empty or whitespace");
+        public static ThreadSafeProperty<string> Prefix { get; } = new ThreadSafeProperty<string>().UseGetter(x => x.HasValue() ? x : DefaultParameterPrefix).ValidIf(x => x.HasValue(), x => $"{nameof(Prefix)} cannot be null, empty or whitespace");
 
-        public static ThreadSafeProperty<string> Suffix { get; } = new ThreadSafeProperty<string>().AddGetterSetCondition(x => !x.HasValue()).AddGetterSetter(() => DefaultParameterSuffix).AddSetterValidation(x => x.HasValue(), $"{nameof(Suffix)} cannot be null, empty or whitespace");
+        public static ThreadSafeProperty<string> Suffix { get; } = new ThreadSafeProperty<string>().UseGetter(x => x.HasValue() ? x : DefaultParameterSuffix).ValidIf(x => x.HasValue(), x => $"{nameof(Suffix)} cannot be null, empty or whitespace");
 
         static GlobalParameters()
         {

@@ -10,20 +10,37 @@ using System.Text.RegularExpressions;
 namespace System
 {
     /// <summary>
-    /// Contains extension methods for strings.
+    /// Contains extension methods for <see cref="string"/>.
     /// </summary>
     public static class StringExtensions
     {
+        /// <summary>
+        /// Formats <paramref name="value"/> using <paramref name="parameters"/>.
+        /// </summary>
+        /// <param name="value">The string to format</param>
+        /// <param name="parameters">The parameters to format <paramref name="value"/> with</param>
+        /// <returns>The formatted string</returns>
         public static string FormatString(this string value, params object[] parameters)
         {
+            value.ValidateArgumentNotNullOrWhitespace(nameof(value));
+            parameters.ValidateArgumentNotNullOrEmpty(nameof(parameters));
+
             return string.Format(value, parameters);
         }
-
+        /// <summary>
+        /// Returns <paramref name="value"/> where all digits are removed.
+        /// </summary>
+        /// <param name="value">The value to remove the digits from</param>
+        /// <returns><paramref name="value"/> with all digits removed</returns>
         public static string GetWithoutDigits(this string value)
         {
             return Regex.Replace(value, @"\d", "");
         }
-
+        /// <summary>
+        /// Checks if <paramref name="value"/> is null or empty.
+        /// </summary>
+        /// <param name="value">The string to check</param>
+        /// <returns>True if <paramref name="value"/> is either null or an empty string, otherwise false</returns>
         public static bool IsNullOrEmpty(this string value)
         {
             return string.IsNullOrEmpty(value);
@@ -103,7 +120,6 @@ namespace System
 
             return true;
         }
-
         /// <summary>
         /// Checks if <paramref name="value"/> contains at least one substring in <paramref name="strings"/>.
         /// </summary>
@@ -149,6 +165,13 @@ namespace System
         #endregion
 
         #region Join
+        /// <summary>
+        /// Joins all <see cref="object.ToString"/> strings from <paramref name="values"/> using the <see cref="object.ToString"/> value from <paramref name="joinValue"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements in <paramref name="values"/></typeparam>
+        /// <param name="values">The values to join</param>
+        /// <param name="joinValue">The object to get the string to join from</param>
+        /// <returns>The joined string</returns>
         public static string JoinString<T>(this IEnumerable<T> values, object joinValue)
         {
             values.ValidateArgument(nameof(values));
@@ -156,29 +179,64 @@ namespace System
 
             return string.Join(joinValue.ToString(), values);
         }
-
+        /// <summary>
+        /// Joins all <see cref="object.ToString"/> strings from <paramref name="values"/> using <see cref="Constants.Strings.Comma"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements in <paramref name="values"/></typeparam>
+        /// <param name="values">The values to join</param>
+        /// <returns>The joined string</returns>
         public static string JoinString<T>(this IEnumerable<T> values)
         {
-            return values.JoinString(Constants.Strings.Comma);
-        }
+            values.ValidateArgument(nameof(values));
 
+            return values.JoinString();
+        }
+        /// <summary>
+        /// Joins all <see cref="object.ToString"/> strings from <paramref name="values"/> using the environment new line character.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements in <paramref name="values"/></typeparam>
+        /// <param name="values">The values to join</param>
+        /// <returns>The joined string</returns>
         public static string JoinStringNewLine<T>(this IEnumerable<T> values)
         {
+            values.ValidateArgument(nameof(values));
+
             return values.JoinString(Environment.NewLine);
         }
-
+        /// <summary>
+        /// Joins all <see cref="object.ToString"/> strings from <paramref name="values"/> using <see cref="Constants.Strings.Tab"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements in <paramref name="values"/></typeparam>
+        /// <param name="values">The values to join</param>
+        /// <returns>The joined string</returns>
         public static string JoinStringTab<T>(this IEnumerable<T> values)
         {
+            values.ValidateArgument(nameof(values));
+
             return values.JoinString(Constants.Strings.Tab);
         }
-
+        /// <summary>
+        /// Joins all <see cref="object.ToString"/> strings from <paramref name="values"/> using <see cref="Constants.Strings.Space"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements in <paramref name="values"/></typeparam>
+        /// <param name="values">The values to join</param>
+        /// <returns>The joined string</returns>
         public static string JoinStringSpace<T>(this IEnumerable<T> values)
         {
+            values.ValidateArgument(nameof(values));
+
             return values.JoinString(Constants.Strings.Space);
         }
-
+        /// <summary>
+        /// Joins all <see cref="object.ToString"/> strings from <paramref name="values"/> using <see cref="string.Empty"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements in <paramref name="values"/></typeparam>
+        /// <param name="values">The values to join</param>
+        /// <returns>The joined string</returns>
         public static string JoinStringNoSpace<T>(this IEnumerable<T> values)
         {
+            values.ValidateArgument(nameof(values));
+
             return values.JoinString(string.Empty);
         }
         #endregion
@@ -193,7 +251,7 @@ namespace System
         /// <returns>Substrings after splitting <paramref name="source"/></returns>
         public static string[] Split(this string source, string splitValue, StringSplitOptions options = StringSplitOptions.None)
         {
-            source.ValidateArgumentNotNullOrEmpty(nameof(source));
+            source.ValidateArgument(nameof(source));
             splitValue.ValidateArgument(nameof(splitValue));
 
             return source.Split(new string[] { splitValue }, options);
@@ -234,7 +292,7 @@ namespace System
         /// <param name="splitValue">Value to split string with</param>
         /// <param name="other">The other values after splitting</param>
         /// <param name="options">Optional options for splitting the strings</param>
-        /// <returns>The first value after splitting/returns>
+        /// <returns>The first value after splitting</returns>
         public static string SplitOnFirst(this string source, object splitValue, out string other, StringSplitOptions options = StringSplitOptions.None)
         {
             splitValue.ValidateArgument(nameof(splitValue));
@@ -298,6 +356,11 @@ namespace System
         #endregion
 
         #region Builder
+        /// <summary>
+        /// Appends <see cref="Constants.Strings.Space"/> to <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder">The builder to append to</param>
+        /// <returns>Current builder for method chaining</returns>
         public static StringBuilder AppendSpace(this StringBuilder builder)
         {
             builder.ValidateArgument(nameof(builder));
@@ -306,7 +369,11 @@ namespace System
 
             return builder;
         }
-
+        /// <summary>
+        /// Appends <see cref="Constants.Strings.Tab"/> to <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder">The builder to append to</param>
+        /// <returns>Current builder for method chaining</returns>
         public static StringBuilder AppendTab(this StringBuilder builder)
         {
             builder.ValidateArgument(nameof(builder));
@@ -340,6 +407,69 @@ namespace System
             }
 
             return value;
+        }
+        #endregion
+
+        #region ToGrid
+        /// <summary>
+        /// Transforms <paramref name="source"/> into a 2 dimensional array by dividing <paramref name="source"/> into rows and columns.
+        /// </summary>
+        /// <param name="source">The string to transform</param>
+        /// <param name="rowSplitter">The delegate that will split up <paramref name="source"/> into rows</param>
+        /// <param name="columnSplitter">The delegate that will split up rows into columns</param>
+        /// <param name="ignoreMissingColumns">If no exception should be thown when a row has less columns than the expected column length. When set to true the missing columns will be null in the grid</param>
+        /// <param name="ignoreExtraColumns">If no exception should be thrown when a row has more columns than the expected column length. When set to true the extra columns will be missing from the grid</param>
+        /// <param name="expectedColumns">The expected amount of rows. When set to null the first row will determine the column count</param>
+        /// <returns>The grid created from the rows and columns in <paramref name="source"/></returns>
+        /// <exception cref="InvalidOperationException">Thown when column lengths don't match up with the expected amount unless disabled</exception>
+        public static string[,] ToGrid(this string source, Func<string, IEnumerable<string>> rowSplitter, Func<string, IEnumerable<string>> columnSplitter, bool ignoreMissingColumns = true, bool ignoreExtraColumns = true, int? expectedColumns = null)
+        {
+            source.ValidateArgumentNotNullOrWhitespace(nameof(source));
+            rowSplitter.ValidateArgument(nameof(rowSplitter));
+            columnSplitter.ValidateArgument(nameof(columnSplitter));
+            if (expectedColumns.HasValue) expectedColumns.Value.ValidateArgumentLarger(nameof(expectedColumns), 0);
+
+            int? columnLength = expectedColumns;
+            var temporaryGrid = new List<string[]>();
+            var rows = (rowSplitter(source) ?? throw new InvalidOperationException($"Row splitter returned null")).ToArray();
+
+            if (rows.HasValue())
+            {
+                for (int i = 0; i < rows.Length; i++)
+                {
+                    var row = rows[i];
+                    var columns = (columnSplitter(row) ?? throw new InvalidOperationException($"Column splitter returned null")).ToArray();
+
+                    if (!columnLength.HasValue) columnLength = columns.Length;
+
+                    if (!ignoreExtraColumns && columns.Length > columnLength) throw new InvalidOperationException($"Row {i} has {columns.Length} columns which is larger than the first row of {columnLength} columns");
+                    if (!ignoreMissingColumns && columns.Length < columnLength) throw new InvalidOperationException($"Row {i} has {columns.Length} columns which is smaller than the first row of {columnLength} columns");
+
+                    var newColumns = new string[columnLength.Value];
+
+                    for (int y = 0; y < columns.Length; y++)
+                    {
+                        if (y >= columnLength) break;
+                        newColumns[y] = columns[y];
+                    }
+
+                    temporaryGrid.Add(newColumns);
+                }
+
+                var grid = new string[temporaryGrid.Count, columnLength.Value];
+
+                for(int i = 0; i < rows.Length; i++)
+                {
+                    for (int y = 0; y < columnLength; y++)
+                    {
+                        grid[i, y] = temporaryGrid[i][y];
+                    }
+                }
+
+                return grid;
+            }
+
+            return new string[0, 0];
         }
         #endregion
     }

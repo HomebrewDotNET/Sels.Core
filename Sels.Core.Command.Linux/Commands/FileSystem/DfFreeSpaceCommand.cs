@@ -3,7 +3,6 @@ using Sels.Core.Extensions.Conversion;
 using Sels.Core.Command.Linux.Commands.Awk;
 using Sels.Core.Command.Linux.Contracts;
 using Sels.Core.Command.Linux.Templates;
-using Sels.Core.Templates.FileSizes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +10,7 @@ using System.Linq;
 using System.Text;
 using Sels.Core.Command.Contracts.Commands;
 using Sels.Core.Conversion.Contracts;
+using Sels.Core.FileSystem.Templates.FileSizes;
 
 namespace Sels.Core.Command.Linux.Commands.FileSystem
 {
