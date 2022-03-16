@@ -50,8 +50,10 @@
 	  <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Contracts\ArgumentParsing\" />
 	  <Folder Include="Models\Documentation\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="System.Runtime" Version="4.3.1" />
 	</ItemGroup>
 
 </Project>

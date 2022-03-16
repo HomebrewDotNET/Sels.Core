@@ -1,4 +1,5 @@
-﻿using Sels.Core.Conversion.Contracts;
+﻿using Sels.Core.Conversion;
+using Sels.Core.Conversion.Serialization.Filters;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;

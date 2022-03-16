@@ -49,7 +49,7 @@
         </member>
         <member name="T:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute">
             <summary>
-            Defines arguments that will be supplied to the <see cref="T:Sels.Core.Conversion.Contracts.ITypeConverter"/> by serializers that support it.
+            Defines arguments that will be supplied to the <see cref="!:ITypeConverter"/> by serializers that support it.
             </summary>
         </member>
         <member name="F:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute.KeyValueSplitter">
@@ -64,7 +64,7 @@
         </member>
         <member name="M:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute.#ctor(System.String[])">
             <summary>
-            Defines arguments that will be supplied to the <see cref="T:Sels.Core.Conversion.Contracts.ITypeConverter"/> by serializers that support it.
+            Defines arguments that will be supplied to the <see cref="!:ITypeConverter"/> by serializers that support it.
             </summary>
             <param name="arguments">List of arguments. Must use <see cref="F:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute.KeyValueSplitter"/> to split the argument key from the argument value</param>
         </member>
@@ -75,7 +75,7 @@
         </member>
         <member name="M:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttributeExtensions.GetConverterArguments(System.Reflection.MemberInfo)">
             <summary>
-            Returns <see cref="T:Sels.Core.Conversion.Contracts.ITypeConverter"/> arguments by looking for <see cref="T:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute"/>.
+            Returns <see cref="!:ITypeConverter"/> arguments by looking for <see cref="T:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute"/>.
             </summary>
             <param name="source">The member to get the arguments from</param>
             <returns>The arguments defined by <see cref="T:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute"/> or null if no attribute is found</returns>
@@ -260,58 +260,77 @@
         <member name="M:Sels.Core.Conversion.Attributes.Table.ColumnIndexAttribute.GetColumnIndex(System.String[])">
             <inheritdoc/>
         </member>
-        <member name="T:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.BoolToBitFilter">
+        <member name="T:Sels.Core.Conversion.Serialization.Filters.Conversion.BoolToBitFilter">
             <summary>
             Filter that will convert 1 and 0 to true and false on read and the opposite on write.
             </summary>
         </member>
-        <member name="M:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.BoolToBitFilter.#ctor">
+        <member name="M:Sels.Core.Conversion.Serialization.Filters.Conversion.BoolToBitFilter.#ctor">
             <summary>
             Filter that will convert 0 and 1 to true and false on read and the opposite on write.
             </summary>
         </member>
-        <member name="M:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.BoolToBitFilter.#ctor(System.String,System.String)">
+        <member name="M:Sels.Core.Conversion.Serialization.Filters.Conversion.BoolToBitFilter.#ctor(System.String,System.String)">
             <summary>
             Filter that will convert 0 and 1 to true and false on read and the opposite on write.
             </summary>
             <param name="defaultReadValue">The value to return when input string isn't 0 or 1 on read</param>
             <param name="defaultWriteValue">The value to return when input string isn't true or false on write</param>
         </member>
-        <member name="M:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.BoolToBitFilter.ModifyOnRead(System.String)">
+        <member name="M:Sels.Core.Conversion.Serialization.Filters.Conversion.BoolToBitFilter.ModifyOnRead(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.BoolToBitFilter.ModifyOnWrite(System.String)">
+        <member name="M:Sels.Core.Conversion.Serialization.Filters.Conversion.BoolToBitFilter.ModifyOnWrite(System.String)">
             <inheritdoc/>
         </member>
-        <member name="T:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.DoubleQuotesFilter">
+        <member name="T:Sels.Core.Conversion.Serialization.Filters.Conversion.DoubleQuotesFilter">
             <summary>
             Filter that trims double quotes on read and adds them on write.
             </summary>
         </member>
-        <member name="M:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.DoubleQuotesFilter.#ctor">
+        <member name="M:Sels.Core.Conversion.Serialization.Filters.Conversion.DoubleQuotesFilter.#ctor">
             <summary>
             Filter that trims double quotes on read and adds them on write.
             </summary>
         </member>
-        <member name="T:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.PercentageFilter">
+        <member name="T:Sels.Core.Conversion.Serialization.Filters.Conversion.PercentageFilter">
             <summary>
             Filter that removes % at the end of a string on read and adds them on write.
             </summary>
         </member>
-        <member name="M:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.PercentageFilter.#ctor">
+        <member name="M:Sels.Core.Conversion.Serialization.Filters.Conversion.PercentageFilter.#ctor">
             <summary>
             Filter that removes % at the end of a string on read and adds them on write.
             </summary>
         </member>
-        <member name="T:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.SingleQuotesFilter">
+        <member name="T:Sels.Core.Conversion.Serialization.Filters.Conversion.SingleQuotesFilter">
             <summary>
             Filter that trims single quotes on read and adds them on write.
             </summary>
         </member>
-        <member name="M:Sels.Core.Conversion.Components.Serialization.Filters.Conversion.SingleQuotesFilter.#ctor">
+        <member name="M:Sels.Core.Conversion.Serialization.Filters.Conversion.SingleQuotesFilter.#ctor">
             <summary>
             Filter that trims single quotes on read and adds them on write.
             </summary>
+        </member>
+        <member name="T:Sels.Core.Conversion.Serialization.Filters.ISerializationFilter">
+            <summary>
+            Filter that allows for modifying serialized or to be deserialized string values.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serialization.Filters.ISerializationFilter.ModifyOnRead(System.String)">
+            <summary>
+            Modifies the value from a property before it is deserialized.
+            </summary>
+            <param name="input">The value to modifiy</param>
+            <returns>The modified value</returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serialization.Filters.ISerializationFilter.ModifyOnWrite(System.String)">
+            <summary>
+            Modifies the value from a property after it is serialized.
+            </summary>
+            <param name="input">The value to modifiy</param>
+            <returns>The modified value</returns>
         </member>
         <member name="T:Sels.Core.Conversion.Components.Serialization.Profile.PropertySerializationProfile">
             <summary>
@@ -358,7 +377,7 @@
             Whether or not <see cref="P:Sels.Core.Conversion.Components.Serialization.Profile.PropertySerializationProfile.Property"/> is static.
             </summary>
         </member>
-        <member name="M:Sels.Core.Conversion.Components.Serialization.Profile.PropertySerializationProfile.#ctor(System.Reflection.PropertyInfo,System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ITypeConverter},System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ISerializationFilter},System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ISerializationFilter},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.Core.Conversion.Components.Serialization.Profile.PropertySerializationProfile.#ctor(System.Reflection.PropertyInfo,System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Converters.ITypeConverter},System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Serialization.Filters.ISerializationFilter},System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Serialization.Filters.ISerializationFilter},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Builds a serialization profile for a <see cref="T:System.Reflection.PropertyInfo"/> containing classes that dictate how the property value should be serialized.
             </summary>
@@ -399,7 +418,7 @@
             Dictionary with properties that can be serialized together with their profile.
             </summary>
         </member>
-        <member name="M:Sels.Core.Conversion.Components.Serialization.Profile.SerializationProfile.#ctor(System.Type,System.Reflection.BindingFlags,System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ITypeConverter},System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ISerializationFilter},System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ISerializationFilter},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.Core.Conversion.Components.Serialization.Profile.SerializationProfile.#ctor(System.Type,System.Reflection.BindingFlags,System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Converters.ITypeConverter},System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Serialization.Filters.ISerializationFilter},System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Serialization.Filters.ISerializationFilter},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <inheritdoc cref="T:Sels.Core.Conversion.Components.Serialization.Profile.SerializationProfile"/>
             <param name="type">The type to create the profile for</param>
             <param name="propertyFlags">The binding flags that dictate what properties to include in this profile</param>
@@ -408,77 +427,280 @@
             <param name="additionalElementFilters">Optional extra element filters for the property profile. Filters from <see cref="T:Sels.Core.Conversion.Attributes.Serialization.SerializationFilterAttribute"/> defined on the type take priority</param>
             <param name="loggers">Optional loggers for tracing</param>
         </member>
-        <member name="T:Sels.Core.Conversion.Contracts.ISerializationFilter">
-            <summary>
-            Filter that allows for modifying serialized or to be deserialized string values.
-            </summary>
-        </member>
-        <member name="M:Sels.Core.Conversion.Contracts.ISerializationFilter.ModifyOnRead(System.String)">
-            <summary>
-            Modifies the value from a property before it is deserialized.
-            </summary>
-            <param name="input">The value to modifiy</param>
-            <returns>The modified value</returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Contracts.ISerializationFilter.ModifyOnWrite(System.String)">
-            <summary>
-            Modifies the value from a property after it is serialized.
-            </summary>
-            <param name="input">The value to modifiy</param>
-            <returns>The modified value</returns>
-        </member>
-        <member name="T:Sels.Core.Conversion.Contracts.ISerializerConfigurator`1">
+        <member name="T:Sels.Core.Conversion.Serializers.ISerializerConfigurator`1">
             <summary>
             Exposes common configuration for serializers.
             </summary>
             <typeparam name="TConfigurator">The type of configurator inheriting from this interface</typeparam>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.ISerializerConfigurator`1.UseConverters(Sels.Core.Conversion.Contracts.ITypeConverter[])">
+        <member name="M:Sels.Core.Conversion.Serializers.ISerializerConfigurator`1.UseConverters(Sels.Core.Conversion.Converters.ITypeConverter[])">
             <summary>
             Defines extra converters that will be used to convert between the property values and the serialized strings.
             </summary>
             <param name="converters">The converters to use</param>
             <returns>Current configurator for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.ISerializerConfigurator`1.UseFilters(Sels.Core.Conversion.Contracts.ISerializationFilter[])">
+        <member name="M:Sels.Core.Conversion.Serializers.ISerializerConfigurator`1.UseFilters(Sels.Core.Conversion.Serialization.Filters.ISerializationFilter[])">
             <summary>
             Defines extra filters that will be used to filter the serialized / to be deserialized strings.
             </summary>
             <param name="filters">The filters to use</param>
             <returns>Current configurator for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.ISerializerConfigurator`1.UseElementFilters(Sels.Core.Conversion.Contracts.ISerializationFilter[])">
+        <member name="M:Sels.Core.Conversion.Serializers.ISerializerConfigurator`1.UseElementFilters(Sels.Core.Conversion.Serialization.Filters.ISerializationFilter[])">
             <summary>
             Defines extra element filters that will be used to filter the serialized / to be deserialized strings.
             </summary>
             <param name="filters">The filters to use</param>
             <returns>Current configurator for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.ISerializerConfigurator`1.UseLoggers(Microsoft.Extensions.Logging.ILogger[])">
+        <member name="M:Sels.Core.Conversion.Serializers.ISerializerConfigurator`1.UseLoggers(Microsoft.Extensions.Logging.ILogger[])">
             <summary>
             Defines loggers that allows the serializer to trace.
             </summary>
             <param name="loggers">The loggers to use</param>
             <returns>Current configurator for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.ISerializerConfigurator`1.ForProperties(System.Reflection.BindingFlags)">
+        <member name="M:Sels.Core.Conversion.Serializers.ISerializerConfigurator`1.ForProperties(System.Reflection.BindingFlags)">
             <summary>
             Defines what properties will be used to serialize/deserialize.
             </summary>
             <param name="bindingFlags">The flags that tell what properties to use</param>
             <returns>Current configurator for method chaining</returns>
         </member>
-        <member name="T:Sels.Core.Conversion.Contracts.ISerializerConfigurator">
+        <member name="T:Sels.Core.Conversion.Serializers.ISerializerConfigurator">
             <summary>
             Exposes common configuration for serializers.
             </summary>
         </member>
-        <member name="T:Sels.Core.Conversion.Contracts.ITypeConverter">
+        <member name="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer">
+            <summary>
+            Serializer that divides a string into key/value pairs where the key dictates what property will be used for the value.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.KeyValueSeparator">
+            <summary>
+            The default substring that is used to separate the key and the value.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.ElementSeparator">
+            <summary>
+            The default substring that will be used to join/split elements.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.#ctor(Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings)">
+            <inheritdoc cref="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer"/>
+            <param name="settings">Optional settings for this serializer</param>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.#ctor(System.Action{Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator},Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings)">
+            <inheritdoc cref="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer"/>
+            <param name="configurator">Delegate for configuring this serializer</param>
+            <param name="settings">Optional settings for this serializer</param>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.Deserialize``1(System.String,``0)">
+            <summary>
+            Deserializes the key/value pairs in <paramref name="value"/> to <paramref name="instance"/>.
+            </summary>
+            <typeparam name="T">Type of the object to deserialize to</typeparam>
+            <param name="value">The string containing the key/value pairs</param>
+            <param name="instance">The instance to deserialize to</param>
+            <returns>The instance deserialized from <paramref name="value"/></returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.Deserialize(System.String,System.Type)">
+            <summary>
+            Deserializes the key/value pairs in <paramref name="value"/> to an instance of type <paramref name="type"/>.
+            </summary>
+            <param name="value">The string containing the key/value pairs</param>
+            <param name="type">The type to deserialize to</param>
+            <returns>The instance deserialized from <paramref name="value"/></returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.Deserialize``1(System.String)">
+            <summary>
+            Deserializes the key/value pairs in <paramref name="value"/> to an instance of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to deserialize to</typeparam>
+            <param name="value">The string containing the key/value pairs</param>
+            <returns>The instance deserialized from <paramref name="value"/></returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.Serialize(System.Object)">
+            <summary>
+            Serializes <paramref name="instance"/> to a string containing key/value pairs.
+            </summary>
+            <param name="instance">The instance to serialize</param>
+            <returns>String containing key/value pairs representing <paramref name="instance"/></returns>
+        </member>
+        <member name="T:Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator">
+            <summary>
+            Exposes extra configuration for <see cref="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator.SplitAndJoinRowsUsing(System.Func{System.String,System.Collections.Generic.IEnumerable{System.String}},System.Func{System.Collections.Generic.IEnumerable{System.String},System.String})">
+            <summary>
+            Defines delegates for splitting the string to deserialize into multiple key/value pairs and joining the serialized key/value pairs.
+            </summary>
+            <param name="splitter">The delegate that will split the string into multiple key value pairs</param>
+            <param name="joiner">The delegate that will join the key/value pairs into a string</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator.SplitAndJoinRowsUsing(System.Object)">
+            <summary>
+            Key/value pairs will be split/joined using the <see cref="M:System.Object.ToString"/> on <paramref name="splitAndJoinValue"/>.
+            </summary>
+            <param name="splitAndJoinValue">The object to get the string to join/split from</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator.ConvertKeyValuePairsUsing(System.Func{System.String,System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Func{System.Collections.Generic.KeyValuePair{System.String,System.String},System.String},System.Predicate{System.String})">
+            <summary>
+            Defines delegates for converting between <see cref="T:System.Collections.Generic.KeyValuePair`2"/> and their string representation.
+            </summary>
+            <param name="toPairFunc">The delegate that will create a <see cref="T:System.Collections.Generic.KeyValuePair`2"/> from the string representation</param>
+            <param name="toStringFunc">The delegate that will create the string representation for a <see cref="T:System.Collections.Generic.KeyValuePair`2"/></param>
+            <param name="isValidPairPredicate">The delegate that checks if the string is a valid key/value pair</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator.ConvertKeyValuePairUsing(System.Object)">
+            <summary>
+            Key/value strings will be split/joined using the <see cref="M:System.Object.ToString"/> on <paramref name="splitAndJoinValue"/>.
+            </summary>
+            <param name="splitAndJoinValue">The object to get the string to join/split from</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings">
+            <summary>
+            Exposes extra settings for <see cref="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer"/>.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings.None">
+            <summary>
+            No selected settings.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings.IgnoreUnconvertable">
+            <summary>
+            If no exceptions should be thrown when either the conversion for a property fails or when no converters are available to do the conversion. 
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings.UseDefaultConverter">
+            <summary>
+            If <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultConverter"/> should be added as a converter.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Conversion.Serializers.Table.TableSerializer">
+            <summary>
+            Serializer that divides a string into columns and rows where the header row text/index determines what property is used.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Conversion.Serializers.Table.TableSerializer.ColumnSeparator">
+            <summary>
+            The default substring that is used to separate columns.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Conversion.Serializers.Table.TableSerializer.RowSeparator">
+            <summary>
+            The default substring that will be used to join/split rows.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Conversion.Serializers.Table.TableSerializer.ElementSeparator">
+            <summary>
+            The default substring that will be used to join/split elements.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.Table.TableSerializer.#ctor(Sels.Core.Conversion.Serializers.Table.TableSerializerSettings)">
+            <inheritdoc cref="T:Sels.Core.Conversion.Serializers.Table.TableSerializer"/>
+            <param name="settings">Optional settings for this serializer</param>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.Table.TableSerializer.#ctor(System.Action{Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator},Sels.Core.Conversion.Serializers.Table.TableSerializerSettings)">
+            <inheritdoc cref="T:Sels.Core.Conversion.Serializers.Table.TableSerializer"/>
+            <param name="configurator">Delegate for configuring this serializer</param>
+            <param name="settings">Optional settings for this serializer</param>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.Table.TableSerializer.Deserialize(System.String,System.Type,System.Boolean)">
+            <summary>
+            Deserializes the rows and columns in <paramref name="value"/> to an instance of type <paramref name="type"/>.
+            </summary>
+            <param name="value">The string containing the rows and columns</param>
+            <param name="type">The type to deserialize to</param>
+            <param name="hasHeaderRow">If <paramref name="value"/> has a header row to take into account</param>
+            <returns>The instance deserialized from <paramref name="value"/></returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.Table.TableSerializer.Deserialize``1(System.String,System.Boolean)">
+            <summary>
+            Deserializes the rows and columns in <paramref name="value"/> to an instance of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to deserialize to</typeparam>
+            <param name="value">The string containing the rows and columns</param>
+            <param name="hasHeaderRow">If <paramref name="value"/> has a header row to take into account</param>
+            <returns>The instance deserialized from <paramref name="value"/></returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.Table.TableSerializer.Serialize(System.Object,System.Boolean)">
+            <summary>
+            Serializes <paramref name="instance"/> to a string containing key/value pairs.
+            </summary>
+            <param name="instance">The instance to serialize</param>
+            <param name="includeHeaderRow">If the header row should be included in the serialized string</param>
+            <returns>String containing key/value pairs representing <paramref name="instance"/></returns>
+        </member>
+        <member name="T:Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator">
+            <summary>
+            Exposes extra configuration for <see cref="T:Sels.Core.Conversion.Serializers.Table.TableSerializer"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator.SplitAndJoinColummsUsing(System.Func{System.String,System.Collections.Generic.IEnumerable{System.String}},System.Func{System.Collections.Generic.IEnumerable{System.String},System.String})">
+            <summary>
+            Defines delegates for splitting the string into multiple columns and joining multiple columns.
+            </summary>
+            <param name="splitter">The delegate that will split the string into multiple columns</param>
+            <param name="joiner">The delegate that will join the columns into a string</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator.SplitAndJoinColumnsUsing(System.Object)">
+            <summary>
+            Columns will be split/joined using the <see cref="M:System.Object.ToString"/> on <paramref name="splitAndJoinValue"/>.
+            </summary>
+            <param name="splitAndJoinValue">The object to get the string to join/split from</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator.SplitAndJoinRowsUsing(System.Func{System.String,System.Collections.Generic.IEnumerable{System.String}},System.Func{System.Collections.Generic.IEnumerable{System.String},System.String})">
+            <summary>
+            Defines delegates for splitting the string to deserialize into multiple rows and joining the serialized rows.
+            </summary>
+            <param name="splitter">The delegate that will split the string into multiple rows</param>
+            <param name="joiner">The delegate that will join the rows into a string</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator.SplitAndJoinRowsUsing(System.Object)">
+            <summary>
+            Rows will be split/joined using the <see cref="M:System.Object.ToString"/> on <paramref name="splitAndJoinValue"/>.
+            </summary>
+            <param name="splitAndJoinValue">The object to get the string to join/split from</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Conversion.Serializers.Table.TableSerializerSettings">
+            <summary>
+            Exposes extra settings for <see cref="T:Sels.Core.Conversion.Serializers.Table.TableSerializer"/>.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Conversion.Serializers.Table.TableSerializerSettings.None">
+            <summary>
+            No selected settings.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Conversion.Serializers.Table.TableSerializerSettings.IgnoreUnconvertable">
+            <summary>
+            If no exceptions should be thrown when either the conversion for a property fails or when no converters are available to do the conversion. 
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Conversion.Serializers.Table.TableSerializerSettings.UseDefaultConverter">
+            <summary>
+            If <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultConverter"/> should be added as a converter.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Conversion.Converters.ITypeConverter">
             <summary>
             Converter that can converts objects into other types.
             </summary>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.ITypeConverter.CanConvert(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:Sels.Core.Conversion.Converters.ITypeConverter.CanConvert(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
             Checks if this converter can convert <paramref name="value"/> to type <paramref name="convertType"/>.
             </summary>
@@ -487,7 +709,7 @@
             <param name="arguments">Arguments to modify the behaviour of this converter</param>
             <returns>Boolean indicating if this converter can convert from <paramref name="value"/> to <paramref name="convertType"/></returns>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.ITypeConverter.ConvertTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:Sels.Core.Conversion.Converters.ITypeConverter.ConvertTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
             Converts <paramref name="value"/> to <paramref name="convertType"/>.
             </summary>
@@ -496,12 +718,12 @@
             <param name="arguments">Arguments to modify the behaviour of this converter</param>
             <returns>Converted value</returns>
         </member>
-        <member name="T:Sels.Core.Conversion.Contracts.TypeConverterExtensions">
+        <member name="T:Sels.Core.Conversion.Converters.TypeConverterExtensions">
             <summary>
-            Contains extension methods for <see cref="T:Sels.Core.Conversion.Contracts.ITypeConverter"/>.
+            Contains extension methods for <see cref="T:Sels.Core.Conversion.Converters.ITypeConverter"/>.
             </summary>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.TypeConverterExtensions.ConvertTo``1(Sels.Core.Conversion.Contracts.ITypeConverter,System.Object,System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:Sels.Core.Conversion.Converters.TypeConverterExtensions.ConvertTo``1(Sels.Core.Conversion.Converters.ITypeConverter,System.Object,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
             Converts <paramref name="value"/> to an instance of type <typeparamref name="T"/>.
             </summary>
@@ -512,7 +734,7 @@
             <returns><paramref name="value"/> converted to <typeparamref name="T"/></returns>
             <exception cref="T:System.NotSupportedException">Thrown when <paramref name="converter"/> cannot convert <paramref name="value"/> to <typeparamref name="T"/></exception>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.TypeConverterExtensions.TryConvertTo(Sels.Core.Conversion.Contracts.ITypeConverter,System.Object,System.Type,System.Object@,System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:Sels.Core.Conversion.Converters.TypeConverterExtensions.TryConvertTo(Sels.Core.Conversion.Converters.ITypeConverter,System.Object,System.Type,System.Object@,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
             Tries to convert <paramref name="value"/> to an instance of type <paramref name="convertType"/>.
             </summary>
@@ -523,7 +745,7 @@
             <param name="arguments">Optional arguments for the converter</param>
             <returns>Whether or not <paramref name="value"/> could be converted</returns>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.TypeConverterExtensions.TryConvertTo``1(Sels.Core.Conversion.Contracts.ITypeConverter,System.Object,``0@,System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:Sels.Core.Conversion.Converters.TypeConverterExtensions.TryConvertTo``1(Sels.Core.Conversion.Converters.ITypeConverter,System.Object,``0@,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
             Tries to convert <paramref name="value"/> to an instance of type <typeparamref name="T"/>.
             </summary>
@@ -534,7 +756,7 @@
             <param name="arguments">Optional arguments for the converter</param>
             <returns>Whether or not <paramref name="value"/> could be converted</returns>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.TypeConverterExtensions.ConvertTo(System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ITypeConverter},System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:Sels.Core.Conversion.Converters.TypeConverterExtensions.ConvertTo(System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Converters.ITypeConverter},System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
             Converts <paramref name="value"/> to an instance of type <paramref name="convertType"/>.
             </summary>
@@ -545,7 +767,7 @@
             <returns><paramref name="value"/> converted to <paramref name="convertType"/></returns>
             <exception cref="T:System.NotSupportedException">Thrown when no converter can convert <paramref name="value"/> to <paramref name="convertType"/></exception>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.TypeConverterExtensions.ConvertTo``1(System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ITypeConverter},System.Object,System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:Sels.Core.Conversion.Converters.TypeConverterExtensions.ConvertTo``1(System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Converters.ITypeConverter},System.Object,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
             Converts <paramref name="value"/> to an instance of type <typeparamref name="T"/>.
             </summary>
@@ -556,7 +778,7 @@
             <returns><paramref name="value"/> converted to <typeparamref name="T"/></returns>
             <exception cref="T:System.NotSupportedException">Thrown when no converter can convert <paramref name="value"/> to <typeparamref name="T"/></exception>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.TypeConverterExtensions.TryConvertTo(System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ITypeConverter},System.Object,System.Type,System.Object@,System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:Sels.Core.Conversion.Converters.TypeConverterExtensions.TryConvertTo(System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Converters.ITypeConverter},System.Object,System.Type,System.Object@,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
             Tries to convert <paramref name="value"/> to an instance of type <paramref name="convertType"/>.
             </summary>
@@ -567,7 +789,7 @@
             <param name="arguments">Optional arguments for the converters</param>
             <returns>Whether or not <paramref name="value"/> could be converted</returns>
         </member>
-        <member name="M:Sels.Core.Conversion.Contracts.TypeConverterExtensions.TryConvertTo``1(System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ITypeConverter},System.Object,``0@,System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:Sels.Core.Conversion.Converters.TypeConverterExtensions.TryConvertTo``1(System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Converters.ITypeConverter},System.Object,``0@,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
             Tries to convert <paramref name="value"/> to an instance of type <typeparamref name="T"/>.
             </summary>
@@ -628,14 +850,14 @@
         <member name="M:Sels.Core.Conversion.Converters.GenericConverter.ConvertObjectTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Conversion.Converters.GenericConverter.Set(System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Contracts.ITypeConverter})">
+        <member name="M:Sels.Core.Conversion.Converters.GenericConverter.Set(System.Collections.Generic.IEnumerable{Sels.Core.Conversion.Converters.ITypeConverter})">
             <summary>
             Replaces all current converts with <paramref name="converters"/>. Setting null will clear the converters.
             </summary>
             <param name="converters">Converters to set</param>
             <returns>Self</returns>
         </member>
-        <member name="M:Sels.Core.Conversion.Converters.GenericConverter.AddConverter(Sels.Core.Conversion.Contracts.ITypeConverter)">
+        <member name="M:Sels.Core.Conversion.Converters.GenericConverter.AddConverter(Sels.Core.Conversion.Converters.ITypeConverter)">
             <summary>
             Adds a sub converter that the <see cref="T:Sels.Core.Conversion.Converters.GenericConverter"/> can use.
             </summary>
@@ -646,8 +868,8 @@
             <summary>
             Adds a sub converter with the supplied delegates that the <see cref="T:Sels.Core.Conversion.Converters.GenericConverter"/> can use.
             </summary>
-            <param name="convertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Conversion.Contracts.ITypeConverter.ConvertTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/></param>
-            <param name="canConvertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Conversion.Contracts.ITypeConverter.CanConvert(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/></param>
+            <param name="convertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Conversion.Converters.ITypeConverter.ConvertTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/></param>
+            <param name="canConvertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Conversion.Converters.ITypeConverter.CanConvert(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/></param>
             <returns>Self</returns>
         </member>
         <member name="M:Sels.Core.Conversion.Converters.GenericConverter.AddConverter``1">
@@ -657,7 +879,7 @@
             <typeparam name="TConverter">Type of converter</typeparam>
             <returns>Self</returns>
         </member>
-        <member name="M:Sels.Core.Conversion.Converters.GenericConverter.InsertConverter(System.Type,Sels.Core.Conversion.Contracts.ITypeConverter)">
+        <member name="M:Sels.Core.Conversion.Converters.GenericConverter.InsertConverter(System.Type,Sels.Core.Conversion.Converters.ITypeConverter)">
             <summary>
             Adds a sub converter that the <see cref="T:Sels.Core.Conversion.Converters.GenericConverter"/> can use and adds it before the first converter with type <paramref name="type"/>.
             </summary>
@@ -669,8 +891,8 @@
             <summary>
             Adds a sub converter with the supplied delegates that the <see cref="T:Sels.Core.Conversion.Converters.GenericConverter"/> can use and adds it before the first converter with type <paramref name="type"/>.
             </summary>
-            <param name="convertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Conversion.Contracts.ITypeConverter.ConvertTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/></param>
-            <param name="canConvertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Conversion.Contracts.ITypeConverter.CanConvert(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/></param>
+            <param name="convertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Conversion.Converters.ITypeConverter.ConvertTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/></param>
+            <param name="canConvertFunc">Func that matches method signiture of <see cref="M:Sels.Core.Conversion.Converters.ITypeConverter.CanConvert(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/></param>
             <param name="type">Type of converter to insert before</param>
             <returns>Self</returns>
         </member>
@@ -993,228 +1215,6 @@
             <param name="values">List of Json strings to deserialize</param>
             <returns>List containing all the deserialized Json strings</returns>
         </member>
-        <member name="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer">
-            <summary>
-            Serializer that divides a string into key/value pairs where the key dictates what property will be used for the value.
-            </summary>
-        </member>
-        <member name="F:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.KeyValueSeparator">
-            <summary>
-            The default substring that is used to separate the key and the value.
-            </summary>
-        </member>
-        <member name="F:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.ElementSeparator">
-            <summary>
-            The default substring that will be used to join/split elements.
-            </summary>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.#ctor(Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings)">
-            <inheritdoc cref="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer"/>
-            <param name="settings">Optional settings for this serializer</param>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.#ctor(System.Action{Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator},Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings)">
-            <inheritdoc cref="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer"/>
-            <param name="configurator">Delegate for configuring this serializer</param>
-            <param name="settings">Optional settings for this serializer</param>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.Deserialize``1(System.String,``0)">
-            <summary>
-            Deserializes the key/value pairs in <paramref name="value"/> to <paramref name="instance"/>.
-            </summary>
-            <typeparam name="T">Type of the object to deserialize to</typeparam>
-            <param name="value">The string containing the key/value pairs</param>
-            <param name="instance">The instance to deserialize to</param>
-            <returns>The instance deserialized from <paramref name="value"/></returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.Deserialize(System.String,System.Type)">
-            <summary>
-            Deserializes the key/value pairs in <paramref name="value"/> to an instance of type <paramref name="type"/>.
-            </summary>
-            <param name="value">The string containing the key/value pairs</param>
-            <param name="type">The type to deserialize to</param>
-            <returns>The instance deserialized from <paramref name="value"/></returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.Deserialize``1(System.String)">
-            <summary>
-            Deserializes the key/value pairs in <paramref name="value"/> to an instance of type <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">The type to deserialize to</typeparam>
-            <param name="value">The string containing the key/value pairs</param>
-            <returns>The instance deserialized from <paramref name="value"/></returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer.Serialize(System.Object)">
-            <summary>
-            Serializes <paramref name="instance"/> to a string containing key/value pairs.
-            </summary>
-            <param name="instance">The instance to serialize</param>
-            <returns>String containing key/value pairs representing <paramref name="instance"/></returns>
-        </member>
-        <member name="T:Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator">
-            <summary>
-            Exposes extra configuration for <see cref="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer"/>.
-            </summary>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator.SplitAndJoinRowsUsing(System.Func{System.String,System.Collections.Generic.IEnumerable{System.String}},System.Func{System.Collections.Generic.IEnumerable{System.String},System.String})">
-            <summary>
-            Defines delegates for splitting the string to deserialize into multiple key/value pairs and joining the serialized key/value pairs.
-            </summary>
-            <param name="splitter">The delegate that will split the string into multiple key value pairs</param>
-            <param name="joiner">The delegate that will join the key/value pairs into a string</param>
-            <returns>Current configurator for method chaining</returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator.SplitAndJoinRowsUsing(System.Object)">
-            <summary>
-            Key/value pairs will be split/joined using the <see cref="M:System.Object.ToString"/> on <paramref name="splitAndJoinValue"/>.
-            </summary>
-            <param name="splitAndJoinValue">The object to get the string to join/split from</param>
-            <returns>Current configurator for method chaining</returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator.ConvertKeyValuePairsUsing(System.Func{System.String,System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Func{System.Collections.Generic.KeyValuePair{System.String,System.String},System.String},System.Predicate{System.String})">
-            <summary>
-            Defines delegates for converting between <see cref="T:System.Collections.Generic.KeyValuePair`2"/> and their string representation.
-            </summary>
-            <param name="toPairFunc">The delegate that will create a <see cref="T:System.Collections.Generic.KeyValuePair`2"/> from the string representation</param>
-            <param name="toStringFunc">The delegate that will create the string representation for a <see cref="T:System.Collections.Generic.KeyValuePair`2"/></param>
-            <param name="isValidPairPredicate">The delegate that checks if the string is a valid key/value pair</param>
-            <returns>Current configurator for method chaining</returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.KeyValue.IKeyValueSerializerConfigurator.ConvertKeyValuePairUsing(System.Object)">
-            <summary>
-            Key/value strings will be split/joined using the <see cref="M:System.Object.ToString"/> on <paramref name="splitAndJoinValue"/>.
-            </summary>
-            <param name="splitAndJoinValue">The object to get the string to join/split from</param>
-            <returns>Current configurator for method chaining</returns>
-        </member>
-        <member name="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings">
-            <summary>
-            Exposes extra settings for <see cref="T:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializer"/>.
-            </summary>
-        </member>
-        <member name="F:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings.None">
-            <summary>
-            No selected settings.
-            </summary>
-        </member>
-        <member name="F:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings.IgnoreUnconvertable">
-            <summary>
-            If no exceptions should be thrown when either the conversion for a property fails or when no converters are available to do the conversion. 
-            </summary>
-        </member>
-        <member name="F:Sels.Core.Conversion.Serializers.KeyValue.KeyValueSerializerSettings.UseDefaultConverter">
-            <summary>
-            If <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultConverter"/> should be added as a converter.
-            </summary>
-        </member>
-        <member name="T:Sels.Core.Conversion.Serializers.Table.TableSerializer">
-            <summary>
-            Serializer that divides a string into columns and rows where the header row text/index determines what property is used.
-            </summary>
-        </member>
-        <member name="F:Sels.Core.Conversion.Serializers.Table.TableSerializer.ColumnSeparator">
-            <summary>
-            The default substring that is used to separate columns.
-            </summary>
-        </member>
-        <member name="P:Sels.Core.Conversion.Serializers.Table.TableSerializer.RowSeparator">
-            <summary>
-            The default substring that will be used to join/split rows.
-            </summary>
-        </member>
-        <member name="F:Sels.Core.Conversion.Serializers.Table.TableSerializer.ElementSeparator">
-            <summary>
-            The default substring that will be used to join/split elements.
-            </summary>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.Table.TableSerializer.#ctor(Sels.Core.Conversion.Serializers.Table.TableSerializerSettings)">
-            <inheritdoc cref="T:Sels.Core.Conversion.Serializers.Table.TableSerializer"/>
-            <param name="settings">Optional settings for this serializer</param>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.Table.TableSerializer.#ctor(System.Action{Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator},Sels.Core.Conversion.Serializers.Table.TableSerializerSettings)">
-            <inheritdoc cref="T:Sels.Core.Conversion.Serializers.Table.TableSerializer"/>
-            <param name="configurator">Delegate for configuring this serializer</param>
-            <param name="settings">Optional settings for this serializer</param>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.Table.TableSerializer.Deserialize(System.String,System.Type,System.Boolean)">
-            <summary>
-            Deserializes the rows and columns in <paramref name="value"/> to an instance of type <paramref name="type"/>.
-            </summary>
-            <param name="value">The string containing the rows and columns</param>
-            <param name="type">The type to deserialize to</param>
-            <param name="hasHeaderRow">If <paramref name="value"/> has a header row to take into account</param>
-            <returns>The instance deserialized from <paramref name="value"/></returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.Table.TableSerializer.Deserialize``1(System.String,System.Boolean)">
-            <summary>
-            Deserializes the rows and columns in <paramref name="value"/> to an instance of type <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">The type to deserialize to</typeparam>
-            <param name="value">The string containing the rows and columns</param>
-            <param name="hasHeaderRow">If <paramref name="value"/> has a header row to take into account</param>
-            <returns>The instance deserialized from <paramref name="value"/></returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.Table.TableSerializer.Serialize(System.Object,System.Boolean)">
-            <summary>
-            Serializes <paramref name="instance"/> to a string containing key/value pairs.
-            </summary>
-            <param name="instance">The instance to serialize</param>
-            <param name="includeHeaderRow">If the header row should be included in the serialized string</param>
-            <returns>String containing key/value pairs representing <paramref name="instance"/></returns>
-        </member>
-        <member name="T:Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator">
-            <summary>
-            Exposes extra configuration for <see cref="T:Sels.Core.Conversion.Serializers.Table.TableSerializer"/>.
-            </summary>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator.SplitAndJoinColummsUsing(System.Func{System.String,System.Collections.Generic.IEnumerable{System.String}},System.Func{System.Collections.Generic.IEnumerable{System.String},System.String})">
-            <summary>
-            Defines delegates for splitting the string into multiple columns and joining multiple columns.
-            </summary>
-            <param name="splitter">The delegate that will split the string into multiple columns</param>
-            <param name="joiner">The delegate that will join the columns into a string</param>
-            <returns>Current configurator for method chaining</returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator.SplitAndJoinColumnsUsing(System.Object)">
-            <summary>
-            Columns will be split/joined using the <see cref="M:System.Object.ToString"/> on <paramref name="splitAndJoinValue"/>.
-            </summary>
-            <param name="splitAndJoinValue">The object to get the string to join/split from</param>
-            <returns>Current configurator for method chaining</returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator.SplitAndJoinRowsUsing(System.Func{System.String,System.Collections.Generic.IEnumerable{System.String}},System.Func{System.Collections.Generic.IEnumerable{System.String},System.String})">
-            <summary>
-            Defines delegates for splitting the string to deserialize into multiple rows and joining the serialized rows.
-            </summary>
-            <param name="splitter">The delegate that will split the string into multiple rows</param>
-            <param name="joiner">The delegate that will join the rows into a string</param>
-            <returns>Current configurator for method chaining</returns>
-        </member>
-        <member name="M:Sels.Core.Conversion.Serializers.Table.ITableSerializerConfigurator.SplitAndJoinRowsUsing(System.Object)">
-            <summary>
-            Rows will be split/joined using the <see cref="M:System.Object.ToString"/> on <paramref name="splitAndJoinValue"/>.
-            </summary>
-            <param name="splitAndJoinValue">The object to get the string to join/split from</param>
-            <returns>Current configurator for method chaining</returns>
-        </member>
-        <member name="T:Sels.Core.Conversion.Serializers.Table.TableSerializerSettings">
-            <summary>
-            Exposes extra settings for <see cref="T:Sels.Core.Conversion.Serializers.Table.TableSerializer"/>.
-            </summary>
-        </member>
-        <member name="F:Sels.Core.Conversion.Serializers.Table.TableSerializerSettings.None">
-            <summary>
-            No selected settings.
-            </summary>
-        </member>
-        <member name="F:Sels.Core.Conversion.Serializers.Table.TableSerializerSettings.IgnoreUnconvertable">
-            <summary>
-            If no exceptions should be thrown when either the conversion for a property fails or when no converters are available to do the conversion. 
-            </summary>
-        </member>
-        <member name="F:Sels.Core.Conversion.Serializers.Table.TableSerializerSettings.UseDefaultConverter">
-            <summary>
-            If <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultConverter"/> should be added as a converter.
-            </summary>
-        </member>
         <member name="T:Sels.Core.Conversion.Templates.BaseSerializer`2">
             <summary>
             Template for creating serializers. Exposes type handlers for serializing/deserializing certain types in a different way.
@@ -1370,13 +1370,13 @@
             The configured binding flags.
             </summary>
         </member>
-        <member name="M:Sels.Core.Conversion.Templates.BaseSerializerConfigurator`1.UseConverters(Sels.Core.Conversion.Contracts.ITypeConverter[])">
+        <member name="M:Sels.Core.Conversion.Templates.BaseSerializerConfigurator`1.UseConverters(Sels.Core.Conversion.Converters.ITypeConverter[])">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Conversion.Templates.BaseSerializerConfigurator`1.UseFilters(Sels.Core.Conversion.Contracts.ISerializationFilter[])">
+        <member name="M:Sels.Core.Conversion.Templates.BaseSerializerConfigurator`1.UseFilters(Sels.Core.Conversion.Serialization.Filters.ISerializationFilter[])">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Conversion.Templates.BaseSerializerConfigurator`1.UseElementFilters(Sels.Core.Conversion.Contracts.ISerializationFilter[])">
+        <member name="M:Sels.Core.Conversion.Templates.BaseSerializerConfigurator`1.UseElementFilters(Sels.Core.Conversion.Serialization.Filters.ISerializationFilter[])">
             <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Conversion.Templates.BaseSerializerConfigurator`1.UseLoggers(Microsoft.Extensions.Logging.ILogger[])">
@@ -1402,10 +1402,10 @@
             <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Conversion.Templates.BaseTypeConverter.CanConvertObject(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
-            <inheritdoc cref="M:Sels.Core.Conversion.Contracts.ITypeConverter.CanConvert(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/>
+            <inheritdoc cref="M:Sels.Core.Conversion.Converters.ITypeConverter.CanConvert(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/>
         </member>
         <member name="M:Sels.Core.Conversion.Templates.BaseTypeConverter.ConvertObjectTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
-            <inheritdoc cref="M:Sels.Core.Conversion.Contracts.ITypeConverter.ConvertTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/>
+            <inheritdoc cref="M:Sels.Core.Conversion.Converters.ITypeConverter.ConvertTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})"/>
         </member>
         <member name="M:Sels.Core.Conversion.Templates.BaseTypeConverter.AreTypePair``2(System.Type,System.Type,System.Boolean)">
             <summary>

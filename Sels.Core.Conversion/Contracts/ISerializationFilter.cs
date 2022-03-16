@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.Core.Conversion.Contracts
+namespace Sels.Core.Conversion.Serialization.Filters
 {
     /// <summary>
     /// Filter that allows for modifying serialized or to be deserialized string values.

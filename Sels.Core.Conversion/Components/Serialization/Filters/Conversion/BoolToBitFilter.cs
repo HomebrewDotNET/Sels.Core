@@ -1,10 +1,10 @@
-﻿using Sels.Core.Conversion.Contracts;
+﻿using Sels.Core.Conversion;
 using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.Core.Conversion.Components.Serialization.Filters.Conversion
+namespace Sels.Core.Conversion.Serialization.Filters.Conversion
 {
     /// <summary>
     /// Filter that will convert 1 and 0 to true and false on read and the opposite on write.

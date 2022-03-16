@@ -59,6 +59,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Conversion.Test",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Cli", "Sels.Core.Cli\Sels.Core.Cli.csproj", "{BC4743C5-483B-4DDC-ABA1-B05DA146C996}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sels.Core.Cli.Test", "Tests\Sels.Core.Cli.Test\Sels.Core.Cli.Test.csproj", "{A683419E-FDD6-4177-B9E9-5725B6A01F07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -145,6 +147,10 @@ Global
 		{BC4743C5-483B-4DDC-ABA1-B05DA146C996}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC4743C5-483B-4DDC-ABA1-B05DA146C996}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC4743C5-483B-4DDC-ABA1-B05DA146C996}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A683419E-FDD6-4177-B9E9-5725B6A01F07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A683419E-FDD6-4177-B9E9-5725B6A01F07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A683419E-FDD6-4177-B9E9-5725B6A01F07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A683419E-FDD6-4177-B9E9-5725B6A01F07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -170,6 +176,7 @@ Global
 		{C25E7178-AB6B-4C86-8460-ADD61D147D9B} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
 		{40C65F99-E56D-455D-BED8-28975DBA1A33} = {9ADF9A39-B6EC-440C-AA22-6478FF9F7EA6}
 		{BC4743C5-483B-4DDC-ABA1-B05DA146C996} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
+		{A683419E-FDD6-4177-B9E9-5725B6A01F07} = {9ADF9A39-B6EC-440C-AA22-6478FF9F7EA6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9510E55C-920C-4EDB-9F77-D83C4E047361}

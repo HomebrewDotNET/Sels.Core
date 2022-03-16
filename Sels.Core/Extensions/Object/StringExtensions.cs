@@ -1,5 +1,7 @@
 ﻿using Sels.Core;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
+using Sels.Core.RegularExpressions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,6 +46,17 @@ namespace System
         public static bool IsNullOrEmpty(this string value)
         {
             return string.IsNullOrEmpty(value);
+        }
+        /// <summary>
+        /// Checks if <paramref name="value"/> contains any whitespace characters.
+        /// </summary>
+        /// <param name="value">The string to check</param>
+        /// <returns>True if <paramref name="value"/> contains whitespace characters, otherwise false</returns>
+        public static bool ContainsWhitespace(this string value)
+        {
+            value.ValidateArgument(nameof(value));
+
+            return value.Any(Char.IsWhiteSpace);
         }
 
         /// <summary>
@@ -470,6 +483,48 @@ namespace System
             }
 
             return new string[0, 0];
+        }
+        #endregion
+
+        #region ExtractFromFormat
+        /// <summary>
+        /// Extracts a value from <paramref name="value"/> where it is formatted according to <paramref name="format"/>.
+        /// </summary>
+        /// <param name="format">The format that <paramref name="value"/> is formatted in</param>
+        /// <param name="parameter">The parameter to extract. Parameter is defined in <paramref name="format"/></param>
+        /// <param name="value">The value to extract <paramref name="parameter"/> from</param>
+        /// <param name="otherParameters">Optional parameters that are also included in the format. These are replaced so they match any characters</param>
+        /// <returns>The extracted value or null if no value could be extracted</returns>
+        public static string ExtractFromFormat(this string format, string parameter, string value, params string[] otherParameters)
+        {
+            value.ValidateArgument(nameof(value));
+            parameter.ValidateArgumentNotNullOrWhitespace(nameof(parameter));
+            format.ValidateArgumentNotNullOrWhitespace(nameof(format));
+            parameter.ValidateArgument(x => format.Contains(x), $"{nameof(format)} does not contain {nameof(parameter)}");
+
+            // Split format on the parameter to extract
+            var lookBehind = format.SplitOnFirst(parameter, out var lookAhead);
+
+            // Escape regex characters and remove any parameters
+            if (!lookBehind.IsNullOrEmpty())
+            {
+                lookBehind = otherParameters.HasValue() ? lookBehind.Split(otherParameters, StringSplitOptions.None).Select(x => Regex.Escape(x)).JoinString(RegexBuilder.Expressions.AnyWord) : Regex.Escape(lookBehind);
+            }
+
+            if (!lookAhead.IsNullOrEmpty())
+            {
+                lookAhead = lookAhead.HasValue() ? lookAhead.Split(otherParameters, StringSplitOptions.None).Select(x => Regex.Escape(x)).JoinString(RegexBuilder.Expressions.AnyWord) : Regex.Escape(lookAhead);
+            }
+
+            // Build regex to match the value
+            var builder = new RegexBuilder();
+            if (!lookBehind.IsNullOrEmpty()) builder.LookBehind(lookBehind);
+            builder.MatchAny();
+            if (!lookAhead.IsNullOrEmpty()) builder.LookAhead(lookAhead);
+
+            // Return the first match if present
+            var match = builder.ToRegex().Match(value);
+            return match.Success ? match.ToString() : null;
         }
         #endregion
     }

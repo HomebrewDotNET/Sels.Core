@@ -1,4 +1,4 @@
-﻿using Sels.Core.Conversion.Contracts;
+﻿using Sels.Core.Conversion;
 using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,5 @@
-﻿using Sels.Core.Conversion.Contracts;
+﻿using Sels.Core.Conversion;
+using Sels.Core.Conversion.Converters;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
 using System;

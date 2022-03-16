@@ -4,5 +4,1175 @@
         <name>Sels.Core.Cli</name>
     </assembly>
     <members>
+        <member name="T:Sels.Core.Cli.CliConstants">
+            <summary>
+            Contains constant values.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Cli.CliConstants.ArgumentParsing">
+            <summary>
+            Contains constant values for argument parsing.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.CliConstants.ArgumentParsing.PatternPrefix">
+            <summary>
+            The prefix for defining values in a pattern.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.CliConstants.ArgumentParsing.PatternSuffix">
+            <summary>
+            The suffix for defining values in a pattern.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.CliConstants.ArgumentParsing.OptionPatternOptionName">
+            <summary>
+            The Option value for the option pattern.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.CliConstants.ArgumentParsing.OptionPatternArgName">
+            <summary>
+            The Arg value for the option pattern.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.CliConstants.ArgumentParsing.KeyValuePatternKeyName">
+            <summary>
+            The Key value for the option pattern.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.CliConstants.ArgumentParsing.KeyValuePatternValueName">
+            <summary>
+            The Value value for the option pattern.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Cli.CommandLine">
+            <summary>
+            Helper methods for running code from an cli.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.CommandLine.SuccesfulExitCode">
+            <summary>
+            The default exit code that gets returned when code was executed without any exceptions.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.CommandLine.ErrorExitCode">
+            <summary>
+            The exit code that gets returned when an exception that isn't <see cref="T:Sels.Core.Cli.CommandLineException"/> gets thrown.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Cli.CommandLine.Argument">
+            <summary>
+            Helper methods for parsing command line arguments.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLine.Argument.Parse``1(System.String[],System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator},Sels.Core.Cli.ArgumentParsing.ArgumentParserSettings)">
+            <summary>
+            Parses <paramref name="args"/> to a new instance of <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to parse to</typeparam>
+            <param name="args">The command line arguments to parse</param>
+            <param name="configurator">Optional delegate for configuring the argument parser</param>
+            <param name="settings">Optional settings for the argument parser</param>
+            <returns>The result from parsing <paramref name="args"/></returns>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLine.Argument.Parse``1(``0,System.String[],System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator},Sels.Core.Cli.ArgumentParsing.ArgumentParserSettings)">
+            <summary>
+            Parses <paramref name="args"/> to <paramref name="instance"/>.
+            </summary>
+            <typeparam name="T">The type to parse to</typeparam>
+            <param name="instance">The instance to parse to</param>
+            <param name="args">The command line arguments to parse</param>
+            <param name="configurator">Optional delegate for configuring the argument parser</param>
+            <param name="settings">Optional settings for the argument parser</param>
+            <returns>The result from parsing <paramref name="args"/></returns>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLine.Argument.Parse``1(System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder{``0}},System.String[],System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator},Sels.Core.Cli.ArgumentParsing.ArgumentParserSettings)">
+            <summary>
+            Parses <paramref name="args"/> to a new instance of <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to parse to</typeparam>
+            <param name="builder">Builder to configure how to parse <typeparamref name="T"/></param>
+            <param name="args">The command line arguments to parse</param>
+            <param name="configurator">Optional delegate for configuring the argument parser</param>
+            <param name="settings">Optional settings for the argument parser</param>
+            <returns>The result from parsing <paramref name="args"/></returns>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLine.Argument.Parse``1(System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder{``0}},``0,System.String[],System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator},Sels.Core.Cli.ArgumentParsing.ArgumentParserSettings)">
+            <summary>
+            Parses <paramref name="args"/> to <paramref name="instance"/>.
+            </summary>
+            <typeparam name="T">The type to parse to</typeparam>
+            <param name="builder">Builder to configure how to parse <typeparamref name="T"/></param>
+            <param name="instance">The instance to parse to</param>
+            <param name="args">The command line arguments to parse</param>
+            <param name="configurator">Optional delegate for configuring the argument parser</param>
+            <param name="settings">Optional settings for the argument parser</param>
+            <returns>The result from parsing <paramref name="args"/></returns>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLine.Argument.Parse(System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder{Sels.Core.Cli.ArgumentParsing.NullArguments}},System.String[],System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator},Sels.Core.Cli.ArgumentParsing.ArgumentParserSettings)">
+            <summary>
+            Parses <paramref name="args"/> where the parsed arguments are handled by using <see cref="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder`1.SetValue``1(System.Action{``0})"/> method.
+            </summary>
+            <typeparam name="T">The type to parse to</typeparam>
+            <param name="builder">Builder to configure how to parse <typeparamref name="T"/></param>
+            <param name="args">The command line arguments to parse</param>
+            <param name="configurator">Optional delegate for configuring the argument parser</param>
+            <param name="settings">Optional settings for the argument parser</param>
+            <returns>The result from parsing <paramref name="args"/></returns>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.IArgumentParser`1"/>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Config">
+            <summary>
+            The config for this argument parser.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Handlers">
+            <summary>
+            The configured argument handlers.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.#ctor(System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder{`0}},System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator},Sels.Core.Cli.ArgumentParsing.ArgumentParserSettings)">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.IArgumentParser`1"/>
+            <param name="builder">Optional builder for creating the argument handlers using the current instance</param>
+            <param name="configurator">Optional delegate for configuring the argument parser</param>
+            <param name="settings">Optional settings for the argument parser</param>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.For``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.For(System.Reflection.PropertyInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.For(System.Reflection.PropertyInfo[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.SetValue``1(System.Action{`0,``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.SetValue``1(System.Action{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.OnParsed(System.Action{Sels.Core.Cli.ArgumentParsing.IParsedResult{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.OnParsed(System.Action{Sels.Core.Cli.ArgumentParsing.IParsedResult{`0},Sels.Core.Cli.ArgumentParsing.IResultBuilder})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Parse(`0,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.IsOption(System.String)">
+            <summary>
+            Checks if argument <paramref name="arg"/> is an option based on known option and long option prefixes.
+            </summary>
+            <param name="arg">The command line argument to check</param>
+            <returns>True if <paramref name="arg"/> is an option, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.AddOptionPrefix(System.Char)">
+            <summary>
+            Adds an option prefix that gets checked by <see cref="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.IsOption(System.String)"/>.
+            </summary>
+            <param name="prefix">The short option prefix to add</param>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.AddLongOptionPrefix(System.String)">
+            <summary>
+            Adds a long option prefix that gets checked by <see cref="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.IsOption(System.String)"/>.
+            </summary>
+            <param name="prefix">The long option prefix to add</param>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromArgument(System.String,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromArguments(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromCommand(System.String,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromOption(System.Char,System.Action{Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder},Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromOption(System.String,System.Action{Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder},Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromOption(System.Char,System.String,System.Action{Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder},Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromEnvironment(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromInput">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromMultiple(System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector{`0,`1}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.OnSelected(System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder{`0,`1}})">
+            <summary>
+            Executes <paramref name="onSelectedAction"/> when a handler is selected using the current selector.
+            </summary>
+            <param name="onSelectedAction">The action to execute</param>
+            <returns>Current selector for method chaining</returns>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.ParserConfig.OptionPrefix">
+            <summary>
+            The default prefix for options.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.ParserConfig.LongOptionPrefix">
+            <summary>
+            The default prefix for long options.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.ParserConfig.Loggers">
+            <summary>
+            Optional loggers for debugging.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.ParserConfig.Converter">
+            <summary>
+            The default converter to use.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.ParserConfig.CreateErrorForUnhandled">
+            <summary>
+            If errors should be created for unparsed command line arguments.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.ParserConfig.ThrowExceptionOnError">
+            <summary>
+            If an exception should be thrown when parsing errors occured.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator">
+            <summary>
+            Exposes extra configuration for an argument parser.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator.WithOptionPrefix(System.Char)">
+            <summary>
+            Overwrites the default prefix used for options. (e.g., -f and -a)
+            </summary>
+            <param name="prefix">The prefix to use</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator.WithLongOptionPrefix(System.String)">
+            <summary>
+            Overwrites the default prefix used for long options. (e.g., --force and --all)
+            </summary>
+            <param name="prefix">The prefix to use</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator.WithLoggers(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Adds loggers for debugging the parser.
+            </summary>
+            <param name="loggers">Enumerator that returns the loggers to use</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserConfigurator.WithConverter(Sels.Core.Conversion.Converters.ITypeConverter)">
+            <summary>
+            Overwrites the default converter that converts the command line strings to the required types.
+            </summary>
+            <param name="converter">The converter to use</param>
+            <returns>Current configurator for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.ArgumentParserSettings">
+            <summary>
+            Exposes extra settings for an argument parser.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.ArgumentParsing.ArgumentParserSettings.None">
+            <summary>
+            No settings selected.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.ArgumentParsing.ArgumentParserSettings.CreateErrorsForUnparsed">
+            <summary>
+            If errors should be created when some command line arguments could not be parsed.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.ArgumentParsing.ArgumentParserSettings.ThrowExceptionOnError">
+            <summary>
+            If the parser should throw an <see cref="T:Sels.Core.Cli.ArgumentParsing.InvalidCommandLineArgumentsException"/> when any errors happened during parsing.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2">
+            <summary>
+            Parses options without any arguments
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2.#ctor(Sels.Core.Cli.ArgumentParsing.ArgumentParser{`0},System.Char,System.String,System.Object,System.Nullable{System.Char},System.String)">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2"/>.
+            <param name="parser">The parser using to create this handler</param>
+            <param name="optionPrefix">The prefix to use for the short option</param>
+            <param name="longOptionPrefix">The prefix to use for the full option</param>
+            <param name="definedValue">The value to return when the configured flag is defined</param>
+            <param name="option">The option name</param>
+            <param name="longOption">The full option name</param>
+            <param name="loggers">Optional loggers for debugging</param>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2.TryParseArguments(System.String[],Sels.Core.Cli.ArgumentParsing.IResultBuilder,`1@,System.String[]@)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2.WithDefault(System.Func{`1})">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2.FromKeyValuePair``2(System.String,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2.FromMultiple(System.Func{System.String,System.Collections.Generic.IEnumerable{System.String}})">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2.FromMultiple(System.String,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder"/>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.OptionPrefix">
+            <summary>
+            The configured short option prefix.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.LongOptionPrefix">
+            <summary>
+            The configured long option prefix.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.DuplicateAllowed">
+            <summary>
+            If the current option can be declared multiple times.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.Format">
+            <summary>
+            The custom pattern configured.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.DefinedValueConstructor">
+            <summary>
+            The configured delegate that create the value to parse in case the option is a flag.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.#ctor(System.Action{Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder})">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder"/>
+            <param name="configurator">The delegate that will configure the current instance</param>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.AllowDuplicate">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.FromFormat(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.WhenDefined(System.Func{System.Object})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.WhenDefined(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.WithPrefix(System.Char)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder.WithPrefix(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.ParsedResult`1">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.IParsedResult`1"/>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.Parsed">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.Arguments">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.ParsedInput">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.ParsedCommands">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.ParsedArguments">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.ParsedOptions">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.ParsedLongOptions">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.ParsedEnvironmentVariables">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.Errors">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.UnparsedArguments">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.#ctor(`0,System.String[])">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.ParsedResult`1"/>.
+            <param name="instance">The instance to parse to</param>
+            <param name="args">The command line arguments to parse from</param>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.AddError(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.AddParsedArgument(System.Int32,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.AddParsedCommand(System.Int32,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.AddParsedEnvironmentVariable(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.AddParsedInput(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.AddParsedLongOption(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.AddParsedLongOption(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.AddParsedOption(System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ParsedResult`1.AddParsedOption(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc />
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.IArgumentParser">
+            <summary>
+            Service that parses command line arguments using delegates.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.IArgumentParser`1">
+            <summary>
+            Service that parses command line arguments to an instance of <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to parse the arguments to</typeparam>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParser`1.Parse(`0,System.String[])">
+            <summary>
+            Parses command line arguments <paramref name="args"/> to an instance of <typeparamref name="T"/>.
+            </summary>
+            <param name="instance">The instance to parse to</param>
+            <param name="args">The result of trying to parse <paramref name="args"/> to an instance of <typeparamref name="T"/></param>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParser`1.OnParsed(System.Action{Sels.Core.Cli.ArgumentParsing.IParsedResult{`0}})">
+            <summary>
+            Executes <paramref name="action"/> after parsing.
+            </summary>
+            <param name="action">The action to execute</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParser`1.OnParsed(System.Action{Sels.Core.Cli.ArgumentParsing.IParsedResult{`0},Sels.Core.Cli.ArgumentParsing.IResultBuilder})">
+            <summary>
+            Executes <paramref name="action"/> after parsing.
+            </summary>
+            <param name="action">The action to execute. First arg is the parsed result, second arg is a builder to modify the result</param>
+            <returns></returns>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder`1">
+            <summary>
+            Configurator for configuring what arguments need to be parsed.
+            </summary>
+            <typeparam name="T">The type to parse the arguments to</typeparam>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder`1.For``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <summary>
+            Creates a new argument handler for the property selected by <paramref name="property"/>. Can be a property selected from the properties on <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="TArg">The type the arguments will be parsed to</typeparam>
+            <param name="property">The expression that selects the property on <typeparamref name="T"/> to parse to</param>
+            <returns>A selector to configure what to parse from</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder`1.For(System.Reflection.PropertyInfo)">
+            <summary>
+            Created a new argument handler for property <paramref name="property"/> on <typeparamref name="T"/>.
+            </summary>
+            <param name="property">The property to parse to</param>
+            <returns>A selector to configure what to parse from</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder`1.For(System.Reflection.PropertyInfo[])">
+            <summary>
+            Creates a new argument handler for the last property in <paramref name="propertyHierarchy"/>.
+            </summary>
+            <param name="propertyHierarchy">A list of properties where the first property is a property on <typeparamref name="T"/> and any following property is a property selected from the type of the previous</param>
+            <returns>A selector to configure what to parse from</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder`1.SetValue``1(System.Action{`0,``0})">
+            <summary>
+            Creates a new argument handler where the value will be handler by <paramref name="setter"/>.
+            </summary>
+            <typeparam name="TArg">The type the arguments will be parsed to</typeparam>
+            <param name="setter">The delegate that will handle the parsed value. First arg is the instance to parse to, second arg is the parsed argument</param>
+            <returns>A selector to configure what to parse from</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder`1.SetValue``1(System.Action{``0})">
+            <summary>
+            Creates a new argument handler where the value will be handler by <paramref name="setter"/>.
+            </summary>
+            <typeparam name="TArg">The type the arguments will be parsed to</typeparam>
+            <param name="setter">The delegate that will handle the parsed value.</param>
+            <returns>A selector to configure what to parse from</returns>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2">
+            <summary>
+            Used to select what argument type to parse to <typeparamref name="TArg"/>.
+            </summary>
+            <typeparam name="T">The instance to add the arguments to</typeparam>
+            <typeparam name="TArg">The type to parse to</typeparam>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromCommand(System.String,System.Int32)">
+            <summary>
+            Parses from a non-option in the beginning of the argument list.
+            Example: mycmd (main_command) (sub_command) -q -f true -p Action=Build (argument) => (main_command) will be parsed using position 0, (sub_command) will be parsed using position 1.
+            </summary>
+            <param name="position">The position to parse from</param>
+            <param name="name">The name that is used in the help text</param>
+            <returns>A configurator for the current argument handler</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromOption(System.Char,System.Action{Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder},Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType)">
+            <summary>
+            Parses from an option anywhere in the argument list.
+            Example: mycmd -h => - is the short option prefix, h is the short option.
+            </summary>
+            <param name="shortOption">The short name of the option</param>
+            <param name="configurator">Optional configurator for modifying how the option is parsed</param>
+            <param name="valueType">Defines how the option can be used</param>
+            <returns>A configurator for the current argument handler</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromOption(System.String,System.Action{Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder},Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType)">
+            <summary>
+            Parses from an option anywhere in the argument list.
+            Example: mycmd --help => -- is the long option prefix, help is the long option.
+            </summary>
+            <param name="longOption">The full name of the option</param>
+            <param name="configurator">Optional configurator for modifying how the option is parsed</param>
+            <param name="valueType">Defines how the option can be used</param>
+            <returns>A configurator for the current argument handler</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromOption(System.Char,System.String,System.Action{Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder},Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType)">
+            <summary>
+            Parses from an option anywhere in the argument list.
+            Example: mycmd -h --help => - is the short option prefix, h is the short option, -- is the long option prefix, help is the long option. Both examples mean the same.
+            </summary>
+            <param name="shortOption">The short name of the option</param>
+            <param name="longOption">The full name of the option</param>
+            <param name="configurator">Optional configurator for modifying how the option is parsed</param>
+            <param name="valueType">Defines how the option can be used</param>
+            <returns>A configurator for the current argument handler</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromArgument(System.String,System.Int32)">
+            <summary>
+            Parses from a non-option at the end of the argument list.
+            Example: mycmd (command) -q (source_file) (target_file) --overwrite => (source_file) will be parsed from position 0, (target_file) will be parsed from position 1.
+            </summary>
+            <param name="position">The position to parse from</param>
+            <param name="name">The name that is used in the help text</param>
+            <returns>A configurator for the current argument handler</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromArguments(System.String)">
+            <summary>
+            Parses from all non-options at the end of the argument list.
+            Example: mycmd (command) (file_one) (file_two) (file_three) => (file_one), (file_two) and (file_three) will be parsed when (command) is configured using <see cref="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromCommand(System.String,System.Int32)"/>
+            </summary>
+            <param name="name">The name that is used in the help text</param>
+            <returns>A configurator for the current argument handler</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromInput">
+            <summary>
+            Parses from the stdin of the cli.
+            </summary>
+            <returns>A configurator for the current argument handler</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromEnvironment(System.String)">
+            <summary>
+            Parses from an environment variable.
+            </summary>
+            <param name="name">The name of the environment to get the value from</param>
+            <returns>A configurator for the current argument handler</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromMultiple(System.Action{Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector{`0,`1}})">
+            <summary>
+            Parses from anything configured using <paramref name="selector"/>.
+            </summary>
+            <param name="selector">The delegate to configure with</param>
+            <returns>The parser to create additional configuration</returns>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2">
+            <summary>
+            Configurator for configuring how arguments need to be parsed.
+            </summary>
+            <typeparam name="T">The instance to add the arguments to</typeparam>
+            <typeparam name="TArg">The type to parse to</typeparam>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.WithDescription(System.String)">
+            <summary>
+            Gives a description to the argument when generating help documentation.
+            </summary>
+            <param name="description">A short decription describing what the argument is used for</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.FromMultiple(System.Func{System.String,System.Collections.Generic.IEnumerable{System.String}})">
+            <summary>
+            Used to split single values into a list that will be converted to <typeparamref name="TArg"/>.
+            </summary>
+            <example>Given the following format: mycmd -c 1,2,3. If you want to parse that value to a list of ints you can do that by splitting 1,2,3 using <paramref name="splitter"/></example>
+            <param name="splitter">The delegate used to split the single value into multiple values</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.FromMultiple(System.String,System.Boolean)">
+            <summary>
+            Used to split single values into a list that will be converted to <typeparamref name="TArg"/>.
+            </summary>
+            <example>Given the following format: mycmd -c 1,2,3. If you want to parse that value to a list of ints you can do that by splitting 1,2,3 using <paramref name="splitter"/></example>
+            <param name="splitter">The delegate used to split the single value into multiple values</param>
+            <param name="trim">Set to true to trim the split up values</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.FromKeyValuePair``2(System.String,System.String,System.String)">
+            <summary>
+            Used to parse single values as key value pairs instead.
+            </summary>
+            <typeparam name="TKey">The type of the key</typeparam>
+            <typeparam name="TValue">The type of the value</typeparam>
+            <param name="keyName">Optional name for the key. Is used in help and error messages</param>
+            <param name="valueName">Optional name for the value. Is used in help and error messages</param>
+            <param name="format">Optional format how the key/value pairs are defined. Key will be extracted from {Key} and the value from {Value}. Cannot contain any whitespace</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.WithDefault(System.Func{`1})">
+            <summary>
+            Used to provide a default value when no arguments are supplied.
+            </summary>
+            <param name="valueConstructor">The delegate that returns the default value</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.WithDefault(`1)">
+            <summary>
+            Used to provide a default value when no arguments are supplied.
+            </summary>
+            <param name="value">The default value to use</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.WithParsingError(System.Func{System.String,System.Type,System.Boolean,System.String})">
+            <summary>
+            Used to overwrite the default error message returned when a string value couldn't be converted to a type.
+            </summary>
+            <param name="errorConstructor">Delegate that creates the error for the failed conversion. First arg is the string value that couldn't be converted, second arg is the target type of the conversion, third arg indicated if the string was the key in case of key value pairs</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.ConvertUsing(System.Func{System.Object,`1})">
+            <summary>
+            Used to convert the parsed values to <typeparamref name="TArg"/>.
+            </summary>
+            <param name="converter">The delegate used to convert the value. First arg is the object to convert, type will be different based on the configuration used</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.ParseWhen(Sels.Core.Delegates.Condition{Sels.Core.Cli.ArgumentParsing.IParsedResult{`0}})">
+            <summary>
+            Sets a condition when this argument is able to be parsed based on <paramref name="condition"/>. Can be used to only parse arguments when a certain command is provided. Is only used to determine when to create help documentation.
+            </summary>
+            <param name="condition">The delegate that dictates if this handler is allowed to parse. First arg is the current result, second arg are the command line argument strings</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.ValidIf(Sels.Core.Delegates.Condition{Sels.Core.Cli.ArgumentParsing.IParsedResult{`0},`1},System.Func{Sels.Core.Cli.ArgumentParsing.IParsedResult{`0},`1,System.String})">
+            <summary>
+            Adds validation for the parsed argument.
+            </summary>
+            <param name="condition">The delegate that dictates if the parsed argument is valid</param>
+            <param name="errorConstructor">The delegate that creates the error when the parsed argument isn't valid</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerBuilder`2.DoNotParseAsCollection">
+            <summary>
+            By default the command line argument values will be converted to the elements type if <typeparamref name="TArg"/> is assignable to <see cref="T:System.Collections.Generic.IEnumerable`1"/>. Calling this method disables that behaviour.
+            </summary>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder">
+            <summary>
+            Configurator for how an option can be parsed.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder.WithPrefix(System.Char)">
+            <summary>
+            Used to overwrite the default short option prefix.
+            If you want an option to be parsed as /p you can set the short option flag to /.
+            </summary>
+            <param name="shortOptionPrefix">The prefix to use for the short option format</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder.WithPrefix(System.String)">
+            <summary>
+            Used to overwrite the default long option prefix.
+            If you want an option to be parsed as -help you can set the long option flag to -.
+            </summary>
+            <param name="longOptionPrefix">The prefix to use for the long option format</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder.FromFormat(System.String)">
+            <summary>
+            Used to provide a custom format for options where an argument can be provided.
+            If you want an option to be parsed as --action=Build you can set the format to {Option}={Arg}.
+            </summary>
+            <param name="pattern">The format to use. {Option} will be replaced by the prefix + option name and the argument from {Arg}. Cannot contain any whitespace</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder.AllowDuplicate">
+            <summary>
+            Allows an option to be defined multiple times.
+            Calling this method will make following arguments valid: --action=Clean --action=Build --action=Publish.
+            </summary>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder.WhenDefined(System.Func{System.Object})">
+            <summary>
+            When no arguments can be provided to the option the value returned by <paramref name="valueConstructor"/> will be used to set the argument value. The default value is true.
+            </summary>
+            <param name="valueConstructor">The delegate that returns the value</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder.WhenDefined(System.Object)">
+            <summary>
+            When no arguments can be provided to the option <paramref name="value"/> will be used to set the argument value. The default value is true.
+            </summary>
+            <param name="value">The value to return</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.IParsedResult`1">
+            <summary>
+            Contains the result from parsing command line arguments.
+            </summary>
+            <typeparam name="T">The type containing the parsed arguments</typeparam>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.IParsedResult`1.Parsed">
+            <summary>
+            The instance created from the parsed arguments.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.IParsedResult`1.Arguments">
+            <summary>
+            The command line arguments this result was parsed from.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.IParsedResult`1.ParsedEnvironmentVariables">
+            <summary>
+            Any environment variables that were used to create the result. Key is the environment variable name.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.IParsedResult`1.ParsedInput">
+            <summary>
+            The stdin that was parsed.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.IParsedResult`1.ParsedCommands">
+            <summary>
+            All commands that could be parsed. Key is the position the command was parsed from. Value is the string used to parse the command.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.IParsedResult`1.ParsedArguments">
+            <summary>
+            All arguments that could be parsed. Key is the position the command was parsed from. Value is the string used to parse the argument.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.IParsedResult`1.ParsedOptions">
+            <summary>
+            All short options (e.g., -a or /p Action=Build) that could be resolved. Key is the option + prefix. Value are all the string values used to parse the option, will be empty array in case of flags (e.g., -h or -q)
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.IParsedResult`1.ParsedLongOptions">
+            <summary>
+            All long options (e.g., --all or /parameter Action=Build). Key is the option + prefix. Value are all the string values used to parse the option, will be empty array in case of flags (e.g., --help or --quiet)
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.IParsedResult`1.Errors">
+            <summary>
+            Any parsing errors that happened.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.ArgumentParsing.IParsedResult`1.UnparsedArguments">
+            <summary>
+            Any command line arguments that could not be parsed.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.IResultBuilder">
+            <summary>
+            A builder for <see cref="T:Sels.Core.Cli.ArgumentParsing.IParsedResult`1"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IResultBuilder.AddError(System.String)">
+            <summary>
+            Adds an errors message to the result.
+            </summary>
+            <param name="message">The error message to add</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IResultBuilder.AddParsedInput(System.String)">
+            <summary>
+            Adds the input from stdin that was parsed.
+            </summary>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IResultBuilder.AddParsedEnvironmentVariable(System.String,System.String)">
+            <summary>
+            Adds an environment variable that was parsed from.
+            </summary>
+            <param name="name">The environment variable name</param>
+            <param name="value">The environment variable value</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IResultBuilder.AddParsedCommand(System.Int32,System.String)">
+            <summary>
+            Adds a command that was parsed.
+            </summary>
+            <param name="position">The position the command was parsed from</param>
+            <param name="value">The value that was used to parse the command</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IResultBuilder.AddParsedArgument(System.Int32,System.String)">
+            <summary>
+            Adds an argument that was parsed.
+            </summary>
+            <param name="position">The position the command was parsed from</param>
+            <param name="argument">The value that was used to parse the argument</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IResultBuilder.AddParsedOption(System.String,System.String)">
+            <summary>
+            Adds a short option that was parsed.
+            </summary>
+            <param name="option">The short option that was parsed</param>
+            <param name="value">The value that was used as an argument to the option, can be null in case of a flag</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IResultBuilder.AddParsedOption(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Adds a short option that was parsed.
+            </summary>
+            <param name="option">The short option that was parsed</param>
+            <param name="values">An enumerator returning all the values that were used as arguments to the option</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IResultBuilder.AddParsedLongOption(System.String,System.String)">
+            <summary>
+            Adds a long option that was parsed.
+            </summary>
+            <param name="option">The short option that was parsed</param>
+            <param name="value">The value that was used as an argument to the option, can be null in case of a flag</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IResultBuilder.AddParsedLongOption(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Adds a long option that was parsed.
+            </summary>
+            <param name="option">The short option that was parsed</param>
+            <param name="values">An enumerator returning all the values that were used as arguments to the option</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.InvalidArgumentParserConfiguration">
+            <summary>
+            Thrown when an argument parser has invalid configuration.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.InvalidArgumentParserConfiguration.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.InvalidArgumentParserConfiguration"/>
+            <param name="reason">The reason why the configuration is invalid</param>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.InvalidCommandLineArgumentsException">
+            <summary>
+            Thrown when invalid arguments were passed to the cli.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.InvalidCommandLineArgumentsException.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.InvalidCommandLineArgumentsException"/>
+            <param name="reason">The reason why the arguments are invalid</param>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.InvalidCommandLineArgumentsException.#ctor(System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.InvalidCommandLineArgumentsException"/>
+            <param name="errors">A list of errors why the arguments are invalid</param>
+        </member>
+        <member name="T:Sels.Core.Cli.ArgumentParsing.NullArguments">
+            <summary>
+            A null instance without any properties to use with a <see cref="T:Sels.Core.Cli.ArgumentParsing.IArgumentParser`1"/> when no properties need to be parsed to.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.ArgumentParsing.NullArguments.Instance">
+            <summary>
+            Static instance to use.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Cli.CommandLineException">
+            <summary>
+            Thrown from a cli. Exposes the exit code to use.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.CommandLineException.ExitCode">
+            <summary>
+            The exit code to return.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineException.#ctor(System.Int32,System.String)">
+            <inheritdoc cref="T:Sels.Core.Cli.CommandLineException"/>
+            <param name="exitcode">The exit code for this exception</param>
+            <param name="message">The message for this exception</param>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineException.#ctor(System.Int32,System.String,System.Exception)">
+            <inheritdoc cref="T:Sels.Core.Cli.CommandLineException"/>
+            <param name="exitcode">The exit code for this exception</param>
+            <param name="message">The message for this exception</param>
+            <param name="innerException">The exception that caused this exception</param>
+        </member>
+        <member name="T:Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType">
+            <summary>
+            Dictates how an option can be provided.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType.Default">
+            <summary>
+            Option type is inferred from the argument type. <see cref="T:System.Boolean"/> will result in <see cref="F:Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType.None"/>, a type assignable to <see cref="T:System.Collections.IEnumerable"/> will result in <see cref="F:Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType.List"/> and the default is <see cref="F:Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType.Single"/>.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType.None">
+            <summary>
+            When the option is provided without any value like -h or --help.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType.Single">
+            <summary>
+            When the option is provided with a value like -a Build or --action Build.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType.List">
+            <summary>
+            When the option is provided with multiple values like -a Clean Build Publish or --action Clean Build Publish.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2">
+            <summary>
+            Template for creating new argument handlers.
+            </summary>
+            <typeparam name="T">The instance to add the arguments to</typeparam>
+            <typeparam name="TArg">The type to parse to</typeparam>
+        </member>
+        <member name="F:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2._targetType">
+            <summary>
+            The actual type to convert to so it can be set.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2._multiSplitter">
+            <summary>
+            The delegate to split strings into multiple values so they can be used for parsing.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2._converter">
+            <summary>
+            Optional converter for converting the parsed values to <typeparamref name="TArg"/>.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2._keyValueInfo">
+            <summary>
+            The types of the key/value pair if the argument needs to be parsed from key/value pairs.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2._description">
+            <summary>
+            The description for this argument.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2._parsingErrorConstructor">
+            <summary>
+            Optional delegate for overwriting the default parsing error that gets returning when conversion fails.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2._parsingConditions">
+            <summary>
+            A list of parsing conditions that must be passed before the current handler can parse arguments.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2._validators">
+            <summary>
+            A list of validators that validates the parsed arguments.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.ParseToElementType">
+            <summary>
+            If the command line argument values should be parsed to the element type instead of the target type.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.ParseAsKeyValuePairs">
+            <summary>
+            If the command line argument values should be split up into key/value pairs.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.#ctor(Sels.Core.Cli.ArgumentParsing.ArgumentParser{`0},System.Type)">
+            <inheritdoc cref="T:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2"/>.
+            <param name="parser">The parser to delegate calls to</param>
+            <param name="targetType">The actual target type to convert the values to</param>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.TryParse(System.String[],Sels.Core.Cli.ArgumentParsing.IResultBuilder,System.Object@,System.String[]@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.CanParse(Sels.Core.Cli.ArgumentParsing.IParsedResult{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.Validate(Sels.Core.Cli.ArgumentParsing.IParsedResult{`0},System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.ConvertUsing(System.Func{System.Object,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.FromKeyValuePair``2(System.String,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.FromMultiple(System.Func{System.String,System.Collections.Generic.IEnumerable{System.String}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.FromMultiple(System.String,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.WithDescription(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.WithDefault(`1)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.ParseWhen(Sels.Core.Delegates.Condition{Sels.Core.Cli.ArgumentParsing.IParsedResult{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.ValidIf(Sels.Core.Delegates.Condition{Sels.Core.Cli.ArgumentParsing.IParsedResult{`0},`1},System.Func{Sels.Core.Cli.ArgumentParsing.IParsedResult{`0},`1,System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.WithParsingError(System.Func{System.String,System.Type,System.Boolean,System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.DoNotParseAsCollection">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.WithDefault(System.Func{`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.ConvertToArgumentType(System.Object)">
+            <summary>
+            Converts <paramref name="convertable"/> created from parsing the command line argument to the target type.
+            </summary>
+            <param name="convertable"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.CreateConversionError(System.String,System.Type,System.Boolean)">
+            <summary>
+            Creates an error message for <paramref name="value"/> who couldn't be converted to <paramref name="targetType"/>.
+            </summary>
+            <param name="value">The string value that couldn't be converted</param>
+            <param name="targetType">The type <paramref name="value"/> couldn't be converted to</param>
+            <param name="isKey">If <paramref name="value"/> came from a key/value pair this boolean indicates if it was the key that failed conversion</param>
+            <returns>The error message</returns>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.ParseValues(Sels.Core.Cli.ArgumentParsing.IResultBuilder,System.String[])">
+            <summary>
+            Parses multiple command line arguments to the handler target type.
+            </summary>
+            <param name="values">The values to parse</param>
+            <param name="builder">Builder for modifying the parsing result</param>
+            <returns>The object with the parsed values</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.ParseValue(Sels.Core.Cli.ArgumentParsing.IResultBuilder,System.String)">
+            <summary>
+            Parses command line argument to the handler target type.
+            </summary>
+            <param name="value">THe value to parse</param>
+            <param name="builder">Builder for modifying the parsing result</param>
+            <returns>The object with the parsed values</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`2.TryParseArguments(System.String[],Sels.Core.Cli.ArgumentParsing.IResultBuilder,`1@,System.String[]@)">
+            <inheritdoc cref="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.TryParse(System.String[],Sels.Core.Cli.ArgumentParsing.IResultBuilder,System.Object@,System.String[]@)"/>
+        </member>
+        <member name="T:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1">
+            <summary>
+            Template for creating new argument handlers.
+            </summary>
+            <typeparam name="T">The instance to add the arguments to</typeparam>
+        </member>
+        <member name="F:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1._parser">
+            <summary>
+            The parser used to create this handler;
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1._loggers">
+            <summary>
+            Optional loggers for tracing.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.#ctor(Sels.Core.Cli.ArgumentParsing.ArgumentParser{`0})">
+            <inheritdoc cref="T:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1"/>.
+            <param name="parser">The parser to delegate calls to</param>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.For``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.For(System.Reflection.PropertyInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.SetValue``1(System.Action{`0,``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.For(System.Reflection.PropertyInfo[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.SetValue``1(System.Action{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.ToString">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.DisplayName">
+            <summary>
+            A human readable name of the current argument handler.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.CanParse(Sels.Core.Cli.ArgumentParsing.IParsedResult{`0})">
+            <summary>
+            Checks if the current handler can parse based on the current result <paramref name="currentResult"/>.
+            </summary>
+            <param name="currentResult">The current result during parsing</param>
+            <returns>True if the current handler can parse arguments, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.Validate(Sels.Core.Cli.ArgumentParsing.IParsedResult{`0},System.Object)">
+            <summary>
+            Validates <paramref name="parsed"/> after being parsed.
+            </summary>
+            <param name="currentResult">The current result during parsing</param>
+            <param name="parsed">The argument fully parsed by the current handler</param>
+            <returns>An enumerator returning any validation errors, returns null or an empty enumerator when there are no validation errors</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseArgumentHandler`1.TryParse(System.String[],Sels.Core.Cli.ArgumentParsing.IResultBuilder,System.Object@,System.String[]@)">
+            <summary>
+            Parses any arguments in <paramref name="args"/>.
+            </summary>
+            <param name="args">List with all the arguments to parse</param>
+            <param name="builder">A builder for modifying the <see cref="T:Sels.Core.Cli.ArgumentParsing.IParsedResult`1"/></param>
+            <param name="parsed">The object parsed from the arguments</param>
+            <param name="modifiedArgs"><paramref name="args"/> with all the handled arguments removed</param>
+            <returns>True if any arguments were handled, otherwise false</returns>
+        </member>
+        <member name="P:Sels.Core.Cli.Templates.ArgumentParsing.BaseOptionHandler`2.DisplayName">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseOptionHandler`2.GetArguments(System.String[],System.Int32[]@,System.Int32[]@)">
+            <summary>
+            Returns the indexes of all arguments in <paramref name="args"/> that contains the flags.
+            </summary>
+            <param name="args">The arguments to check</param>
+            <param name="optionIndexes">Indexes of arguments in <paramref name="args"/> matching the short option</param>
+            <param name="longOptionIndexes">Indexes of arguments in <paramref name="args"/> matching the long option</param>
+        </member>
     </members>
 </doc>

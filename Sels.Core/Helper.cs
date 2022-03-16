@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions.Logging;
 using SystemConsole = System.Console;
 using SystemRandom = System.Random;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.Core
 {
@@ -493,6 +494,47 @@ namespace Sels.Core
                 max.ValidateArgumentLarger(nameof(max), min);
 
                 return _random.NextDouble() * (max - min) + min;
+            }
+        }
+        #endregion
+
+        #region Expression
+        /// <summary>
+        /// Contains static helper methods for working with expressions.
+        /// </summary>
+        public static class Expression
+        {
+            /// <summary>
+            /// Static helper methods for working with expression resolving around properties.
+            /// </summary>
+            public static class Property
+            {
+                /// <summary>
+                /// Validates that <paramref name="nestedProperties"/> are selected from root object of type <paramref name="expectedRoot"/>.
+                /// </summary>
+                /// <param name="expectedRoot">The expected reflected type of the first property</param>
+                /// <param name="nestedProperties">The nested properties to check</param>
+                /// <exception cref="InvalidDataException"></exception>
+                public static void ValidateNestedProperties(Type expectedRoot, IEnumerable<PropertyInfo> nestedProperties)
+                {
+                    expectedRoot.ValidateArgument(nameof(expectedRoot));
+                    nestedProperties.ValidateArgumentNotNullOrEmpty(nameof(nestedProperties));
+
+                    PropertyInfo currentProperty = null;
+
+                    foreach(var property in nestedProperties)
+                    {
+                        if(currentProperty == null)
+                        {                            
+                            if (!expectedRoot.IsAssignableTo(property.ReflectedType)) throw new InvalidDataException($"Expected property <{property.Name}> to be reflected from <{expectedRoot}> but was <{property.ReflectedType}>");
+                        }
+                        else
+                        {
+                            if (currentProperty.ReflectedType.GetProperty(property.Name) == null) throw new InvalidDataException($"Property <{property.Name}> does not exist on type <{currentProperty.ReflectedType}>");
+                        }
+                        currentProperty = property;
+                    }
+                }
             }
         }
         #endregion

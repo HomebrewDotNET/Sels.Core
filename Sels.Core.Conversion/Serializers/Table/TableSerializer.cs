@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Conversion.Attributes.Table;
 using Sels.Core.Conversion.Components.Serialization.Profile;
-using Sels.Core.Conversion.Contracts;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.Conversion.Templates;
 using Sels.Core.Conversion.Templates.Table;

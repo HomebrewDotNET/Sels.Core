@@ -679,6 +679,157 @@
             Triggers the stop action.
             </summary>
         </member>
+        <member name="T:Sels.Core.RegularExpressions.RegexBuilder">
+            <summary>
+            Represents a instance used to create regular expressions.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.RegularExpressions.RegexBuilder.Expressions">
+            <summary>
+            Contains constant values for certain regular expressions.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.RegularExpressions.RegexBuilder.Expressions.AnyWord">
+            <summary>
+            Matches everything except linebreaks.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.RegularExpressions.RegexBuilder.Expressions.AnyWordOptional">
+            <summary>
+            Matches everything exception linebreaks. Can also match empty string.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.RegularExpressions.RegexBuilder.Expressions.Any">
+            <summary>
+            Matches everything.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.RegularExpressions.RegexBuilder.Expressions.AnyOptional">
+            <summary>
+            Matches everything. Can also match empty string.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.RegularExpressions.RegexBuilder.Formats">
+            <summary>
+            Contains formats for certain regular expressions.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.RegularExpressions.RegexBuilder.Formats.PositiveLookAhead">
+            <summary>
+            Matches a group after the main expression without including it in the result.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.RegularExpressions.RegexBuilder.Formats.NegativeLookAhead">
+            <summary>
+            Specifies a group that can not match after the main expression without including it in the result.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.RegularExpressions.RegexBuilder.Formats.PositiveLookBehind">
+            <summary>
+            Matches a group before the main expression without including it in the result.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.RegularExpressions.RegexBuilder.Formats.NegativeLookBehind">
+            <summary>
+            Specifies a group that can not match before the main expression without including it in the result.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.Append(System.String,System.Boolean)">
+            <summary>
+            Appends <paramref name="value"/> to the internal regex.
+            </summary>
+            <param name="value">The value to append</param>
+            <param name="escape">If <paramref name="value"/> should be escaped</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.Append(System.Object,System.Boolean)">
+            <summary>
+            Appends <see cref="M:System.Object.ToString"/> value from <paramref name="value"/> to the internal regex.
+            </summary>
+            <param name="value">The value to append</param>
+            <param name="escape">If <paramref name="value"/> should be escaped</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.Insert(System.Int32,System.String,System.Boolean)">
+            <summary>
+            Inserts <paramref name="value"/> at character index <paramref name="index"/> of the internal regex.
+            </summary>
+            <param name="index">The position in this instance where insertion begins</param>
+            <param name="value">The value to insert</param>
+            <param name="escape">If <paramref name="value"/> should be escaped</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.Insert(System.Int32,System.Object,System.Boolean)">
+            <summary>
+            Inserts <see cref="M:System.Object.ToString"/> value from <paramref name="value"/> at character index <paramref name="index"/> of the internal regex.
+            </summary>
+            <param name="index">The position in this instance where insertion begins</param>
+            <param name="value">The value to insert</param>
+            <param name="escape">If <paramref name="value"/> should be escaped</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.Replace(System.String,System.String,System.Boolean)">
+            <summary>
+            Replaces <paramref name="oldValue"/> with <paramref name="newValue"/> in the internal regex.
+            </summary>
+            <param name="oldValue">The value to replace</param>
+            <param name="newValue">The value to replace with</param>
+            <param name="escape">If <paramref name="value"/> should be escaped</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.Replace(System.Object,System.Object,System.Boolean)">
+            <summary>
+            Replaces <see cref="M:System.Object.ToString"/> value from <paramref name="oldValue"/> with <see cref="M:System.Object.ToString"/> value from <paramref name="newValue"/> in the internal regex.
+            </summary>
+            <param name="oldValue">The value to replace</param>
+            <param name="newValue">The value to replace with</param>
+            <param name="escape">If <paramref name="value"/> should be escaped</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.MatchAnyWord(System.Boolean)">
+            <summary>
+            Appends an expression that matches any combination excluding linebreaks.
+            </summary>
+            <param name="isOptional">Set to false if at least 1 characters needs to be matched</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.MatchAny(System.Boolean)">
+            <summary>
+            Appends an expression that matches any combination.
+            </summary>
+            <param name="isOptional">Set to false if at least 1 characters needs to be matched</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.LookAhead(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Appends a lookahead with <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to add to the lookahead</param>
+            <param name="isMatch">Set to true for a positive lookahead and false for a negative lookahead</param>
+            <param name="escape">If <paramref name="value"/> should be escaped</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.LookBehind(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Appends a lookbehind with <paramref name="value"/>.
+            </summary>
+            <param name="value">The value to add to the lookbehind</param>
+            <param name="isMatch">Set to true for a positive lookbehind and false for a negative lookbehind</param>
+            <param name="escape">If <paramref name="value"/> should be escaped</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.ToString">
+            <summary>
+            Builds the regex of the current builder.
+            </summary>
+            <returns>The regex string representing the current instance</returns>
+        </member>
+        <member name="M:Sels.Core.RegularExpressions.RegexBuilder.ToRegex">
+            <summary>
+            Builds the regex of the current builder.
+            </summary>
+            <returns>The regex representing the current instance</returns>
+        </member>
         <member name="T:Sels.Core.Constants">
             <summary>
             Contains constant/static values used by other components.
@@ -2448,6 +2599,30 @@
             <returns>The extracted property</returns>
             <exception cref="T:System.ArgumentException">Thrown when <paramref name="expression"/> doesn't point to a property</exception>
         </member>
+        <member name="M:Sels.Core.Extensions.Reflection.ExpressionReflectionExtenions.ExtractProperty``1(System.Linq.Expressions.Expression{``0})">
+            <summary>
+            Extracts <see cref="T:System.Reflection.PropertyInfo"/> from <paramref name="expression"/>.
+            </summary>
+            <typeparam name="T">Type of the delegate in <paramref name="expression"/></typeparam>
+            <param name="expression">The expression to check</param>
+            <returns>The extracted property</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.ExpressionReflectionExtenions.ExtractPropertyOrDefault(System.Linq.Expressions.Expression)">
+            <summary>
+            Extracts <see cref="T:System.Reflection.PropertyInfo"/> from <paramref name="expression"/> if the expression points to a property.
+            </summary>
+            <param name="expression">The expression to check</param>
+            <returns>The extracted property or null if <paramref name="expression"/> doesn't point to an expression</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.ExpressionReflectionExtenions.ExtractProperties``1(System.Linq.Expressions.Expression{``0})">
+            <summary>
+            Extract the property + any nested properties from <paramref name="expression"/>.
+            </summary>
+            <typeparam name="T">The type of the lambda expression to extract the properties from</typeparam>
+            <param name="expression">The expression to get the properties from</param>
+            <returns>All properties extracted from <paramref name="expression"/> in the same order they are defined in <paramref name="expression"/></returns>
+            <exception cref="T:System.NotSupportedException"></exception>
+        </member>
         <member name="T:Sels.Core.Extensions.Reflection.PropertyInfoExtensions">
             <summary>
             Contains extension methods for working with <see cref="T:System.Reflection.PropertyInfo"/>.
@@ -2548,7 +2723,7 @@
             Sets the default value of the property type on property <paramref name="property"/> on instance <paramref name="sourceObject"/>.
             </summary>
             <param name="property">The property to set</param>
-            <param name="sourceObject">THe instance to set the value on</param>
+            <param name="sourceObject">The instance to set the value on</param>
         </member>
         <member name="T:Sels.Core.Extensions.Reflection.ReflectionExtensions">
             <summary>
@@ -3279,6 +3454,24 @@
             <param name="max">The highest possible value to generate</param>
             <returns>A random double in range of <paramref name="min"/> and <paramref name="max"/></returns>
         </member>
+        <member name="T:Sels.Core.Helper.Expression">
+            <summary>
+            Contains static helper methods for working with expressions.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Helper.Expression.Property">
+            <summary>
+            Static helper methods for working with expression resolving around properties.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Helper.Expression.Property.ValidateNestedProperties(System.Type,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo})">
+            <summary>
+            Validates that <paramref name="nestedProperties"/> are selected from root object of type <paramref name="expectedRoot"/>.
+            </summary>
+            <param name="expectedRoot"></param>
+            <param name="nestedProperties"></param>
+            <exception cref="T:System.IO.InvalidDataException"></exception>
+        </member>
         <member name="T:System.IO.DirectoryInfoExtensions">
             <summary>
             Contains extension methods for working with <see cref="T:System.IO.DirectoryInfo"/>.
@@ -3572,6 +3765,13 @@
             <param name="value">The string to check</param>
             <returns>True if <paramref name="value"/> is either null or an empty string, otherwise false</returns>
         </member>
+        <member name="M:System.StringExtensions.ContainsWhitespace(System.String)">
+            <summary>
+            Checks if <paramref name="value"/> contains any whitespace characters.
+            </summary>
+            <param name="value">The string to check</param>
+            <returns>True if <paramref name="value"/> contains whitespace characters, otherwise false</returns>
+        </member>
         <member name="M:System.StringExtensions.EscapeStrings(System.String,System.String,System.String[])">
             <summary>
             Escapes all <paramref name="stringsToEscape"/> in <paramref name="source"/> by prefixing <paramref name="escapeString"/> to each <paramref name="stringsToEscape"/>.
@@ -3745,6 +3945,16 @@
             <param name="expectedColumns">The expected amount of rows. When set to null the first row will determine the column count</param>
             <returns>The grid created from the rows and columns in <paramref name="source"/></returns>
             <exception cref="T:System.InvalidOperationException">Thown when column lengths don't match up with the expected amount unless disabled</exception>
+        </member>
+        <member name="M:System.StringExtensions.ExtractFromFormat(System.String,System.String,System.String,System.String[])">
+            <summary>
+            Extracts a value from <paramref name="value"/> where it is formatted according to <paramref name="format"/>.
+            </summary>
+            <param name="format">The format that <paramref name="value"/> is formatted in</param>
+            <param name="parameter">The parameter to extract. Parameter is defined in <paramref name="format"/></param>
+            <param name="value">The value to extract <paramref name="parameter"/> from</param>
+            <param name="otherParameters">Optional parameters that are also included in the format. These are replaced so they match any characters</param>
+            <returns>The extracted value or null if no value could be extracted</returns>
         </member>
         <member name="T:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions">
             <summary>

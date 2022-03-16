@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Sels.Core.Command.Contracts.Commands;
-using Sels.Core.Conversion.Contracts;
+using Sels.Core.Conversion.Converters;
 using Sels.Core.FileSystem.Templates.FileSizes;
 
 namespace Sels.Core.Command.Linux.Commands.FileSystem

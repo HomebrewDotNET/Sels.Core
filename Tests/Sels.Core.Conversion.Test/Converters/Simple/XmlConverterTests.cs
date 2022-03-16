@@ -1,4 +1,5 @@
-﻿using Sels.Core.Conversion.Contracts;
+﻿using Sels.Core.Conversion;
+using Sels.Core.Conversion.Converters;
 using Sels.Core.Conversion.Converters.Simple;
 using Sels.Core.Conversion.Test.TestTemplates.Converter;
 using Sels.Core.Testing.Models;

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Sels.Core.Conversion.Contracts
+namespace Sels.Core.Conversion.Converters
 {
     /// <summary>
     /// Converter that can converts objects into other types.
