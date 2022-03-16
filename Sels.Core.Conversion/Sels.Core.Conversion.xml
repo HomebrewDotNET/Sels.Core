@@ -49,7 +49,7 @@
         </member>
         <member name="T:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute">
             <summary>
-            Defines arguments that will be supplied to the <see cref="!:ITypeConverter"/> by serializers that support it.
+            Defines arguments that will be supplied to the <see cref="T:Sels.Core.Conversion.Converters.ITypeConverter"/> by serializers that support it.
             </summary>
         </member>
         <member name="F:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute.KeyValueSplitter">
@@ -64,7 +64,7 @@
         </member>
         <member name="M:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute.#ctor(System.String[])">
             <summary>
-            Defines arguments that will be supplied to the <see cref="!:ITypeConverter"/> by serializers that support it.
+            Defines arguments that will be supplied to the <see cref="T:Sels.Core.Conversion.Converters.ITypeConverter"/> by serializers that support it.
             </summary>
             <param name="arguments">List of arguments. Must use <see cref="F:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute.KeyValueSplitter"/> to split the argument key from the argument value</param>
         </member>
@@ -75,7 +75,7 @@
         </member>
         <member name="M:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttributeExtensions.GetConverterArguments(System.Reflection.MemberInfo)">
             <summary>
-            Returns <see cref="!:ITypeConverter"/> arguments by looking for <see cref="T:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute"/>.
+            Returns <see cref="T:Sels.Core.Conversion.Converters.ITypeConverter"/> arguments by looking for <see cref="T:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute"/>.
             </summary>
             <param name="source">The member to get the arguments from</param>
             <returns>The arguments defined by <see cref="T:Sels.Core.Conversion.Attributes.Serialization.ConverterArgumentAttribute"/> or null if no attribute is found</returns>

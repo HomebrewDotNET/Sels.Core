@@ -774,7 +774,7 @@
             </summary>
             <param name="oldValue">The value to replace</param>
             <param name="newValue">The value to replace with</param>
-            <param name="escape">If <paramref name="value"/> should be escaped</param>
+            <param name="escape">If <paramref name="newValue"/> should be escaped</param>
             <returns>Current builder for method chaining</returns>
         </member>
         <member name="M:Sels.Core.RegularExpressions.RegexBuilder.Replace(System.Object,System.Object,System.Boolean)">
@@ -783,7 +783,7 @@
             </summary>
             <param name="oldValue">The value to replace</param>
             <param name="newValue">The value to replace with</param>
-            <param name="escape">If <paramref name="value"/> should be escaped</param>
+            <param name="escape">If <paramref name="newValue"/> should be escaped</param>
             <returns>Current builder for method chaining</returns>
         </member>
         <member name="M:Sels.Core.RegularExpressions.RegexBuilder.MatchAnyWord(System.Boolean)">
@@ -3468,8 +3468,8 @@
             <summary>
             Validates that <paramref name="nestedProperties"/> are selected from root object of type <paramref name="expectedRoot"/>.
             </summary>
-            <param name="expectedRoot"></param>
-            <param name="nestedProperties"></param>
+            <param name="expectedRoot">The expected reflected type of the first property</param>
+            <param name="nestedProperties">The nested properties to check</param>
             <exception cref="T:System.IO.InvalidDataException"></exception>
         </member>
         <member name="T:System.IO.DirectoryInfoExtensions">

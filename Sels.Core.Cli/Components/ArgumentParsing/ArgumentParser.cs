@@ -432,7 +432,7 @@ namespace Sels.Core.Cli.ArgumentParsing
                             break;
                         case OptionValueType.Single:
                             if (handlerConfig.DefinedValueConstructor != null) throw new InvalidArgumentParserConfiguration($"Defined value is not valid with value options");
-                            return new SingleOptionHandler<T, TArg>(_parser, handlerConfig.OptionPrefix ?? _parser.Config.OptionPrefix, handlerConfig.LongOptionPrefix ?? _parser.Config.LongOptionPrefix, option, longOption);
+                            return new SingleOptionHandler<T, TArg>(handlerConfig.Format, handlerConfig.DuplicateAllowed, _parser, handlerConfig.OptionPrefix ?? _parser.Config.OptionPrefix, handlerConfig.LongOptionPrefix ?? _parser.Config.LongOptionPrefix, option, longOption);
                         default: throw new NotSupportedException($"Option value type <{valueType}> is not supported");
                     }
                 }

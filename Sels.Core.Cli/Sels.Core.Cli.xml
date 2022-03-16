@@ -112,8 +112,7 @@
             <summary>
             Parses <paramref name="args"/> where the parsed arguments are handled by using <see cref="M:Sels.Core.Cli.ArgumentParsing.IArgumentParserBuilder`1.SetValue``1(System.Action{``0})"/> method.
             </summary>
-            <typeparam name="T">The type to parse to</typeparam>
-            <param name="builder">Builder to configure how to parse <typeparamref name="T"/></param>
+            <param name="builder">Builder to configure how to parse</param>
             <param name="args">The command line arguments to parse</param>
             <param name="configurator">Optional delegate for configuring the argument parser</param>
             <param name="settings">Optional settings for the argument parser</param>
@@ -181,13 +180,13 @@
             </summary>
             <param name="prefix">The long option prefix to add</param>
         </member>
-        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromArgument(System.String,System.Int32)">
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromArgument(System.String)">
             <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromArguments(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromCommand(System.String,System.Int32)">
+        <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromCommand(System.String)">
             <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1.Selector`1.FromOption(System.Char,System.Action{Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder},Sels.Core.Cli.Contracts.ArgumentParsing.OptionValueType)">
@@ -311,7 +310,6 @@
             <param name="definedValue">The value to return when the configured flag is defined</param>
             <param name="option">The option name</param>
             <param name="longOption">The full option name</param>
-            <param name="loggers">Optional loggers for debugging</param>
         </member>
         <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2.TryParseArguments(System.String[],Sels.Core.Cli.ArgumentParsing.IResultBuilder,`1@,System.String[]@)">
             <inheritdoc />
@@ -330,6 +328,19 @@
         </member>
         <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.FlagHandler`2.ToString">
             <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.SingleOptionHandler`2.#ctor(System.String,System.Boolean,Sels.Core.Cli.ArgumentParsing.ArgumentParser{`0},System.Char,System.String,System.Nullable{System.Char},System.String)">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.Handlers.SingleOptionHandler`2"/>.
+            <param name="format">The format for the option and value. If left to null the next arg after an option will be used as the value</param>
+            <param name="duplicatesAllowed">If the option is allowed to be defined multiple times</param>
+            <param name="parser">The parser using to create this handler</param>
+            <param name="optionPrefix">The prefix to use for the short option</param>
+            <param name="longOptionPrefix">The prefix to use for the full option</param>
+            <param name="option">The option name</param>
+            <param name="longOption">The full option name</param>
+        </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.Handlers.SingleOptionHandler`2.TryParseArguments(System.String[],Sels.Core.Cli.ArgumentParsing.IResultBuilder,`1@,System.String[]@)">
+            <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Cli.ArgumentParsing.OptionHandlerBuilder">
             <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.IOptionHandlerBuilder"/>
@@ -529,7 +540,7 @@
             <typeparam name="T">The instance to add the arguments to</typeparam>
             <typeparam name="TArg">The type to parse to</typeparam>
         </member>
-        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromCommand(System.String,System.Int32)">
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromCommand(System.String)">
             <summary>
             Parses from a non-option in the beginning of the argument list.
             Example: mycmd (main_command) (sub_command) -q -f true -p Action=Build (argument) => (main_command) will be parsed using position 0, (sub_command) will be parsed using position 1.
@@ -569,7 +580,7 @@
             <param name="valueType">Defines how the option can be used</param>
             <returns>A configurator for the current argument handler</returns>
         </member>
-        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromArgument(System.String,System.Int32)">
+        <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromArgument(System.String)">
             <summary>
             Parses from a non-option at the end of the argument list.
             Example: mycmd (command) -q (source_file) (target_file) --overwrite => (source_file) will be parsed from position 0, (target_file) will be parsed from position 1.
@@ -581,7 +592,7 @@
         <member name="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromArguments(System.String)">
             <summary>
             Parses from all non-options at the end of the argument list.
-            Example: mycmd (command) (file_one) (file_two) (file_three) => (file_one), (file_two) and (file_three) will be parsed when (command) is configured using <see cref="M:Sels.Core.Cli.ArgumentParsing.IArgumentHandlerSelector`2.FromCommand(System.String,System.Int32)"/>
+            Example: mycmd (command) (file_one) (file_two) (file_three) => (file_one), (file_two) and (file_three) will be parsed when (command) is configured using <see cref="!:FromCommand(string, int)"/>
             </summary>
             <param name="name">The name that is used in the help text</param>
             <returns>A configurator for the current argument handler</returns>
@@ -1166,13 +1177,8 @@
         <member name="P:Sels.Core.Cli.Templates.ArgumentParsing.BaseOptionHandler`2.DisplayName">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseOptionHandler`2.GetArguments(System.String[],System.Int32[]@,System.Int32[]@)">
-            <summary>
-            Returns the indexes of all arguments in <paramref name="args"/> that contains the flags.
-            </summary>
-            <param name="args">The arguments to check</param>
-            <param name="optionIndexes">Indexes of arguments in <paramref name="args"/> matching the short option</param>
-            <param name="longOptionIndexes">Indexes of arguments in <paramref name="args"/> matching the long option</param>
+        <member name="M:Sels.Core.Cli.Templates.ArgumentParsing.BaseOptionHandler`2.WithDefault(System.Func{`1})">
+            <inheritdoc/>
         </member>
     </members>
 </doc>

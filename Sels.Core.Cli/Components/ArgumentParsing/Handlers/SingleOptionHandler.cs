@@ -45,7 +45,7 @@ namespace Sels.Core.Cli.ArgumentParsing.Handlers
                     if(arg.StartsWith(FullOption) || arg.StartsWith(FullLongOption)) optionIndexes.Add(i);
                 });
 
-                if()
+                throw new NotImplementedException();
             }
         }       
     }
