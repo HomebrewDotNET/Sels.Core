@@ -12,7 +12,7 @@ namespace Sels.Core.Test.Extensions.Object
         [TestCase("{Key}={Value}", "{Key}", "Action=Build", new string[] { "{Value}" }, "Action")]
         [TestCase("{Command}::{Action}", "{Action}", "Config::Deploy", new string[] { "{Command}" }, "Deploy")]
         [TestCase("Hello from {0}!", "{0}", "Hello from Jens Sels!", null, "Jens Sels")]
-        [TestCase("[{Index}]", "{0}", "[2]", null, null)]
+        [TestCase("[{Index}]", "{Index}", "[]", null, null)]
         public void StringExtensions_ExtractFromFormat_CorrectValueIsReturned(string format, string parameter, string value, string[] otherParameters, string expected)
         {
             // Arrange
