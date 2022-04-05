@@ -38,9 +38,9 @@ namespace Sels.Core.Conversion.Components.Serialization.Profile
         {
             Type = type.ValidateArgument(nameof(type));
 
-            var converters = Helper.Collection.Enumerate(type.GetConverters(), additionalConverters);
-            var filters = Helper.Collection.Enumerate(type.GetFilters(false), additionalFilters);
-            var elementFilters = Helper.Collection.Enumerate(type.GetFilters(true), additionalElementFilters);
+            var converters = Helper.Collection.EnumerateAll(type.GetConverters(), additionalConverters);
+            var filters = Helper.Collection.EnumerateAll(type.GetFilters(false), additionalFilters);
+            var elementFilters = Helper.Collection.EnumerateAll(type.GetFilters(true), additionalElementFilters);
 
             foreach (var property in type.GetProperties(propertyFlags).Where(x => !x.IsIgnoredForSerialization()))
             {

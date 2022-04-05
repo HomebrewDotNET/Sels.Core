@@ -64,6 +64,8 @@ namespace Sels.Core.Extensions.Reflection
         /// <returns>If <paramref name="type"/> is assignable to <see cref="IEnumerable{T}"/></returns>
         public static bool IsTypedEnumerable(this Type type)
         {
+            type.ValidateArgument(nameof(type));
+
             return !type.IsValueType && type.IsArray || type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
         }
 
@@ -81,7 +83,9 @@ namespace Sels.Core.Extensions.Reflection
         /// <returns>If <paramref name="type"/> is <see cref="string"/></returns>
         public static bool IsString(this Type type)
         {
-            return type.Equals(typeof(string));
+            type.ValidateArgument(nameof(type));
+
+            return type.Is<string>();
         }
         /// <summary>
         /// Checks if <paramref name="type"/> is any of the numeric types.
@@ -90,6 +94,8 @@ namespace Sels.Core.Extensions.Reflection
         /// <returns>If <paramref name="type"/> is any of the numeric types</returns>
         public static bool IsNumeric(this Type type)
         {
+            type.ValidateArgument(nameof(type));
+
             return _numericTypes.Contains(Nullable.GetUnderlyingType(type) ?? type);
         }
 

@@ -44,5 +44,65 @@
             What professors signed this result.
             </summary>
         </member>
+        <member name="T:Sels.Core.Testing.Models.Person">
+            <summary>
+            Simple model for testing reflection.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.Person.Id">
+            <summary>
+            The unique id.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.Person.Name">
+            <summary>
+            The first name of the person.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.Person.SurName">
+            <summary>
+            The family name.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.Person.BirthDay">
+            <summary>
+            When the person was born.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.Person.ResidenceId">
+            <summary>
+            Id of the residence.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Testing.Models.Residence">
+            <summary>
+            Simple model for testing reflection.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.Residence.Id">
+            <summary>
+            The unique id.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.Residence.Street">
+            <summary>
+            The street name.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.Residence.HouseNumber">
+            <summary>
+            The house number.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.Residence.City">
+            <summary>
+            The city name.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Testing.Models.Residence.PostalCode">
+            <summary>
+            The postal code.
+            </summary>
+        </member>
     </members>
 </doc>

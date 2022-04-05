@@ -39,6 +39,17 @@ namespace System
             return Regex.Replace(value, @"\d", "");
         }
         /// <summary>
+        /// Returns <paramref name="value"/> where all whitespace characters are removed.
+        /// </summary>
+        /// <param name="value">The value to remove the whitespace from</param>
+        /// <returns><paramref name="value"/> with all whitespace removed</returns>
+        public static string GetWithoutWhitespace(this string value)
+        {
+            value.ValidateArgument(nameof(value));
+
+            return Regex.Replace(value, @"\s+", "");
+        }
+        /// <summary>
         /// Checks if <paramref name="value"/> is null or empty.
         /// </summary>
         /// <param name="value">The string to check</param>
