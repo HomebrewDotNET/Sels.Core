@@ -186,13 +186,13 @@ namespace Sels.Core.Data.SQL.Query
         /// <typeparam name="T">The type to get the table name from</typeparam>
         /// <param name="datasetAlias">Optional alias for the dataset. If a type is used the alias defined for the type is taken</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived From<T>(object? datasetAlias = null) => From(typeof(T).Name, typeof(T));
+        TDerived From<T>(object? datasetAlias = null) => From(typeof(T).Name, datasetAlias ?? typeof(T));
         /// <summary>
         /// Defines the table to select from by using the name of <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="datasetAlias">Optional alias for the dataset. If a type is used the alias defined for the type is taken</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived From(object? datasetAlias = null) => From<TEntity>();
+        TDerived From(object? datasetAlias = null) => From<TEntity>(datasetAlias);
         /// <summary>
         /// Defines the sub query to select from.
         /// </summary>

@@ -1,5 +1,7 @@
 ﻿using Sels.Core.Data.SQL.Query.Compilation;
 using Sels.Core.Data.SQL.Query.Expressions;
+using Sels.Core.Data.SQL.Query.Expressions.Condition;
+using Sels.Core.Data.SQL.Query.Expressions.Join;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,14 +81,14 @@ namespace Sels.Core.Data.SQL.Query
         #endregion
 
         /// <inheritdoc/>
-        protected override void AddConditionExpression(IConditionExpression conditionExpression)
+        protected override void AddConditionExpression(ConditionGroupExpression<TEntity> conditionExpression)
         {
             conditionExpression.ValidateArgument(nameof(conditionExpression));
 
             Expression(conditionExpression, SelectExpressionPositions.Where);
         }
         /// <inheritdoc/>
-        protected override void AddJoinExpression(JoinExpression joinExpression)
+        protected override void AddJoinExpression(JoinExpression<TEntity> joinExpression)
         {
             joinExpression.ValidateArgument(nameof(joinExpression));
 

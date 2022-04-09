@@ -59,9 +59,10 @@ namespace Sels.Core.Data.MySQL.Test
         public void BuildsCorrectSelectQueryWithSubQuery()
         {
             // Arrange
-            var expected = "SELECT Q.Name, Q.Amount FROM (SELECT P.Name, Count(*) as Amount FROM Person P GROUP BY P.Name) Q".GetWithoutWhitespace().ToLower();
+            var expected = "SELECT Q.Name, Q.Amount FROM (SELECT P.Name, Count(*) as Amount FROM Person P GROUP BY P.Name) Q WHERE Q.Amount > 1".GetWithoutWhitespace().ToLower();
             var builder = MySql.Select().Column("Q.Name").Column("Q.Amount")
-                                .FromQuery(MySql.Select<Person>().Column(x => x.Name).CountAll("Amount").From().GroupBy(x => x.Name), "Q");
+                                .FromQuery(MySql.Select<Person>().Column(x => x.Name).CountAll("Amount").From().GroupBy(x => x.Name), "Q")
+                                .Where(x => x.Column("Q.Amount").GreaterThan(1));
 
             // Act
             var query = builder.Build();
@@ -107,8 +108,8 @@ namespace Sels.Core.Data.MySQL.Test
             // Arrange
             var expected = "SELECT R.* FROM Residence R INNER JOIN Person P ON P.ResidenceId = R.Id WHERE P.Id = @Id".GetWithoutWhitespace().ToLower();
             var builder = MySql.Select<Residence>().AllOf<Residence>().From()
-                                .Join<Person>(Joins.Inner).On<Person>(x => x.ResidenceId).To(x => x.Id).Exit()
-                                .WhereColumn<Person>(x => x.Id).EqualTo().Parameter("Id").Exit();
+                                .Join<Person>(Joins.Inner, x => x.On<Person>(x => x.ResidenceId).To(x => x.Id))
+                                .Where(w => w.Column<Person>(x => x.Id).EqualTo().Parameter(x => x.Id));
 
             // Act
             var query = builder.Build();
@@ -122,13 +123,45 @@ namespace Sels.Core.Data.MySQL.Test
         public void BuildsCorrectSelectQueryWithConditions()
         {
             // Arrange
-            var expected = "SELECT * From Person P WHERE P.Id >= 250 AND NOT (P.Name != @Name OR NOT P.SurName != @SurName) AND NOT P.ResidenceId = 5".GetWithoutWhitespace().ToLower();
+            var expected = "SELECT * From Person P WHERE P.Id >= 250 AND NOT (P.Name != @Name OR NOT P.SurName != @SurName) AND NOT P.ResidenceId NOT IN (1,2,3,4,5)".GetWithoutWhitespace().ToLower();
             var builder = MySql.Select<Person>().All().From()
-                                .WhereColumn(x => x.Id).GreaterOrEqualTo(250).And()
-                                .Not().WhereGroup(g => 
-                                            g.WhereColumn(x => x.Name).NotEqualTo().Parameter(x => x.Name).Or()
-                                             .Not().WhereColumn(x => x.SurName).NotEqualTo().Parameter(x => x.SurName)
-                                ).And().Not().WhereColumn(x => x.ResidenceId).EqualTo(5).Exit();
+                                .Where(w => w.Column(x => x.Id).GreaterOrEqualTo(250).And()
+                                             .Not().WhereGroup(g => g.Column(x => x.Name).NotEqualTo().Parameter(x => x.Name).Or()
+                                                                     .Not().Column(x => x.SurName).NotEqualTo().Parameter(x => x.SurName)).And()
+                                             .Not().Column(x => x.ResidenceId).NotIn().Values(1,2,3,4,5));
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithExistsCondition()
+        {
+            // Arrange
+            var expected = "SELECT * From Person P WHERE NOT EXISTS (SELECT * FROM Residence R WHERE R.Id = P.ResidenceId)".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>().All().From()
+                                .Where(x => x.Not().ExistsIn(MySql.Select<Residence>().All().From().Where(x => x.Column(x => x.Id).EqualTo().Column<Person>(x => x.ResidenceId))));
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithInSubQueryCondition()
+        {
+            // Arrange
+            var expected = "SELECT * From Person P WHERE P.ResidenceId IN (SELECT R.Id FROM Residence R WHERE R.Id <= 100)".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>().All().From()
+                                .Where(x => x.Column(x => x.ResidenceId).In()
+                                             .Query(MySql.Select<Residence>().Column(x => x.Id).From().Where(x => x.Column(x => x.Id).LesserOrEqualTo().Value(100))));
 
             // Act
             var query = builder.Build();

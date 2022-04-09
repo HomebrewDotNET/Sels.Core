@@ -6,13 +6,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Sels.Core.Attributes.Enumeration.Value;
 
-namespace Sels.Core.Data.SQL.Query.Expressions
+namespace Sels.Core.Data.SQL.Query.Expressions.Join
 {
     /// <summary>
     /// Expression that represents a sql join.
     /// </summary>
-    public class JoinExpression : BaseExpressionContainer
+    /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
+    public class JoinExpression<TEntity> : BaseExpressionContainer,
+        IOnJoinBuilder<TEntity>,
+        IToJoinBuilder<TEntity>,
+        IChainedJoinBuilder<TEntity>
     {
+        // Fields
+        private IExpression? _currentExpression;
+
         // Properties
         /// <summary>
         /// The type of the join.
@@ -27,13 +34,16 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         /// </summary>
         public List<(IExpression LeftExpression, IExpression RightExpression)> OnExpressions { get; } = new List<(IExpression LeftExpression, IExpression RightExpression)>();
 
-        /// <inheritdoc cref="JoinExpression"/>
+        /// <inheritdoc cref="JoinExpression{TEntity}"/>
         /// <param name="joinType"><inheritdoc cref="JoinType"/></param>
         /// <param name="tableExpression"><inheritdoc cref="TableExpression"/></param>
-        public JoinExpression(Joins joinType, IExpression tableExpression)
+        /// <param name="builder">Delegate for configuring the current expression</param>
+        public JoinExpression(Joins joinType, IExpression tableExpression, Action<IOnJoinBuilder<TEntity>> builder)
         {
             JoinType = joinType;
             TableExpression = tableExpression.ValidateArgument(nameof(tableExpression));
+            builder.ValidateArgument(nameof(builder))(this);
+            if (!OnExpressions.HasValue()) throw new InvalidOperationException($"No expressions created using {nameof(builder)}");
         }
 
         /// <inheritdoc/>
@@ -63,5 +73,34 @@ namespace Sels.Core.Data.SQL.Query.Expressions
             });
             
         }
+
+        /// <inheritdoc/>
+        public IToJoinBuilder<TEntity> OnExpression(IExpression sqlExpression)
+        {
+            sqlExpression.ValidateArgument(nameof(sqlExpression));
+            if (_currentExpression != null) throw new InvalidOperationException("Expression on left side already defined");
+
+            _currentExpression = sqlExpression;
+            return this;
+        }
+        /// <inheritdoc/>
+        public IChainedJoinBuilder<TEntity> ToExpression(IExpression sqlExpression)
+        {
+            sqlExpression.ValidateArgument(nameof(sqlExpression));
+            if (_currentExpression == null) throw new InvalidOperationException("No expression on the left side defined");
+
+            OnExpressions.Add((_currentExpression, sqlExpression));
+            _currentExpression = null;
+            return this;
+        }
+        /// <inheritdoc/>
+        public IOnJoinBuilder<TEntity> And()
+        {
+            return this;
+        }
+
+        #region Builder
+
+        #endregion
     }
 }

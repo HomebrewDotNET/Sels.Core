@@ -61,61 +61,115 @@
         <member name="M:Sels.Core.Data.SQL.Query.Expressions.ColumnExpression.ToSql(System.Text.StringBuilder,System.Func{System.Object,System.String},System.Func{System.String,System.String},System.Boolean,Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
             <inheritdoc/>
         </member>
-        <member name="T:Sels.Core.Data.SQL.Query.Expressions.ConditionExpression">
+        <member name="T:Sels.Core.Data.SQL.Query.Expressions.Condition.ComparisonConditionExpression">
             <summary>
-            Expression that represents a where clause where 2 expression are compared using an operator expression.
+            Expression that represents a condition where 2 expressions are compared using a operator expression
             </summary>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.ConditionExpression.IsNot">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.ComparisonConditionExpression.IsNot">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.ConditionExpression.LeftExpression">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.ComparisonConditionExpression.LeftExpression">
             <summary>
             Expression on the left side of the condition.
             </summary>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.ConditionExpression.OperatorExpression">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.ComparisonConditionExpression.OperatorExpression">
             <summary>
             Expression containing the comparator for the condition.
             </summary>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.ConditionExpression.RightExpression">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.ComparisonConditionExpression.RightExpression">
             <summary>
             Expression on the right side of the condition.
             </summary>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.ConditionExpression.LogicOperator">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.ComparisonConditionExpression.LogicOperator">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.ConditionExpression.Expressions">
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.ComparisonConditionExpression.#ctor(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <inheritdoc/>
+            <param name="expression"><inheritdoc cref="P:Sels.Core.Data.SQL.Query.Expressions.Condition.ComparisonConditionExpression.LeftExpression"/></param>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.ComparisonConditionExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.Expressions.ConditionExpression.#ctor(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
-            <inheritdoc/>
-            <param name="expression"><inheritdoc cref="P:Sels.Core.Data.SQL.Query.Expressions.ConditionExpression.LeftExpression"/></param>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.Expressions.ConditionExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
-            <inheritdoc/>
-        </member>
-        <member name="T:Sels.Core.Data.SQL.Query.Expressions.ConditionGroupExpression">
+        <member name="T:Sels.Core.Data.SQL.Query.Expressions.Condition.ConditionGroupExpression`1">
             <summary>
-            Expression that represents multiple conditions grouped together using ().
+            Expression that represents multiple conditions.
+            </summary>
+            <typeparam name="TEntity">The main entity to create the condition group for</typeparam>
+        </member>
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.ConditionGroupExpression`1.IsNot">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.ConditionGroupExpression`1.LogicOperator">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.ConditionGroupExpression`1.#ctor(System.Action{Sels.Core.Data.SQL.Query.IConditionExpressionBuilder{`0}},System.Boolean)">
+            <inheritdoc/>
+            <param name="builder">Delegate for configuring the current condition group</param>
+            <param name="isGrouped">If the condition in this expression should be grouped using ()</param>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.ConditionGroupExpression`1.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.Query.Expressions.Condition.FullConditionExpression">
+            <summary>
+            Expression that wraps another <see cref="T:Sels.Core.Data.SQL.Query.Expressions.IExpression"/> so it acts as a condition in a where clause.
             </summary>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.ConditionGroupExpression.IsNot">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.FullConditionExpression.IsNot">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.ConditionGroupExpression.Expressions">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.FullConditionExpression.Expression">
+            <summary>
+            The condition expression
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.FullConditionExpression.LogicOperator">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.ConditionGroupExpression.LogicOperator">
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.FullConditionExpression.#ctor(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <inheritdoc/>
+            <param name="expression">The condition expression</param>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.FullConditionExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.Expressions.ConditionGroupExpression.#ctor(System.Collections.Generic.IEnumerable{Sels.Core.Data.SQL.Query.Expressions.IExpression})">
-            <inheritdoc/>
-            <param name="expressions">The expressions to group</param>
+        <member name="T:Sels.Core.Data.SQL.Query.Expressions.Condition.BaseConditionExpression`1">
+            <summary>
+            Template for creating a new <see cref="T:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1"/>.
+            </summary>
+            <typeparam name="TEntity">The main entity to build the query for</typeparam>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.Expressions.ConditionGroupExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Condition.BaseConditionExpression`1.Expressions">
+            <summary>
+            The currently configured condition expressions.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.BaseConditionExpression`1.#ctor(System.Action{Sels.Core.Data.SQL.Query.IConditionExpressionBuilder{`0}},System.Boolean)">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Expressions.Condition.BaseConditionExpression`1"/>
+            <param name="builder">Delegate for configuring the current builder</param>
+            <param name="throwOnEmpty">If a <see cref="T:System.InvalidOperationException"/> should be thrown when <paramref name="builder"/> created no expressions</param>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.BaseConditionExpression`1.Not">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.BaseConditionExpression`1.WhereGroup(System.Action{Sels.Core.Data.SQL.Query.IConditionExpressionBuilder{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.BaseConditionExpression`1.FullExpression(Sels.Core.Data.SQL.Query.Expressions.IConditionExpression)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.BaseConditionExpression`1.Expression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.BaseConditionExpression`1.CompareTo(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Condition.BaseConditionExpression`1.And(Sels.Core.Data.SQL.Query.LogicOperators)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.Expressions.ConstantExpression">
@@ -187,32 +241,43 @@
         <member name="M:Sels.Core.Data.SQL.Query.Expressions.FunctionExpression.ToSql(System.Text.StringBuilder,System.Func{System.Object,System.String},System.Func{System.String,System.String},System.Boolean,Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
             <inheritdoc/>
         </member>
-        <member name="T:Sels.Core.Data.SQL.Query.Expressions.JoinExpression">
+        <member name="T:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1">
             <summary>
             Expression that represents a sql join.
             </summary>
+            <typeparam name="TEntity">The main entity to build the query for</typeparam>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.JoinExpression.JoinType">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1.JoinType">
             <summary>
             The type of the join.
             </summary>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.JoinExpression.TableExpression">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1.TableExpression">
             <summary>
             The table to join.
             </summary>
         </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.JoinExpression.OnExpressions">
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1.OnExpressions">
             <summary>
             List of expressions to join on.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.Expressions.JoinExpression.#ctor(Sels.Core.Data.SQL.Query.Joins,Sels.Core.Data.SQL.Query.Expressions.IExpression)">
-            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Expressions.JoinExpression"/>
-            <param name="joinType"><inheritdoc cref="P:Sels.Core.Data.SQL.Query.Expressions.JoinExpression.JoinType"/></param>
-            <param name="tableExpression"><inheritdoc cref="P:Sels.Core.Data.SQL.Query.Expressions.JoinExpression.TableExpression"/></param>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1.#ctor(Sels.Core.Data.SQL.Query.Joins,Sels.Core.Data.SQL.Query.Expressions.IExpression,System.Action{Sels.Core.Data.SQL.Query.IOnJoinBuilder{`0}})">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1"/>
+            <param name="joinType"><inheritdoc cref="P:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1.JoinType"/></param>
+            <param name="tableExpression"><inheritdoc cref="P:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1.TableExpression"/></param>
+            <param name="builder">Delegate for configuring the current expression</param>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.Expressions.JoinExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1.OnExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1.ToExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression`1.And">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.Expressions.ListExpression">
@@ -231,6 +296,19 @@
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.Expressions.ListExpression.ToSql(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
             <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.Query.Expressions.NullExpression">
+            <summary>
+            Expression that doesn't add any sql.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.NullExpression.ToSql(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.NullExpression.Value">
+            <summary>
+            The singleton instance.
+            </summary>
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.Expressions.OrderByExpression">
             <summary>
@@ -357,17 +435,12 @@
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.Expressions.IConditionExpression">
             <summary>
-            Expression that represents a where clause.
+            Expression that represents a condition in a where clause.
             </summary>
         </member>
         <member name="P:Sels.Core.Data.SQL.Query.Expressions.IConditionExpression.IsNot">
             <summary>
             If the current clause should be inverted 
-            </summary>
-        </member>
-        <member name="P:Sels.Core.Data.SQL.Query.Expressions.IConditionExpression.Expressions">
-            <summary>
-            The expressions that make up this conditions.
             </summary>
         </member>
         <member name="P:Sels.Core.Data.SQL.Query.Expressions.IConditionExpression.LogicOperator">
@@ -620,10 +693,10 @@
         <member name="M:Sels.Core.Data.SQL.Query.SelectQueryBuilder`1.Build(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.SelectQueryBuilder`1.AddConditionExpression(Sels.Core.Data.SQL.Query.Expressions.IConditionExpression)">
+        <member name="M:Sels.Core.Data.SQL.Query.SelectQueryBuilder`1.AddConditionExpression(Sels.Core.Data.SQL.Query.Expressions.Condition.ConditionGroupExpression{`0})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.SelectQueryBuilder`1.AddJoinExpression(Sels.Core.Data.SQL.Query.Expressions.JoinExpression)">
+        <member name="M:Sels.Core.Data.SQL.Query.SelectQueryBuilder`1.AddJoinExpression(Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression{`0})">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler`1">
@@ -643,439 +716,100 @@
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.IConditionBuilder`2">
             <summary>
-            Builder for creating conditions for sql queries.
+            Builder for adding conditions to a sql query.
+            </summary>
+            <typeparam name="TEntity">The main entity to create the query for</typeparam>
+            <typeparam name="TDerived">The type of the builder to create the conditions for</typeparam>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.Where(System.Action{Sels.Core.Data.SQL.Query.IConditionExpressionBuilder{`0}})">
+            <summary>
+            Adds conditions to the current builder using <paramref name="builder"/>.
+            </summary>
+            <param name="builder">Builder for adding conditions</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1">
+            <summary>
+            Builder for creating condition expressions.
             </summary>
             <typeparam name="TEntity">The main entity to build the query for</typeparam>
-            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.Not">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1.Not">
             <summary>
             Inverts the result of the next condition by using the NOT keyword.
             </summary>
             <returns>Current selector for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.WhereGroup(System.Action{Sels.Core.Data.SQL.Query.IConditionBuilder{`0,`1}})">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1.WhereGroup(System.Action{Sels.Core.Data.SQL.Query.IConditionExpressionBuilder{`0}})">
             <summary>
             Any conditions created using <paramref name="builder"/> will be wrapped between ().
             </summary>
             <param name="builder">The builder to create the conditions within the codition group</param>
             <returns>Current builder for creating more conditions</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.WhereColumn(System.Object,System.String)">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1.FullExpression(Sels.Core.Data.SQL.Query.Expressions.IConditionExpression)">
             <summary>
-            Creates a condition for <paramref name="column"/>.
+            Adds a full sql condition expression.
             </summary>
-            <param name="dataset">Optional dataset alias to select <paramref name="column"/> from</param>
-            <param name="column">The column to create the condition for</param>
-            <returns>Builder for selecting what to compare to <paramref name="column"/></returns>
+            <param name="expression">The sql condition expression to add</param>
+            <returns>Current builder for creating more conditions</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.WhereColumn(System.String)">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1.FullExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
             <summary>
-            Creates a condition for <paramref name="column"/>.
-            </summary>
-            <param name="column">The column to create the condition for</param>
-            <returns>Builder for selecting what to compare to <paramref name="column"/></returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.WhereColumn``1(System.Object,System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
-            <summary>
-            Creates a condition for column where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">The type to select the property from</typeparam>
-            <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken</param>
-            <param name="property">The expression that points to the property to use</param>
-            <returns>Builder for selecting what to compare to the column selected by <paramref name="property"/></returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.WhereColumn``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
-            <summary>
-            Creates a condition for column where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">The type to select the property from</typeparam>
-            <param name="property">The expression that points to the property to use</param>
-            <returns>Builder for selecting what to compare to the column selected by <paramref name="property"/></returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.WhereColumn(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
-            <summary>
-            Creates a condition for column where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
-            </summary>
-            <param name="property">The expression that points to the property to use</param>
-            <returns>Builder for selecting what to compare to the column selected by <paramref name="property"/></returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.WhereColumn(System.Object,System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
-            <summary>
-            Creates a condition for column where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
-            </summary>
-            <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken</param>
-            <param name="property">The expression that points to the property to use</param>
-            <returns>Builder for selecting what to compare to the column selected by <paramref name="property"/></returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.WhereExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
-            <summary>
-            Adds a sql expression on the left side of the condition.
+            Adds a full sql condition expression.
             </summary>
             <param name="expression">The sql expression to add</param>
-            <returns>Builder for selecting what to compare to the expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.WhereExpression(System.String)">
-            <summary>
-            Adds a raw sql expression on the left side of the condition.
-            </summary>
-            <param name="sqlExpression">String containing the sql expression</param>
-            <returns>Builder for selecting what to compare to the expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionBuilder`2.WhereExpression(System.Action{System.Text.StringBuilder})">
-            <summary>
-            Adds a raw sql expression on the left side of the condition.
-            </summary>
-            <param name="sqlExpression">Delegate that adds the sql expression to the provided string builder</param>
-            <returns>Builder for selecting what to compare to the expression</returns>
-        </member>
-        <member name="T:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2">
-            <summary>
-            Builder for configuring how to compare 2 sql expressions.
-            </summary>
-            <typeparam name="TEntity">The main entity to build the query for</typeparam>
-            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.CompareTo(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
-            <summary>
-            Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
-            </summary>
-            <param name="sqlExpression">The sql expression containing the operator</param>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.CompareTo(System.String)">
-            <summary>
-            Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
-            </summary>
-            <param name="sqlExpression">String containing the sql operator</param>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.CompareTo(System.Action{System.Text.StringBuilder})">
-            <summary>
-            Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
-            </summary>
-            <param name="sqlExpression">Delegate that adds the sql operator to compare to the provided string builder</param>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.EqualTo">
-            <summary>
-            The expressions should be equal.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.NotEqualTo">
-            <summary>
-            The expressions should not be equal.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.GreaterThan">
-            <summary>
-            First expression should be greater than second expression.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.LesserThan">
-            <summary>
-            First expression should be lesser than second expression.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.GreaterOrEqualTo">
-            <summary>
-            First expression should be greater or equal to second expression.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.LesserOrEqualTo">
-            <summary>
-            First expression should be lesser or equal to second expression.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.Like">
-            <summary>
-            First expression should be like the pattern defined in the second expression.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.NotLike">
-            <summary>
-            First expression should not be like the pattern defined in the second expression.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.In">
-            <summary>
-            First expression should exist in a list of values defined by the second expression.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.NotIn">
-            <summary>
-            First expression should not exist in a list of values defined by the second expression.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.ExistsIn">
-            <summary>
-            First expression should exist in any of the rows returned by the sub query.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.NotExistsIn">
-            <summary>
-            First expression should not exist in any of the rows returned by the sub query.
-            </summary>
-            <returns>Builder for selecting what to compare to the first expression</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.Between(System.Object,System.Object)">
-            <summary>
-            First expression should be greater than <paramref name="lower"/> and lesser than <paramref name="top"/>.
-            </summary>
-            <param name="lower">The lowest value in the range</param>
-            <param name="top">The highest value in the range</param>
             <returns>Current builder for creating more conditions</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.NotBetween(System.Object,System.Object)">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1.FullExpression(System.String)">
             <summary>
-            First expression should be not greater than <paramref name="lower"/> and not lesser than <paramref name="top"/>.
+            Adds a full sql condition expression.
             </summary>
-            <param name="lower">The lowest value in the range</param>
-            <param name="top">The highest value in the range</param>
+            <param name="expression">String containing the sql expression</param>
             <returns>Current builder for creating more conditions</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.IsNull">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1.FullExpression(System.Action{System.Text.StringBuilder})">
             <summary>
-            Checks if first expression is equal to NULL.
+            Adds a full sql condition expression.
             </summary>
+            <param name="expression">String containing the sql expression</param>
             <returns>Current builder for creating more conditions</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.IsNotNull">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1.ExistsIn(System.Func{Sels.Core.Data.SQL.Query.QueryBuilderOptions,System.String})">
             <summary>
-            Checks if first expression is not equal to NULL.
-            </summary>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.EqualTo(System.Object)">
-            <summary>
-            First expression should be equal to <paramref name="constantValue"/>.
-            </summary>
-            <param name="constantValue">Object containing the constant sql value</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.NotEqualTo(System.Object)">
-            <summary>
-            First expression should not be equal to <paramref name="constantValue"/>.
-            </summary>
-            <param name="constantValue">Object containing the constant sql value</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.GreaterThan(System.Object)">
-            <summary>
-            First expression should be greater than <paramref name="constantValue"/>.
-            </summary>
-            <param name="constantValue">Object containing the constant sql value</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.LesserThan(System.Object)">
-            <summary>
-            First expression should be lesser than <paramref name="constantValue"/>.
-            </summary>
-            <param name="constantValue">Object containing the constant sql value</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.GreaterOrEqualTo(System.Object)">
-            <summary>
-            First expression should be greater or equal to <paramref name="constantValue"/>.
-            </summary>
-            <param name="constantValue">Object containing the constant sql value</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.LesserOrEqualTo(System.Object)">
-            <summary>
-            First expression should be lesser or equal to <paramref name="constantValue"/>.
-            </summary>
-            <param name="constantValue">Object containing the constant sql value</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.Like(System.String)">
-            <summary>
-            First expression should be like <paramref name="pattern"/>.
-            </summary>
-            <param name="pattern">The pattern that the first expression should be like</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.NotLike(System.String)">
-            <summary>
-            First expression should not be like <paramref name="pattern"/>.
-            </summary>
-            <param name="pattern">The pattern that the first expression should not be like</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.In(System.Collections.Generic.IEnumerable{System.Object})">
-            <summary>
-            First expression should exist in a list of values.
-            </summary>
-            <param name="values">List of values that the expression should be compared to</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.In(System.Object,System.Object[])">
-            <summary>
-            First expression should exist in a list of values.
-            </summary>
-            <param name="value">The first value in the list of values to compare to</param>
-            <param name="values">Any additional values to conpare to</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.NotIn(System.Collections.Generic.IEnumerable{System.Object})">
-            <summary>
-            First expression should not exist in a list of values.
-            </summary>
-            <param name="values">List of values that the expression should be compared to</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorBuilder`2.NotIn(System.Object,System.Object[])">
-            <summary>
-            First expression should not exist in a list of values.
-            </summary>
-            <param name="value">The first value in the list of values to compare to</param>
-            <param name="values">Any additional values to conpare to</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="T:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2">
-            <summary>
-            Builder for selecting what to compare to the first expression.
-            </summary>
-            <typeparam name="TEntity">The main entity to build the query for</typeparam>
-            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Column(System.Object,System.String)">
-            <summary>
-            Compares the first expression to a column.
-            </summary>
-            <param name="dataset">Optional dataset alias to select <paramref name="column"/> from</param>
-            <param name="column">The column to create the condition for</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Column``1(System.Object,System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
-            <summary>
-            Compares the first expression to a column where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">The type to select the property from</typeparam>
-            <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken</param>
-            <param name="property">The expression that points to the property to use</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Column(System.String)">
-            <summary>
-            Compares the first expression to a column.
-            </summary>
-            <param name="column">The column to create the condition for</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Column(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
-            <summary>
-            Compares the first expression to a column where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
-            </summary>
-            <param name="property">The expression that points to the property to use</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Column``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
-            <summary>
-            Compares the first expression to a column where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">The type to select the property from</typeparam>
-            <param name="property">The expression that points to the property to use</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Column(System.Object,System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
-            <summary>
-            Compares the first expression to a column where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
-            </summary>
-            <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken</param>
-            <param name="property">The expression that points to the property to use</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Value(System.Object)">
-            <summary>
-            Compares an expression to a constant sql value.
-            </summary>
-            <param name="constantValue">Object containing the constant sql value to compare to</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Parameter(System.String)">
-            <summary>
-            Compares the first expression to a parameter.
-            </summary>
-            <param name="parameter">The column to create the condition for</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Parameter``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
-            <summary>
-            Compares the first expression to a parameter where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">The type to select the property from</typeparam>
-            <param name="property">The expression that points to the property to use</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Parameter(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
-            <summary>
-            Compares the first expression to a parameter where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
-            </summary>
-            <param name="property">The expression that points to the property to use</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Expression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
-            <summary>
-            Compares an expression to the sql expression defined in <paramref name="sqlExpression"/>.
-            </summary>
-            <param name="sqlExpression">The sql expression to compare to</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Expression(System.String)">
-            <summary>
-            Compares an expression to the sql expression defined in <paramref name="sqlExpression"/>.
-            </summary>
-            <param name="sqlExpression">String containing the sql expression to compare to</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Expression(System.Action{System.Text.StringBuilder})">
-            <summary>
-            Compares an expression to the sql expression defined in <paramref name="sqlExpression"/>.
-            </summary>
-            <param name="sqlExpression">Delegate that adds the sql expression to compare to the provided string builder</param>
-            <returns>Current builder for creating more conditions</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Query(System.Func{Sels.Core.Data.SQL.Query.QueryBuilderOptions,System.String})">
-            <summary>
-            Compares an expression to a sub query.
+            Condition is true when any rows are returned by the sub query.
             </summary>
             <param name="query">Delegate that returns the query string</param>
-            <returns>Current builder for creating more conditions</returns>
+            <returns>Builder for creating the sub query expression</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Query(System.String)">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1.ExistsIn(System.String)">
             <summary>
-            Compares an expression to a sub query.
+            Condition is true when any rows are returned by the sub query.
             </summary>
             <param name="query">The query string</param>
-            <returns>Current builder for creating more conditions</returns>
+            <returns>Builder for creating the sub query expression</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Query(Sels.Core.Data.SQL.Query.IQueryBuilder)">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionExpressionBuilder`1.ExistsIn(Sels.Core.Data.SQL.Query.IQueryBuilder)">
             <summary>
-            Compares an expression to a sub query.
+            Condition is true when any rows are returned by the sub query.
             </summary>
             <param name="builder">Builder for creating the sub query</param>
-            <returns>Current builder for creating more conditions</returns>
+            <returns>Builder for creating the sub query expression</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Values(System.Collections.Generic.IEnumerable{System.Object})">
+        <member name="T:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`1">
+            <summary>
+            Builder for creating the expressionon the right-hand side of a condition.
+            </summary>
+            <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`1.Values(System.Collections.Generic.IEnumerable{System.Object})">
             <summary>
             Compares an expression to a list of values.
             </summary>
             <param name="values">List of values that the expression should be compared to</param>
             <returns>Current builder for creating more conditions</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Values(System.Object,System.Object[])">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`1.Values(System.Object,System.Object[])">
             <summary>
             Compares an expression to a list of values.
             </summary>
@@ -1083,7 +817,7 @@
             <param name="values">Any additional values to conpare to</param>
             <returns>Current builder for creating more conditions</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Parameters(System.String,System.String[])">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`1.Parameters(System.String,System.String[])">
             <summary>
             Compares an expression to a list of sql parameters.
             </summary>
@@ -1091,38 +825,357 @@
             <param name="parameters">Any additional parameters in the list of values to conpare to</param>
             <returns>Current builder for creating more conditions</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`2.Parameters(System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionRightExpressionBuilder`1.Parameters(System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Compares an expression to a list of sql parameters.
             </summary>
             <param name="parameters">The list of sql parameters to compare to</param>
             <returns>Current builder for creating more conditions</returns>
         </member>
-        <member name="T:Sels.Core.Data.SQL.Query.IChainedConditionBuilder`2">
+        <member name="T:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1">
+            <summary>
+            Builder for configuring how to compare 2 sql expressions.
+            </summary>
+            <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.CompareTo(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <summary>
+            Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
+            </summary>
+            <param name="sqlExpression">The sql expression containing the operator</param>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.CompareTo(System.String)">
+            <summary>
+            Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
+            </summary>
+            <param name="sqlExpression">String containing the sql operator</param>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.CompareTo(System.Action{System.Text.StringBuilder})">
+            <summary>
+            Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
+            </summary>
+            <param name="sqlExpression">Delegate that adds the sql operator to compare to the provided string builder</param>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.EqualTo">
+            <summary>
+            The expressions should be equal.
+            </summary>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.NotEqualTo">
+            <summary>
+            The expressions should not be equal.
+            </summary>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.GreaterThan">
+            <summary>
+            First expression should be greater than second expression.
+            </summary>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.LesserThan">
+            <summary>
+            First expression should be lesser than second expression.
+            </summary>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.GreaterOrEqualTo">
+            <summary>
+            First expression should be greater or equal to second expression.
+            </summary>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.LesserOrEqualTo">
+            <summary>
+            First expression should be lesser or equal to second expression.
+            </summary>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.Like">
+            <summary>
+            First expression should be like the pattern defined in the second expression.
+            </summary>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.NotLike">
+            <summary>
+            First expression should not be like the pattern defined in the second expression.
+            </summary>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.In">
+            <summary>
+            First expression should exist in a list of values defined by the second expression.
+            </summary>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.NotIn">
+            <summary>
+            First expression should not exist in a list of values defined by the second expression.
+            </summary>
+            <returns>Builder for selecting what to compare to the first expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.Between(System.Object,System.Object)">
+            <summary>
+            First expression should be greater than <paramref name="lower"/> and lesser than <paramref name="top"/>.
+            </summary>
+            <param name="lower">The lowest value in the range</param>
+            <param name="top">The highest value in the range</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.NotBetween(System.Object,System.Object)">
+            <summary>
+            First expression should be not greater than <paramref name="lower"/> and not lesser than <paramref name="top"/>.
+            </summary>
+            <param name="lower">The lowest value in the range</param>
+            <param name="top">The highest value in the range</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.IsNull">
+            <summary>
+            Checks if first expression is equal to NULL.
+            </summary>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.IsNotNull">
+            <summary>
+            Checks if first expression is not equal to NULL.
+            </summary>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.EqualTo(System.Object)">
+            <summary>
+            First expression should be equal to <paramref name="constantValue"/>.
+            </summary>
+            <param name="constantValue">Object containing the constant sql value</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.NotEqualTo(System.Object)">
+            <summary>
+            First expression should not be equal to <paramref name="constantValue"/>.
+            </summary>
+            <param name="constantValue">Object containing the constant sql value</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.GreaterThan(System.Object)">
+            <summary>
+            First expression should be greater than <paramref name="constantValue"/>.
+            </summary>
+            <param name="constantValue">Object containing the constant sql value</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.LesserThan(System.Object)">
+            <summary>
+            First expression should be lesser than <paramref name="constantValue"/>.
+            </summary>
+            <param name="constantValue">Object containing the constant sql value</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.GreaterOrEqualTo(System.Object)">
+            <summary>
+            First expression should be greater or equal to <paramref name="constantValue"/>.
+            </summary>
+            <param name="constantValue">Object containing the constant sql value</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.LesserOrEqualTo(System.Object)">
+            <summary>
+            First expression should be lesser or equal to <paramref name="constantValue"/>.
+            </summary>
+            <param name="constantValue">Object containing the constant sql value</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.Like(System.String)">
+            <summary>
+            First expression should be like <paramref name="pattern"/>.
+            </summary>
+            <param name="pattern">The pattern that the first expression should be like</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.NotLike(System.String)">
+            <summary>
+            First expression should not be like <paramref name="pattern"/>.
+            </summary>
+            <param name="pattern">The pattern that the first expression should not be like</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.In(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            First expression should exist in a list of values.
+            </summary>
+            <param name="values">List of values that the expression should be compared to</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.In(System.Object,System.Object[])">
+            <summary>
+            First expression should exist in a list of values.
+            </summary>
+            <param name="value">The first value in the list of values to compare to</param>
+            <param name="values">Any additional values to conpare to</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.NotIn(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            First expression should not exist in a list of values.
+            </summary>
+            <param name="values">List of values that the expression should be compared to</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder`1.NotIn(System.Object,System.Object[])">
+            <summary>
+            First expression should not exist in a list of values.
+            </summary>
+            <param name="value">The first value in the list of values to compare to</param>
+            <param name="values">Any additional values to conpare to</param>
+            <returns>Current builder for creating more conditions</returns>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2">
+            <summary>
+            Builder for creating expressions in a condition that can appear both on the left and right side of the condition.
+            </summary>
+            <typeparam name="TEntity">The main entity to build the query for</typeparam>
+            <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Expression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <summary>
+            Adds a sql expression to the condition.
+            </summary>
+            <param name="expression">The sql expression to add</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Expression(System.String)">
+            <summary>
+            Adds a raw sql expression to the condition.
+            </summary>
+            <param name="sqlExpression">String containing the sql expression</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Expression(System.Action{System.Text.StringBuilder})">
+            <summary>
+            Adds a sql expression to the condition.
+            </summary>
+            <param name="sqlExpression">Delegate that adds the sql expression to the provided string builder</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Column(System.Object,System.String)">
+            <summary>
+            Adds a column expression.
+            </summary>
+            <param name="dataset">Optional dataset alias to select <paramref name="column"/> from</param>
+            <param name="column">The column to create the condition for</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Column(System.String)">
+            <summary>
+            Adds a column expression.
+            </summary>
+            <param name="column">The column to create the condition for</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Column``1(System.Object,System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+            <summary>
+            Adds a column expression where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to select the property from</typeparam>
+            <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken</param>
+            <param name="property">The expression that points to the property to use</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Column``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+            <summary>
+            Adds a column expression where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to select the property from</typeparam>
+            <param name="property">The expression that points to the property to use</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Column(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+            <summary>
+            Adds a column expression where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="property">The expression that points to the property to use</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Column(System.Object,System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+            <summary>
+            Adds a column expression where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken</param>
+            <param name="property">The expression that points to the property to use</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Value(System.Object)">
+            <summary>
+            Adds a constant sql value expression.
+            </summary>
+            <param name="constantValue">Object containing the constant sql value to compare to</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Parameter(System.String)">
+            <summary>
+            Adds a sql parameter expression.
+            </summary>
+            <param name="parameter">The name of the sql parameter</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Parameter``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+            <summary>
+            Adds a sql parameter expression where the parameter name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to select the property from</typeparam>
+            <param name="property">The expression that points to the property to use</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Parameter(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+            <summary>
+            Adds a sql parameter expression where the parameter name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="property">The expression that points to the property to use</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Query(System.Func{Sels.Core.Data.SQL.Query.QueryBuilderOptions,System.String})">
+            <summary>
+            Adds a sub query expression.
+            </summary>
+            <param name="query">Delegate that returns the query string</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Query(System.String)">
+            <summary>
+            Adds a sub query expression.
+            </summary>
+            <param name="query">The query string</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IConditionSharedExpressionBuilder`2.Query(Sels.Core.Data.SQL.Query.IQueryBuilder)">
+            <summary>
+            Adds a sub query expression.
+            </summary>
+            <param name="builder">Builder for creating the sub query</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.Query.IChainedConditionBuilder`1">
             <summary>
             Builder for creating conditions for sql queries chained after previously created expressions.
             </summary>
             <typeparam name="TEntity">The main entity to build the query for</typeparam>
-            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IChainedConditionBuilder`2.And(Sels.Core.Data.SQL.Query.LogicOperators)">
+        <member name="M:Sels.Core.Data.SQL.Query.IChainedConditionBuilder`1.And(Sels.Core.Data.SQL.Query.LogicOperators)">
             <summary>
             Sets the logic operator on how to join the current condition and the condition created after calling this method.
             </summary>
             <param name="logicOperator">The logic operator to use</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IChainedConditionBuilder`2.Or">
+        <member name="M:Sels.Core.Data.SQL.Query.IChainedConditionBuilder`1.Or">
             <summary>
             Current condition and the condition created after calling this method either need to result in true.
             </summary>
             <returns>Current builder for method chaining</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IChainedConditionBuilder`2.Exit">
-            <summary>
-            Exits the current condition builder.
-            </summary>
-            <returns>Builder of type <typeparamref name="TDerived"/> to continue method chaining</returns>
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.IQueryBuilder`2">
             <summary>
@@ -1224,85 +1277,72 @@
             <typeparam name="TEntity">The main entity to build the query for</typeparam>
             <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IQueryJoinBuilder`2.JoinExpression(Sels.Core.Data.SQL.Query.Joins,Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+        <member name="M:Sels.Core.Data.SQL.Query.IQueryJoinBuilder`2.Join(Sels.Core.Data.SQL.Query.Joins,System.String,System.Object,System.Action{Sels.Core.Data.SQL.Query.IOnJoinBuilder{`0}})">
             <summary>
-            Defines what to join.
-            </summary>
-            <param name="joinType">The type of the join to perform</param>
-            <param name="sqlExpression">Expression containing what to join</param>
-            <returns>Builder for selecting what to join on</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IQueryJoinBuilder`2.JoinExpression(Sels.Core.Data.SQL.Query.Joins,System.String)">
-            <summary>
-            Defines what to join.
-            </summary>
-            <param name="joinType">The type of the join to perform</param>
-            <param name="sqlExpression">String containing what to join</param>
-            <returns>Builder for selecting what to join on</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IQueryJoinBuilder`2.JoinExpression(Sels.Core.Data.SQL.Query.Joins,System.Action{System.Text.StringBuilder})">
-            <summary>
-            Defines what to join.
-            </summary>
-            <param name="joinType">The type of the join to perform</param>
-            <param name="sqlExpression">Delegate that appends the sql to the provided builder</param>
-            <returns>Builder for selecting what to join on</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IQueryJoinBuilder`2.Join(Sels.Core.Data.SQL.Query.Joins,System.String,System.Object)">
-            <summary>
-            Defines the table to join.
+            Defines what table to join.
             </summary>
             <param name="joinType">The type of the join to perform</param>
             <param name="table">The table to select from</param>
             <param name="datasetAlias">Optional alias for the column dataset. If a type is used the alias defined for the type is taken</param>
-            <returns>Builder for selecting what to join on</returns>
+            <param name="builder">Builder for defining what columns to join on</param>
+            <returns>The builder used to call this method</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IQueryJoinBuilder`2.Join``1(Sels.Core.Data.SQL.Query.Joins)">
+        <member name="M:Sels.Core.Data.SQL.Query.IQueryJoinBuilder`2.Join(Sels.Core.Data.SQL.Query.Joins,System.String,System.Action{Sels.Core.Data.SQL.Query.IOnJoinBuilder{`0}})">
             <summary>
-            Defines the table to join by using the name of <typeparamref name="T"/>.
+            Defines what table to join.
+            </summary>
+            <param name="joinType">The type of the join to perform</param>
+            <param name="table">The table to select from</param>
+            <param name="builder">Builder for defining what columns to join on</param>
+            <returns>The builder used to call this method</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.IQueryJoinBuilder`2.Join``1(Sels.Core.Data.SQL.Query.Joins,System.Action{Sels.Core.Data.SQL.Query.IOnJoinBuilder{`0}})">
+            <summary>
+            Defines what table to join by using the name of <typeparamref name="T"/>.
             </summary>
             <typeparam name="T">The type to get the table name from</typeparam>
             <param name="joinType">The type of the join to perform</param>
-            <returns>Builder for selecting what to join on</returns>
+            <param name="builder">Builder for defining what columns to join on</param>
+            <returns>The builder used to call this method</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IQueryJoinBuilder`2.Join``1(Sels.Core.Data.SQL.Query.Joins,System.Object)">
+        <member name="M:Sels.Core.Data.SQL.Query.IQueryJoinBuilder`2.Join``1(Sels.Core.Data.SQL.Query.Joins,System.Object,System.Action{Sels.Core.Data.SQL.Query.IOnJoinBuilder{`0}})">
             <summary>
-            Defines the table to join by using the name of <typeparamref name="T"/>.
+            Defines what table to join by using the name of <typeparamref name="T"/>.
             </summary>
             <typeparam name="T">The type to get the table name from</typeparam>
             <param name="joinType">The type of the join to perform</param>
             <param name="datasetAlias">Optional alias for the column dataset. If a type is used the alias defined for the type is taken</param>
-            <returns>Builder for selecting what to join on</returns>
+            <param name="builder">Builder for defining what columns to join on</param>
+            <returns>The builder used to call this method</returns>
         </member>
-        <member name="T:Sels.Core.Data.SQL.Query.IOnJoinBuilder`2">
+        <member name="T:Sels.Core.Data.SQL.Query.IOnJoinBuilder`1">
             <summary>
             Builder for selecting the first column to join on.
             </summary>
             <typeparam name="TEntity">The main entity to build the query for</typeparam>
-            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`2.OnExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`1.OnExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
             <summary>
             Defines the expression to join from.
             </summary>
             <param name="sqlExpression">Expression containing what to join</param>
             <returns>Builder for selecting what to join on</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`2.OnExpression(System.String)">
+        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`1.OnExpression(System.String)">
             <summary>
             Defines the expression to join from.
             </summary>
             <param name="sqlExpression">String containing what to join from</param>
             <returns>Builder for selecting what to join to</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`2.OnExpression(System.Action{System.Text.StringBuilder})">
+        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`1.OnExpression(System.Action{System.Text.StringBuilder})">
             <summary>
             Defines the expression to join from.
             </summary>
             <param name="sqlExpression">Delegate that appends the sql to the provided builder</param>
             <returns>Builder for selecting what to join to</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`2.On(System.Object,System.String)">
+        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`1.On(System.Object,System.String)">
             <summary>
             Defines the expression to join from.
             </summary>
@@ -1310,7 +1350,7 @@
             <param name="column">The column name</param>
             <returns>Builder for selecting what to join to</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`2.On``1(System.Object,System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`1.On``1(System.Object,System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
             <summary>
             Defines the expression to join from where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
             </summary>
@@ -1319,21 +1359,21 @@
             <param name="property">The expression that points to the property to use</param>
             <returns>Builder for selecting what to join to</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`2.On(System.String)">
+        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`1.On(System.String)">
             <summary>
             Defines the expression to join from.
             </summary>
             <param name="column">The column name</param>
             <returns>Builder for selecting what to join to</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`2.On(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`1.On(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
             <summary>
             Defines the expression to join from where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
             </summary>
             <param name="property">The expression that points to the property to use</param>
             <returns>Builder for selecting what to join to</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`2.On``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`1.On``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
             <summary>
             Defines the expression to join from where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
             </summary>
@@ -1341,7 +1381,7 @@
             <param name="property">The expression that points to the property to use</param>
             <returns>Builder for selecting what to join to</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`2.On(System.Object,System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+        <member name="M:Sels.Core.Data.SQL.Query.IOnJoinBuilder`1.On(System.Object,System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
             <summary>
             Defines the expression to join from where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
             </summary>
@@ -1349,35 +1389,34 @@
             <param name="property">The expression that points to the property to use</param>
             <returns>Builder for selecting what to join to</returns>
         </member>
-        <member name="T:Sels.Core.Data.SQL.Query.IToJoinBuilder`2">
+        <member name="T:Sels.Core.Data.SQL.Query.IToJoinBuilder`1">
             <summary>
             Builder for selecting what to join to to join on.
             </summary>
             <typeparam name="TEntity">The main entity to build the query for</typeparam>
-            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`2.ToExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`1.ToExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
             <summary>
             Defines the expression to join to.
             </summary>
             <param name="sqlExpression">Expression containing what to join</param>
             <returns>Builder for selecting what to join on</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`2.ToExpression(System.String)">
+        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`1.ToExpression(System.String)">
             <summary>
             Defines the expression to join to.
             </summary>
             <param name="sqlExpression">String containing what to join to</param>
             <returns>Builder for selecting what to join to</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`2.ToExpression(System.Action{System.Text.StringBuilder})">
+        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`1.ToExpression(System.Action{System.Text.StringBuilder})">
             <summary>
             Defines the expression to join to.
             </summary>
             <param name="sqlExpression">Delegate that appends the sql to the provided builder</param>
             <returns>Builder for selecting what to join to</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`2.To(System.Object,System.String)">
+        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`1.To(System.Object,System.String)">
             <summary>
             Defines the expression to join to.
             </summary>
@@ -1385,7 +1424,7 @@
             <param name="column">The column name</param>
             <returns>Builder for creating more columns to join on or exit the current builder</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`2.To``1(System.Object,System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`1.To``1(System.Object,System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
             <summary>
             Defines the expression to join to where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
             </summary>
@@ -1394,21 +1433,21 @@
             <param name="property">The expression that points to the property to use</param>
             <returns>Builder for creating more columns to join on or exit the current builder</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`2.To(System.String)">
+        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`1.To(System.String)">
             <summary>
             Defines the expression to join to.
             </summary>
             <param name="column">The column name</param>
             <returns>Builder for creating more columns to join on or exit the current builder</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`2.To(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`1.To(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
             <summary>
             Defines the expression to join to where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
             </summary>
             <param name="property">The expression that points to the property to use</param>
             <returns>Builder for creating more columns to join on or exit the current builder</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`2.To``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`1.To``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
             <summary>
             Defines the expression to join to where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
             </summary>
@@ -1416,7 +1455,7 @@
             <param name="property">The expression that points to the property to use</param>
             <returns>Builder for creating more columns to join on or exit the current builder</returns>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`2.To(System.Object,System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+        <member name="M:Sels.Core.Data.SQL.Query.IToJoinBuilder`1.To(System.Object,System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
             <summary>
             Defines the expression to join to where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
             </summary>
@@ -1424,30 +1463,17 @@
             <param name="property">The expression that points to the property to use</param>
             <returns>Builder for creating more columns to join on or exit the current builder</returns>
         </member>
-        <member name="T:Sels.Core.Data.SQL.Query.IChainedJoinBuilder`2">
+        <member name="T:Sels.Core.Data.SQL.Query.IChainedJoinBuilder`1">
             <summary>
             Builder for defining more columns to join or creating more joins.
             </summary>
             <typeparam name="TEntity">The main entity to build the query for</typeparam>
-            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IChainedJoinBuilder`2.And">
+        <member name="M:Sels.Core.Data.SQL.Query.IChainedJoinBuilder`1.And">
             <summary>
             Returns current builder for defining more columns to join on.
             </summary>
             <returns>Current builder for method chaining</returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IChainedJoinBuilder`2.Also">
-            <summary>
-            Returns the current builder for defining another join.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.IChainedJoinBuilder`2.Exit">
-            <summary>
-            Exits the current join builder.
-            </summary>
-            <returns>Builder of type <typeparamref name="TDerived"/> to continue method chaining</returns>
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.ISelectQueryBuilder`2">
             <summary>
@@ -2206,43 +2232,10 @@
         <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.OutAlias``1(System.String@)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.JoinExpression(Sels.Core.Data.SQL.Query.Joins,Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.Join(Sels.Core.Data.SQL.Query.Joins,System.String,System.Object,System.Action{Sels.Core.Data.SQL.Query.IOnJoinBuilder{`0}})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.OnExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.ToExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.And">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.Also">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.Sels#Core#Data#SQL#Query#IChainedJoinBuilder{TEntity,TDerived}#Exit">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.Not">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.WhereGroup(System.Action{Sels.Core.Data.SQL.Query.IConditionBuilder{`0,`1}})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.WhereExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.CompareTo(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.Expression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.And(Sels.Core.Data.SQL.Query.LogicOperators)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.Sels#Core#Data#SQL#Query#IChainedConditionBuilder{TEntity,TDerived}#Exit">
+        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.Where(System.Action{Sels.Core.Data.SQL.Query.IConditionExpressionBuilder{`0}})">
             <inheritdoc/>
         </member>
         <member name="P:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.InnerExpressions">
@@ -2259,13 +2252,13 @@
             The instance of the derived class inheriting from the current class.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.AddJoinExpression(Sels.Core.Data.SQL.Query.Expressions.JoinExpression)">
+        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.AddJoinExpression(Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression{`0})">
             <summary>
             Adds a join expression to the current builder.
             </summary>
             <param name="joinExpression">The expression to add</param>
         </member>
-        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.AddConditionExpression(Sels.Core.Data.SQL.Query.Expressions.IConditionExpression)">
+        <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`2.AddConditionExpression(Sels.Core.Data.SQL.Query.Expressions.Condition.ConditionGroupExpression{`0})">
             <summary>
             Adds a condition expression to the current builder.
             </summary>

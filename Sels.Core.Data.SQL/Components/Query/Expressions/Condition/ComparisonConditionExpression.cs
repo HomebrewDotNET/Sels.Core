@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Data.SQL.Query.Expressions
+namespace Sels.Core.Data.SQL.Query.Expressions.Condition
 {
     /// <summary>
-    /// Expression that represents a where clause where 2 expression are compared using an operator expression.
+    /// Expression that represents a condition where 2 expressions are compared using a operator expression
     /// </summary>
-    public class ConditionExpression : BaseExpressionContainer, IConditionExpression
+    public class ComparisonConditionExpression : BaseExpressionContainer, IConditionExpression
     {
         // Properties
         /// <inheritdoc/>
@@ -28,12 +28,10 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         public IExpression RightExpression { get; set; }
         /// <inheritdoc/>
         public LogicOperators? LogicOperator { get; set; }
-        /// <inheritdoc/>
-        public IExpression[] Expressions => Helper.Collection.Enumerate(LeftExpression, OperatorExpression, RightExpression).ToArray();
 
         /// <inheritdoc/>
         /// <param name="expression"><inheritdoc cref="LeftExpression"/></param>
-        public ConditionExpression(IExpression expression)
+        public ComparisonConditionExpression(IExpression expression)
         {
             LeftExpression = expression.ValidateArgument(nameof(expression));
         }
@@ -47,7 +45,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
             if (OperatorExpression == null) throw new InvalidOperationException($"{nameof(OperatorExpression)} is not set");
             if (RightExpression == null) throw new InvalidOperationException($"{nameof(RightExpression)} is not set");
 
-            var expressions = Expressions;
+            var expressions = Helper.Collection.Enumerate(LeftExpression, OperatorExpression, RightExpression).ToArray();
             if (IsNot) builder.Append(Sql.Not).AppendSpace();
 
             expressions.Execute((i, x) =>

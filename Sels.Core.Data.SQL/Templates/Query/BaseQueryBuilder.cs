@@ -1,4 +1,6 @@
 ﻿using Sels.Core.Data.SQL.Query.Expressions;
+using Sels.Core.Data.SQL.Query.Expressions.Condition;
+using Sels.Core.Data.SQL.Query.Expressions.Join;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,18 +14,12 @@ namespace Sels.Core.Data.SQL.Query
     /// </summary>
     /// <typeparam name="TEntity">The main entity to create the query for</typeparam>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-    public abstract class BaseQueryBuilder<TEntity, TDerived> : IQueryBuilder<TEntity, TDerived>, IQueryJoinBuilder<TEntity, TDerived>, IOnJoinBuilder<TEntity, TDerived>, IToJoinBuilder<TEntity, TDerived>, IChainedJoinBuilder<TEntity, TDerived>, IConditionBuilder<TEntity, TDerived>, IChainedConditionBuilder<TEntity, TDerived>, IConditionOperatorBuilder<TEntity, TDerived>, IConditionRightExpressionBuilder<TEntity, TDerived>
+    public abstract class BaseQueryBuilder<TEntity, TDerived> : IQueryBuilder<TEntity, TDerived>, 
+        IQueryJoinBuilder<TEntity, TDerived>, 
+        IConditionBuilder<TEntity, TDerived>
     {
         // Fields
         private readonly Dictionary<Type, string> _aliases = new Dictionary<Type, string>();
-
-        // State
-        private JoinExpression? _lastJoinExpression;
-
-        private IConditionExpression? _lastConditionExpression;
-        private ConditionExpression? _lastTypedConditionExpression;
-        private Action<ConditionExpression> _conditionSetter;
-        private bool _nextConditionIsNot = false;
 
         // Properties
         /// <inheritdoc/>
@@ -84,143 +80,25 @@ namespace Sels.Core.Data.SQL.Query
 
         #region Join
         /// <inheritdoc/>
-        public IOnJoinBuilder<TEntity, TDerived> JoinExpression(Joins joinType, IExpression sqlExpression)
+        public TDerived Join(Joins joinType, string table, object? datasetAlias, Action<IOnJoinBuilder<TEntity>> builder)
         {
-            sqlExpression.ValidateArgument(nameof(sqlExpression));
+            table.ValidateArgument(nameof(table));
+            builder.ValidateArgument(nameof(builder));
 
-            _lastJoinExpression = new JoinExpression(joinType, sqlExpression);
-            AddJoinExpression(_lastJoinExpression);
-            return this;
-        }
-        /// <inheritdoc/>
-        public IToJoinBuilder<TEntity, TDerived> OnExpression(IExpression sqlExpression)
-        {
-            sqlExpression.ValidateArgument(nameof(sqlExpression));
-            if (_lastJoinExpression == null) throw new InvalidOperationException("No join expression was created");
-            _lastJoinExpression.OnExpressions.Add((sqlExpression, null));
-            return this;
-        }
-        /// <inheritdoc/>
-        public IChainedJoinBuilder<TEntity, TDerived> ToExpression(IExpression sqlExpression)
-        {
-            sqlExpression.ValidateArgument(nameof(sqlExpression));
-            if (_lastJoinExpression == null) throw new InvalidOperationException("No join expression was created");
-            var last = _lastJoinExpression.OnExpressions.Last();
-            _lastJoinExpression.OnExpressions.RemoveAt(_lastJoinExpression.OnExpressions.Count-1);
-            _lastJoinExpression.OnExpressions.Add((last.LeftExpression, sqlExpression));
-            return this;
-        }
-        /// <inheritdoc/>
-        public IOnJoinBuilder<TEntity, TDerived> And()
-        {
-            return this;
-        }
-        /// <inheritdoc/>
-        public IQueryJoinBuilder<TEntity, TDerived> Also()
-        {
-            _lastJoinExpression = null;
-            return this;
-        }
-        /// <inheritdoc/>
-        TDerived IChainedJoinBuilder<TEntity, TDerived>.Exit()
-        {
+            AddJoinExpression(new JoinExpression<TEntity>(joinType, new TableExpression(datasetAlias, table), builder));
+
             return Instance;
         }
         #endregion
 
         #region Condition
         /// <inheritdoc/>
-        public IConditionBuilder<TEntity, TDerived> Not()
-        {
-            _nextConditionIsNot = true;
-            return this;
-        }
-        /// <inheritdoc/>
-        public IChainedConditionBuilder<TEntity, TDerived> WhereGroup(Action<IConditionBuilder<TEntity, TDerived>> builder)
+        public TDerived Where(Action<IConditionExpressionBuilder<TEntity>> builder)
         {
             builder.ValidateArgument(nameof(builder));
-            var expressions = new List<IConditionExpression>();
-            var isNot = NextConditionIsInverted();
 
-            // Intercept conditions
-            var oldSetter = _conditionSetter;
-            _conditionSetter = x => expressions.Add(x);
-
-            // Create conditions
-            builder(this);
-
-            // Reset old setter
-            _conditionSetter = oldSetter;
-
-            AddCondition(new ConditionGroupExpression(expressions) { IsNot = isNot });
-            return this;
-        }
-        /// <inheritdoc/>
-        public IConditionOperatorBuilder<TEntity, TDerived> WhereExpression(IExpression expression)
-        {
-            expression.ValidateArgument(nameof(expression));
-            var isNot = NextConditionIsInverted();
-
-            AddCondition(new ConditionExpression(expression) { IsNot = isNot });
-            return this;
-        }
-        /// <inheritdoc/>
-        public IConditionRightExpressionBuilder<TEntity, TDerived> CompareTo(IExpression sqlExpression)
-        {
-            sqlExpression.ValidateArgument(nameof(sqlExpression));
-            if (_lastTypedConditionExpression == null) throw new InvalidOperationException("Expected expression to set but was null");
-            _lastTypedConditionExpression.OperatorExpression = sqlExpression;
-            return this;
-        }
-        /// <inheritdoc/>
-        public IChainedConditionBuilder<TEntity, TDerived> Expression(IExpression sqlExpression)
-        {
-            sqlExpression.ValidateArgument(nameof(sqlExpression));
-            if (_lastTypedConditionExpression == null) throw new InvalidOperationException("Expected expression to set but was null");
-            _lastTypedConditionExpression.RightExpression = sqlExpression;
-            return this;
-        }
-        /// <inheritdoc/>
-        public IConditionBuilder<TEntity, TDerived> And(LogicOperators logicOperator = LogicOperators.And)
-        {
-            if (_lastConditionExpression == null) throw new InvalidOperationException("Expected expression to set but was null");
-
-            _lastConditionExpression.LogicOperator = logicOperator;
-            _lastConditionExpression = null;
-            _lastTypedConditionExpression = null;
-            return this;
-        }
-        /// <inheritdoc/>
-        TDerived IChainedConditionBuilder<TEntity, TDerived>.Exit()
-        {
-            _lastConditionExpression = null;
-            _lastTypedConditionExpression = null;
+            AddConditionExpression(new ConditionGroupExpression<TEntity>(builder, false));
             return Instance;
-        }
-
-        private bool NextConditionIsInverted()
-        {
-            // Get value from is not and reset
-            var isNot = _nextConditionIsNot;
-            _nextConditionIsNot = false;
-            return isNot;
-        }
-        private void AddCondition(IConditionExpression expression)
-        {
-            _lastConditionExpression = expression;
-
-            if(expression is ConditionExpression conditionExpression)
-            {
-                _lastTypedConditionExpression = conditionExpression;
-
-                if(_conditionSetter != null)
-                {
-                    _conditionSetter(conditionExpression);
-                    return;
-                }
-            }
-
-            AddConditionExpression(expression);
         }
         #endregion
 
@@ -240,11 +118,11 @@ namespace Sels.Core.Data.SQL.Query
         /// Adds a join expression to the current builder.
         /// </summary>
         /// <param name="joinExpression">The expression to add</param>
-        protected abstract void AddJoinExpression(JoinExpression joinExpression);
+        protected abstract void AddJoinExpression(JoinExpression<TEntity> joinExpression);
         /// <summary>
         /// Adds a condition expression to the current builder.
         /// </summary>
         /// <param name="conditionExpression">The expression to add</param>
-        protected abstract void AddConditionExpression(IConditionExpression conditionExpression);
+        protected abstract void AddConditionExpression(ConditionGroupExpression<TEntity> conditionExpression);
     }
 }

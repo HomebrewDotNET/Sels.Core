@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Sels.Core.Data.SQL.Query.Expressions
 {
     /// <summary>
-    /// Expression that represents a where clause.
+    /// Expression that represents a condition in a where clause.
     /// </summary>
     public interface IConditionExpression : IExpressionContainer
     {
@@ -15,10 +15,6 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         /// If the current clause should be inverted 
         /// </summary>
         public bool IsNot { get; set; }
-        /// <summary>
-        /// The expressions that make up this conditions.
-        /// </summary>
-        public IExpression[] Expressions { get; }
         /// <summary>
         /// How the current condition and the next condition (if one exists) should be joined together.
         /// </summary>
