@@ -9,7 +9,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     /// <summary>
     /// Expression that represents an sql parameter.
     /// </summary>
-    public class ParameterExpression : IExpression
+    public class ParameterExpression : BaseExpression, IExpression
     {
         // Constants
         /// <summary>
@@ -30,7 +30,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
 

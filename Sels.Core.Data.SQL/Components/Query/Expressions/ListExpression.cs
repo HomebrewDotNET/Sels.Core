@@ -11,7 +11,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     /// <summary>
     /// Expression that represents a list of constant values in an sql query.
     /// </summary>
-    public class ListExpression : IExpression
+    public class ListExpression : BaseExpression, IExpression
     {
         /// <summary>
         /// Expressions that form the list of constant values.
@@ -26,7 +26,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
 

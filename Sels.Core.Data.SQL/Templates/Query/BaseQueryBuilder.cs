@@ -1,4 +1,5 @@
-﻿using Sels.Core.Data.SQL.Query.Expressions;
+﻿using Sels.Core.Data.SQL.Query.Compilation;
+using Sels.Core.Data.SQL.Query.Expressions;
 using Sels.Core.Data.SQL.Query.Expressions.Condition;
 using Sels.Core.Data.SQL.Query.Expressions.Join;
 using System;
@@ -13,17 +14,32 @@ namespace Sels.Core.Data.SQL.Query
     /// Template for creating a <see cref="IQueryBuilder"/>.
     /// </summary>
     /// <typeparam name="TEntity">The main entity to create the query for</typeparam>
+    /// <typeparam name="TPosition">Type that defines where in a query expressions should be located</typeparam>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-    public abstract class BaseQueryBuilder<TEntity, TDerived> : IQueryBuilder<TEntity, TDerived>, 
+    public abstract class BaseQueryBuilder<TEntity, TPosition, TDerived> : IQueryBuilder<TEntity, TPosition, TDerived>, 
         IQueryJoinBuilder<TEntity, TDerived>, 
         IConditionBuilder<TEntity, TDerived>
+        where TPosition : notnull
     {
         // Fields
         private readonly Dictionary<Type, string> _aliases = new Dictionary<Type, string>();
+        private readonly Dictionary<TPosition, List<IExpression>> _expressions = new();
+        private readonly IQueryCompiler<TPosition> _compiler;
 
         // Properties
         /// <inheritdoc/>
+        public IReadOnlyDictionary<TPosition, IExpression[]> Expressions => _expressions.ToDictionary(x => x.Key, x => x.Value.ToArray());
+        /// <inheritdoc/>
+        public IExpression[] InnerExpressions => _expressions.OrderBy(x => x.Key).SelectMany(x => x.Value).ToArray();
+        /// <inheritdoc/>
         public IReadOnlyDictionary<Type, string> Aliases => _aliases;
+
+        /// <inheritdoc cref="BaseQueryBuilder{TEntity, TPosition, TDerived}"/>
+        /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
+        public BaseQueryBuilder(IQueryCompiler<TPosition> compiler)
+        {
+            _compiler = compiler.ValidateArgument(nameof(compiler));
+        }
 
         #region Alias
         /// <inheritdoc/>
@@ -85,7 +101,8 @@ namespace Sels.Core.Data.SQL.Query
             table.ValidateArgument(nameof(table));
             builder.ValidateArgument(nameof(builder));
 
-            AddJoinExpression(new JoinExpression<TEntity>(joinType, new TableExpression(datasetAlias, table), builder));
+            var expression = new JoinExpression<TEntity>(joinType, new TableExpression(datasetAlias, table), builder);
+            Expression(expression, GetPositionForJoinExpression(expression));
 
             return Instance;
         }
@@ -97,32 +114,56 @@ namespace Sels.Core.Data.SQL.Query
         {
             builder.ValidateArgument(nameof(builder));
 
-            AddConditionExpression(new ConditionGroupExpression<TEntity>(builder, false));
+            var expression = new ConditionGroupExpression<TEntity>(builder, false);
+            Expression(expression, GetPositionForConditionExpression(expression));
             return Instance;
         }
         #endregion
 
-        // Abstractions
+        #region Expression
         /// <inheritdoc/>
-        public abstract IExpression[] InnerExpressions { get; }
-        /// <inheritdoc/>
-        public abstract string Build(QueryBuilderOptions options = QueryBuilderOptions.None);
-        /// <inheritdoc/>
-        public abstract void Build(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None);
+        public TDerived Expression(IExpression sqlExpression, TPosition position)
+        {
+            sqlExpression.ValidateArgument(nameof(sqlExpression));
+            position.ValidateArgument(nameof(position));    
 
+            _expressions.AddValueToList(position, sqlExpression);
+            return Instance;
+        }
+        #endregion
+
+        #region Build
+        /// <inheritdoc/>
+        public string Build(QueryBuilderOptions options = QueryBuilderOptions.None)
+        {
+            var builder = new StringBuilder();
+            Build(builder, options);
+            return builder.ToString();
+        }
+        /// <inheritdoc/>
+        public void Build(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            _compiler.CompileTo(builder, this, Expressions, options);
+        }
+        #endregion
+
+        // Abstractions
         /// <summary>
         /// The instance of the derived class inheriting from the current class.
         /// </summary>
         protected abstract TDerived Instance { get; }
+
         /// <summary>
-        /// Adds a join expression to the current builder.
+        /// Gets the position for <paramref name="joinExpression"/>.
         /// </summary>
-        /// <param name="joinExpression">The expression to add</param>
-        protected abstract void AddJoinExpression(JoinExpression<TEntity> joinExpression);
+        /// <param name="joinExpression">The expression to get the position for</param>
+        protected abstract TPosition GetPositionForJoinExpression(JoinExpression<TEntity> joinExpression);
         /// <summary>
-        /// Adds a condition expression to the current builder.
+        /// Gets the position for <paramref name="conditionExpression"/>.
         /// </summary>
-        /// <param name="conditionExpression">The expression to add</param>
-        protected abstract void AddConditionExpression(ConditionGroupExpression<TEntity> conditionExpression);
+        /// <param name="conditionExpression">The expression to get the position for</param>
+        protected abstract TPosition GetPositionForConditionExpression(ConditionGroupExpression<TEntity> conditionExpression);
     }
 }

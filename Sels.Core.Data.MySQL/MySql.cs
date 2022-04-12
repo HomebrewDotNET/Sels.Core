@@ -31,5 +31,23 @@ namespace Sels.Core.Data.MySQL
         /// <param name="loggers">Optional loggers for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>
         public static ISelectQueryBuilder<object> Select(IEnumerable<ILogger>? loggers = null) => Select<object>(loggers);
+
+        /// <summary>
+        /// Returns a builder for creating a mysql delete query.
+        /// </summary>
+        /// <typeparam name="T">The main entity to query</typeparam>
+        /// <param name="loggers">Optional loggers for tracing</param>
+        /// <returns>A builder for creating a mysql query</returns>
+        public static IDeleteQueryBuilder<T> Delete<T>(IEnumerable<ILogger>? loggers = null)
+        {
+            return new DeleteQueryBuilder<T>(new MySqlCompiler(loggers));
+        }
+
+        /// <summary>
+        /// Returns a builder for creating a mysql delete query.
+        /// </summary>
+        /// <param name="loggers">Optional loggers for tracing</param>
+        /// <returns>A builder for creating a mysql query</returns>
+        public static IDeleteQueryBuilder<object> Delete(IEnumerable<ILogger>? loggers = null) => Delete<object>(loggers);
     }
 }

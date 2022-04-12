@@ -13,32 +13,8 @@ namespace Sels.Core.Data.SQL.Query
     /// </summary>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
     /// <typeparam name="TEntity">The main entity to select from</typeparam>
-    public interface ISelectQueryBuilder<TEntity, TDerived> : IQueryBuilder<TEntity, TDerived>, IConditionBuilder<TEntity, TDerived>, IQueryJoinBuilder<TEntity, TDerived>
+    public interface ISelectQueryBuilder<TEntity, TDerived> : IQueryBuilder<TEntity, SelectExpressionPositions, TDerived>, IConditionBuilder<TEntity, TDerived>, IQueryJoinBuilder<TEntity, TDerived>
     {
-        #region Expressions
-        /// <summary>
-        /// Adds a sql expression to the current builder.
-        /// </summary>
-        /// <param name="sqlExpression">The sql expression to add</param>
-        /// <param name="location">Where in the query the expression should be placed</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Expression(IExpression sqlExpression, SelectExpressionPositions location);
-        /// <summary>
-        /// Adds a raw sql expression to the current builder.
-        /// </summary>
-        /// <param name="sqlExpression">String containing the sql expression</param>
-        /// <param name="location">Where in the query the expression should be placed</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Expression(string sqlExpression, SelectExpressionPositions location) => Expression(new RawExpression(sqlExpression.ValidateArgumentNotNullOrWhitespace(nameof(sqlExpression))), location);
-        /// <summary>
-        /// Adds a sql expression to the current builder.
-        /// </summary>
-        /// <param name="sqlExpression">Delegate that adds the sql expression to the provided string builder</param>
-        /// <param name="location">Where in the query the expression should be placed</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Expression(Action<StringBuilder> sqlExpression, SelectExpressionPositions location) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))), location);
-        #endregion
-
         #region Select
         #region All
         /// <summary>

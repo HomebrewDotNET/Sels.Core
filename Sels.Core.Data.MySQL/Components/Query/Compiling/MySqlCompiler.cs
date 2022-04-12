@@ -13,7 +13,9 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
     /// <summary>
     /// Query compiler that converts sql expressions to the mysql syntax.
     /// </summary>
-    public class MySqlCompiler : IQueryCompiler<SelectExpressionPositions>
+    public class MySqlCompiler : 
+        IQueryCompiler<SelectExpressionPositions>,
+        IQueryCompiler<DeleteExpressionPositions>
     {
         // Fields
         private readonly IEnumerable<ILogger>? _loggers;
@@ -29,6 +31,13 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
             { SelectExpressionPositions.OrderBy, (true, Sql.Clauses.OrderBy, Constants.Strings.Comma, false) },
             { SelectExpressionPositions.GroupBy, (true, Sql.Clauses.GroupBy, Constants.Strings.Comma, false) },
             { SelectExpressionPositions.End, (true, null, Environment.NewLine, false) },
+        };
+        private static readonly IReadOnlyDictionary<DeleteExpressionPositions, (bool IsNewLine, string? Clause, string? ExpressionJoinValue, bool IsSingleExpression)> _deletePositionConfigs = new Dictionary<DeleteExpressionPositions, (bool IsNewLine, string? Clause, string? ExpressionJoinValue, bool IsSingleExpression)>()
+        {
+            { DeleteExpressionPositions.From, (true, Sql.Clauses.From, Constants.Strings.Comma, false) },
+            { DeleteExpressionPositions.Join, (true, null, Environment.NewLine, false) },
+            { DeleteExpressionPositions.Where, (true, Sql.Clauses.Where, Constants.Strings.Space, false) },
+            { DeleteExpressionPositions.End, (true, null, Environment.NewLine, false) },
         };
         #endregion
 
@@ -52,7 +61,7 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
                 var expressionCount = builderExpressions.SelectMany(x => x.Value).GetCount();
                 var isFormatted = options.HasFlag(QueryBuilderOptions.Format);
 
-                _loggers.Log($"{_name} compiling <{expressionCount}> into a select query");
+                _loggers.Log($"{_name} compiling <{expressionCount}> expressions into a select query");
                 if (expressionCount == 0) throw new NotSupportedException($"No expressions to compile into a select query");
  
                 builder.Append(Sql.Statements.Select);
@@ -109,6 +118,112 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
         }
         #endregion
 
+        #region Delete
+        /// <inheritdoc/>
+        void IQueryCompiler<DeleteExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder queryBuilder, IReadOnlyDictionary<DeleteExpressionPositions, IExpression[]> builderExpressions, QueryBuilderOptions options)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                builder.ValidateArgument(nameof(builder));
+                queryBuilder.ValidateArgument(nameof(queryBuilder));
+                builderExpressions.ValidateArgument(nameof(builderExpressions));
+
+                var expressionCount = builderExpressions.SelectMany(x => x.Value).GetCount();
+                var isFormatted = options.HasFlag(QueryBuilderOptions.Format);
+                
+                _loggers.Log($"{_name} compiling <{expressionCount}> expressions into a delete query");
+                if (expressionCount == 0) throw new NotSupportedException($"No expressions to compile into a delete query");
+
+                builder.Append(Sql.Statements.Delete);
+
+                foreach (var builderExpression in builderExpressions.OrderBy(x => x.Key).Where(x => x.Value.HasValue()))
+                {
+                    var position = builderExpression.Key;
+                    var expressions = builderExpression.Value;
+
+                    // Position settings
+                    var isConfigSet = _deletePositionConfigs.ContainsKey(position);
+                    var isNewLine = isConfigSet ? _deletePositionConfigs[position].IsNewLine : false;
+                    var clause = isConfigSet ? _deletePositionConfigs[position].Clause : null;
+                    var joinValue = (isConfigSet ? _deletePositionConfigs[position].ExpressionJoinValue : null) ?? Constants.Strings.Space;
+                    var isSingleExpression = isConfigSet ? _deletePositionConfigs[position].IsSingleExpression : false;
+
+                    _loggers.Debug($"{_name} compiling <{expressions.Length}> expressions for position <{position}>");
+
+                    // Formatting
+                    if (isFormatted && isNewLine)
+                    {
+                        builder.AppendLine();
+                    }
+                    else
+                    {
+                        builder.AppendSpace();
+                    }
+
+                    // Special cases
+                    if (position == DeleteExpressionPositions.From)
+                    {
+                        if(expressions.Any(x => x is IObjectExpression))
+                        {
+                            var aliases = expressions.Where(x => x is IObjectExpression).Cast<IObjectExpression>().Select(x => ConvertDataSet(x.DataSet, queryBuilder)).Where(x => x != null).ToArray();
+
+                            if (aliases.HasValue())
+                            {
+                                aliases.Execute((i, a) =>
+                                {
+                                    builder.Append(a);
+                                    if (i != aliases.Length - 1) builder.Append(',');
+                                });
+
+                                // Formatting
+                                if (isFormatted && isNewLine)
+                                {
+                                    builder.AppendLine();
+                                }
+                                else
+                                {
+                                    builder.AppendSpace();
+                                }
+                            }
+                            else
+                            {
+                                _loggers.Warning($"{_name}: No table aliases defined. Using default format");
+                            }
+                        }
+                        else
+                        {
+                            _loggers.Warning($"{_name}: No expression is <{nameof(IObjectExpression)}>. Won't be able to determine table to delete from. Using default format");
+                        }
+                    }
+
+                    //Clause
+                    if (clause.HasValue())
+                    {
+                        builder.Append(clause).AppendSpace();
+                    }
+
+                    // Single value
+                    if (isSingleExpression)
+                    {
+                        if (expressions.Length > 1) _loggers.Warning($"Expected only 1 expression for position <{position}> but got <{expressions.Length}>. Taking the last expression");
+                        CompileExpressionTo(builder, queryBuilder, options, expressions.Last());
+                        continue;
+                    }
+                    else
+                    {
+                        expressions.Execute((i, e) =>
+                        {
+                            var expressionJoinValue = joinValue == Environment.NewLine && !isFormatted ? Constants.Strings.Space : joinValue;
+
+                            CompileExpressionTo(builder, queryBuilder, options, e);
+                            if (i < expressions.Length - 1) builder.Append(expressionJoinValue);
+                        });
+                    }
+                }
+            }
+        }
+        #endregion
+
         private void CompileExpressionTo(StringBuilder builder, IQueryBuilder queryBuilder, QueryBuilderOptions options, IExpression expression)
         {
             builder.ValidateArgument(nameof(builder));
@@ -133,6 +248,7 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
 
         private string? ConvertDataSet(object dataSet, IQueryBuilder queryBuilder)
         {
+            if (dataSet == null) return null;
             return dataSet is Type type ? queryBuilder.GetAlias(type) : dataSet.ToString();
         }
     }

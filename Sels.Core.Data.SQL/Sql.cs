@@ -20,6 +20,10 @@ namespace Sels.Core.Data.SQL
             /// The sql statements for reading data.
             /// </summary>
             public const string Select = "SELECT";
+            /// <summary>
+            /// The sql statements for deleting data.
+            /// </summary>
+            public const string Delete = "DELETE";
         }
 
         /// <summary>

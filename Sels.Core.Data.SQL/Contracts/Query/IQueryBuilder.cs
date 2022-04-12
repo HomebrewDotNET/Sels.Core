@@ -12,9 +12,16 @@ namespace Sels.Core.Data.SQL.Query
     /// Exposes methods for building sql queries.
     /// </summary>
     /// <typeparam name="TEntity">The main entity to create the query for</typeparam>
+    /// <typeparam name="TPosition">Type that defines where in a query expressions should be located</typeparam>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-    public interface IQueryBuilder<TEntity, TDerived> : IQueryBuilder
+    public interface IQueryBuilder<TEntity, TPosition, TDerived> : IQueryBuilder
     {
+        /// <summary>
+        /// Dictionary of the currently defined expressions grouped by the position where they would appear in the query.
+        /// </summary>
+        public IReadOnlyDictionary<TPosition, IExpression[]> Expressions { get; }
+
+        #region Alias
         /// <summary>
         /// Creates an alias for <typeparamref name="TEntity"/> when it is used in the current builder. A default alias is created by default for each new type.
         /// </summary>
@@ -35,6 +42,31 @@ namespace Sels.Core.Data.SQL.Query
         /// <param name="tableAlias">The defined table alias for type <paramref name="tableAlias"/></param>
         /// <returns>Current builder for method chaining</returns>
         TDerived OutAlias<T>(out string tableAlias);
+        #endregion
+
+        #region Expression
+        /// <summary>
+        /// Adds a sql expression to the current builder.
+        /// </summary>
+        /// <param name="sqlExpression">The sql expression to add</param>
+        /// <param name="position">Where in the query the expression should be placed</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Expression(IExpression sqlExpression, TPosition position);
+        /// <summary>
+        /// Adds a raw sql expression to the current builder.
+        /// </summary>
+        /// <param name="sqlExpression">String containing the sql expression</param>
+        /// <param name="position">Where in the query the expression should be placed</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Expression(string sqlExpression, TPosition position) => Expression(new RawExpression(sqlExpression.ValidateArgumentNotNullOrWhitespace(nameof(sqlExpression))), position);
+        /// <summary>
+        /// Adds a sql expression to the current builder.
+        /// </summary>
+        /// <param name="sqlExpression">Delegate that adds the sql expression to the provided string builder</param>
+        /// <param name="position">Where in the query the expression should be placed</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Expression(Action<StringBuilder> sqlExpression, TPosition position) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))), position);
+        #endregion
     }
     /// <summary>
     /// Exposes methods for building sql queries.

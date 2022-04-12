@@ -10,7 +10,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     /// <summary>
     /// Expression that represents a constant value in a sql query.
     /// </summary>
-    public class ConstantExpression : IExpression
+    public class ConstantExpression : BaseExpression, IExpression
     {
         /// <summary>
         /// The value of the constant expression.
@@ -25,7 +25,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             var type = Value.GetType();

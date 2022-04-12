@@ -10,7 +10,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     /// <summary>
     /// Expression where the string enum value is used as sql constant.
     /// </summary>
-    public class EnumExpression<T> : IExpression where T : Enum
+    public class EnumExpression<T> : BaseExpression, IExpression where T : Enum
     {
         /// <summary>
         /// The enum value of the expression.
@@ -25,7 +25,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
 

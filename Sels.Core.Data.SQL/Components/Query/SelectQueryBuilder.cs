@@ -12,37 +12,22 @@ using System.Threading.Tasks;
 namespace Sels.Core.Data.SQL.Query
 {
     /// <summary>
-    /// Builds select queries.
+    /// Builds a select query.
     /// </summary>
     /// <typeparam name="TEntity">The main entity to create the query for</typeparam>
-    public class SelectQueryBuilder<TEntity> : BaseQueryBuilder<TEntity, ISelectQueryBuilder<TEntity>>, ISelectQueryBuilder<TEntity>
+    public class SelectQueryBuilder<TEntity> : BaseQueryBuilder<TEntity, SelectExpressionPositions, ISelectQueryBuilder<TEntity>>, ISelectQueryBuilder<TEntity>
     {
-        // Fields
-        private readonly IQueryCompiler<SelectExpressionPositions> _compiler;
-        private readonly Dictionary<SelectExpressionPositions, List<IExpression>> _expressions = new ();
-
         // Properties
-        /// <inheritdoc/>
-        public override IExpression[] InnerExpressions => _expressions.OrderBy(x => x.Key).SelectMany(x => x.Value).ToArray();
         /// <inheritdoc/>
         protected override ISelectQueryBuilder<TEntity> Instance => this;
 
         /// <inheritdoc cref="SelectQueryBuilder{TEntity}"/>
         /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
-        public SelectQueryBuilder(IQueryCompiler<SelectExpressionPositions> compiler)
+        public SelectQueryBuilder(IQueryCompiler<SelectExpressionPositions> compiler) : base(compiler)
         {
-            _compiler = compiler.ValidateArgument(nameof(compiler));
         }
 
-        #region Expressions
-        /// <inheritdoc/>
-        public ISelectQueryBuilder<TEntity> Expression(IExpression sqlExpression, SelectExpressionPositions location)
-        {
-            sqlExpression.ValidateArgument(nameof(sqlExpression));
-
-            _expressions.AddValueToList(location, sqlExpression);
-            return this;
-        }
+        #region Expressions        
         /// <inheritdoc/>
         public ISelectQueryBuilder<TEntity> Columns(object? dataset, IEnumerable<string> columns)
         {
@@ -63,36 +48,15 @@ namespace Sels.Core.Data.SQL.Query
         }
         #endregion
 
-        #region Build
         /// <inheritdoc/>
-        public override string Build(QueryBuilderOptions options = QueryBuilderOptions.None)
+        protected override SelectExpressionPositions GetPositionForJoinExpression(JoinExpression<TEntity> joinExpression)
         {
-            var builder = new StringBuilder();
-            Build(builder, options);
-            return builder.ToString();
+            return SelectExpressionPositions.Join;
         }
         /// <inheritdoc/>
-        public override void Build(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        protected override SelectExpressionPositions GetPositionForConditionExpression(ConditionGroupExpression<TEntity> conditionExpression)
         {
-            builder.ValidateArgument(nameof(builder));
-
-            _compiler.CompileTo(builder, this, _expressions.ToDictionary(x => x.Key, x => x.Value.ToArray()), options);
-        }
-        #endregion
-
-        /// <inheritdoc/>
-        protected override void AddConditionExpression(ConditionGroupExpression<TEntity> conditionExpression)
-        {
-            conditionExpression.ValidateArgument(nameof(conditionExpression));
-
-            Expression(conditionExpression, SelectExpressionPositions.Where);
-        }
-        /// <inheritdoc/>
-        protected override void AddJoinExpression(JoinExpression<TEntity> joinExpression)
-        {
-            joinExpression.ValidateArgument(nameof(joinExpression));
-
-            Expression(joinExpression, SelectExpressionPositions.Join);
+            return SelectExpressionPositions.Where;
         }
     }
 }

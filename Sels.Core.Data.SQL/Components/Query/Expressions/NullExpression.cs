@@ -11,7 +11,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     /// <summary>
     /// Expression that doesn't add any sql.
     /// </summary>
-    public class NullExpression : IExpression
+    public class NullExpression : BaseExpression, IExpression
     {
         private NullExpression()
         {
@@ -19,7 +19,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             
         }

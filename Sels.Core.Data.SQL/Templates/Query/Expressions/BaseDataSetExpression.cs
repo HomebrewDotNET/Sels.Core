@@ -9,7 +9,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     /// <summary>
     /// Template for creating a <see cref="IDataSetExpression"/>.
     /// </summary>
-    public abstract class BaseDataSetExpression : IDataSetExpression
+    public abstract class BaseDataSetExpression : BaseExpression, IDataSetExpression
     {
         /// <inheritdoc/>
         public object? DataSet { get; }
@@ -21,7 +21,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
             DataSet = dataset;
         }
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             ToSql(builder, x => x.ToString(), options);

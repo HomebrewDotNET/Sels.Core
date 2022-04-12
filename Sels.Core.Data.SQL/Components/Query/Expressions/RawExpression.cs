@@ -9,7 +9,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     /// <summary>
     /// Expression that converts the supplied object to a sql string using <see cref="object.ToString()"/>.
     /// </summary>
-    public class RawExpression : IExpression
+    public class RawExpression : BaseExpression, IExpression
     {
         /// <summary>
         /// The object containing the sql expression.
@@ -24,7 +24,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             builder.Append(Expression);

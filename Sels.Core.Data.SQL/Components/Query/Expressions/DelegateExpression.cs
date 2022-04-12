@@ -9,7 +9,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     /// <summary>
     /// Expression that delegates the <see cref="IExpression.ToSql(StringBuilder, QueryBuilderOptions)"/> call to a delegate.
     /// </summary>
-    public class DelegateExpression : IExpression
+    public class DelegateExpression : BaseExpression, IExpression
     {
         // Fields
         private readonly Action<StringBuilder> _action;
@@ -22,7 +22,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             _action(builder);

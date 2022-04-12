@@ -9,7 +9,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     /// <summary>
     /// Expression that represents the syntax for selecting everything (e.g. *) from a dataset.
     /// </summary>
-    public class AllColumnsExpression : IDataSetExpression 
+    public class AllColumnsExpression : BaseExpression, IDataSetExpression
     {
         /// <summary>
         /// Object containing the dataset to select everything from.
@@ -24,7 +24,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             ToSql(builder, x => x.ToString(), options);
