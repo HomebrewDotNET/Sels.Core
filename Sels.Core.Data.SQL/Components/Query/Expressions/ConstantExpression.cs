@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         /// <param name="value">The constant value</param>
         public ConstantExpression(object value)
         {
-            Value = value.ValidateArgument(nameof(value));
+            Value = value;
         }
 
         /// <inheritdoc/>
@@ -30,17 +31,29 @@ namespace Sels.Core.Data.SQL.Query.Expressions
             builder.ValidateArgument(nameof(builder));
             var type = Value.GetType();
 
-            if (type.Is<string>())
-            {
-                builder.Append('\'').Append(Value.ToString()).Append('\'');
-            }
-            else if (type.Is<DBNull>())
+            if (type.Is<DBNull>() || Value == null)
             {
                 builder.Append(Sql.Null);
+            }
+            else if (type.Is<string>())
+            {
+                builder.Append('\'').Append(Value.ToString()).Append('\'');
             }
             else if (type.IsAssignableTo<Enum>())
             {
                 builder.Append(options.HasFlag(QueryBuilderOptions.EnumAsString) ? Value.ToString() : Value.ChangeType<int>());
+            }
+            else if (type.Is<DateTime>())
+            {
+                builder.Append('\'').Append(Value.Cast<DateTime>().ToString("yyyy-MM-dd HH:mm:ss")).Append('\'');
+            }
+            else if (type.Is<double>())
+            {
+                builder.Append(Value.Cast<double>().ToString(CultureInfo.InvariantCulture));
+            }
+            else if (type.Is<decimal>())
+            {
+                builder.Append(Value.Cast<decimal>().ToString(CultureInfo.InvariantCulture));
             }
             else if (type is IExpression expression)
             {

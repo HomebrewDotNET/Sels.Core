@@ -7,22 +7,22 @@ using System.Threading.Tasks;
 namespace Sels.Core.Data.SQL.Query
 {
     /// <summary>
-    /// Defines where in a delete query an expression is placed.
+    /// Defines where in a update query an expression is placed.
     /// </summary>
-    public enum DeleteExpressionPositions
+    public enum UpdateExpressionPositions
     {
         /// <summary>
-        /// Expression should be positioned before the tables to delete from.
+        /// Expression should be positioned before the tables to update.
         /// </summary>
         Before,
         /// <summary>
-        /// Expression should be located where the from statement is located.
+        /// Expression should be located where the tables to update are located.
         /// </summary>
-        From,
+        Table,
         /// <summary>
-        /// Expression should be located after the from statement.
+        /// Expression should be located after the tables to update.
         /// </summary>
-        AfterFrom,
+        AfterTable,
         /// <summary>
         /// Expression should be located where the join statements are located.
         /// </summary>
@@ -31,6 +31,14 @@ namespace Sels.Core.Data.SQL.Query
         /// Expression should be located after the join statements.
         /// </summary>
         AfterJoin,
+        /// <summary>
+        /// Expression should be located where the set statements are located.
+        /// </summary>
+        Set,
+        /// <summary>
+        /// Expression should be located after the set statements.
+        /// </summary>
+        AfterSet,
         /// <summary>
         /// Expression should be located with the other conditions.
         /// </summary>

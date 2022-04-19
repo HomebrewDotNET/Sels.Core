@@ -14,7 +14,7 @@ namespace Sels.Core.Data.SQL.Query
     /// <typeparam name="TEntity">The main entity to create the query for</typeparam>
     /// <typeparam name="TPosition">Type that defines where in a query expressions should be located</typeparam>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-    public interface IQueryBuilder<TEntity, TPosition, TDerived> : IQueryBuilder
+    public interface IQueryBuilder<TEntity, TPosition, out TDerived> : IQueryBuilder
     {
         /// <summary>
         /// Dictionary of the currently defined expressions grouped by the position where they would appear in the query.

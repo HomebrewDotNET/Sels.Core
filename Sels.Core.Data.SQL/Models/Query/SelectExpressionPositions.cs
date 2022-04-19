@@ -14,7 +14,7 @@ namespace Sels.Core.Data.SQL.Query
         /// <summary>
         /// Expression should be positioned before the select columns.
         /// </summary>
-        Start,
+        Before,
         /// <summary>
         /// Expression should be located with the columns.
         /// </summary>
@@ -62,6 +62,6 @@ namespace Sels.Core.Data.SQL.Query
         /// <summary>
         /// Expression should be located after all other expressions.
         /// </summary>
-        End
+        After
     }
 }

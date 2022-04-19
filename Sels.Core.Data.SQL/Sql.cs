@@ -17,11 +17,15 @@ namespace Sels.Core.Data.SQL
         public static class Statements
         {
             /// <summary>
-            /// The sql statements for reading data.
+            /// The sql statement for creating data.
+            /// </summary>
+            public const string Insert = "INSERT INTO";
+            /// <summary>
+            /// The sql statement for reading data.
             /// </summary>
             public const string Select = "SELECT";
             /// <summary>
-            /// The sql statements for deleting data.
+            /// The sql statement for deleting data.
             /// </summary>
             public const string Delete = "DELETE";
         }
@@ -31,6 +35,10 @@ namespace Sels.Core.Data.SQL
         /// </summary>
         public static class Clauses
         {
+            /// <summary>
+            /// The sql clause for defining the values to insert.
+            /// </summary>
+            public const string Values = "VALUES";
             /// <summary>
             /// The sql clause for defining where to select from.
             /// </summary>

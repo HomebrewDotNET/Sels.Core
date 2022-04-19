@@ -12,8 +12,8 @@ namespace Sels.Core.Data.SQL.Query
     /// Exposes methods for building a sql select query.
     /// </summary>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-    /// <typeparam name="TEntity">The main entity to select from</typeparam>
-    public interface ISelectQueryBuilder<TEntity, TDerived> : IQueryBuilder<TEntity, SelectExpressionPositions, TDerived>, IConditionBuilder<TEntity, TDerived>, IQueryJoinBuilder<TEntity, TDerived>
+    /// <typeparam name="TEntity">The main entity to insert</typeparam>
+    public interface ISelectQueryBuilder<TEntity, out TDerived> : IQueryBuilder<TEntity, SelectExpressionPositions, TDerived>, IConditionBuilder<TEntity, TDerived>, IQueryJoinBuilder<TEntity, TDerived>
     {
         #region Select
         #region All
@@ -27,13 +27,13 @@ namespace Sels.Core.Data.SQL.Query
         /// Select all columns from the dataset alias defined by <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to get the dataset alias from</typeparam>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken</param>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived AllOf<T>(object? dataset = null) => All(dataset ?? typeof(T));
         /// <summary>
         /// Select all columns from the dataset alias defined by <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken</param>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived AllOf(object? dataset = null) => AllOf<TEntity>(dataset);
         #endregion
@@ -50,7 +50,7 @@ namespace Sels.Core.Data.SQL.Query
         /// Specifies a column to select by using the name of the property selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken</param>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="property">The expression that points to the property to use</param>
         /// <param name="columnAlias">Overwrites the default alias of <typeparamref name="T"/></param>
         /// <returns>Current builder for method chaining</returns>
@@ -100,7 +100,7 @@ namespace Sels.Core.Data.SQL.Query
         /// <param name="column">The primary column to select</param>
         /// <param name="columns">Additional columns to select</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Columns(string column, params string[] columns) => Columns(Helper.Collection.EnumerateAll(column.AsArrayOrDefault(), columns));
+        TDerived Columns(string column, params string[] columns) => Columns(Helper.Collection.Enumerate(column, columns));
         /// <summary>
         /// Specifies the columns to select.
         /// </summary>
@@ -114,14 +114,14 @@ namespace Sels.Core.Data.SQL.Query
         /// <param name="column">The primary column to select</param>
         /// <param name="columns">Additional columns to select</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Columns(object? dataset, string column, params string[] columns) => Columns(dataset, Helper.Collection.EnumerateAll(column.AsArrayOrDefault(), columns));
+        TDerived Columns(object? dataset, string column, params string[] columns) => Columns(dataset, Helper.Collection.Enumerate(column, columns));
         #endregion
         #region ColumnsOf
         /// <summary>
         /// Specifies the columns to select by selecting the names of all public properties on <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the properties from</typeparam>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken</param>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="excludedProperties">Optional names of properties to exclude</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived ColumnsOf<T>(object? dataset, params string[] excludedProperties);
@@ -141,7 +141,7 @@ namespace Sels.Core.Data.SQL.Query
         /// <summary>
         /// Specifies the columns to select by selecting the names of all public properties on <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken</param>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="excludedProperties">Optional names of properties to exclude</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived ColumnsOf(object? dataset, params string[] excludedProperties) => ColumnsOf<TEntity>(dataset, excludedProperties);

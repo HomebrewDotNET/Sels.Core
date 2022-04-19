@@ -273,7 +273,7 @@ namespace Sels.Core
         public static class Collection
         {
             /// <summary>
-            /// Creates an enumerator returning all elements in <paramref name="enumerators"/>. Nulls are returned.
+            /// Creates an enumerator returning all elements in <paramref name="enumerators"/>. Nulls are not returned.
             /// </summary>
             /// <typeparam name="T">Type of element to return</typeparam>
             /// <param name="enumerators">List of enumerators to returns the elements from</param>
@@ -284,26 +284,29 @@ namespace Sels.Core
                 {
                     foreach(var enumerator in enumerators.Where(x => x != null))
                     {
-                        foreach(var element in enumerator.Where(x => x != null))
+                        foreach(var element in enumerator)
                         {
                             yield return element;
                         }
                     }
                 }
             }
+
             /// <summary>
             /// Create an enumerator returning all elements in <paramref name="values"/>. Nulls are not returned.
             /// </summary>
             /// <typeparam name="T">Type of element to return</typeparam>
-            /// <param name="values">List of value to return</param>
+            /// <param name="value">The first value to return</param>
+            /// <param name="values">Optional additional values to return</param>
             /// <returns>An enumerator returning all elements in <paramref name="values"/></returns>
-            public static IEnumerable<T> Enumerate<T>(params T[] values)
+            public static IEnumerable<T> Enumerate<T>(T value, params T[] values)
             {
+                yield return value;
                 if (values.HasValue())
                 {
-                    foreach(var value in values.Where(x => x != null))
+                    foreach (var otherValue in values)
                     {
-                        yield return value;
+                        yield return otherValue;
                     }
                 }
             }

@@ -13,7 +13,7 @@ namespace Sels.Core.Data.SQL.Query
     /// </summary>
     /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-    public interface IQueryJoinBuilder<TEntity, TDerived>
+    public interface IQueryJoinBuilder<TEntity, out TDerived>
     {
         /// <summary>
         /// Defines what table to join.
@@ -85,7 +85,7 @@ namespace Sels.Core.Data.SQL.Query
         /// Defines the expression to join from where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken</param>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for selecting what to join to</returns>
         IToJoinBuilder<TEntity> On<T>(object? dataset, Expression<Func<T, object?>> property) => On(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
@@ -111,7 +111,7 @@ namespace Sels.Core.Data.SQL.Query
         /// <summary>
         /// Defines the expression to join from where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken</param>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for selecting what to join to</returns>
         IToJoinBuilder<TEntity> On(object? dataset, Expression<Func<TEntity, object?>> property) => On<TEntity>(dataset, property);
@@ -151,7 +151,7 @@ namespace Sels.Core.Data.SQL.Query
         /// Defines the expression to join to where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken</param>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more columns to join on or exit the current builder</returns>
         IChainedJoinBuilder<TEntity> To<T>(object? dataset, Expression<Func<T, object?>> property) => To(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
@@ -177,7 +177,7 @@ namespace Sels.Core.Data.SQL.Query
         /// <summary>
         /// Defines the expression to join to where the name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken</param>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more columns to join on or exit the current builder</returns>
         IChainedJoinBuilder<TEntity> To(object? dataset, Expression<Func<TEntity, object?>> property) => To<TEntity>(dataset, property);

@@ -3376,18 +3376,19 @@
         </member>
         <member name="M:Sels.Core.Helper.Collection.EnumerateAll``1(System.Collections.Generic.IEnumerable{``0}[])">
             <summary>
-            Creates an enumerator returning all elements in <paramref name="enumerators"/>. Nulls are returned.
+            Creates an enumerator returning all elements in <paramref name="enumerators"/>. Nulls are not returned.
             </summary>
             <typeparam name="T">Type of element to return</typeparam>
             <param name="enumerators">List of enumerators to returns the elements from</param>
             <returns>An enumerator returning all elements in <paramref name="enumerators"/></returns>
         </member>
-        <member name="M:Sels.Core.Helper.Collection.Enumerate``1(``0[])">
+        <member name="M:Sels.Core.Helper.Collection.Enumerate``1(``0,``0[])">
             <summary>
             Create an enumerator returning all elements in <paramref name="values"/>. Nulls are not returned.
             </summary>
             <typeparam name="T">Type of element to return</typeparam>
-            <param name="values">List of value to return</param>
+            <param name="value">The first value to return</param>
+            <param name="values">Optional additional values to return</param>
             <returns>An enumerator returning all elements in <paramref name="values"/></returns>
         </member>
         <member name="T:Sels.Core.Helper.Program">

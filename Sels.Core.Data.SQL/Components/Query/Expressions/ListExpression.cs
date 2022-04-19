@@ -16,11 +16,11 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         /// <summary>
         /// Expressions that form the list of constant values.
         /// </summary>
-        public ConstantExpression[] Expressions { get; }
+        public IExpression[] Expressions { get; }
 
         /// <inheritdoc cref="ListExpression"/>
-        /// <param name="expressions">The list values</param>
-        public ListExpression(IEnumerable<ConstantExpression> expressions)
+        /// <param name="expressions"><inheritdoc cref="Expressions"/></param>
+        public ListExpression(IEnumerable<IExpression> expressions)
         {
             Expressions = expressions.ValidateArgumentNotNullOrEmpty(nameof(expressions)).ToArray();
         }

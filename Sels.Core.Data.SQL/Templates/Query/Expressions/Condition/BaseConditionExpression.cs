@@ -77,7 +77,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions.Condition
             _lastExpression.OperatorExpression = sqlExpression;
             return this;
         }
-        IChainedConditionBuilder<TEntity> IConditionSharedExpressionBuilder<TEntity, IChainedConditionBuilder<TEntity>>.Expression(IExpression expression)
+        IChainedConditionBuilder<TEntity> ISharedExpressionBuilder<TEntity, IChainedConditionBuilder<TEntity>>.Expression(IExpression expression)
         {
             expression.ValidateArgument(nameof(expression));
             if (_lastExpression == null) throw new InvalidOperationException("Expected expression to update but was null");

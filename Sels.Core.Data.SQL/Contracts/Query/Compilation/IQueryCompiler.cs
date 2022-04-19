@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Sels.Core.Data.SQL.Query.Compilation
 {
     /// <summary>
-    /// Compiler that converts the 
+    /// Compiler that converts <see cref="IExpression"/> into a query. 
     /// </summary>
     /// <typeparam name="TPosition">Type that tells where in the query an expression should be placed</typeparam>
     public interface IQueryCompiler<TPosition>

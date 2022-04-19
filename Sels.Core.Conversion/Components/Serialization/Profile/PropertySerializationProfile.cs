@@ -67,10 +67,10 @@ namespace Sels.Core.Conversion.Components.Serialization.Profile
         public PropertySerializationProfile(PropertyInfo property, IEnumerable<ITypeConverter> additionalConverters = null, IEnumerable<ISerializationFilter> additionalFilters = null, IEnumerable<ISerializationFilter> additionalElementFilters = null, IEnumerable<ILogger> loggers = null)
         {
             Property = property.ValidateArgument(nameof(property));
-            Converters = Helper.Collection.EnumerateAll(property.GetConverters(), additionalConverters).ToArray();
+            Converters = Helper.Collection.EnumerateAll(property.GetConverters(), additionalConverters).Where(x => x != null).ToArray();
             ConverterArguments = property.GetConverterArguments();
-            Filters = Helper.Collection.EnumerateAll(property.GetFilters(false), additionalFilters).ToArray();
-            ElementFilters = Helper.Collection.EnumerateAll(property.GetFilters(true), additionalElementFilters).ToArray();
+            Filters = Helper.Collection.EnumerateAll(property.GetFilters(false), additionalFilters).Where(x => x != null).ToArray();
+            ElementFilters = Helper.Collection.EnumerateAll(property.GetFilters(true), additionalElementFilters).Where(x => x != null).ToArray();
             ElementSeparator = property.GetAttributeOrDefault<ElementSeparatorAttribute>();
 
             _loggers = loggers;
