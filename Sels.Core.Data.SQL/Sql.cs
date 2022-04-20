@@ -25,6 +25,10 @@ namespace Sels.Core.Data.SQL
             /// </summary>
             public const string Select = "SELECT";
             /// <summary>
+            /// The sql statement for updating data.
+            /// </summary>
+            public const string Update = "UPDATE";
+            /// <summary>
             /// The sql statement for deleting data.
             /// </summary>
             public const string Delete = "DELETE";
@@ -35,6 +39,10 @@ namespace Sels.Core.Data.SQL
         /// </summary>
         public static class Clauses
         {
+            /// <summary>
+            /// The sql clause for defining the columns to update to new values.
+            /// </summary>
+            public const string Set = "SET";
             /// <summary>
             /// The sql clause for defining the values to insert.
             /// </summary>

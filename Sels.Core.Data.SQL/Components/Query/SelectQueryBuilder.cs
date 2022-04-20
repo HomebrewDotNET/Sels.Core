@@ -39,7 +39,7 @@ namespace Sels.Core.Data.SQL.Query
         /// <inheritdoc/>
         public ISelectQueryBuilder<TEntity> ColumnsOf<T>(object? dataset, params string[] excludedProperties)
         {
-            foreach(var property in typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters()?.Length == 0 && (!excludedProperties.HasValue() || !excludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase))))
+            foreach(var property in GetColumnPropertiesFrom<T>(excludedProperties))
             {
                 Expression(new ColumnExpression(dataset, property.Name), SelectExpressionPositions.Column);
             }

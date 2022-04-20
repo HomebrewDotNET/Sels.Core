@@ -16,6 +16,7 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
     public class MySqlCompiler :
         IQueryCompiler<InsertExpressionPositions>,
         IQueryCompiler<SelectExpressionPositions>,
+        IQueryCompiler<UpdateExpressionPositions>,
         IQueryCompiler<DeleteExpressionPositions>
     {
         // Fields
@@ -38,6 +39,13 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
             { SelectExpressionPositions.OrderBy, (true, Sql.Clauses.OrderBy, Constants.Strings.Comma, false) },
             { SelectExpressionPositions.GroupBy, (true, Sql.Clauses.GroupBy, Constants.Strings.Comma, false) },
             { SelectExpressionPositions.After, (true, null, Environment.NewLine, false) },
+        };
+        private static readonly IReadOnlyDictionary<UpdateExpressionPositions, (bool IsNewLine, string? Prefix, string[]? ExpressionJoinValues, string? Suffix, bool IsSingleExpression)> _updatePositionConfigs = new Dictionary<UpdateExpressionPositions, (bool IsNewLine, string? Prefix, string[]? ExpressionJoinValues, string? Suffix, bool IsSingleExpression)>()
+        {
+            { UpdateExpressionPositions.Table, (false, null, new string[] {  Constants.Strings.Comma}, null, false) },
+            { UpdateExpressionPositions.Join, (true, null, new string[] {  Environment.NewLine}, null, false) },
+            { UpdateExpressionPositions.Set, (true, Sql.Clauses.Set + Constants.Strings.Space, new string[] {  Environment.NewLine , Constants.Strings.Comma }, null, false) },
+            { UpdateExpressionPositions.Where, (true, Sql.Clauses.Where + Constants.Strings.Space, new string[] {  Constants.Strings.Space }, null, false) }
         };
         private static readonly IReadOnlyDictionary<DeleteExpressionPositions, (bool IsNewLine, string? Clause, string? ExpressionJoinValue, bool IsSingleExpression)> _deletePositionConfigs = new Dictionary<DeleteExpressionPositions, (bool IsNewLine, string? Clause, string? ExpressionJoinValue, bool IsSingleExpression)>()
         {
@@ -203,6 +211,84 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
         }
         #endregion
 
+        #region Update
+        public void CompileTo(StringBuilder builder, IQueryBuilder queryBuilder, IReadOnlyDictionary<UpdateExpressionPositions, IExpression[]> builderExpressions, QueryBuilderOptions options = QueryBuilderOptions.None)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                builder.ValidateArgument(nameof(builder));
+                queryBuilder.ValidateArgument(nameof(queryBuilder));
+                builderExpressions.ValidateArgument(nameof(builderExpressions));
+
+                var expressionCount = builderExpressions.SelectMany(x => x.Value).GetCount();
+                var isFormatted = options.HasFlag(QueryBuilderOptions.Format);
+
+                _loggers.Log($"{_name} compiling <{expressionCount}> expressions into an update query");
+                if (expressionCount == 0) throw new NotSupportedException($"No expressions to compile into an update query");
+
+                builder.Append(Sql.Statements.Update);
+
+                foreach (var builderExpression in builderExpressions.OrderBy(x => x.Key).Where(x => x.Value.HasValue()))
+                {
+                    var position = builderExpression.Key;
+                    var expressions = builderExpression.Value;
+
+                    // Position settings
+                    var isConfigSet = _updatePositionConfigs.ContainsKey(position);
+                    var isNewLine = isConfigSet ? _updatePositionConfigs[position].IsNewLine : false;
+                    var prefix = isConfigSet ? _updatePositionConfigs[position].Prefix : null;
+                    var joinValues = (isConfigSet ? _updatePositionConfigs[position].ExpressionJoinValues : null) ?? Constants.Strings.Space.AsArray();
+                    var suffix = isConfigSet ? _updatePositionConfigs[position].Suffix : null;
+                    var isSingleExpression = isConfigSet ? _updatePositionConfigs[position].IsSingleExpression : false;
+
+                    _loggers.Debug($"{_name} compiling <{expressions.Length}> expressions for position <{position}>");
+
+                    // Formatting
+                    if (isFormatted && isNewLine)
+                    {
+                        builder.AppendLine();
+                    }
+                    else
+                    {
+                        builder.AppendSpace();
+                    }
+
+                    // Prefix
+                    if (prefix.HasValue())
+                    {
+                        builder.Append(prefix);
+                    }
+
+                    // Single value
+                    if (isSingleExpression)
+                    {
+                        if (expressions.Length > 1) _loggers.Warning($"Expected only 1 expression for position <{position}> but got <{expressions.Length}>. Taking the last expression");
+                        CompileExpressionTo(builder, queryBuilder, options, expressions.Last());
+                    }
+                    else
+                    {
+                        expressions.Execute((i, e) =>
+                        {
+
+                            CompileExpressionTo(builder, queryBuilder, options, e);
+                            if (i < expressions.Length - 1)
+                            {
+                                var joinChars = joinValues.Select(x => x == Environment.NewLine && !isFormatted ? Constants.Strings.Space : x);
+                                joinChars.Execute(x => builder.Append(x));
+                            }
+                        });
+                    }
+
+                    // Suffix
+                    if (suffix.HasValue())
+                    {
+                        builder.Append(suffix);
+                    }
+                }
+            }
+        }
+        #endregion
+
         #region Delete
         /// <inheritdoc/>
         void IQueryCompiler<DeleteExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder queryBuilder, IReadOnlyDictionary<DeleteExpressionPositions, IExpression[]> builderExpressions, QueryBuilderOptions options)
@@ -336,5 +422,7 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
             if (dataSet == null) return null;
             return dataSet is Type type ? queryBuilder.GetAlias(type) : dataSet.ToString();
         }
+
+
     }
 }

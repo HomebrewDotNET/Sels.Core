@@ -16,10 +16,17 @@ namespace Sels.Core.Data.SQL.Query.Expressions
 
         /// <inheritdoc cref="SubQueryExpression"/>
         /// <param name="dataset"><inheritdoc cref="IDataSetExpression.DataSet"/></param>
-        /// <param name="subQueryBuilder"><inheritdoc cref="SubQueryExpression"/></param>
+        /// <param name="subQueryBuilder">Delegate that creates the query string</param>
         public SubQueryExpression(object? dataset, Func<QueryBuilderOptions, string> subQueryBuilder) : base(dataset)
         {
             _subQueryBuilder = subQueryBuilder.ValidateArgument(nameof(subQueryBuilder));
+        }
+        /// <inheritdoc cref="SubQueryExpression"/>
+        /// <param name="dataset"><inheritdoc cref="IDataSetExpression.DataSet"/></param>
+        /// <param name="queryBuilder">Builder that creates the query string</param>
+        public SubQueryExpression(object? dataset, IQueryBuilder queryBuilder) : this(dataset, x => queryBuilder.Build(x))
+        {
+            queryBuilder.ValidateArgument(nameof(queryBuilder));
         }
 
         /// <summary>

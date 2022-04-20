@@ -5,6 +5,7 @@ using Sels.Core.Data.SQL.Query.Expressions.Join;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -148,6 +149,17 @@ namespace Sels.Core.Data.SQL.Query
             _compiler.CompileTo(builder, this, Expressions, options);
         }
         #endregion
+
+        /// <summary>
+        /// Returns all properties on type <typeparamref name="T"/> that can be used as object names/values for a query.
+        /// </summary>
+        /// <typeparam name="T">The type to get the properties from</typeparam>
+        /// <param name="excludedProperties">Optional names of properties to exclude</param>
+        /// <returns>All usable properties on <typeparamref name="T"/></returns>
+        protected IEnumerable<PropertyInfo> GetColumnPropertiesFrom<T>(string[]? excludedProperties)
+        {
+            return typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters()?.Length == 0 && (!excludedProperties.HasValue() || !excludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase)));
+        }
 
         // Abstractions
         /// <summary>

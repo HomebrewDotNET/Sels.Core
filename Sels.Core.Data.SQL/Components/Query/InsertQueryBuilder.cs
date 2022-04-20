@@ -57,9 +57,7 @@ namespace Sels.Core.Data.SQL.Query
         /// <inheritdoc/>
         public IInsertQueryBuilder<TEntity> ColumnsOf<T>(params string[] excludedProperties)
         {
-            var properties = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters()?.Length == 0 && (!excludedProperties.HasValue() || !excludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase)));
-
-            return Columns(properties.Select(x => x.Name));
+            return Columns(GetColumnPropertiesFrom<T>(excludedProperties).Select(x => x.Name));
         }
         /// <inheritdoc/>
         public IInsertQueryBuilder<TEntity> Values(IEnumerable<object> values)
@@ -73,17 +71,14 @@ namespace Sels.Core.Data.SQL.Query
         {
             valueObject.ValidateArgument(nameof(valueObject));
 
-            var properties = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters()?.Length == 0 && (!excludedProperties.HasValue() || !excludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase)));
-
-            return Values(properties.Select(x => x.GetValue(valueObject)));
+            return Values(GetColumnPropertiesFrom<T>(excludedProperties).Select(x => x.GetValue(valueObject)));
         }
         /// <inheritdoc/>
         public IInsertQueryBuilder<TEntity> ParametersFrom<T>(int? suffix = null, params string[] excludedProperties)
         {
-            var properties = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters()?.Length == 0 && (!excludedProperties.HasValue() || !excludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase)));
             var builder = this.Cast<IInsertQueryBuilder<TEntity>>();
 
-            return builder.Parameters(properties.Select(x => suffix.HasValue ? $"{x.Name}{suffix}" : x.Name));
+            return builder.Parameters(GetColumnPropertiesFrom<T>(excludedProperties).Select(x => suffix.HasValue ? $"{x.Name}{suffix}" : x.Name));
         }
         #endregion
     }
