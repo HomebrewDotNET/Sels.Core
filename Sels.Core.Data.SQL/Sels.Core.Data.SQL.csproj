@@ -1,11 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <LangVersion>10</LangVersion>
-	  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	  <Authors>Jens Sels</Authors>
 	  <Company>Homebrew IT</Company>
@@ -32,6 +31,9 @@
 		<DebugType>None</DebugType>
 		<DebugSymbols>false</DebugSymbols>
 	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="Dapper" Version="2.0.123" />
+	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
 	</ItemGroup>
