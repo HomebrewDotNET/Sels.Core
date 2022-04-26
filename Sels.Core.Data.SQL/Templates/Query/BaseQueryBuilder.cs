@@ -162,10 +162,8 @@ namespace Sels.Core.Data.SQL.Query
         }
 
         // Abstractions
-        /// <summary>
-        /// The instance of the derived class inheriting from the current class.
-        /// </summary>
-        protected abstract TDerived Instance { get; }
+        /// <inheritdoc/>
+        public abstract TDerived Instance { get; }
 
         /// <summary>
         /// Gets the position for <paramref name="joinExpression"/>.

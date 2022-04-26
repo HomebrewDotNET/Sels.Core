@@ -220,6 +220,24 @@
         <member name="M:Sels.Core.Data.SQL.Query.Expressions.DelegateExpression.ToSql(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
             <inheritdoc/>
         </member>
+        <member name="T:Sels.Core.Data.SQL.Query.Expressions.DistintExpression">
+            <summary>
+            Expression that represents the DISTINCT sql keyword.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Data.SQL.Query.Expressions.DistintExpression.Keyword">
+            <summary>
+            The distint keyword.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.DistintExpression.ToSql(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Data.SQL.Query.Expressions.DistintExpression.Instance">
+            <summary>
+            The singleton instance.
+            </summary>
+        </member>
         <member name="T:Sels.Core.Data.SQL.Query.Expressions.EnumExpression`1">
             <summary>
             Expression where the string enum value is used as sql constant.
@@ -401,13 +419,18 @@
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.Expressions.SubQueryExpression">
             <summary>
-            Expression that represents a sub query
+            Expression that represents a sub query.
             </summary>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.Expressions.SubQueryExpression.#ctor(System.Object,System.Func{Sels.Core.Data.SQL.Query.QueryBuilderOptions,System.String})">
             <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Expressions.SubQueryExpression"/>
             <param name="dataset"><inheritdoc cref="P:Sels.Core.Data.SQL.Query.Expressions.IDataSetExpression.DataSet"/></param>
-            <param name="subQueryBuilder"><inheritdoc cref="T:Sels.Core.Data.SQL.Query.Expressions.SubQueryExpression"/></param>
+            <param name="subQueryBuilder">Delegate that creates the query string</param>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.SubQueryExpression.#ctor(System.Object,Sels.Core.Data.SQL.Query.IQueryBuilder)">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Expressions.SubQueryExpression"/>
+            <param name="dataset"><inheritdoc cref="P:Sels.Core.Data.SQL.Query.Expressions.IDataSetExpression.DataSet"/></param>
+            <param name="queryBuilder">Builder that creates the query string</param>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.Expressions.SubQueryExpression.GetQuery(Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
             <summary>
@@ -430,6 +453,29 @@
             <param name="table"><inheritdoc cref="P:Sels.Core.Data.SQL.Query.Expressions.IObjectExpression.Object"/></param>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.Expressions.TableExpression.ToSql(System.Text.StringBuilder,System.Func{System.Object,System.String},System.Func{System.String,System.String},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.Query.Expressions.UnionExpression">
+            <summary>
+            Expression that represents a union query.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.UnionExpression.#ctor(System.Func{Sels.Core.Data.SQL.Query.QueryBuilderOptions,System.String})">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Expressions.UnionExpression"/>
+            <param name="subQueryBuilder">Delegate that creates the query string</param>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.UnionExpression.#ctor(Sels.Core.Data.SQL.Query.IQueryBuilder)">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Expressions.SubQueryExpression"/>
+            <param name="queryBuilder">Builder that creates the query string</param>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.UnionExpression.GetQuery(Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+            <summary>
+            Gets the query string.
+            </summary>
+            <param name="options">Optional settings for building the query</param>
+            <returns>The query string</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Expressions.UnionExpression.ToSql(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.Expressions.Update.SetExpression`2">
@@ -1338,6 +1384,11 @@
             <typeparam name="TPosition">Type that defines where in a query expressions should be located</typeparam>
             <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         </member>
+        <member name="P:Sels.Core.Data.SQL.Query.IQueryBuilder`3.Instance">
+            <summary>
+            The instance that implemented this interface. Can be used by extensions methods.
+            </summary>
+        </member>
         <member name="P:Sels.Core.Data.SQL.Query.IQueryBuilder`3.Expressions">
             <summary>
             Dictionary of the currently defined expressions grouped by the position where they would appear in the query.
@@ -1665,6 +1716,12 @@
             <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
             <typeparam name="TEntity">The main entity to insert</typeparam>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.ISelectQueryBuilder`2.Distinct">
+            <summary>
+            Select only distinct rows.
+            </summary>
+            <returns>Current builder for method chaining</returns>
+        </member>
         <member name="M:Sels.Core.Data.SQL.Query.ISelectQueryBuilder`2.All(System.Object)">
             <summary>
             Selects all columns.
@@ -1802,6 +1859,13 @@
             </summary>
             <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
             <param name="excludedProperties">Optional names of properties to exclude</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.ISelectQueryBuilder`2.Value(System.Object)">
+            <summary>
+            Selects <paramref name="value"/> as a constant sql value.
+            </summary>
+            <param name="value">The value to select</param>
             <returns>Current builder for method chaining</returns>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.ISelectQueryBuilder`2.From(System.String,System.Object)">
@@ -2245,6 +2309,27 @@
             <param name="property">The expression that points to the property to use</param>
              <returns>Current builder for method chaining</returns>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.ISelectQueryBuilder`2.Union(System.Func{Sels.Core.Data.SQL.Query.QueryBuilderOptions,System.String})">
+            <summary>
+            Adds a sub query expression whose results will be added to the result set of the current query.
+            </summary>
+            <param name="query">Delegate that returns the query string</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.ISelectQueryBuilder`2.Union(System.String)">
+            <summary>
+            Adds a sub query expression whose results will be added to the result set of the current query..
+            </summary>
+            <param name="query">The query string</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.ISelectQueryBuilder`2.Union(Sels.Core.Data.SQL.Query.IQueryBuilder)">
+            <summary>
+            Adds a sub query expression whose results will be added to the result set of the current query..
+            </summary>
+            <param name="builder">Builder for creating the sub query</param>
+            <returns>Builder for creating more expressions</returns>
+        </member>
         <member name="T:Sels.Core.Data.SQL.Query.ISelectQueryBuilder`1">
             <inheritdoc cref="T:Sels.Core.Data.SQL.Query.ISelectQueryBuilder`2"/>
         </member>
@@ -2257,21 +2342,21 @@
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.ISharedExpressionBuilder`2.Expression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
             <summary>
-            Adds a sql expression to the condition.
+            Adds a sql expression to the builder.
             </summary>
             <param name="expression">The sql expression to add</param>
             <returns>Builder for creating more expressions</returns>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.ISharedExpressionBuilder`2.Expression(System.String)">
             <summary>
-            Adds a raw sql expression to the condition.
+            Adds a raw sql expression to the builder.
             </summary>
             <param name="sqlExpression">String containing the sql expression</param>
             <returns>Builder for creating more expressions</returns>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.ISharedExpressionBuilder`2.Expression(System.Action{System.Text.StringBuilder})">
             <summary>
-            Adds a sql expression to the condition.
+            Adds a sql expression to the builder.
             </summary>
             <param name="sqlExpression">Delegate that adds the sql expression to the provided string builder</param>
             <returns>Builder for creating more expressions</returns>
@@ -2430,7 +2515,6 @@
             </summary>
             <param name="dataset">Optional dataset alias to update <paramref name="column"/> from</param>
             <param name="column">The name of the column to update</param>
-            <param name="columnAlias">Optional column alias</param>
             <returns>Builder to select what to set the expression to</returns>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.IUpdateQueryBuilder`2.SetColumnTo``1(System.Object,System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
@@ -2810,9 +2894,7 @@
             <returns>All usable properties on <typeparamref name="T"/></returns>
         </member>
         <member name="P:Sels.Core.Data.SQL.Query.BaseQueryBuilder`3.Instance">
-            <summary>
-            The instance of the derived class inheriting from the current class.
-            </summary>
+            <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.BaseQueryBuilder`3.GetPositionForJoinExpression(Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression{`0})">
             <summary>
@@ -2825,6 +2907,63 @@
             Gets the position for <paramref name="conditionExpression"/>.
             </summary>
             <param name="conditionExpression">The expression to get the position for</param>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.Extensions.Dapper.DapperExtensions">
+            <summary>
+            Contains extension methods for working with dapper.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Extensions.Dapper.DapperExtensions.AddParametersUsing``1(Dapper.DynamicParameters,``0,System.String[])">
+            <summary>
+            Adds the values from the properties on <typeparamref name="T"/> to <paramref name="parameters"/>.
+            </summary>
+            <typeparam name="T">Type of instance to add the values from</typeparam>
+            <param name="parameters">Object to add the values to</param>
+            <param name="instance">The instance whose values to add to <paramref name="parameters"/></param>
+            <param name="excludedProperties">Optional names of properties to exclude</param>
+            <returns><paramref name="parameters"/> for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Extensions.Dapper.DapperExtensions.AddParametersUsing``1(Dapper.DynamicParameters,``0,System.Func{System.Reflection.PropertyInfo,System.String},System.String[])">
+            <summary>
+            Adds the values from the properties on <typeparamref name="T"/> to <paramref name="parameters"/>.
+            </summary>
+            <typeparam name="T">Type of instance to add the values from</typeparam>
+            <param name="parameters">Object to add the values to</param>
+            <param name="instance">The instance whose values to add to <paramref name="parameters"/></param>
+            <param name="nameConverter">Delegate for converting the property into a parameter name</param>
+            <param name="excludedProperties">Optional names of properties to exclude</param>
+            <returns><paramref name="parameters"/> for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Extensions.Dapper.DapperExtensions.AsParameters``1(``0,System.String[])">
+            <summary>
+            Converst <paramref name="instance"/> into dapper parameters using the values from the properties on <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of instance to add the values from</typeparam>
+            <param name="instance">The instance whose values to add</param>
+            <param name="excludedProperties">Optional names of properties to exclude</param>
+            <returns>A bag of parameters with the values added from <paramref name="instance"/></returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Extensions.Dapper.DapperExtensions.AsParameters``1(``0,System.Func{System.Reflection.PropertyInfo,System.String},System.String[])">
+            <summary>
+            Converst <paramref name="instance"/> into dapper parameters using the values from the properties on <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of instance to add the values from</typeparam>
+            <param name="instance">The instance whose values to add</param>
+            <param name="nameConverter">Delegate for converting the property into a parameter name</param>
+            <param name="excludedProperties">Optional names of properties to exclude</param>
+            <returns>A bag of parameters with the values added from <paramref name="instance"/></returns>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.SqlQueryBuilderExtensions">
+            <summary>
+            Contains extension methods for working with the sql builders.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SqlQueryBuilderExtensions.AsParameterExpression(System.String)">
+            <summary>
+            Turns <paramref name="parameter"/> into a <see cref="T:Sels.Core.Data.SQL.Query.Expressions.ParameterExpression"/>.
+            </summary>
+            <param name="parameter">The string containing the parameter name</param>
+            <returns><paramref name="parameter"/> as <see cref="T:Sels.Core.Data.SQL.Query.Expressions.ParameterExpression"/></returns>
         </member>
         <member name="T:Sels.Core.Data.SQL.Sql">
             <summary>
@@ -2889,6 +3028,11 @@
         <member name="F:Sels.Core.Data.SQL.Sql.Clauses.GroupBy">
             <summary>
             The sql clause for defining how to group the query results.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Data.SQL.Sql.Clauses.Union">
+            <summary>
+            The sql clause for concatenating the results of 2 select queries.
             </summary>
         </member>
         <member name="T:Sels.Core.Data.SQL.Sql.Joins">

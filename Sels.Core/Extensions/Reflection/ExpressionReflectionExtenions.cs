@@ -9,7 +9,7 @@ namespace Sels.Core.Extensions.Reflection
     /// <summary>
     /// Contains extension methods for working with <see cref="Expression{TDelegate}"/>.
     /// </summary>
-    public static class ExpressionReflectionExtenions
+    public static class Expression
     {
         #region PropertyExtractor
         /// <summary>
@@ -67,7 +67,7 @@ namespace Sels.Core.Extensions.Reflection
         /// </summary>
         /// <param name="expression">The expression to check</param>
         /// <returns>The extracted property or null if <paramref name="expression"/> doesn't point to an expression</returns>
-        public static PropertyInfo ExtractPropertyOrDefault(this Expression expression)
+        public static PropertyInfo ExtractPropertyOrDefault(this System.Linq.Expressions.Expression expression)
         {
             expression.ValidateArgument(nameof(expression));
 
@@ -103,7 +103,7 @@ namespace Sels.Core.Extensions.Reflection
 
             List<PropertyInfo> properties = new List<PropertyInfo>();
 
-            Expression currentExpression = expression.Body;
+            System.Linq.Expressions.Expression currentExpression = expression.Body;
 
             while(currentExpression != null)
             {

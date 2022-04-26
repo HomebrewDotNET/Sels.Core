@@ -91,7 +91,6 @@ namespace Sels.Core.Cli.ArgumentParsing
         /// Parses from a non-option in the beginning of the argument list.
         /// Example: mycmd (main_command) (sub_command) -q -f true -p Action=Build (argument) => (main_command) will be parsed using position 0, (sub_command) will be parsed using position 1.
         /// </summary>
-        /// <param name="position">The position to parse from</param>
         /// <param name="name">The name that is used in the help text</param>
         /// <returns>A configurator for the current argument handler</returns>
         IArgumentHandlerBuilder<T, TArg> FromCommand(string name);
@@ -127,13 +126,12 @@ namespace Sels.Core.Cli.ArgumentParsing
         /// Parses from a non-option at the end of the argument list.
         /// Example: mycmd (command) -q (source_file) (target_file) --overwrite => (source_file) will be parsed from position 0, (target_file) will be parsed from position 1.
         /// </summary>
-        /// <param name="position">The position to parse from</param>
         /// <param name="name">The name that is used in the help text</param>
         /// <returns>A configurator for the current argument handler</returns>
         IArgumentHandlerBuilder<T, TArg> FromArgument(string name);
         /// <summary>
         /// Parses from all non-options at the end of the argument list.
-        /// Example: mycmd (command) (file_one) (file_two) (file_three) => (file_one), (file_two) and (file_three) will be parsed when (command) is configured using <see cref="FromCommand(string, int)"/>
+        /// Example: mycmd (command) (file_one) (file_two) (file_three) => (file_one), (file_two) and (file_three) will be parsed when (command) is configured using <see cref="FromCommand(string)"/>
         /// </summary>
         /// <param name="name">The name that is used in the help text</param>
         /// <returns>A configurator for the current argument handler</returns>

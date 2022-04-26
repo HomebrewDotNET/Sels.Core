@@ -10,7 +10,8 @@
 	  <Company>Homebrew IT</Company>
 	  <Product>MySql Data Library</Product>
 	  <Description>
-		  Contains code for working with my sql based databases.
+		  Contains code for working with MySql based databases.
+		  Contains fluent query builders for Insert, Select, Update and Delete.
 		  Used by projects maintained here: https://github.com/Jenssels1998
 	  </Description>
 	  <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>

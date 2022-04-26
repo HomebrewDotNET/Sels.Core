@@ -261,7 +261,7 @@ namespace Sels.Core.Extensions.Reflection
         {
             method.ValidateArgument(nameof(method));
 
-            return Expression.GetDelegateType(method.GetDelegateTypes());
+            return System.Linq.Expressions.Expression.GetDelegateType(method.GetDelegateTypes());
         }
         #endregion
 

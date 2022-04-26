@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using SqlConstantExpression = Sels.Core.Data.SQL.Query.Expressions.ConstantExpression;
 
 namespace Sels.Core.Data.SQL.Query
 {
@@ -15,6 +16,14 @@ namespace Sels.Core.Data.SQL.Query
     /// <typeparam name="TEntity">The main entity to insert</typeparam>
     public interface ISelectQueryBuilder<TEntity, out TDerived> : IQueryBuilder<TEntity, SelectExpressionPositions, TDerived>, IConditionBuilder<TEntity, TDerived>, IQueryJoinBuilder<TEntity, TDerived>
     {
+        #region Keywords
+        /// <summary>
+        /// Select only distinct rows.
+        /// </summary>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Distinct() => InnerExpressions.Any(x => x is DistintExpression) ? Instance : Expression(DistintExpression.Instance, SelectExpressionPositions.Before);
+        #endregion
+
         #region Select
         #region All
         /// <summary>
@@ -145,6 +154,14 @@ namespace Sels.Core.Data.SQL.Query
         /// <param name="excludedProperties">Optional names of properties to exclude</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived ColumnsOf(object? dataset, params string[] excludedProperties) => ColumnsOf<TEntity>(dataset, excludedProperties);
+        #endregion
+        #region Value
+        /// <summary>
+        /// Selects <paramref name="value"/> as a constant sql value.
+        /// </summary>
+        /// <param name="value">The value to select</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Value(object value) => Expression(new SqlConstantExpression(value), SelectExpressionPositions.Column);
         #endregion
         #endregion
 
@@ -557,6 +574,27 @@ namespace Sels.Core.Data.SQL.Query
         ///<param name="property">The expression that points to the property to use</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived GroupBy(Expression<Func<TEntity, object?>> property) => GroupBy<TEntity>(typeof(TEntity), property);
+        #endregion
+
+        #region Union
+        /// <summary>
+        /// Adds a sub query expression whose results will be added to the result set of the current query.
+        /// </summary>
+        /// <param name="query">Delegate that returns the query string</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TDerived Union(Func<QueryBuilderOptions, string> query) => Expression(new UnionExpression(query.ValidateArgument(nameof(query))), SelectExpressionPositions.After);
+        /// <summary>
+        /// Adds a sub query expression whose results will be added to the result set of the current query..
+        /// </summary>
+        /// <param name="query">The query string</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TDerived Union(string query) => Union(x => query.ValidateArgumentNotNullOrWhitespace(nameof(query)));
+        /// <summary>
+        /// Adds a sub query expression whose results will be added to the result set of the current query..
+        /// </summary>
+        /// <param name="builder">Builder for creating the sub query</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TDerived Union(IQueryBuilder builder) => Union(x => builder.ValidateArgument(nameof(builder)).Build(x));
         #endregion
     }
     /// <inheritdoc cref="ISelectQueryBuilder{TEntity, TDerived}"/>

@@ -19,7 +19,7 @@ namespace Sels.Core.Data.SQL.Query
     {
         // Properties
         /// <inheritdoc/>
-        protected override ISelectQueryBuilder<TEntity> Instance => this;
+        public override ISelectQueryBuilder<TEntity> Instance => this;
 
         /// <inheritdoc cref="SelectQueryBuilder{TEntity}"/>
         /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>

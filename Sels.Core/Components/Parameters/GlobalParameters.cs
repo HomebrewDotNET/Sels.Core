@@ -15,8 +15,10 @@ namespace Sels.Core.Components.Parameters
     public static class GlobalParameters
     {
         // Constants
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public const string DefaultParameterPrefix = "${{";
         public const string DefaultParameterSuffix = "}}";
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         // Fields
         private readonly static object _threadLock = new object();

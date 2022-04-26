@@ -1,4 +1,5 @@
-﻿using Sels.Core.Data.SQL.Query;
+﻿using Sels.Core.Data.SQL;
+using Sels.Core.Data.SQL.Query;
 using Sels.Core.Testing.Models;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,73 @@ namespace Sels.Core.Data.MySQL.Test
             // Arrange
             var expected = "SELECT * FROM Person P".GetWithoutWhitespace().ToLower();
             var builder = MySql.Select<Person>().All().From();
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithDistinctKeyword()
+        {
+            // Arrange
+            var expected = "SELECT DISTINCT P.SurName FROM Person P".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>().Distinct().Column(x => x.SurName).From();
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithLimitKeyword()
+        {
+            // Arrange
+            var expected = "SELECT * FROM Person P WHERE P.Id = 52 LIMIT 1".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>().All().From().Where(w => w.Column(x => x.Id).EqualTo(52)).Limit(1);
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithLimitKeywordIncludingAOffset()
+        {
+            // Arrange
+            var expected = "SELECT * FROM Person P WHERE P.Name LIKE CONCAT('%', @Name, '%') LIMIT 1, 10".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>().All().From()
+                                    .Where(w => 
+                                        w.Column(x => x.Name).LikeParameter("Name")
+                                    ).Limit(1, 10);
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithForUpdateKeyword()
+        {
+            // Arrange
+            var expected = "SELECT @Id = P.Id FROM Person P LIMIT 1 FOR UPDATE".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>()
+                                    .Expression("@Id = P.Id", SelectExpressionPositions.Column)
+                                    .From()
+                                    .Expression("LIMIT 1", SelectExpressionPositions.After)
+                                    .ForUpdate();
 
             // Act
             var query = builder.Build();
@@ -46,6 +114,21 @@ namespace Sels.Core.Data.MySQL.Test
             // Arrange
             var expected = "SELECT P.Id, P.Name, P.SurName, P.BirthDay FROM Person P".GetWithoutWhitespace().ToLower();
             var builder = MySql.Select<Person>().ColumnsOf(nameof(Person.ResidenceId)).From();
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithConstantValues()
+        {
+            // Arrange
+            var expected = "SELECT 1, 'Jens'".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select().Value(1).Value("Jens");
 
             // Act
             var query = builder.Build();
@@ -162,6 +245,40 @@ namespace Sels.Core.Data.MySQL.Test
             var builder = MySql.Select<Person>().All().From()
                                 .Where(x => x.Column(x => x.ResidenceId).In()
                                              .Query(MySql.Select<Residence>().Column(x => x.Id).From().Where(x => x.Column(x => x.Id).LesserOrEqualTo().Value(100))));
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithUnion()
+        {
+            // Arrange
+            var expected = "SELECT COUNT(P.Name) As Amount FROM Person P UNION SELECT COUNT(R.Street) as Amount FROM Residence R".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>().Count(x => x.Name, "Amount").From()
+                            .Union(MySql.Select<Residence>().Count(x => x.Street, "Amount").From());
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithConcatFunction()
+        {
+            // Arrange
+            var expected = "SELECT * From Person P WHERE P.SurName LIKE CONCAT('%', 'Sel', '%')".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>().All().From()
+                                    .Where(w => 
+                                        w.Column(x => x.SurName).Like().Concat("%", "Sel", "%")
+                                    );
 
             // Act
             var query = builder.Build();

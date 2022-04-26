@@ -7,24 +7,22 @@ using System.Threading.Tasks;
 namespace Sels.Core.Data.SQL.Query.Expressions
 {
     /// <summary>
-    /// Expression that represents a sub query.
+    /// Expression that represents a union query.
     /// </summary>
-    public class SubQueryExpression : BaseDataSetExpression
+    public class UnionExpression : BaseExpression
     {
         // Fields
         private readonly Func<QueryBuilderOptions, string> _subQueryBuilder;
 
-        /// <inheritdoc cref="SubQueryExpression"/>
-        /// <param name="dataset"><inheritdoc cref="IDataSetExpression.DataSet"/></param>
+        /// <inheritdoc cref="UnionExpression"/>
         /// <param name="subQueryBuilder">Delegate that creates the query string</param>
-        public SubQueryExpression(object? dataset, Func<QueryBuilderOptions, string> subQueryBuilder) : base(dataset)
+        public UnionExpression(Func<QueryBuilderOptions, string> subQueryBuilder)
         {
             _subQueryBuilder = subQueryBuilder.ValidateArgument(nameof(subQueryBuilder));
         }
         /// <inheritdoc cref="SubQueryExpression"/>
-        /// <param name="dataset"><inheritdoc cref="IDataSetExpression.DataSet"/></param>
         /// <param name="queryBuilder">Builder that creates the query string</param>
-        public SubQueryExpression(object? dataset, IQueryBuilder queryBuilder) : this(dataset, x => queryBuilder.Build(x))
+        public UnionExpression(IQueryBuilder queryBuilder) : this(x => queryBuilder.Build(x))
         {
             queryBuilder.ValidateArgument(nameof(queryBuilder));
         }
@@ -40,17 +38,16 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
-            datasetConverterer.ValidateArgument(nameof(datasetConverterer));
 
-            var dataset = DataSet != null ? datasetConverterer(DataSet) : null;
             var query = GetQuery(options);
-            if(!query.HasValue()) throw new InvalidOperationException("Query builder delegate returned empty string");
+            if (!query.HasValue()) throw new InvalidOperationException("Query builder delegate returned empty string");
 
-            builder.Append('(').Append(query).Append(')');
-            if (dataset.HasValue()) builder.AppendSpace().Append(dataset);
+            builder.Append(Sql.Clauses.Union);
+            if (options.HasFlag(QueryBuilderOptions.Format)) builder.AppendLine(); else builder.AppendSpace();
+            builder.Append(query);
         }
     }
 }

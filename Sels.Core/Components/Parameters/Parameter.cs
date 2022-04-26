@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Sels.Core.Components.Parameters
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public abstract class Parameter
     {
         // Fields
@@ -145,4 +146,5 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         protected abstract string GenerateValue(TContext scope, string argument);
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

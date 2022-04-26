@@ -25,7 +25,7 @@ namespace Sels.Core.Data.SQL.Query
 
         #region Base Builder
         /// <inheritdoc/>
-        protected override IInsertQueryBuilder<TEntity> Instance => this;
+        public override IInsertQueryBuilder<TEntity> Instance => this;
 
         /// <inheritdoc/>
         protected override InsertExpressionPositions GetPositionForConditionExpression(ConditionGroupExpression<TEntity> conditionExpression)

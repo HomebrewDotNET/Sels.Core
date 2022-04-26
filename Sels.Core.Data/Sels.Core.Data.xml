@@ -4,5 +4,151 @@
         <name>Sels.Core.Data</name>
     </assembly>
     <members>
+        <member name="T:Sels.Core.Data.Contracts.Service.IDataService`2">
+            <summary>
+            Service that allows for crud operations on <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">The type of the entity the perform crud operations on</typeparam>
+            <typeparam name="TId">The type of the primary id of <typeparamref name="TEntity"/></typeparam>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.OpenNewConnectionAsync(System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Opens a new connection that can be used to perform actions on this service.
+            </summary>
+            <param name="startTransaction">If a transaction must be created as well. Can be set to false when only reading data</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>A connection used to perform actions on the current service</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.CreateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`0,System.Threading.CancellationToken)">
+            <summary>
+            Persist <paramref name="entity"/> to the database.
+            </summary>
+            <param name="connection">The connection to perform the request with</param>
+            <param name="entity">The entity to persist</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>The created entity with any changes done by the database (Default values, incrementing ids, ...)</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.CreateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+            <summary>
+            Persists all <paramref name="entities"/> to the database.
+            </summary>
+            <param name="connection">The connection to perform the request with</param>
+            <param name="entities">The entities to persist</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>The created entities with any changes done by the database (Default values, incrementing ids, ...)</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.ExistsAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`1,System.Threading.CancellationToken)">
+            <summary>
+            Checks if an <typeparamref name="TEntity"/> with <paramref name="id"/> exists.
+            </summary>
+            <param name="connection">The connection to perform the request with</param>
+            <param name="id">The id of the entity to check</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>True if a <typeparamref name="TEntity"/> with <paramref name="id"/> exists, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.GetAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`1,System.Threading.CancellationToken)">
+            <summary>
+            Gets <typeparamref name="TEntity"/> with <paramref name="id"/>.
+            </summary>
+            <param name="connection">The connection to perform the request with</param>
+            <param name="id">The id of the entity to fetch</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>Entity with <paramref name="id"/> or null if it doesn't exist.</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.GetAllAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Threading.CancellationToken)">
+            <summary>
+            Gets all <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="connection">The connection to perform the request with</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>All persisted <typeparamref name="TEntity"/></returns>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.UpdateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`0,System.Threading.CancellationToken)">
+            <summary>
+            Persists any changes to <paramref name="entity"/> to the database.
+            </summary>
+            <param name="connection">The connection to perform the request with</param>
+            <param name="entity">The entity to update</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>The updated entity with any changes done by the database (Default values, incrementing ids, ...)</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.UpdateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+            <summary>
+            Persists any changes to all <paramref name="entities"/> to the database.
+            </summary>
+            <param name="connection">The connection to perform the request with</param>
+            <param name="entities">The entities to update</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>The updates entities with any changes done by the database (Default values, incrementing ids, ...)</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.DeleteAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`1,System.Threading.CancellationToken)">
+            <summary>
+            Deletes <typeparamref name="TEntity"/> with id <paramref name="id"/>.
+            </summary>
+            <param name="connection">The connection to perform the request with</param>
+            <param name="id">Id of the entity to delete</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>The deleted entity</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.DeleteAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+            <summary>
+            Deletes all <typeparamref name="TEntity"/> with <paramref name="ids"/>.
+            </summary>
+            <param name="connection">The connection to perform the request with</param>
+            <param name="ids">Ids of the entities to delete</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>The deleted entities</returns>
+        </member>
+        <member name="T:Sels.Core.Data.Contracts.Service.IDataServiceConnection">
+            <summary>
+            Represents an opened connection that can be used to perform actions on a <see cref="T:Sels.Core.Data.Contracts.Service.IDataService`2"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.Contracts.Service.IDataServiceConnection.Connection">
+            <summary>
+            The opened database connection.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.Contracts.Service.IDataServiceConnection.Transaction">
+            <summary>
+            Optional transaction if one was created when creating the current connection.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Service.IDataServiceConnection.Commit">
+            <summary>
+            Commits <see cref="P:Sels.Core.Data.Contracts.Service.IDataServiceConnection.Transaction"/> if it is not null.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Data.Domain.BaseDomainEntity`1">
+            <summary>
+            Base class for a domain entity containing common shared properties.
+            </summary>
+            <typeparam name="TId">Type of the primary id</typeparam>
+        </member>
+        <member name="P:Sels.Core.Data.Domain.BaseDomainEntity`1.Id">
+            <summary>
+            The unique id of this entity.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.Domain.BaseDomainEntity`1.CreatedBy">
+            <summary>
+            Key of the entity (User, background job, ...) that created this entity.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.Domain.BaseDomainEntity`1.CreatedAt">
+            <summary>
+            The time when the entity was created.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.Domain.BaseDomainEntity`1.ModifiedBy">
+            <summary>
+            Key of the entity (User, background job, ...) that modified this entity last.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.Domain.BaseDomainEntity`1.ModifiedAt">
+            <summary>
+            THe last time this entity was modified.
+            </summary>
+        </member>
     </members>
 </doc>

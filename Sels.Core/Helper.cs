@@ -273,7 +273,7 @@ namespace Sels.Core
         public static class Collection
         {
             /// <summary>
-            /// Creates an enumerator returning all elements in <paramref name="enumerators"/>. Nulls are not returned.
+            /// Creates an enumerator returning all elements in <paramref name="enumerators"/>. Nulls in <paramref name="enumerators"/> are ignored.
             /// </summary>
             /// <typeparam name="T">Type of element to return</typeparam>
             /// <param name="enumerators">List of enumerators to returns the elements from</param>
@@ -293,12 +293,12 @@ namespace Sels.Core
             }
 
             /// <summary>
-            /// Create an enumerator returning all elements in <paramref name="values"/>. Nulls are not returned.
+            /// Create an enumerator returning <paramref name="value"/> and optionally all elements in <paramref name="values"/>.
             /// </summary>
             /// <typeparam name="T">Type of element to return</typeparam>
             /// <param name="value">The first value to return</param>
             /// <param name="values">Optional additional values to return</param>
-            /// <returns>An enumerator returning all elements in <paramref name="values"/></returns>
+            /// <returns>An enumerator returning <paramref name="value"/> and optionally all elements in <paramref name="values"/></returns>
             public static IEnumerable<T> Enumerate<T>(T value, params T[] values)
             {
                 yield return value;

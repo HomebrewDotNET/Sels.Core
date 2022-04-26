@@ -429,7 +429,6 @@ namespace Sels.Core.Cli.ArgumentParsing
                             return new FlagHandler<T, TArg>(_parser, handlerConfig.OptionPrefix ?? _parser.Config.OptionPrefix, handlerConfig.LongOptionPrefix ?? _parser.Config.LongOptionPrefix, handlerConfig.DefinedValueConstructor != null ? handlerConfig.DefinedValueConstructor() : true, option, longOption);
                         case OptionValueType.List:
                             throw new NotImplementedException();
-                            break;
                         case OptionValueType.Single:
                             if (handlerConfig.DefinedValueConstructor != null) throw new InvalidArgumentParserConfiguration($"Defined value is not valid with value options");
                             return new SingleOptionHandler<T, TArg>(handlerConfig.Format, handlerConfig.DuplicateAllowed, _parser, handlerConfig.OptionPrefix ?? _parser.Config.OptionPrefix, handlerConfig.LongOptionPrefix ?? _parser.Config.LongOptionPrefix, option, longOption);

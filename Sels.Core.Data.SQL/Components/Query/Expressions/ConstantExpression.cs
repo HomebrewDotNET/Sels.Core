@@ -29,19 +29,15 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
-            var type = Value.GetType();
+            var type = Value?.GetType();
 
-            if (type.Is<DBNull>() || Value == null)
+            if (type == null || type.Is<DBNull>())
             {
                 builder.Append(Sql.Null);
             }
-            else if (type.Is<string>())
-            {
-                builder.Append('\'').Append(Value.ToString()).Append('\'');
-            }
             else if (type.IsAssignableTo<Enum>())
             {
-                builder.Append(options.HasFlag(QueryBuilderOptions.EnumAsString) ? Value.ToString() : Value.ChangeType<int>());
+                builder.Append(options.HasFlag(QueryBuilderOptions.EnumAsString) ? Value : Value.ChangeType<int>());
             }
             else if (type.Is<DateTime>())
             {
@@ -55,13 +51,17 @@ namespace Sels.Core.Data.SQL.Query.Expressions
             {
                 builder.Append(Value.Cast<decimal>().ToString(CultureInfo.InvariantCulture));
             }
+            else if (type.IsNumeric())
+            {
+                builder.Append(Value);
+            }
             else if (type is IExpression expression)
             {
                 expression.ToSql(builder);
             }
             else
             {
-                builder.Append(Value.ToString());
+                builder.Append('\'').Append(Value).Append('\'');
             }
         }
     }

@@ -137,7 +137,9 @@ namespace Sels.Core.Components.Parameters
         #endregion
 
         #region RemoveParameter
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public void RemoveParameterIfExists(string name)
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         {
             name.ValidateArgument(nameof(name));
 

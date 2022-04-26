@@ -26,7 +26,7 @@ namespace Sels.Core.Data.SQL.Query
 
         #region Base builder
         /// <inheritdoc/>
-        protected override IUpdateQueryBuilder<TEntity> Instance => this;
+        public override IUpdateQueryBuilder<TEntity> Instance => this;
 
         /// <inheritdoc/>
         protected override UpdateExpressionPositions GetPositionForConditionExpression(ConditionGroupExpression<TEntity> conditionExpression)

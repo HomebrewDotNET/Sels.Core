@@ -19,19 +19,19 @@ namespace Sels.Core.Data.SQL.Query
     {
         #region Expression
         /// <summary>
-        /// Adds a sql expression to the condition.
+        /// Adds a sql expression to the builder.
         /// </summary>
         /// <param name="expression">The sql expression to add</param>
         /// <returns>Builder for creating more expressions</returns>
         TReturn Expression(IExpression expression);
         /// <summary>
-        /// Adds a raw sql expression to the condition.
+        /// Adds a raw sql expression to the builder.
         /// </summary>
         /// <param name="sqlExpression">String containing the sql expression</param>
         /// <returns>Builder for creating more expressions</returns>
         TReturn Expression(string sqlExpression) => Expression(new RawExpression(sqlExpression.ValidateArgumentNotNullOrEmpty(sqlExpression)));
         /// <summary>
-        /// Adds a sql expression to the condition.
+        /// Adds a sql expression to the builder.
         /// </summary>
         /// <param name="sqlExpression">Delegate that adds the sql expression to the provided string builder</param>
         /// <returns>Builder for creating more expressions</returns>

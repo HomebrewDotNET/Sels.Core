@@ -1,0 +1,40 @@
+﻿using Sels.Core.Data.SQL.Query;
+using Sels.Core.Data.SQL.Query.Expressions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Sels.Core.Data.MySQL.Query.Expressions
+{
+    /// <summary>
+    /// Expressions that represents the FOR UPDATE keyword for locking a row during a select.
+    /// </summary>
+    public class ForUpdateExpression : BaseExpression
+    {
+        /// <summary>
+        /// The MySql for update keyword.
+        /// </summary>
+        public const string Keyword = "FOR UPDATE";
+
+        private ForUpdateExpression()
+        {
+
+        }
+
+        /// <inheritdoc/>
+        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            builder.Append(Keyword);
+        }
+
+        // Statics
+        /// <summary>
+        /// The singleton instance.
+        /// </summary>
+        public static ForUpdateExpression Instance { get; } = new ForUpdateExpression();
+    }
+}

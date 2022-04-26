@@ -63,6 +63,10 @@ namespace Sels.Core.Data.SQL
             /// The sql clause for defining how to group the query results.
             /// </summary>
             public const string GroupBy = "GROUP BY";
+            /// <summary>
+            /// The sql clause for concatenating the results of 2 select queries.
+            /// </summary>
+            public const string Union = "UNION";
         }
 
         /// <summary>

@@ -65,7 +65,6 @@ namespace Sels.Core.Data.SQL.Query
         /// </summary>
         /// <param name="dataset">Optional dataset alias to update <paramref name="column"/> from</param>
         /// <param name="column">The name of the column to update</param>
-        /// <param name="columnAlias">Optional column alias</param>
         /// <returns>Builder to select what to set the expression to</returns>
         ISharedExpressionBuilder<TEntity, TDerived> SetColumnTo(object? dataset, string column) => SetTo(new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)), null));
         /// <summary>

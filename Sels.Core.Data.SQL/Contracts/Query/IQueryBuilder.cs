@@ -17,6 +17,10 @@ namespace Sels.Core.Data.SQL.Query
     public interface IQueryBuilder<TEntity, TPosition, out TDerived> : IQueryBuilder
     {
         /// <summary>
+        /// The instance that implemented this interface. Can be used by extensions methods.
+        /// </summary>
+        public TDerived Instance { get; }
+        /// <summary>
         /// Dictionary of the currently defined expressions grouped by the position where they would appear in the query.
         /// </summary>
         public IReadOnlyDictionary<TPosition, IExpression[]> Expressions { get; }

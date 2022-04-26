@@ -1,4 +1,5 @@
-﻿using Sels.Core.Testing.Models;
+﻿using Sels.Core.Data.MySQL.MariaDb;
+using Sels.Core.Testing.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +50,23 @@ namespace Sels.Core.Data.MySQL.Test
             var builder = MySql.Insert<Person>().Into().Column(x => x.Id).Column(x => x.Name).Column(x => x.SurName)
                             .Parameters("Id", "Name", "SurName")
                             .ParametersFrom(1, nameof(Person.BirthDay), nameof(Person.ResidenceId));
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectInsertQueryWithReturningKeyword()
+        {
+            // Arrange
+            var expected = "INSERT INTO Person (Id, Name, SurName) VALUES (1, 'Jens', 'Sels') RETURNING *".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Insert<Person>().Into().Column(x => x.Id).Column(x => x.Name).Column(x => x.SurName)
+                            .Values(1, "Jens", "Sels")
+                            .Return(x => x.All());
 
             // Act
             var query = builder.Build();

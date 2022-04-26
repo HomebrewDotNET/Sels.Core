@@ -22,7 +22,7 @@ namespace Sels.Core.Data.SQL.Query
         }
 
         /// <inheritdoc/>
-        protected override IDeleteQueryBuilder<TEntity> Instance => this;
+        public override IDeleteQueryBuilder<TEntity> Instance => this;
 
         /// <inheritdoc/>
         protected override DeleteExpressionPositions GetPositionForConditionExpression(ConditionGroupExpression<TEntity> conditionExpression)
