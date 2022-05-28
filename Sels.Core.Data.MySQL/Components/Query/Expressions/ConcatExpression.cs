@@ -14,6 +14,9 @@ namespace Sels.Core.Data.MySQL.Query.Expressions
     public class ConcatExpression : BaseExpressionContainer
     {
         // Constants
+        /// <summary>
+        /// The name of the MySql Concat function.
+        /// </summary>
         public const string Function = "CONCAT";
 
         // Properties
@@ -32,7 +35,7 @@ namespace Sels.Core.Data.MySQL.Query.Expressions
             Expressions = expressions.ToArray();
         }
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             subBuilder.ValidateArgument(nameof(subBuilder));

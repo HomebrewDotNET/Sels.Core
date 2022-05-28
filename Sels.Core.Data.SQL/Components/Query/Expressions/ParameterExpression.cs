@@ -15,7 +15,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         /// <summary>
         /// The default parameter prefix used.
         /// </summary>
-        public const char DefaultPrefix = '@';
+        public const char DefaultPrefix = Sql.ParameterPrefix;
 
         /// <summary>
         /// The name of the parameter.
@@ -30,7 +30,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
 
@@ -42,7 +42,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         /// <param name="builder">The builder to append to</param>
         /// <param name="parameterPrefix">The prefix to add before the parameter name</param>
         /// <param name="options">Optional settings for building the query</param>
-        public void ToSql(StringBuilder builder, string parameterPrefix, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public void ToSql(StringBuilder builder, string parameterPrefix, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
 

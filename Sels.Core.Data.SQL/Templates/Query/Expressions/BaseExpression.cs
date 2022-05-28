@@ -12,12 +12,12 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     public abstract class BaseExpression : IExpression
     {
         /// <inheritdoc/>
-        public abstract void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None);
+        public abstract void ToSql(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None);
         /// <inheritdoc/>
         public override string ToString()
         {
             var builder = new StringBuilder();
-            ToSql(builder, QueryBuilderOptions.Format);
+            ToSql(builder, ExpressionCompileOptions.Format);
             return builder.ToString();
         }
     }

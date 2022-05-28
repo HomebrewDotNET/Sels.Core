@@ -310,6 +310,25 @@ namespace Sels.Core
                     }
                 }
             }
+
+            /// <summary>
+            /// Create an enumerator returning <paramref name="value"/> and optionally all elements in <paramref name="values"/>.
+            /// </summary>
+            /// <typeparam name="T">Type of element to return</typeparam>
+            /// <param name="value">The first value to return</param>
+            /// <param name="values">Optional additional values to return</param>
+            /// <returns>An enumerator returning <paramref name="value"/> and optionally all elements in <paramref name="values"/></returns>
+            public static IEnumerable<T> Enumerate<T>(T value, IEnumerable<T> values = null)
+            {
+                yield return value;
+                if (values.HasValue())
+                {
+                    foreach (var otherValue in values)
+                    {
+                        yield return otherValue;
+                    }
+                }
+            }
         }
         #endregion
 

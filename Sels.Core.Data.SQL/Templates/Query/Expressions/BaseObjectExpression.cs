@@ -22,7 +22,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
             Object = objectName.ValidateArgumentNotNullOrWhitespace(nameof(objectName));
         }
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             datasetConverterer.ValidateArgument(nameof(datasetConverterer));
@@ -31,6 +31,6 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public abstract void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? objectConverter, QueryBuilderOptions options = QueryBuilderOptions.None);
+        public abstract void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? objectConverter, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }

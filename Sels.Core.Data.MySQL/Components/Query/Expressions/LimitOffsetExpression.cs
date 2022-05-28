@@ -41,7 +41,7 @@ namespace Sels.Core.Data.MySQL.Query.Expressions
             OffsetExpression = offsetExpression;
         }
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             subBuilder.ValidateArgument(nameof(subBuilder));

@@ -9,27 +9,62 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     /// <summary>
     /// Expression that represents a table to perform a query on.
     /// </summary>
-    public class TableExpression : BaseObjectExpression
+    public class TableExpression : BaseExpressionContainer
     {
+        // Properties
+        /// <inheritdoc cref="IDataSetExpression.DataSet"/>
+        public DataSetExpression? DataSet { get; set; }
+        /// <summary>
+        /// Contains the database where the table is located in.
+        /// </summary>
+        public ObjectExpression? Database { get; set; }
+        /// <summary>
+        /// Contains the schema the table is located in.
+        /// </summary>
+        public ObjectExpression? Schema { get; set; }
+        /// <summary>
+        /// Contains the table name.
+        /// </summary>
+        public ObjectExpression Table { get; }
+
         /// <inheritdoc cref="TableExpression"/>
         /// <param name="dataset"><inheritdoc cref="IDataSetExpression.DataSet"/></param>
-        /// <param name="table"><inheritdoc cref="IObjectExpression.Object"/></param>
-        public TableExpression(object? dataset, string table) : base(dataset, table)
+        /// <param name="database"><inheritdoc cref="Database"/></param>
+        /// <param name="schema"><inheritdoc cref="Schema"/></param>
+        /// <param name="table"><inheritdoc cref="Table"/></param>
+        public TableExpression(string? database, string? schema, string table, object? dataset)
         {
+            Table = new ObjectExpression(null, table.ValidateArgumentNotNullOrWhitespace(nameof(table)));
+            DataSet = dataset != null ? new DataSetExpression(dataset) : null;
+            Schema = schema != null ? new ObjectExpression(null, schema) : null;
+            Database = database != null ? new ObjectExpression(null, database) : null;
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? objectConverter, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
-            datasetConverterer.ValidateArgument(nameof(datasetConverterer));
-            objectConverter.ValidateArgument(nameof(objectConverter));
+            subBuilder.ValidateArgument(nameof(subBuilder));
 
-            var dataset = DataSet != null ? datasetConverterer(DataSet) : null;
-            var tableName = objectConverter(Object) ?? throw new InvalidOperationException($"{nameof(objectConverter)} returned null");
+            if(Database != null)
+            {
+                subBuilder(builder, Database);
+                builder.Append('.');
+            }
 
-            builder.Append(tableName);
-            if (dataset.HasValue()) builder.AppendSpace().Append(dataset);
+            if (Schema != null)
+            {
+                subBuilder(builder, Schema);
+                builder.Append('.');
+            }
+
+            subBuilder(builder, Table);
+
+            if(DataSet != null)
+            {
+                builder.AppendSpace();
+                subBuilder(builder, DataSet);
+            }
         }
     }
 }

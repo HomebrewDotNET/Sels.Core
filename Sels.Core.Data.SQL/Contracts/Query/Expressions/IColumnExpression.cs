@@ -25,6 +25,6 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         /// <param name="columnConverter">Delegate for converting the column name to sql</param>
         /// <param name="includeAlias">If the column alias should also be appended to <paramref name="builder"/></param>
         /// <param name="options">Optional settings for building the query</param>
-        public void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? columnConverter, bool includeAlias = true, QueryBuilderOptions options = QueryBuilderOptions.None);
+        public void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? columnConverter, bool includeAlias = true, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }

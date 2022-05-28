@@ -20,7 +20,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? columnConverter, bool includeAlias = true, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? columnConverter, bool includeAlias = true, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             datasetConverterer.ValidateArgument(nameof(datasetConverterer));

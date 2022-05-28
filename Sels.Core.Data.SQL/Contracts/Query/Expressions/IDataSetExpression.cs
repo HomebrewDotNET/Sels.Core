@@ -23,6 +23,6 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         /// <param name="builder">The builder to append to</param>
         /// <param name="datasetConverterer">Delegate for converting dataset to sql</param>
         /// <param name="options">Optional settings for building the query</param>
-        public void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, QueryBuilderOptions options = QueryBuilderOptions.None);
+        public void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }

@@ -59,6 +59,11 @@
             The exit code that gets returned when an exception that isn't <see cref="T:Sels.Core.Cli.CommandLineException"/> gets thrown.
             </summary>
         </member>
+        <member name="P:Sels.Core.Cli.CommandLine.InvalidArgumentsExitCode">
+            <summary>
+            The exit code to return when invalid command line arguments are provided.
+            </summary>
+        </member>
         <member name="T:Sels.Core.Cli.CommandLine.Argument">
             <summary>
             Helper methods for parsing command line arguments.
@@ -117,6 +122,32 @@
             <param name="configurator">Optional delegate for configuring the argument parser</param>
             <param name="settings">Optional settings for the argument parser</param>
             <returns>The result from parsing <paramref name="args"/></returns>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLine.CreateTool``1">
+            <summary>
+            Creates a builder running code in a command line tool.
+            </summary>
+             <typeparam name="TArg">Type of object containing the parsed command line arguments</typeparam>
+            <returns>A builder for creating a tool for running code within a command line tool</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLine.CreateTool">
+            <summary>
+            Creates a builder running code in a command line tool.
+            </summary>
+            <returns>A builder for creating a tool for running code within a command line tool</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLine.CreateAsyncTool``1">
+            <summary>
+            Creates a builder running code in a command line tool.
+            </summary>
+             <typeparam name="TArg">Type of object containing the parsed command line arguments</typeparam>
+            <returns>A builder for creating a tool for running code within a command line tool</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLine.CreateAsyncTool">
+            <summary>
+            Creates a builder running code in a command line tool.
+            </summary>
+            <returns>A builder for creating a tool for running code within a command line tool</returns>
         </member>
         <member name="T:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1">
             <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.IArgumentParser`1"/>
@@ -913,10 +944,112 @@
             A null instance without any properties to use with a <see cref="T:Sels.Core.Cli.ArgumentParsing.IArgumentParser`1"/> when no properties need to be parsed to.
             </summary>
         </member>
+        <member name="M:Sels.Core.Cli.ArgumentParsing.NullArguments.#ctor">
+            <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.NullArguments"/>
+        </member>
         <member name="F:Sels.Core.Cli.ArgumentParsing.NullArguments.Instance">
             <summary>
             Static instance to use.
             </summary>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineTool`1.Execute(System.Action{System.IServiceProvider,`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineTool`1.Execute(System.Func{System.IServiceProvider,`0,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineTool`1.Handles``1(System.Func{``0,System.Int32})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineTool`1.Sels#Core#Cli#ICommandLineToolBuilder{TArg,Sels#Core#Cli#ICommandLineAsyncToolBuilder{TArg}}#Handles``1(System.Func{``0,System.Int32})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineTool`1.ParseArgumentsUsing(System.Func{System.String[],`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineTool`1.Sels#Core#Cli#ICommandLineToolBuilder{TArg,Sels#Core#Cli#ICommandLineAsyncToolBuilder{TArg}}#ParseArgumentsUsing(System.Func{System.String[],`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineTool`1.RegisterServices(System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection,`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineTool`1.Sels#Core#Cli#ICommandLineToolBuilder{TArg,Sels#Core#Cli#ICommandLineAsyncToolBuilder{TArg}}#RegisterServices(System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection,`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineTool`1.Run(System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Cli.CommandLineTool`1.RunAsync(System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Cli.ICommandLineSyncToolBuilder`1">
+            <summary>
+            Builder for creating and executing a command line tool that executes sync code.
+            </summary>
+            <typeparam name="TArg">Type of object containing the parsed command line arguments</typeparam>
+        </member>
+        <member name="M:Sels.Core.Cli.ICommandLineSyncToolBuilder`1.Execute(System.Action{System.IServiceProvider,`0})">
+            <summary>
+            Defines an action to be executed by the tool using the provided command line arguments.
+            </summary>
+            <param name="action">Delegate that executes the code in the tool</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ICommandLineSyncToolBuilder`1.Run(System.String[])">
+            <summary>
+            Executes the command line tool.
+            </summary>
+            <param name="args">The arguments provided to the tool</param>
+            <returns>The exit code of the tool</returns>
+        </member>
+        <member name="T:Sels.Core.Cli.ICommandLineAsyncToolBuilder`1">
+            <summary>
+            Builder for creating and executing a command line tool that executes async code.
+            </summary>
+            <typeparam name="TArg">Type of object containing the parsed command line arguments</typeparam>
+        </member>
+        <member name="M:Sels.Core.Cli.ICommandLineAsyncToolBuilder`1.Execute(System.Func{System.IServiceProvider,`0,System.Threading.CancellationToken,System.Threading.Tasks.Task})">
+            <summary>
+            Defines an action to be executed by the tool using the provided command line arguments.
+            </summary>
+            <param name="action">Delegate that executes the code in the tool</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ICommandLineAsyncToolBuilder`1.RunAsync(System.String[])">
+            <summary>
+            Executes the command line tool.
+            </summary>
+            <param name="args">The arguments provided to the tool</param>
+            <returns>The exit code of the tool</returns>
+        </member>
+        <member name="T:Sels.Core.Cli.ICommandLineToolBuilder`2">
+            <summary>
+            Builder for configuring a command line tool.
+            </summary>
+            <typeparam name="TArg">Type of object containing the parsed command line arguments</typeparam>
+            <typeparam name="TDerived">Type of the deriving builder</typeparam>
+        </member>
+        <member name="M:Sels.Core.Cli.ICommandLineToolBuilder`2.RegisterServices(System.Action{Microsoft.Extensions.DependencyInjection.IServiceCollection,`0})">
+            <summary>
+            Builds the service collection for injecting services.
+            </summary>
+            <param name="action">Action that configures the service collection</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ICommandLineToolBuilder`2.ParseArgumentsUsing(System.Func{System.String[],`0})">
+            <summary>
+            Overwrites the default parser with <paramref name="parser"/>.
+            </summary>
+            <param name="parser">Delegate that creates <typeparamref name="TArg"/> using the provided</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Cli.ICommandLineToolBuilder`2.Handles``1(System.Func{``0,System.Int32})">
+            <summary>
+            Defines a handler for handling exceptions of type <typeparamref name="TException"/> when an unhandled exception gets thrown.
+            </summary>
+            <typeparam name="TException">Type of the exception to handle</typeparam>
+            <param name="handler">Delegate that handles the exception. Returns the exit code</param>
+            <returns>Current builder for method chaining</returns>
         </member>
         <member name="T:Sels.Core.Cli.CommandLineException">
             <summary>

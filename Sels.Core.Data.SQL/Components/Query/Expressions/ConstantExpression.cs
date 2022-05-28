@@ -26,7 +26,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             var type = Value?.GetType();
@@ -37,7 +37,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
             }
             else if (type.IsAssignableTo<Enum>())
             {
-                builder.Append(options.HasFlag(QueryBuilderOptions.EnumAsString) ? Value : Value.ChangeType<int>());
+                builder.Append(options.HasFlag(ExpressionCompileOptions.EnumAsString) ? Value : Value.ChangeType<int>());
             }
             else if (type.Is<DateTime>())
             {

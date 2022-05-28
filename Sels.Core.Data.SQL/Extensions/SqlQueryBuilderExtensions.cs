@@ -1,4 +1,6 @@
-﻿using Sels.Core.Data.SQL.Query.Expressions;
+﻿using Sels.Core.Data.SQL.Query;
+using Sels.Core.Data.SQL.Query.Expressions;
+using Sels.Core.Data.SQL.Query.Statement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +24,19 @@ namespace Sels.Core.Data.SQL
             parameter.ValidateArgumentNotNullOrWhitespace(nameof(parameter));
 
             return new ParameterExpression(parameter);
+        }
+        /// <summary>
+        /// Set an expression to NULL.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to select</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static IUpdateStatementBuilder<TEntity, TDerived> Null<TEntity, TDerived>(this ISharedExpressionBuilder<TEntity, IUpdateStatementBuilder<TEntity, TDerived>> builder)
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            return builder.Value(DBNull.Value);
         }
     }
 }

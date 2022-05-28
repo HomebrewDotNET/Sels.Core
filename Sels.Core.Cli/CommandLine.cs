@@ -21,9 +21,13 @@ namespace Sels.Core.Cli
         /// </summary>
         public static int ErrorExitCode { get; set; } = 1;
         /// <summary>
+        /// The exit code to return when invalid command line arguments are provided.
+        /// </summary>
+        public static int InvalidArgumentsExitCode { get; set; } = 2;
+        /// <summary>
         /// Helper methods for parsing command line arguments.
         /// </summary>
-        public class Argument
+        internal class Argument
         {
             /// <summary>
             /// Parses <paramref name="args"/> to a new instance of <typeparamref name="T"/>.
@@ -105,5 +109,29 @@ namespace Sels.Core.Cli
                 return Parse(builder, NullArguments.Instance, args, configurator, settings);
             }
         }
+
+        /// <summary>
+        /// Creates a builder running code in a command line tool.
+        /// </summary>
+        ///  <typeparam name="TArg">Type of object containing the parsed command line arguments</typeparam>
+        /// <returns>A builder for creating a tool for running code within a command line tool</returns>
+        public static ICommandLineSyncToolBuilder<TArg> CreateTool<TArg>() where TArg : new() => new CommandLineTool<TArg>();
+        /// <summary>
+        /// Creates a builder running code in a command line tool.
+        /// </summary>
+        /// <returns>A builder for creating a tool for running code within a command line tool</returns>
+        public static ICommandLineSyncToolBuilder<NullArguments> CreateTool() => CreateTool<NullArguments>();
+
+        /// <summary>
+        /// Creates a builder running code in a command line tool.
+        /// </summary>
+        ///  <typeparam name="TArg">Type of object containing the parsed command line arguments</typeparam>
+        /// <returns>A builder for creating a tool for running code within a command line tool</returns>
+        public static ICommandLineAsyncToolBuilder<TArg> CreateAsyncTool<TArg>() where TArg : new() => new CommandLineTool<TArg>();
+        /// <summary>
+        /// Creates a builder running code in a command line tool.
+        /// </summary>
+        /// <returns>A builder for creating a tool for running code within a command line tool</returns>
+        public static ICommandLineAsyncToolBuilder<NullArguments> CreateAsyncTool() => CreateAsyncTool<NullArguments>();
     }
 }

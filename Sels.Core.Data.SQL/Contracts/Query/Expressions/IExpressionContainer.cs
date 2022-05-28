@@ -17,6 +17,6 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         /// <param name="builder">The builder to append to</param>
         /// <param name="subBuilder">Delegate for appending any sub expression to <paramref name="builder"/></param>
         /// <param name="options">Optional settings for building the query</param>
-        public void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, QueryBuilderOptions options = QueryBuilderOptions.None);
+        public void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }

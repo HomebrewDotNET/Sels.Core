@@ -15,7 +15,7 @@ namespace Sels.Core.Data.MySQL.Test
         public void BuildsCorrectDeleteQuery()
         {
             // Arrange
-            var expected = "DELETE FROM Person".GetWithoutWhitespace().ToLower();
+            var expected = "DELETE FROM `Person`".GetWithoutWhitespace().ToLower();
             var builder = MySql.Delete().From("Person");
 
             // Act
@@ -30,7 +30,7 @@ namespace Sels.Core.Data.MySQL.Test
         public void BuildsCorrectDeleteQueryWithTableAlias()
         {
             // Arrange
-            var expected = "DELETE P FROM Person P".GetWithoutWhitespace().ToLower();
+            var expected = "DELETE P FROM `Person` P".GetWithoutWhitespace().ToLower();
             var builder = MySql.Delete<Person>().From();
 
             // Act
@@ -45,10 +45,10 @@ namespace Sels.Core.Data.MySQL.Test
         public void BuildsCorrectDeleteQueryWithJoin()
         {
             // Arrange
-            var expected = "DELETE P FROM Person P FULL JOIN Residence R ON R.Id = P.ResidenceId WHERE P.Id = @Id".GetWithoutWhitespace().ToLower();
+            var expected = "DELETE P FROM `Person` P FULL JOIN `Residence` R ON R.`Id` = P.`ResidenceId` WHERE P.`Id` = @Id".GetWithoutWhitespace().ToLower();
             var builder = MySql.Delete<Person>().From()
-                                .Join<Residence>(Joins.Full, x => x.On<Residence>(x => x.Id).To(x => x.ResidenceId))
-                                .Where(x => x.Column(x => x.Id).EqualTo().Parameter(x => x.Id));
+                                .FullJoin().Table<Residence>().On(x => x.Column<Residence>(x => x.Id).EqualTo.Column(c => c.ResidenceId))
+                                .Where(x => x.Column(x => x.Id).EqualTo.Parameter(x => x.Id));
 
             // Act
             var query = builder.Build();
@@ -62,9 +62,9 @@ namespace Sels.Core.Data.MySQL.Test
         public void BuildsCorrectDeleteQueryWithCondition()
         {
             // Arrange
-            var expected = "DELETE P FROM Person P WHERE P.Name LIKE '%Sels%'".GetWithoutWhitespace().ToLower();
+            var expected = "DELETE P FROM `Person` P WHERE P.`Name` LIKE '%Sels%'".GetWithoutWhitespace().ToLower();
             var builder = MySql.Delete<Person>().From()
-                                .Where(x => x.Column(x => x.Name).Like("%Sels%"));
+                                .Where(x => x.Column(x => x.Name).Like.Value("%Sels%"));
 
             // Act
             var query = builder.Build();
@@ -78,7 +78,7 @@ namespace Sels.Core.Data.MySQL.Test
         public void BuildsCorrectDeleteQueryWithReturningKeyword()
         {
             // Arrange
-            var expected = "DELETE P FROM Person P RETURNING P.Id".GetWithoutWhitespace().ToLower();
+            var expected = "DELETE P FROM `Person` P RETURNING P.`Id`".GetWithoutWhitespace().ToLower();
             var builder = MySql.Delete<Person>().From()
                                 .Return(x => x.Column(c => c.Id));
 

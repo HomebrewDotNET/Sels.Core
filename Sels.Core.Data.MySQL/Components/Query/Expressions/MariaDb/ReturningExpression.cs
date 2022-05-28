@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Data.SQL.Query;
 using Sels.Core.Data.SQL.Query.Expressions;
+using Sels.Core.Data.SQL.Query.Statement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,9 @@ namespace Sels.Core.Data.MySQL.Query.Expressions.MariaDb
         /// </summary>
         public IExpression[] Expressions  => _expressions.ToArray();
 
+        /// <inheritdoc cref="ReturningExpression{TEntity}"/>
+        /// <param name="configurator">Delegate that builds this expression</param>
+        /// <exception cref="InvalidOperationException"></exception>
         public ReturningExpression(Action<IReturningExpressionBuilder<TEntity>> configurator)
         {
             configurator.ValidateArgument(nameof(configurator));
@@ -48,7 +52,7 @@ namespace Sels.Core.Data.MySQL.Query.Expressions.MariaDb
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             subBuilder.ValidateArgument(nameof(subBuilder));

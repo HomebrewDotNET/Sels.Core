@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Sels.Core.Data.SQL.Query;
+using Sels.Core.Data.SQL.Query.Statement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,10 +9,11 @@ using System.Threading.Tasks;
 namespace Sels.Core.Data.SQL
 {
     /// <summary>
-    /// Contains sql related constant values.
+    /// Contains sql related constant values and helper methods.
     /// </summary>
     public static class Sql
     {
+        #region Constants
         /// <summary>
         /// Contains the sql statements.
         /// </summary>
@@ -19,7 +22,7 @@ namespace Sels.Core.Data.SQL
             /// <summary>
             /// The sql statement for creating data.
             /// </summary>
-            public const string Insert = "INSERT INTO";
+            public const string Insert = "INSERT";
             /// <summary>
             /// The sql statement for reading data.
             /// </summary>
@@ -44,6 +47,10 @@ namespace Sels.Core.Data.SQL
             /// </summary>
             public const string Set = "SET";
             /// <summary>
+            /// Sql clause for defining what to insert into.
+            /// </summary>
+            public const string Into = "INTO";
+            /// <summary>
             /// The sql clause for defining the values to insert.
             /// </summary>
             public const string Values = "VALUES";
@@ -64,9 +71,13 @@ namespace Sels.Core.Data.SQL
             /// </summary>
             public const string GroupBy = "GROUP BY";
             /// <summary>
-            /// The sql clause for concatenating the results of 2 select queries.
+            /// The sql clause for concatenating the results of 2 select queries. Duplicate rows are excluded.
             /// </summary>
             public const string Union = "UNION";
+            /// <summary>
+            /// The sql clause for concatenating the results of 2 select queries. Duplicate rows are included.
+            /// </summary>
+            public const string UnionAll = "UNION ALL";
         }
 
         /// <summary>
@@ -225,6 +236,10 @@ namespace Sels.Core.Data.SQL
         /// </summary>
         public const string As = "AS";
         /// <summary>
+        /// Sql keyword for defining cte's or sql locks.
+        /// </summary>
+        public const string With = "WITH";
+        /// <summary>
         /// The sql keyword for defining what columns to join on.
         /// </summary>
         public const string On = "ON";
@@ -236,5 +251,35 @@ namespace Sels.Core.Data.SQL
         /// The sql keyword for inverting a condition result.
         /// </summary>
         public const string Not = "NOT";
+        /// <summary>
+        /// The prefix to place in front of parameter names.
+        /// </summary>
+        public const char ParameterPrefix = '@';
+        #endregion
+
+        #region Helpers
+        /// <summary>
+        /// Joins the query builder results from any <see cref="IQueryBuilder"/> in <paramref name="builders"/> into a single string.
+        /// </summary>
+        /// <param name="options">The settings for generating the queries</param>
+        /// <param name="builders">Object containing either <see cref="IQueryBuilder"/> that is used to generate queries or object who's <see cref="object.ToString()"/> value will be added to the string</param>
+        /// <returns>String created from <paramref name="builders"/></returns>
+        public static string Join(ExpressionCompileOptions options, params object[] builders)
+        {
+            builders.ValidateArgument(nameof(builders));
+
+            var stringBuilder = new StringBuilder();
+            var isFormatted = options.HasFlag(ExpressionCompileOptions.Format);
+
+            builders.Execute((i, x) =>
+            {
+                if (x is IQueryBuilder builder) builder.Build(stringBuilder, options); else stringBuilder.Append(x);
+
+                if (i < builders.Length - 1) if (isFormatted) stringBuilder.AppendLine(); else stringBuilder.AppendSpace();
+            });
+
+            return stringBuilder.ToString();
+        }
+        #endregion
     }
 }

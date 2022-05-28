@@ -26,7 +26,7 @@ namespace Sels.Core.Data.SQL.Extensions.Dapper
             parameters.ValidateArgument(nameof(parameters));
             instance.ValidateArgument(nameof(instance));
 
-           return parameters.AddParametersUsing(instance, x => x.Name, excludedProperties);
+            return parameters.AddParametersUsing(instance, x => x.Name, excludedProperties);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Sels.Core.Data.SQL.Extensions.Dapper
 
             foreach (var property in properties.Where(x => x.CanRead && x.CanWrite))
             {
-                parameters.Add(nameConverter(property), property.GetValue(instance));
+                parameters.AddParameter(nameConverter(property), property.GetValue(instance));
             }
 
             return parameters;
@@ -77,6 +77,28 @@ namespace Sels.Core.Data.SQL.Extensions.Dapper
         public static DynamicParameters AsParameters<T>(this T instance, Func<PropertyInfo, string> nameConverter, params string[] excludedProperties)
         {
             return new DynamicParameters().AddParametersUsing<T>(instance, nameConverter, excludedProperties);
+        }
+
+        /// <summary>
+        /// Adds a parameter to <paramref name="parameters"/>;
+        /// </summary>
+        /// <param name="parameters">Object to add the values to</param>
+        /// <param name="name">Name of the parameter to add</param>
+        /// <param name="value">Value of the parameter to add</param>
+        /// <returns><paramref name="parameters"/> for method chaining</returns>
+        public static DynamicParameters AddParameter(this DynamicParameters parameters, string name, object value)
+        {
+            parameters.ValidateArgument(nameof(parameters));
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
+
+            // Append prefix if missing
+            if (!name.StartsWith(Sql.ParameterPrefix))
+            {
+                name = Sql.ParameterPrefix + name;
+            }
+
+            parameters.Add(name, value);
+            return parameters;
         }
     }
 }

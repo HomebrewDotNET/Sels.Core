@@ -4,6 +4,92 @@
         <name>Sels.Core</name>
     </assembly>
     <members>
+        <member name="T:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations">
+            <summary>
+            Contains extension methods for registering services
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterConfigurationService(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds <see cref="T:Sels.Core.Components.Configuration.ConfigurationService"/> to the service collection as <see cref="T:Sels.Core.Contracts.Configuration.IConfigurationService"/>
+            </summary>
+            <param name="services">Collection to add the services to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions">
+            <summary>
+            Contains extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,System.Type,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <paramref name="serviceType"/> with an implementation of type <paramref name="implementationType"/>.
+            </summary>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceType">Type of service to add to the collection</param>
+            <param name="implementationType">Implementation for <paramref name="serviceType"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/> with an implementation of type <typeparamref name="TImplementation"/>.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <typeparam name="TImplementation">Implementation for <typeparamref name="TService"/></typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <paramref name="serviceType"/>.
+            </summary>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceType">Type of service to add to the collection</param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/>.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,System.Func{System.IServiceProvider,System.Object},Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <paramref name="serviceType"/> with <paramref name="implementationFactory"/> to create the instances.
+            </summary>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceType">Type of service to add to the collection</param>
+            <param name="implementationFactory">Factory that creates instances that implement <paramref name="serviceType"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``1},Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/> with <paramref name="implementationFactory"/> to create the instances.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <typeparam name="TImplementation">Implementation for <typeparamref name="TService"/></typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="implementationFactory">Factory that creates instances that implement <typeparamref name="TImplementation"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``0},Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers a service of type <typeparamref name="TService"/> with <paramref name="serviceFactory"/> to create the instances.
+            </summary>
+            <typeparam name="TService">Type of service to add to the collection</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="serviceFactory">Factory that creates instances of type <typeparamref name="TService"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
         <member name="T:Sels.Core.Attributes.Enumeration.Value.StringEnumValue">
             <summary>
             Used to give an alternate string value to an enum.
@@ -662,9 +748,47 @@
             </summary>
             <param name="setter">The action that will get called with the boolean to set</param>
         </member>
+        <member name="T:Sels.Core.Components.Scope.AsyncScopedAction">
+            <summary>
+            Executes an async action when this object gets created and an async action when this object gets disposed.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.Scope.AsyncScopedAction.#ctor(Sels.Core.Delegates.Async.AsyncAction{System.Threading.CancellationToken},Sels.Core.Delegates.Async.AsyncAction{System.Threading.CancellationToken})">
+            <inheritdoc cref="T:Sels.Core.Components.Scope.AsyncScopedAction"/>
+            <param name="startAction">The action that is to be executed by <see cref="M:Sels.Core.Components.Scope.AsyncScopedAction.StartAsync(System.Threading.CancellationToken)"/></param>
+            <param name="endAction">The action that is to be executed when disposing the scoped action</param>
+        </member>
+        <member name="M:Sels.Core.Components.Scope.AsyncScopedAction.#ctor(Sels.Core.Delegates.Async.AsyncAction,Sels.Core.Delegates.Async.AsyncAction{System.Threading.CancellationToken})">
+            <inheritdoc cref="T:Sels.Core.Components.Scope.AsyncScopedAction"/>
+            <param name="startAction">The action that is to be executed by <see cref="M:Sels.Core.Components.Scope.AsyncScopedAction.StartAsync(System.Threading.CancellationToken)"/></param>
+            <param name="endAction">The action that is to be executed when disposing the scoped action</param>
+        </member>
+        <member name="M:Sels.Core.Components.Scope.AsyncScopedAction.#ctor(Sels.Core.Delegates.Async.AsyncAction{System.Threading.CancellationToken},Sels.Core.Delegates.Async.AsyncAction)">
+            <inheritdoc cref="T:Sels.Core.Components.Scope.AsyncScopedAction"/>
+            <param name="startAction">The action that is to be executed by <see cref="M:Sels.Core.Components.Scope.AsyncScopedAction.StartAsync(System.Threading.CancellationToken)"/></param>
+            <param name="endAction">The action that is to be executed when disposing the scoped action</param>
+        </member>
+        <member name="M:Sels.Core.Components.Scope.AsyncScopedAction.#ctor(Sels.Core.Delegates.Async.AsyncAction,Sels.Core.Delegates.Async.AsyncAction)">
+            <inheritdoc cref="T:Sels.Core.Components.Scope.AsyncScopedAction"/>
+            <param name="startAction">The action that is to be executed by <see cref="M:Sels.Core.Components.Scope.AsyncScopedAction.StartAsync(System.Threading.CancellationToken)"/></param>
+            <param name="endAction">The action that is to be executed when disposing the scoped action</param>
+        </member>
+        <member name="M:Sels.Core.Components.Scope.AsyncScopedAction.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Executes the provided start action.
+            </summary>
+            <param name="token">Optional token provided to the start/end actions</param>
+            <returns>Current scoped action so it can be disposed</returns>
+        </member>
+        <member name="M:Sels.Core.Components.Scope.AsyncScopedAction.DisposeAsync">
+            <summary>
+            Triggers to end action.
+            </summary>
+            <returns>Task to await the result</returns>
+        </member>
         <member name="T:Sels.Core.Components.Scope.ScopedAction">
             <summary>
-            Executed an action when this object gets created and an action when this object gets disposed.
+            Executes an action when this object gets created and an action when this object gets disposed.
             </summary>
         </member>
         <member name="M:Sels.Core.Components.Scope.ScopedAction.#ctor(System.Action,System.Action)">
@@ -3408,6 +3532,15 @@
             <param name="values">Optional additional values to return</param>
             <returns>An enumerator returning <paramref name="value"/> and optionally all elements in <paramref name="values"/></returns>
         </member>
+        <member name="M:Sels.Core.Helper.Collection.Enumerate``1(``0,System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Create an enumerator returning <paramref name="value"/> and optionally all elements in <paramref name="values"/>.
+            </summary>
+            <typeparam name="T">Type of element to return</typeparam>
+            <param name="value">The first value to return</param>
+            <param name="values">Optional additional values to return</param>
+            <returns>An enumerator returning <paramref name="value"/> and optionally all elements in <paramref name="values"/></returns>
+        </member>
         <member name="T:Sels.Core.Helper.Program">
             <summary>
             Contains helper methods for working with 
@@ -3956,6 +4089,16 @@
             <param name="builder">The builder to append to</param>
             <returns>Current builder for method chaining</returns>
         </member>
+        <member name="M:System.StringExtensions.Join(System.Text.StringBuilder,System.Collections.Generic.IEnumerable{System.Object},System.Object)">
+            <summary>
+            Joins the <see cref="M:System.Object.ToString"/> values in <paramref name="values"/> using the <see cref="M:System.Object.ToString"/> of <paramref name="joinValue"/> and adds it to <paramref name="builder"/>.
+            </summary>
+            <param name="builder">The builder to append to</param>
+            <param name="values">Enumerator returning the object to join the string values from</param>
+            <param name="joinValue">Object containing the string value to join with</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
         <member name="M:System.StringExtensions.Filter``1(System.Collections.Generic.IEnumerable{``0},System.String,System.Func{``0,System.String,System.String})">
             <summary>
             Modifies <paramref name="value"/> by calling <paramref name="filterFunction"/> for each filter in <paramref name="source"/>.
@@ -3988,80 +4131,6 @@
             <param name="value">The value to extract <paramref name="parameter"/> from</param>
             <param name="otherParameters">Optional parameters that are also included in the format. These are replaced so they match any characters</param>
             <returns>The extracted value or null if no value could be extracted</returns>
-        </member>
-        <member name="T:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions">
-            <summary>
-            Contains extension methods for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
-            </summary>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,System.Type,Sels.Core.Components.IoC.ServiceScope)">
-            <summary>
-            Registers a service of type <paramref name="serviceType"/> with an implementation of type <paramref name="implementationType"/>.
-            </summary>
-            <param name="services">Service collection to add service to</param>
-            <param name="serviceType">Type of service to add to the collection</param>
-            <param name="implementationType">Implementation for <paramref name="serviceType"/></param>
-            <param name="scope">Which scope to use for the service</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope)">
-            <summary>
-            Registers a service of type <typeparamref name="TService"/> with an implementation of type <typeparamref name="TImplementation"/>.
-            </summary>
-            <typeparam name="TService">Type of service to add to the collection</typeparam>
-            <typeparam name="TImplementation">Implementation for <typeparamref name="TService"/></typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,Sels.Core.Components.IoC.ServiceScope)">
-            <summary>
-            Registers a service of type <paramref name="serviceType"/>.
-            </summary>
-            <param name="services">Service collection to add service to</param>
-            <param name="serviceType">Type of service to add to the collection</param>
-            <param name="scope">Which scope to use for the service</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope)">
-            <summary>
-            Registers a service of type <typeparamref name="TService"/>.
-            </summary>
-            <typeparam name="TService">Type of service to add to the collection</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Type,System.Func{System.IServiceProvider,System.Object},Sels.Core.Components.IoC.ServiceScope)">
-            <summary>
-            Registers a service of type <paramref name="serviceType"/> with <paramref name="implementationFactory"/> to create the instances.
-            </summary>
-            <param name="services">Service collection to add service to</param>
-            <param name="serviceType">Type of service to add to the collection</param>
-            <param name="implementationFactory">Factory that creates instances that implement <paramref name="serviceType"/></param>
-            <param name="scope">Which scope to use for the service</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``1},Sels.Core.Components.IoC.ServiceScope)">
-            <summary>
-            Registers a service of type <typeparamref name="TService"/> with <paramref name="implementationFactory"/> to create the instances.
-            </summary>
-            <typeparam name="TService">Type of service to add to the collection</typeparam>
-            <typeparam name="TImplementation">Implementation for <typeparamref name="TService"/></typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="implementationFactory">Factory that creates instances that implement <typeparamref name="TImplementation"/></param>
-            <param name="scope">Which scope to use for the service</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.IServiceCollectionExtensions.Register``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``0},Sels.Core.Components.IoC.ServiceScope)">
-            <summary>
-            Registers a service of type <typeparamref name="TService"/> with <paramref name="serviceFactory"/> to create the instances.
-            </summary>
-            <typeparam name="TService">Type of service to add to the collection</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="serviceFactory">Factory that creates instances of type <typeparamref name="TService"/></param>
-            <param name="scope">Which scope to use for the service</param>
-            <returns>Self</returns>
         </member>
     </members>
 </doc>

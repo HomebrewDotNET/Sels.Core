@@ -11,7 +11,8 @@ namespace Sels.Core.Cli.ArgumentParsing
     /// </summary>
     public class NullArguments
     {
-        private NullArguments()
+        /// <inheritdoc cref="NullArguments"/>
+        public NullArguments()
         {
 
         }

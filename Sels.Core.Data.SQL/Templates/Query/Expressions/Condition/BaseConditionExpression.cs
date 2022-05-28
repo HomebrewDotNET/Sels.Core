@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sels.Core.Data.SQL.Query.Statement;
 
 namespace Sels.Core.Data.SQL.Query.Expressions.Condition
 {
     /// <summary>
-    /// Template for creating a new <see cref="IConditionExpressionBuilder{TEntity}"/>.
+    /// Template for creating a new <see cref="IStatementConditionExpressionBuilder{TEntity}"/>.
     /// </summary>
     /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
-    public abstract class BaseConditionExpression<TEntity> : BaseExpressionContainer, IConditionExpressionBuilder<TEntity>, IConditionOperatorExpressionBuilder<TEntity>, IConditionRightExpressionBuilder<TEntity>, IChainedConditionBuilder<TEntity>
+    public abstract class BaseConditionExpression<TEntity> : BaseExpressionContainer, IStatementConditionExpressionBuilder<TEntity>, IStatementConditionOperatorExpressionBuilder<TEntity>, IStatementConditionRightExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>
     {
         // Fields
         private readonly List<IConditionExpression> _expressions = new List<IConditionExpression>();
@@ -29,7 +30,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions.Condition
         /// <param name="builder">Delegate for configuring the current builder</param>
         /// <param name="throwOnEmpty">If a <see cref="InvalidOperationException"/> should be thrown when <paramref name="builder"/> created no expressions</param>
         /// <exception cref="InvalidOperationException"></exception>
-        public BaseConditionExpression(Action<IConditionExpressionBuilder<TEntity>> builder, bool throwOnEmpty = true)
+        public BaseConditionExpression(Action<IStatementConditionExpressionBuilder<TEntity>> builder, bool throwOnEmpty = true)
         {
             builder.ValidateArgument(nameof(builder));
             builder(this);
@@ -37,20 +38,20 @@ namespace Sels.Core.Data.SQL.Query.Expressions.Condition
         }
 
         /// <inheritdoc/>
-        public IConditionExpressionBuilder<TEntity> Not()
+        public IStatementConditionExpressionBuilder<TEntity> Not()
         {
             _nextConditionIsNot = true;
             return this;
         }
         /// <inheritdoc/>
-        public IChainedConditionBuilder<TEntity> WhereGroup(Action<IConditionExpressionBuilder<TEntity>> builder)
+        public IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Action<IStatementConditionExpressionBuilder<TEntity>> builder)
         {
             builder.ValidateArgument(nameof(builder));
 
             return FullExpression(new ConditionGroupExpression<TEntity>(builder, true));
         }
         /// <inheritdoc/>
-        public IChainedConditionBuilder<TEntity> FullExpression(IConditionExpression expression)
+        public IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> FullExpression(IConditionExpression expression)
         {
             expression.ValidateArgument(nameof(expression));
 
@@ -60,7 +61,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions.Condition
             return this;
         }
         /// <inheritdoc/>
-        public IConditionOperatorExpressionBuilder<TEntity> Expression(IExpression expression)
+        public IStatementConditionOperatorExpressionBuilder<TEntity> Expression(IExpression expression)
         {
             expression.ValidateArgument(nameof(expression));
             if (_lastExpression != null) throw new InvalidOperationException($"Condition expression already created");
@@ -69,7 +70,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions.Condition
             return this;
         }
         /// <inheritdoc/>
-        public IConditionRightExpressionBuilder<TEntity> CompareTo(IExpression sqlExpression)
+        public IStatementConditionRightExpressionBuilder<TEntity> CompareTo(IExpression sqlExpression)
         {
             sqlExpression.ValidateArgument(nameof(sqlExpression));
             if (_lastExpression == null) throw new InvalidOperationException("Expected expression to update but was null");
@@ -77,7 +78,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions.Condition
             _lastExpression.OperatorExpression = sqlExpression;
             return this;
         }
-        IChainedConditionBuilder<TEntity> ISharedExpressionBuilder<TEntity, IChainedConditionBuilder<TEntity>>.Expression(IExpression expression)
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> ISharedExpressionBuilder<TEntity, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>>.Expression(IExpression expression)
         {
             expression.ValidateArgument(nameof(expression));
             if (_lastExpression == null) throw new InvalidOperationException("Expected expression to update but was null");
@@ -88,7 +89,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions.Condition
             return builder;
         }
         /// <inheritdoc/>
-        public IConditionExpressionBuilder<TEntity> And(LogicOperators logicOperator = LogicOperators.And)
+        public IStatementConditionExpressionBuilder<TEntity> AndOr(LogicOperators logicOperator = LogicOperators.And)
         {
             var last = _expressions.LastOrDefault();
             if (last == null) throw new InvalidOperationException("Expected expression to update but was null");

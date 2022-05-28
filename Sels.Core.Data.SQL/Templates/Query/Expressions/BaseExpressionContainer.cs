@@ -13,9 +13,9 @@ namespace Sels.Core.Data.SQL.Query.Expressions
     public abstract class BaseExpressionContainer : BaseExpression, IExpressionContainer
     {
         /// <inheritdoc/>
-        public abstract void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, QueryBuilderOptions options = QueryBuilderOptions.None);
+        public abstract void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None);
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             ToSql(builder, (b, e) => e.ToSql(b), options);

@@ -6,7 +6,7 @@ using System.Text;
 namespace Sels.Core.Components.Scope
 {
     /// <summary>
-    /// Executed an action when this object gets created and an action when this object gets disposed.
+    /// Executes an action when this object gets created and an action when this object gets disposed.
     /// </summary>
     public class ScopedAction : IDisposable
     {

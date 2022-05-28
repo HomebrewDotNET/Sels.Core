@@ -21,13 +21,13 @@ namespace Sels.Core.Data.SQL.Query.Expressions
             DataSet = dataset;
         }
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             ToSql(builder, x => x.ToString(), options);
         }
 
         /// <inheritdoc/>
-        public abstract void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, QueryBuilderOptions options = QueryBuilderOptions.None);
+        public abstract void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }

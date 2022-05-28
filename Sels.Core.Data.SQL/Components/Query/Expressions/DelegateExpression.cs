@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Sels.Core.Data.SQL.Query.Expressions
 {
     /// <summary>
-    /// Expression that delegates the <see cref="IExpression.ToSql(StringBuilder, QueryBuilderOptions)"/> call to a delegate.
+    /// Expression that delegates the <see cref="IExpression.ToSql(StringBuilder, ExpressionCompileOptions)"/> call to a delegate.
     /// </summary>
     public class DelegateExpression : BaseExpression, IExpression
     {
@@ -22,7 +22,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             _action(builder);

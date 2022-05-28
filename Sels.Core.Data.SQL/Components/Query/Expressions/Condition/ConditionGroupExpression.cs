@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sels.Core.Data.SQL.Query.Statement;
 
 namespace Sels.Core.Data.SQL.Query.Expressions.Condition
 {
@@ -24,13 +25,13 @@ namespace Sels.Core.Data.SQL.Query.Expressions.Condition
         /// <inheritdoc/>
         /// <param name="builder">Delegate for configuring the current condition group</param>
         /// <param name="isGrouped">If the condition in this expression should be grouped using ()</param>
-        public ConditionGroupExpression(Action<IConditionExpressionBuilder<TEntity>> builder, bool isGrouped) : base(builder, true)
+        public ConditionGroupExpression(Action<IStatementConditionExpressionBuilder<TEntity>> builder, bool isGrouped) : base(builder, true)
         {
             _isGrouped = isGrouped;
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, QueryBuilderOptions options = QueryBuilderOptions.None)
+        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             subBuilder.ValidateArgument(nameof(subBuilder));

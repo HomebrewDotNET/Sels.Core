@@ -4,22 +4,23 @@
         <name>Sels.Core.Data</name>
     </assembly>
     <members>
-        <member name="T:Sels.Core.Data.Contracts.Service.IDataService`2">
+        <member name="T:Sels.Core.Data.Contracts.Repository.IDataRepository`2">
             <summary>
-            Service that allows for crud operations on <typeparamref name="TEntity"/>.
+            Repository that allows for crud operations on <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">The type of the entity the perform crud operations on</typeparam>
             <typeparam name="TId">The type of the primary id of <typeparamref name="TEntity"/></typeparam>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.OpenNewConnectionAsync(System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepository`2.OpenNewConnectionAsync(System.Boolean,System.Data.IsolationLevel,System.Threading.CancellationToken)">
             <summary>
-            Opens a new connection that can be used to perform actions on this service.
+            Opens a new connection that can be used to perform actions on this repository.
             </summary>
             <param name="startTransaction">If a transaction must be created as well. Can be set to false when only reading data</param>
+            <param name="isolationLevel">The isolation for the transaction if <paramref name="startTransaction"/> is set to true</param>
             <param name="token">Optional token to cancel the request</param>
             <returns>A connection used to perform actions on the current service</returns>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.CreateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`0,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepository`2.CreateAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,`0,System.Threading.CancellationToken)">
             <summary>
             Persist <paramref name="entity"/> to the database.
             </summary>
@@ -28,7 +29,7 @@
             <param name="token">Optional token to cancel the request</param>
             <returns>The created entity with any changes done by the database (Default values, incrementing ids, ...)</returns>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.CreateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepository`2.CreateAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
             <summary>
             Persists all <paramref name="entities"/> to the database.
             </summary>
@@ -37,7 +38,7 @@
             <param name="token">Optional token to cancel the request</param>
             <returns>The created entities with any changes done by the database (Default values, incrementing ids, ...)</returns>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.ExistsAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`1,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepository`2.ExistsAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,`1,System.Threading.CancellationToken)">
             <summary>
             Checks if an <typeparamref name="TEntity"/> with <paramref name="id"/> exists.
             </summary>
@@ -46,7 +47,7 @@
             <param name="token">Optional token to cancel the request</param>
             <returns>True if a <typeparamref name="TEntity"/> with <paramref name="id"/> exists, otherwise false</returns>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.GetAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`1,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepository`2.GetAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,`1,System.Threading.CancellationToken)">
             <summary>
             Gets <typeparamref name="TEntity"/> with <paramref name="id"/>.
             </summary>
@@ -55,7 +56,7 @@
             <param name="token">Optional token to cancel the request</param>
             <returns>Entity with <paramref name="id"/> or null if it doesn't exist.</returns>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.GetAllAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepository`2.GetAllAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,System.Threading.CancellationToken)">
             <summary>
             Gets all <typeparamref name="TEntity"/>.
             </summary>
@@ -63,7 +64,7 @@
             <param name="token">Optional token to cancel the request</param>
             <returns>All persisted <typeparamref name="TEntity"/></returns>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.UpdateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`0,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepository`2.UpdateAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,`0,System.Threading.CancellationToken)">
             <summary>
             Persists any changes to <paramref name="entity"/> to the database.
             </summary>
@@ -72,7 +73,7 @@
             <param name="token">Optional token to cancel the request</param>
             <returns>The updated entity with any changes done by the database (Default values, incrementing ids, ...)</returns>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.UpdateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepository`2.UpdateAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
             <summary>
             Persists any changes to all <paramref name="entities"/> to the database.
             </summary>
@@ -81,7 +82,7 @@
             <param name="token">Optional token to cancel the request</param>
             <returns>The updates entities with any changes done by the database (Default values, incrementing ids, ...)</returns>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.DeleteAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`1,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepository`2.DeleteAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,`1,System.Threading.CancellationToken)">
             <summary>
             Deletes <typeparamref name="TEntity"/> with id <paramref name="id"/>.
             </summary>
@@ -90,7 +91,7 @@
             <param name="token">Optional token to cancel the request</param>
             <returns>The deleted entity</returns>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataService`2.DeleteAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepository`2.DeleteAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <summary>
             Deletes all <typeparamref name="TEntity"/> with <paramref name="ids"/>.
             </summary>
@@ -99,25 +100,35 @@
             <param name="token">Optional token to cancel the request</param>
             <returns>The deleted entities</returns>
         </member>
-        <member name="T:Sels.Core.Data.Contracts.Service.IDataServiceConnection">
+        <member name="T:Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection">
             <summary>
-            Represents an opened connection that can be used to perform actions on a <see cref="T:Sels.Core.Data.Contracts.Service.IDataService`2"/>.
+            Represents an opened connection that can be used to perform actions on a <see cref="T:Sels.Core.Data.Contracts.Repository.IDataRepository`2"/>.
             </summary>
         </member>
-        <member name="P:Sels.Core.Data.Contracts.Service.IDataServiceConnection.Connection">
+        <member name="P:Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection.Connection">
             <summary>
             The opened database connection.
             </summary>
         </member>
-        <member name="P:Sels.Core.Data.Contracts.Service.IDataServiceConnection.Transaction">
+        <member name="P:Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection.Transaction">
             <summary>
             Optional transaction if one was created when creating the current connection.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.Contracts.Service.IDataServiceConnection.Commit">
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection.CommitAsync(System.Threading.CancellationToken)">
             <summary>
-            Commits <see cref="P:Sels.Core.Data.Contracts.Service.IDataServiceConnection.Transaction"/> if it is not null.
+            Commits <see cref="P:Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection.Transaction"/>.
             </summary>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>Task to await the result</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection.CreateTransactionAsync(System.Data.IsolationLevel,System.Threading.CancellationToken)">
+            <summary>
+            Creates a new transaction for the current connection.
+            </summary>
+            <param name="isolationLevel">The isolation level for the transaction</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>Task to await the result</returns>
         </member>
         <member name="T:Sels.Core.Data.Domain.BaseDomainEntity`1">
             <summary>

@@ -13,18 +13,32 @@
             <inheritdoc cref="T:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler"/>
             <param name="loggers"></param>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#InsertExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder,System.Collections.Generic.IReadOnlyDictionary{Sels.Core.Data.SQL.Query.InsertExpressionPositions,Sels.Core.Data.SQL.Query.Expressions.IExpression[]},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#Statement#InsertExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder{Sels.Core.Data.SQL.Query.Statement.InsertExpressionPositions},System.Func{System.Object,System.String},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#SelectExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder,System.Collections.Generic.IReadOnlyDictionary{Sels.Core.Data.SQL.Query.SelectExpressionPositions,Sels.Core.Data.SQL.Query.Expressions.IExpression[]},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#Statement#SelectExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder{Sels.Core.Data.SQL.Query.Statement.SelectExpressionPositions},System.Func{System.Object,System.String},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#DeleteExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder,System.Collections.Generic.IReadOnlyDictionary{Sels.Core.Data.SQL.Query.DeleteExpressionPositions,Sels.Core.Data.SQL.Query.Expressions.IExpression[]},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder{Sels.Core.Data.SQL.Query.Statement.UpdateExpressionPositions},System.Func{System.Object,System.String},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#Statement#DeleteExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder{Sels.Core.Data.SQL.Query.Statement.DeleteExpressionPositions},System.Func{System.Object,System.String},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Compile(Sels.Core.Data.SQL.Query.Expressions.IExpression,Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Compile(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression,Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression">
             <summary>
             Expression that represents the MySql CONCAT function for joining strings.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression.Function">
+            <summary>
+            The name of the MySql Concat function.
             </summary>
         </member>
         <member name="P:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression.Expressions">
@@ -36,7 +50,7 @@
             <inheritdoc cref="T:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression"/>
             <param name="expressions"><inheritdoc cref="P:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression.Expressions"/></param>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.MySQL.Query.Expressions.ForUpdateExpression">
@@ -49,7 +63,7 @@
             The MySql for update keyword.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.ForUpdateExpression.ToSql(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.ForUpdateExpression.ToSql(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="P:Sels.Core.Data.MySQL.Query.Expressions.ForUpdateExpression.Instance">
@@ -82,7 +96,7 @@
              <param name="limitExpression"><inheritdoc cref="P:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression.LimitExpression"/></param>
              <param name="offsetExpression"><inheritdoc cref="P:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression.OffsetExpression"/></param>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1">
@@ -102,10 +116,15 @@
             Expressions containing the columns to return after insert or delete.
             </summary>
         </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1.#ctor(System.Action{Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder{`0}})">
+            <inheritdoc cref="T:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1"/>
+            <param name="configurator">Delegate that builds this expression</param>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
         <member name="M:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1.Expression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.QueryBuilderOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder`1">
@@ -119,12 +138,138 @@
             Return all columns.
             </summary>
         </member>
-        <member name="T:Sels.Core.Data.MySQL.BuilderExtensions">
+        <member name="T:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1">
+            <summary>
+            Expressions that represents the ON DUPLICATE KEY UPDATE expression for updating values during an insert if a record matching the primary key already exists.
+            </summary>
+            <typeparam name="TEntity">The main entity to build the expression for</typeparam>
+        </member>
+        <member name="F:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.KeyWord">
+            <summary>
+            The MySql keywords for on duplicate key update.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.Expressions">
+            <summary>
+            The expression containing what values to update.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.And">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.To">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.#ctor(System.Action{Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateBuilder{`0}})">
+            <inheritdoc cref="T:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1"/>
+            <param name="builder">Delegate that build the current instance</param>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.Build(System.Action{Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateBuilder{`0}})">
+            <summary>
+            Builds the current instance using <paramref name="builder"/>.
+            </summary>
+            <param name="builder">Delegate that build the current instance</param>
+            <returns>The current instance</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.Expression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.Sels#Core#Data#SQL#Query#Statement#IStatementSetBuilder{TEntity,Sels#Core#Data#MySQL#Query#Statement#IOnDuplicateKeyUpdateValueBuilder{TEntity}}#SetExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateBuilder`1">
+            <summary>
+            Builder for defining what to update on duplicate key during insert.
+            </summary>
+            <typeparam name="TEntity">The main entity to create the query for</typeparam>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateValueBuilder`1">
+            <summary>
+            Builder for defining what to set an expression to.
+            </summary>
+            <typeparam name="TEntity">The main entity to create the query for</typeparam>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateValueBuilder`1.Values(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+            <summary>
+            Set an expression to a value supplied to the VALUES clause.
+            </summary>
+            <param name="expression">Expression pointing to the expression in the INSERT clause</param>
+            <returns>Builder for setting more values</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateValueBuilder`1.Values(System.String)">
+            <summary>
+            Set an expression to a value supplied to the VALUES clause.
+            </summary>
+            <param name="expression">String containing the sql expression</param>
+            <returns>Builder for setting more values</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateValueBuilder`1.Values(System.Action{System.Text.StringBuilder})">
+            <summary>
+            Set an expression to a value supplied to the VALUES clause.
+            </summary>
+            <param name="expression">Delegate that adds the sql expression to the provided string builder</param>
+            <returns>Builder for setting more values</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateValueBuilder`1.Values``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+            <summary>
+            Set an expression to a value supplied to the VALUES clause where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type to select the property from</typeparam>
+            <param name="property">The expression that points to the property to use</param>
+            <returns>Builder for setting more values</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateValueBuilder`1.Values(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+            <summary>
+            Set an expression to a value supplied to the VALUES clause where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="property">The expression that points to the property to use</param>
+            <returns>Builder for setting more values</returns>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateChainedBuilder`1">
+            <summary>
+            Builder for setting more values.
+            </summary>
+            <typeparam name="TEntity">The main entity to create the query for</typeparam>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateChainedBuilder`1.And">
+            <summary>
+            Returns a builder for setting more values.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.MariaDb.MariaDbBuilderExtensions">
+            <summary>
+            Contains MariaDb specific MySql extension methods for query builders.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MariaDb.MariaDbBuilderExtensions.Return``2(Sels.Core.Data.SQL.Query.Statement.IDeleteStatementBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder{``0}})">
+            <summary>
+            Specifies what to return after deleting.
+            </summary>
+            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+            <typeparam name="TEntity">The main entity to delete</typeparam>
+            <param name="builder">The builder to add the expression to</param>
+            <param name="configurator">Delegate used to configure what to return</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MariaDb.MariaDbBuilderExtensions.Return``2(Sels.Core.Data.SQL.Query.Statement.IInsertStatementBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder{``0}})">
+            <summary>
+            Specifies what to return after inserting.
+            </summary>
+            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+            <typeparam name="TEntity">The main entity to insert</typeparam>
+            <param name="builder">The builder to add the expression to</param>
+            <param name="configurator">Delegate used to configure what to return</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.MySqlBuilderExtensions">
             <summary>
             Contains MySql extension methods for query builders.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.BuilderExtensions.ForUpdate``2(Sels.Core.Data.SQL.Query.ISelectQueryBuilder{``0,``1})">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.ForUpdate``2(Sels.Core.Data.SQL.Query.Statement.ISelectStatementBuilder{``0,``1})">
             <summary>
             Locks the selected rows for updating within the same transaction.
             </summary>
@@ -133,7 +278,27 @@
             <param name="builder">The builder to add the expression to</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.BuilderExtensions.Limit``2(Sels.Core.Data.SQL.Query.ISelectQueryBuilder{``0,``1},System.Object)">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.OnDuplicateKeyUpdate``2(Sels.Core.Data.SQL.Query.Statement.IInsertStatementBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateBuilder{``0}})">
+            <summary>
+            Update records if there are duplicate primary keys in the insert statement.
+            </summary>
+            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+            <typeparam name="TEntity">The main entity to insert</typeparam>
+            <param name="builder">The builder to add the expression to</param>
+            <param name="expressionBuilder">Delegate for building what to update on duplicate key</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.OnDuplicateKeyUpdate``2(Sels.Core.Data.SQL.Query.Statement.IInsertStatementBuilder{``0,``1},System.Int32[])">
+            <summary>
+            Update records if there are duplicate primary keys in the insert statement.
+            </summary>
+            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+            <typeparam name="TEntity">The main entity to insert</typeparam>
+            <param name="builder">The builder to add the expression to</param>
+            <param name="primaryKeyColumnIndexes">The indexes of the columns containing the primary keys, they will be omitted from the update expressions.</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Limit``2(Sels.Core.Data.SQL.Query.Statement.ISelectStatementBuilder{``0,``1},System.Object)">
             <summary>
             Limits the amount of rows returned.
             </summary>
@@ -143,7 +308,7 @@
             <param name="limit">Object containing the amount of rows to limit by</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.BuilderExtensions.Limit``2(Sels.Core.Data.SQL.Query.ISelectQueryBuilder{``0,``1},System.Object,System.Object)">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Limit``2(Sels.Core.Data.SQL.Query.Statement.ISelectStatementBuilder{``0,``1},System.Object,System.Object)">
             <summary>
             Limits the amount of rows returned.
             </summary>
@@ -154,7 +319,7 @@
             <param name="limit">Object containing the amount of rows to limit by</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.BuilderExtensions.Concat``2(Sels.Core.Data.SQL.Query.ISharedExpressionBuilder{``0,``1},System.Collections.Generic.IEnumerable{System.Object})">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Concat``2(Sels.Core.Data.SQL.Query.Statement.ISharedExpressionBuilder{``0,``1},System.Collections.Generic.IEnumerable{System.Object})">
             <summary>
             Concatenates the supplied values by using the MySql CONCAT function.
             </summary>
@@ -164,7 +329,7 @@
             <param name="values">The expressions to supply to the CONCAT function as arguments</param>
             <returns>Builder for creating more expressions</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.BuilderExtensions.Concat``2(Sels.Core.Data.SQL.Query.ISharedExpressionBuilder{``0,``1},System.Object,System.Object,System.Object[])">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Concat``2(Sels.Core.Data.SQL.Query.Statement.ISharedExpressionBuilder{``0,``1},System.Object,System.Object,System.Object[])">
             <summary>
             Concatenates the supplied values by using the MySql CONCAT function.
             </summary>
@@ -176,7 +341,7 @@
             <param name="additionalValues">Optional additional values to concatenate</param>
             <returns>Builder for creating more expressions</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.BuilderExtensions.LikeParameter``1(Sels.Core.Data.SQL.Query.IConditionOperatorExpressionBuilder{``0},System.String)">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.LikeParameter``1(Sels.Core.Data.SQL.Query.Statement.IStatementConditionOperatorExpressionBuilder{``0},System.String)">
             <summary>
             Creates a comparison where an expression is compared to the value of a sql parameter concatenated with wildcards.
             </summary>
@@ -185,66 +350,171 @@
             <param name="parameter">The name of the sql parameter</param>
             <returns>Builder for creating more expressions</returns>
         </member>
-        <member name="T:Sels.Core.Data.MySQL.MariaDb.MariaDbBuilderExtensions">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.RecursiveCte``1(Sels.Core.Data.SQL.Query.Statement.ICteStatementBuilder,System.String)">
             <summary>
-            Contains MariaDb specific MySql extension methods for query builders.
+            Starts to build a cte recursive expression for the current statement.
+            </summary>
+            <typeparam name="T">The main entity to map to the cte columns</typeparam>
+            <param name="builder">The builder to add the cte to</param>
+            <param name="name">The name of the cte</param>
+            <returns>Builder for creating the cte expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.RecursiveCte``1(Sels.Core.Data.SQL.Query.Statement.ICteStatementBuilder)">
+            <summary>
+            Starts to build a cte recursive expression for the current statement.
+            </summary>
+            <typeparam name="T">The main entity to map to the cte columns</typeparam>
+            <param name="builder">The builder to add the cte to</param>
+            <returns>Builder for creating the cte expression</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.RecursiveCte(Sels.Core.Data.SQL.Query.Statement.ICteStatementBuilder,System.String)">
+            <summary>
+            Starts to build a cte recursive expression for the current statement.
+            </summary>
+            <param name="builder">The builder to add the cte to</param>
+            <param name="name">The name of the cte</param>
+            <returns>Builder for creating the cte expression</returns>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.Models.ConnectionString">
+            <summary>
+            Strongly typed MySql connection string that can be parsed from a string or converted to connection string.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MariaDb.MariaDbBuilderExtensions.Return``2(Sels.Core.Data.SQL.Query.IDeleteQueryBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder{``0}})">
+        <member name="P:Sels.Core.Data.MySQL.Models.ConnectionString.Servers">
             <summary>
-            Specifies what to return after deleting.
-            </summary>
-            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-            <typeparam name="TEntity">The main entity to delete</typeparam>
-            <param name="builder">The builder to add the expression to</param>
-            <param name="configurator">Delegate used to configure what to return</param>
-            <returns>Current builder for method chaining</returns>
-        </member>
-        <member name="M:Sels.Core.Data.MySQL.MariaDb.MariaDbBuilderExtensions.Return``2(Sels.Core.Data.SQL.Query.IInsertQueryBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder{``0}})">
-            <summary>
-            Specifies what to return after inserting.
-            </summary>
-            <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-            <typeparam name="TEntity">The main entity to insert</typeparam>
-            <param name="builder">The builder to add the expression to</param>
-            <param name="configurator">Delegate used to configure what to return</param>
-            <returns>Current builder for method chaining</returns>
-        </member>
-        <member name="T:Sels.Core.Data.MySQL.Models.Data.MySqlDataServiceConnection">
-            <summary>
-            A <see cref="T:Sels.Core.Data.Contracts.Service.IDataServiceConnection"/> implemented using a MySql connection.
+            The servers to connection to.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Models.Data.MySqlDataServiceConnection.#ctor(System.String,System.Boolean)">
-            <inheritdoc cref="T:Sels.Core.Data.MySQL.Models.Data.MySqlDataServiceConnection"/>
+        <member name="P:Sels.Core.Data.MySQL.Models.ConnectionString.Database">
+            <summary>
+            The name of the database to connect to.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Models.ConnectionString.Port">
+            <summary>
+            The tcp port to connect to.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Models.ConnectionString.Username">
+            <summary>
+            The name of the user to connect with.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Models.ConnectionString.Password">
+            <summary>
+            The password to connect with.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Models.ConnectionString.SslMode">
+            <summary>
+            The ssl mode for the connection.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Models.ConnectionString.AllowUserVariables">
+            <summary>
+            Allows the usage of variables in queries.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Models.ConnectionString.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Models.ConnectionString.Parse(System.String)">
+            <summary>
+            Parses <paramref name="connectionString"/> and turns it into an instance of <see cref="T:Sels.Core.Data.MySQL.Models.ConnectionString"/>.
+            </summary>
+            <param name="connectionString">The connection string to parse</param>
+            <returns>Instance parsed from <paramref name="connectionString"/></returns>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.Models.MySqlSslMode">
+            <summary>
+            The ssl modes that MySql supports.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Data.MySQL.Models.MySqlSslMode.Preferred">
+            <summary>
+            Use ssl if the server supports it.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Data.MySQL.Models.MySqlSslMode.Required">
+            <summary>
+            Force encryption. Denies connection if the server doesn't support ssl.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.Models.Repository.MySqlDataRepositoryConnection">
+            <summary>
+            A <see cref="T:Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection"/> implemented using a MySql connection.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Models.Repository.MySqlDataRepositoryConnection.#ctor(System.String,System.Boolean,System.Data.IsolationLevel)">
+            <inheritdoc cref="T:Sels.Core.Data.MySQL.Models.Repository.MySqlDataRepositoryConnection"/>
             <param name="connectionString">The connection string to open the connection with</param>
             <param name="beginTransaction">If a transaction should be created for this connection</param>
+            <param name="isolationLevel">The isolation level for the transaction if <paramref name="beginTransaction"/> is set to true</param>
         </member>
-        <member name="P:Sels.Core.Data.MySQL.Models.Data.MySqlDataServiceConnection.Connection">
+        <member name="P:Sels.Core.Data.MySQL.Models.Repository.MySqlDataRepositoryConnection.Connection">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Data.MySQL.Models.Data.MySqlDataServiceConnection.Transaction">
+        <member name="P:Sels.Core.Data.MySQL.Models.Repository.MySqlDataRepositoryConnection.Transaction">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Models.Data.MySqlDataServiceConnection.OpenAsync(System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Models.Repository.MySqlDataRepositoryConnection.OpenAsync(System.Threading.CancellationToken)">
             <summary>
             Opens the connection.
             </summary>
             <param name="token">Optional token to cancel the request</param>
             <returns>Task to await the request</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Models.Data.MySqlDataServiceConnection.Commit">
+        <member name="M:Sels.Core.Data.MySQL.Models.Repository.MySqlDataRepositoryConnection.CreateTransactionAsync(System.Data.IsolationLevel,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Models.Data.MySqlDataServiceConnection.Dispose">
+        <member name="M:Sels.Core.Data.MySQL.Models.Repository.MySqlDataRepositoryConnection.CommitAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Models.Repository.MySqlDataRepositoryConnection.Dispose">
+            <summary>
+            Closes the connection.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Models.Repository.MySqlDataRepositoryConnection.DisposeAsync">
             <summary>
             Closes the connection.
             </summary>
         </member>
         <member name="T:Sels.Core.Data.MySQL.MySql">
             <summary>
-            Contains static helper methods and constant values for mysql.
+            Contains static helper methods and constant values for MySql.
             </summary>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.MySql.Database">
+            <summary>
+            Contains static helper methods for working with a mysql based database
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MySql.Database.EnsureDatabaseExistsAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Creates the database defined in <paramref name="connectionString"/> if it does not exist.
+            </summary>
+            <param name="connectionString">The connection string to make the connection with</param>
+            <param name="cancellationToken">Token to cancel the request</param>
+            <exception cref="T:System.ArgumentException"></exception>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.MySql.Database.Locking">
+            <summary>
+            Contains static helper methods for gaining exclusive locks on a database.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MySql.Database.Locking.LockAsync(System.String,System.String,System.String,System.Int32,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.Threading.CancellationToken)">
+            <summary>
+            Creates an exclusive lock on database resource with name <paramref name="key"/>. Provides concurrency between all instances using this method to lock the target database.
+            Uses a table called <see cref="T:Sels.Core.Data.MySQL.MySql.Database.Locking.DatabaseLock"/> and sql locking to handle the locks.
+            </summary>
+            <param name="connectionString">Connection string to connect to the database</param>
+            <param name="key">The name of the resource to lock</param>
+            <param name="requester">The name of the instance that is requesting the lock. The name should be unique for the different instances. Instances with the same name can lock and unlock the held resource</param>
+            <param name="expireAfter">How many minutes to lock the resource for. After the allotted time other instances will be able to lock the resource</param>
+            <param name="loggers">Optional logger for tracing</param>
+            <param name="cancellationToken">Optional token to cancel the request</param>
+            <returns>Object that can be disposed to unlock the resource with name <paramref name="key"/></returns>
         </member>
         <member name="M:Sels.Core.Data.MySQL.MySql.Insert``1(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
@@ -272,6 +542,13 @@
         <member name="M:Sels.Core.Data.MySQL.MySql.Select(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Returns a builder for creating a mysql select query.
+            </summary>
+            <param name="loggers">Optional loggers for tracing</param>
+            <returns>A builder for creating a mysql query</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MySql.With(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Returns a builder for creating a select query using common table expressions.
             </summary>
             <param name="loggers">Optional loggers for tracing</param>
             <returns>A builder for creating a mysql query</returns>
@@ -306,66 +583,108 @@
             <param name="loggers">Optional loggers for tracing</param>
             <returns>A builder for creating a mysql query</returns>
         </member>
-        <member name="T:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2">
+        <member name="M:Sels.Core.Data.MySQL.MySql.Compile(Sels.Core.Data.SQL.Query.Expressions.IExpression,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
-            Template for creating a new <see cref="T:Sels.Core.Data.Contracts.Service.IDataService`2"/> using MariaDb as the backing database.
+            Compiles <paramref name="expression"/> into MySql.
+            </summary>
+            <param name="expression">The expression to compile</param>
+            <param name="loggers">Optional loggers for tracing</param>
+            <returns><paramref name="expression"/> compiled into MySql</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MySql.Compile(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Compiles <paramref name="expression"/> into MySql and adds it to <paramref name="builder"/>.
+            </summary>
+            <param name="builder">The builder to add the MySql string to</param>
+            <param name="expression">The expression to compile</param>
+            <param name="loggers">Optional loggers for tracing</param>
+            <returns><paramref name="builder"/> for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.MySql.Schema">
+            <summary>
+            Contains static values related to the schema of MySql databases.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.MySql.Schema.Indexes">
+            <summary>
+            Contains static values related to MySql indexes.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Data.MySQL.MySql.Schema.Indexes.PrimaryKeyName">
+            <summary>
+            The MySql name for the primary key index.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.MySql.Keywords">
+            <summary>
+            Contains static values related to MySql specific keywords.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Data.MySQL.MySql.Keywords.Recursive">
+            <summary>
+            The keyword for a recursive cte.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2">
+            <summary>
+            Template for creating a new <see cref="T:Sels.Core.Data.Contracts.Repository.IDataRepository`2"/> using MariaDb as the backing database.
             Requires mariaDb 10.5.0 or later due to use of the RETURNING keyword.
             </summary>
             <typeparam name="TEntity">The type of the entity the perform crud operations on</typeparam>
             <typeparam name="TId">The type of the primary id of <typeparamref name="TEntity"/></typeparam>
         </member>
-        <member name="P:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.IdProperty">
+        <member name="P:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.IdProperty">
             <summary>
             The property of the id column on <typeparamref name="TEntity"/>.
             </summary>
         </member>
-        <member name="P:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.ExcludedProperties">
+        <member name="P:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.ExcludedProperties">
             <summary>
             The properties that will be excluded as columns from the query.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.#ctor(System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
-            <inheritdoc cref="T:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2"/>
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.#ctor(System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc cref="T:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2"/>
             <param name="connectionString">The connection string to use to open connections</param>
             <param name="loggers">Optional loggers for tracing</param>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.OpenNewConnectionAsync(System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.OpenNewConnectionAsync(System.Boolean,System.Data.IsolationLevel,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.CreateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`0,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.CreateAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.CreateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.CreateAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.ExistsAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`1,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.ExistsAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,`1,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.GetAllAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.GetAllAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.GetAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`1,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.GetAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,`1,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.UpdateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`0,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.UpdateAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.UpdateAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.UpdateAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,System.Collections.Generic.IEnumerable{`0},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.DeleteAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,`1,System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.DeleteAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,`1,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.DeleteAsync(Sels.Core.Data.Contracts.Service.IDataServiceConnection,System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.DeleteAsync(Sels.Core.Data.Contracts.Repository.IDataRepositoryConnection,System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.GetIdProperty">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.GetIdProperty">
             <summary>
             Returns the property info of the id property on <typeparamref name="TEntity"/>.
             </summary>
             <returns>The property info of the id property on <typeparamref name="TEntity"/></returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Service.MariaDb.BaseMariaDbDataService`2.GetExcludedProperties">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.GetExcludedProperties">
             <summary>
             Gets the names of the properties on <typeparamref name="TEntity"/> not to include in queries.
             </summary>

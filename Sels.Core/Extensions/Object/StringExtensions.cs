@@ -1,5 +1,6 @@
 ﻿using Sels.Core;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.RegularExpressions;
 using System;
@@ -403,6 +404,29 @@ namespace System
             builder.ValidateArgument(nameof(builder));
 
             builder.Append(Constants.Strings.Tab);
+
+            return builder;
+        }
+        /// <summary>
+        /// Joins the <see cref="object.ToString()"/> values in <paramref name="values"/> using the <see cref="object.ToString()"/> of <paramref name="joinValue"/> and adds it to <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder">The builder to append to</param>
+        /// <param name="values">Enumerator returning the object to join the string values from</param>
+        /// <param name="joinValue">Object containing the string value to join with</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static StringBuilder Join(this StringBuilder builder, IEnumerable<object> values, object joinValue)
+        {
+            builder.ValidateArgument(nameof(builder));
+            joinValue.ValidateArgument(nameof(joinValue));
+            if (values == null) return builder;
+            var valueCount = values.GetCount();
+
+            values.Execute((i, x) =>
+            {
+                builder.Append(x);
+                if (i < valueCount-1) builder.Append(joinValue);
+            });
 
             return builder;
         }

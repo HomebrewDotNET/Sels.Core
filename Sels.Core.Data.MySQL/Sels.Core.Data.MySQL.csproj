@@ -11,7 +11,7 @@
 	  <Product>MySql Data Library</Product>
 	  <Description>
 		  Contains code for working with MySql based databases.
-		  Contains fluent query builders for Insert, Select, Update and Delete.
+		  Contains fluent query builders for Insert, Select, Update and Delete queries.
 		  Used by projects maintained here: https://github.com/Jenssels1998
 	  </Description>
 	  <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
@@ -32,12 +32,6 @@
 		<DebugType>None</DebugType>
 		<DebugSymbols>false</DebugSymbols>
 	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Dapper" Version="2.0.123" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
-	</ItemGroup>
 
 	<!--Include non-NuGet package projects in NuGet package-->
 	<Target Name="PrePackage" BeforeTargets="BuildPackage">
@@ -54,8 +48,12 @@
 	</Target>
 
 	<ItemGroup>
-    <Folder Include="Contracts\Query\" />
-  </ItemGroup>
+		<PackageReference Include="Dapper" Version="2.0.123" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
+		<ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
+	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MySqlConnector" Version="2.1.8" />
