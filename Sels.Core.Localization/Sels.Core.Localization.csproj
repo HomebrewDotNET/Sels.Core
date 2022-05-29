@@ -4,13 +4,13 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	  <Authors>Jens Sels</Authors>
 	  <Company>Homebrew IT</Company>
 	  <Product>Localization Library</Product>
 	  <Description>
-		  Contains code for creating localized applications.
+		  Contains a static localizer for localizing applications using embedded resx/resource files.
 		  Used by projects maintained here: https://github.com/Jenssels1998
 	  </Description>
 	  <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
@@ -45,5 +45,13 @@
 		<Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
+
+  <ItemGroup>
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
+  </ItemGroup>
 
 </Project>

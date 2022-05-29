@@ -1430,23 +1430,23 @@
         <member name="T:Sels.Core.Delegates.Async.AsyncAction`5">
             <inheritdoc cref="T:System.Action`5"/>
         </member>
-        <member name="T:Sels.Core.Delegates.Async.Func`1">
-            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`1"/>
+        <member name="T:Sels.Core.Delegates.Async.AsyncFunc`1">
+            <inheritdoc cref="T:System.Func`1"/>
         </member>
-        <member name="T:Sels.Core.Delegates.Async.Func`2">
-            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`2"/>
+        <member name="T:Sels.Core.Delegates.Async.AsyncFunc`2">
+            <inheritdoc cref="T:System.Func`2"/>
         </member>
-        <member name="T:Sels.Core.Delegates.Async.Func`3">
-            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`3"/>
+        <member name="T:Sels.Core.Delegates.Async.AsyncFunc`3">
+            <inheritdoc cref="T:System.Func`3"/>
         </member>
-        <member name="T:Sels.Core.Delegates.Async.Func`4">
-            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`4"/>
+        <member name="T:Sels.Core.Delegates.Async.AsyncFunc`4">
+            <inheritdoc cref="T:System.Func`4"/>
         </member>
-        <member name="T:Sels.Core.Delegates.Async.Func`5">
-            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`5"/>
+        <member name="T:Sels.Core.Delegates.Async.AsyncFunc`5">
+            <inheritdoc cref="T:System.Func`5"/>
         </member>
-        <member name="T:Sels.Core.Delegates.Async.Func`6">
-            <inheritdoc cref="T:Sels.Core.Delegates.Async.Func`6"/>
+        <member name="T:Sels.Core.Delegates.Async.AsyncFunc`6">
+            <inheritdoc cref="T:System.Func`6"/>
         </member>
         <member name="T:Sels.Core.Exceptions.Configuration.ConfigurationMissingException">
             <summary>
