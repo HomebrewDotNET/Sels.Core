@@ -16,4 +16,9 @@ namespace Sels.Core.TestTool.Models
         public List<double> Earnings { get; set; }
         public bool IsGraduated { get; set; }
     }
+
+    public class PersonInfo<TId> : PersonInfo
+    {
+        public TId Id { get; set; }
+    }
 }

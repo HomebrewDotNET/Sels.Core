@@ -68,5 +68,14 @@ namespace Sels.Core.TestTool.Resources {
                 return ResourceManager.GetString("TypeAlias.Sels.Core.TestTool.Models.PersonInfo", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Domain.PersonInfo.
+        /// </summary>
+        internal static string TypeAlias_Sels_Core_TestTool_Models_PersonInfo__ {
+            get {
+                return ResourceManager.GetString("TypeAlias.Sels.Core.TestTool.Models.PersonInfo<>", resourceCulture);
+            }
+        }
     }
 }

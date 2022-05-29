@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.Core.Localization
 {
@@ -246,18 +247,26 @@ namespace Sels.Core.Localization
                 {
                     type.ValidateArgument(nameof(type));
 
-                    _loggers.Debug($"Getting alias for type <{type}>");
+                    var typeName = type.GetDisplayName(true);
+                    _loggers.Debug($"Getting alias for type <{typeName}>");
 
-                    var alias = Localizer.Get(AliasKeyPrefix + type.FullName, null, true);
+                    var alias = Localizer.Get(AliasKeyPrefix + typeName, null, true);
+                    
+                    if (!alias.HasValue() && type.IsGenericType && !type.IsGenericTypeDefinition)
+                    {
+                        typeName = type.GetGenericTypeDefinition().GetDisplayName();
+                        _loggers.Debug($"Type <{type}> is generic type. Searching for generic type definition <{typeName}>");
+                        alias = Localizer.Get(AliasKeyPrefix + typeName, null, true);
+                    }
 
                     if (alias.HasValue())
                     {
-                        _loggers.Debug($"Type alias <{alias}> defined for type <{type}>");
+                        _loggers.Debug($"Type alias <{alias}> defined for type <{typeName}>");
                         return alias;
                     }
 
-                    _loggers.Debug($"No type alias defined for type <{type}>. Using full type name as default");
-                    return type.FullName;
+                    _loggers.Debug($"No type alias defined for type <{type}>. Using full type display name as default");
+                    return type.GetDisplayName(true);
                 }
             }
             #endregion

@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -237,6 +238,85 @@ namespace Sels.Core.Extensions.Reflection
 
             return type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(x => x.IsLiteral && !x.IsInitOnly);
         }
+
+        #region DisplayName
+        /// <summary>
+        /// Returns a display name where in case of a generic type the types are fully filled out.
+        /// </summary>
+        /// <param name="type">Type to get the display name for</param>
+        /// <param name="includeNamespace">If the namespace needs to be included</param>
+        /// <returns>The display name for <paramref name="type"/></returns>
+        public static string GetDisplayName(this Type type, bool includeNamespace = true)
+        {
+            type.ValidateArgument(nameof(type));
+
+            return new StringBuilder().GetDisplayName(type, includeNamespace).ToString();
+        }
+        /// <summary>
+        /// Appends a display name where in case of a generic type the types are fully filled out to <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder">The builder to append to</param>
+        /// <param name="type">Type to get the display name for</param>
+        /// <param name="includeNamespace">If the namespace needs to be included</param>
+        /// <returns><paramref name="builder"/> for method chaining</returns>
+        public static StringBuilder GetDisplayName(this StringBuilder builder, Type type, bool includeNamespace = true)
+        {
+            builder.ValidateArgument(nameof(builder));
+            type.ValidateArgument(nameof(type));
+
+            var baseName = type.GetBaseName(includeNamespace);
+            if (type.IsArray)
+            {
+                builder.Append(GetDisplayName(type.GetElementType(), includeNamespace)).Append('[').Append(']');
+            }
+            else if (type.IsGenericTypeDefinition)
+            {
+                // Add generic type arguments in name
+                builder.Append(baseName).Append('<');
+
+                var argumentsCount = type.GetGenericArguments().Length;
+
+                for (int i = 0; i < argumentsCount - 1; i++)
+                {
+                    builder.Append(',');
+                }
+                builder.Append('>');
+            }
+            else if (type.IsGenericType)
+            {
+                // Add generic type arguments in name
+                builder.Append(baseName).Append('<');
+
+                var arguments = type.GetGenericArguments();
+                arguments.Execute((i, t) =>
+                {
+                    builder.GetDisplayName(t, includeNamespace);
+                    if (i < arguments.Length - 1) builder.Append(',');
+                });
+                builder.Append('>');
+            }
+            else
+            {
+                builder.Append(baseName);
+            }
+
+            return builder;
+        }
+        /// <summary>
+        /// Returns the type name of <paramref name="type"/> without any generic information.
+        /// </summary>
+        /// <param name="type">Type to get the name from</param>
+        /// <param name="includeNamespace">If the namespace needs to be included</param>
+        /// <returns>The type name for <paramref name="type"/></returns>
+        public static string GetBaseName(this Type type, bool includeNamespace = true)
+        {
+            type.ValidateArgument(nameof(type));
+
+            string name = includeNamespace ? type.FullName != null ? type.FullName : type.Name : type.Name;
+            int index = name.IndexOf('`');
+            return index == -1 ? name : name.Substring(0, index);
+        }
+        #endregion
 
         #region Delegate Types 
         /// <summary>

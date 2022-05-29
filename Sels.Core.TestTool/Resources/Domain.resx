@@ -120,4 +120,7 @@
   <data name="TypeAlias.Sels.Core.TestTool.Models.PersonInfo" xml:space="preserve">
     <value>Domain.PersonInfo</value>
   </data>
+  <data name="TypeAlias.Sels.Core.TestTool.Models.PersonInfo&lt;&gt;" xml:space="preserve">
+    <value>Domain.PersonInfo</value>
+  </data>
 </root>

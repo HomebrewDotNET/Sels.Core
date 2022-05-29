@@ -31,8 +31,9 @@ namespace Sels.Core.TestTool
                     x.ScanIn(Assembly.GetExecutingAssembly()).UseLoggers(LoggingServices.Loggers);
                 });
 
-                var person = new PersonInfo()
+                var person = new PersonInfo<int>()
                 {
+                    Id = 1,
                     Name = "Jens",
                     FamilyName = "Sels",
                     BirthDay = DateTime.Parse("04/01/1998 00:13:45"),

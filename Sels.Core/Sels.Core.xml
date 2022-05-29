@@ -3051,6 +3051,31 @@
             <param name="type">Type to get the constant fields from</param>
             <returns>All constant fields on <paramref name="type"/></returns>
         </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.GetDisplayName(System.Type,System.Boolean)">
+            <summary>
+            Returns a display name where in case of a generic type the types are fully filled out.
+            </summary>
+            <param name="type">Type to get the display name for</param>
+            <param name="includeNamespace">If the namespace needs to be included</param>
+            <returns>The display name for <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.GetDisplayName(System.Text.StringBuilder,System.Type,System.Boolean)">
+            <summary>
+            Appends a display name where in case of a generic type the types are fully filled out to <paramref name="builder"/>.
+            </summary>
+            <param name="builder">The builder to append to</param>
+            <param name="type">Type to get the display name for</param>
+            <param name="includeNamespace">If the namespace needs to be included</param>
+            <returns><paramref name="builder"/> for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.GetBaseName(System.Type,System.Boolean)">
+            <summary>
+            Returns the type name of <paramref name="type"/> without any generic information.
+            </summary>
+            <param name="type">Type to get the name from</param>
+            <param name="includeNamespace">If the namespace needs to be included</param>
+            <returns>The type name for <paramref name="type"/></returns>
+        </member>
         <member name="M:Sels.Core.Extensions.Reflection.TypeReflectionExtensions.GetDelegateTypes(System.Reflection.MethodInfo)">
             <summary>
             Returns the return type and the parameter types in the right order so they can be used to create a delegate.
