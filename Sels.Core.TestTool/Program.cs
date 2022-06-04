@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Sels.Core.Components.Logging;
 using Sels.Core.Localization;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sels.Core.TestTool
 {

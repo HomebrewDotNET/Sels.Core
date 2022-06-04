@@ -2764,6 +2764,77 @@
             <returns>All properties extracted from <paramref name="expression"/> in the same order they are defined in <paramref name="expression"/></returns>
             <exception cref="T:System.NotSupportedException"></exception>
         </member>
+        <member name="M:Sels.Core.Extensions.Reflection.Expression.TryExtractMethod``1(System.Linq.Expressions.Expression{``0},System.Reflection.MethodInfo@)">
+            <summary>
+            Tries to extract the <see cref="T:System.Reflection.MethodInfo"/> if <paramref name="expression"/> points to a method.
+            </summary>
+            <typeparam name="T">Type of the delegate in <paramref name="expression"/></typeparam>
+            <param name="expression">The expression to check</param>
+            <param name="method">The method if it could be extracted</param>
+            <returns>True if <paramref name="expression"/> points to a method, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.Expression.ExtractMethod``1(System.Linq.Expressions.Expression{``0},System.String)">
+            <summary>
+            Extracts <see cref="T:System.Reflection.MethodInfo"/> from <paramref name="expression"/>.
+            </summary>
+            <typeparam name="T">Type of the delegate in <paramref name="expression"/></typeparam>
+            <param name="expression">The expression to check</param>
+            <param name="variableName">The name of the expression variable</param>
+            <returns>The extracted method</returns>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="expression"/> doesn't point to a method</exception>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.Expression.ExtractMethod``1(System.Linq.Expressions.Expression{``0})">
+            <summary>
+            Extracts <see cref="T:System.Reflection.MethodInfo"/> from <paramref name="expression"/>.
+            </summary>
+            <typeparam name="T">Type of the delegate in <paramref name="expression"/></typeparam>
+            <param name="expression">The expression to check</param>
+            <returns>The extracted method</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.Expression.ExtractMethodOrDefault(System.Linq.Expressions.Expression)">
+            <summary>
+            Extracts <see cref="T:System.Reflection.MethodInfo"/> from <paramref name="expression"/> if the expression points to a method.
+            </summary>
+            <param name="expression">The expression to check</param>
+            <returns>The extracted method or null if <paramref name="expression"/> doesn't point to an expression</returns>
+        </member>
+        <member name="T:Sels.Core.Extensions.Reflection.MethodInfoExtensions">
+            <summary>
+            Contains extension methods for working with <see cref="T:System.Reflection.MethodInfo"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.MethodInfoExtensions.AreEqual(System.Reflection.MethodInfo,System.Reflection.MethodInfo)">
+            <summary>
+            Checks if <paramref name="method"/> is the same method as <paramref name="methodToCompare"/>.
+            </summary>
+            <param name="method">The first method to compare</param>
+            <param name="methodToCompare">The second method to compare</param>
+            <returns>Whether or not <paramref name="method"/> is equal to <paramref name="methodToCompare"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.MethodInfoExtensions.AreSameDefinition(System.Reflection.MethodInfo,System.Reflection.MethodInfo)">
+            <summary>
+            Checks if 2 methods have the same definition (Name, returns value, parameters, ...).
+            </summary>
+            <param name="method">The first method to compare</param>
+            <param name="methodToCompare">The second method to compare</param>
+            <returns>Whether or not <paramref name="method"/> has the same definition as <paramref name="methodToCompare"/></returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.MethodInfoExtensions.IsOverriden(System.Reflection.MethodInfo)">
+            <summary>
+            Checks if <paramref name="method"/> is an override of a method on a base class.
+            </summary>
+            <param name="method">The method to check</param>
+            <returns>True if method is overriden in a derived class, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Reflection.MethodInfoExtensions.GetDisplayName(System.Reflection.MethodInfo,System.Boolean,System.String[])">
+            <summary>
+            Returns a display name where in case of a generic method the types are fully filled out.
+            </summary>
+            <param name="method">Method to get the display name for</param>
+            <param name="includeNamespace">If the namespace needs to be included</param>
+            <param name="arguments">Optional list of argument for the method</param>
+            <returns>The display name for <paramref name="method"/></returns>
+        </member>
         <member name="T:Sels.Core.Extensions.Reflection.PropertyInfoExtensions">
             <summary>
             Contains extension methods for working with <see cref="T:System.Reflection.PropertyInfo"/>.
@@ -3655,6 +3726,19 @@
             <param name="expectedRoot">The expected reflected type of the first property</param>
             <param name="nestedProperties">The nested properties to check</param>
             <exception cref="T:System.IO.InvalidDataException"></exception>
+        </member>
+        <member name="T:Sels.Core.Models.Disposables.NullDisposer">
+            <summary>
+            Class that implements <see cref="T:System.IDisposable"/> but does nothing in the dispose.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Models.Disposables.NullDisposer.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Models.Disposables.NullDisposer.Instance">
+            <summary>
+            The singleton instance.
+            </summary>
         </member>
         <member name="T:System.IO.DirectoryInfoExtensions">
             <summary>

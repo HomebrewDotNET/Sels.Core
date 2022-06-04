@@ -319,16 +319,28 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
         }
         #endregion
 
+        // Virtuals
+        /// <summary>
+        /// Gets the names of the properties on <typeparamref name="TEntity"/> not to include in queries.
+        /// </summary>
+        /// <returns>Enumerator returning the names of the properties to ignore or null if no properties need to be ignored</returns>
+        protected virtual IEnumerable<string>? GetExcludedProperties()
+        {
+            foreach(var property in typeof(TEntity).GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            {
+                if (property.GetIndexParameters().Length != 0) yield return property.Name;
+
+                var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+                if(!type.IsPrimitive && !type.IsString() && !type.Is<DateTime>() && !type.Is<DateTimeOffset>() && !type.Is<Guid>()) yield return property.Name;
+            }
+        }
+
         // Abstractions
         /// <summary>
         /// Returns the property info of the id property on <typeparamref name="TEntity"/>.
         /// </summary>
         /// <returns>The property info of the id property on <typeparamref name="TEntity"/></returns>
         protected abstract PropertyInfo GetIdProperty();
-        /// <summary>
-        /// Gets the names of the properties on <typeparamref name="TEntity"/> not to include in queries.
-        /// </summary>
-        /// <returns>Enumerator returning the names of the properties to ignore or null if no properties need to be ignored</returns>
-        protected abstract IEnumerable<string>? GetExcludedProperties();
     }
 }

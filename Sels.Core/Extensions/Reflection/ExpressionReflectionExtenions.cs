@@ -126,5 +126,74 @@ namespace Sels.Core.Extensions.Reflection
             return properties.ToArray(); 
         }
         #endregion
+
+        #region MethodExtractor
+        /// <summary>
+        /// Tries to extract the <see cref="MethodInfo"/> if <paramref name="expression"/> points to a method.
+        /// </summary>
+        /// <typeparam name="T">Type of the delegate in <paramref name="expression"/></typeparam>
+        /// <param name="expression">The expression to check</param>
+        /// <param name="method">The method if it could be extracted</param>
+        /// <returns>True if <paramref name="expression"/> points to a method, otherwise false</returns>
+        public static bool TryExtractMethod<T>(this Expression<T> expression, out MethodInfo method)
+        {
+            method = null;
+            expression.ValidateArgument(nameof(expression));
+
+            if (expression.Body != null) method = expression.Body.ExtractMethodOrDefault();
+
+            return method != null;
+        }
+        /// <summary>
+        /// Extracts <see cref="MethodInfo"/> from <paramref name="expression"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the delegate in <paramref name="expression"/></typeparam>
+        /// <param name="expression">The expression to check</param>
+        /// <param name="variableName">The name of the expression variable</param>
+        /// <returns>The extracted method</returns>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="expression"/> doesn't point to a method</exception>
+        public static MethodInfo ExtractMethod<T>(this Expression<T> expression, string variableName)
+        {
+            expression.ValidateArgument(nameof(expression));
+
+            if (expression.TryExtractMethod(out var method))
+            {
+                return method;
+            }
+            else
+            {
+                throw new ArgumentException($"{variableName} must have a method as body");
+            }
+        }
+
+        /// <summary>
+        /// Extracts <see cref="MethodInfo"/> from <paramref name="expression"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the delegate in <paramref name="expression"/></typeparam>
+        /// <param name="expression">The expression to check</param>
+        /// <returns>The extracted method</returns>
+        public static MethodInfo ExtractMethod<T>(this Expression<T> expression)
+        {
+            expression.ValidateArgument(nameof(expression));
+
+            return expression.ExtractMethod("Expression");
+        }
+        /// <summary>
+        /// Extracts <see cref="MethodInfo"/> from <paramref name="expression"/> if the expression points to a method.
+        /// </summary>
+        /// <param name="expression">The expression to check</param>
+        /// <returns>The extracted method or null if <paramref name="expression"/> doesn't point to an expression</returns>
+        public static MethodInfo ExtractMethodOrDefault(this System.Linq.Expressions.Expression expression)
+        {
+            expression.ValidateArgument(nameof(expression));
+
+            if (expression is MethodCallExpression callExpression)
+            {
+                return callExpression.Method;
+            }
+
+            return null;
+        }
+        #endregion
     }
 }
