@@ -53,7 +53,8 @@ namespace Sels.ObjectValidationFramework.Contracts.Rules
         /// Creates a configurator that uses a typed context of type <typeparamref name="TContext"/> used to create validatiion rules.
         /// </summary>
         /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="required">If the context is required to be supplied. When set to true <see cref="IValidationRuleContext{TEntity, TContext}.WasContextSupplied"/> must be set to true for the rules to trigger</param>
         /// <returns>Current configurator with a context of type <typeparamref name="TContext"/></returns>
-        IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> WithContext<TContext>();
+        IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> WithContext<TContext>(bool required = false);
     }
 }

@@ -98,7 +98,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
 
             var builder = new StringBuilder();
 
-            builder.Append(ruleContext.GetDisplayName(includeParents) + ".");
+            builder.Append(ruleContext.GetDisplayName(includeParents)).Append('.');
 
             // Include property name
             builder.Append(ruleContext.Info.Property.Name);

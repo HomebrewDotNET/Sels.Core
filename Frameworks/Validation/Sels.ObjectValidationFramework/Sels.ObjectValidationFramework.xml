@@ -271,6 +271,44 @@
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.DynamicValidator`3.Validate(System.Collections.Generic.IEnumerable{`0},`2)">
             <inheritdoc/>
         </member>
+        <member name="T:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3">
+            <inheritdoc cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3"/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.#ctor(System.Boolean,Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`2})">
+            <inheritdoc cref="T:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3"/>
+            <param name="contextRequired">If the context is required by the created rules</param>
+            <param name="parent">The parent validator to delegate calls to</param>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`1}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1,`2}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,``0,`2}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`1}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.Sels#ObjectValidationFramework#Contracts#Validators#IValidationConfigurator{TEntity,TContext,TError}#ForElements``1(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.Sels#ObjectValidationFramework#Contracts#Validators#IValidationConfigurator{TEntity,TContext,TError}#ForElements``2(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},System.Func{``0,``1},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.Sels#ObjectValidationFramework#Contracts#Validators#IValidationConfigurator{TEntity,TContext,TError}#ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.Sels#ObjectValidationFramework#Contracts#Validators#IValidationConfigurator{TEntity,TContext,TError}#ForProperty``2(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{``0,``1},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.Sels#ObjectValidationFramework#Contracts#Validators#IValidationConfigurator{TEntity,TContext,TError}#ForSource(Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.Sels#ObjectValidationFramework#Contracts#Validators#IValidationConfigurator{TEntity,TContext,TError}#ForSource``1(System.Func{`0,``0},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <inheritdoc/>
+        </member>
         <member name="T:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2">
             <summary>
             Validator that allows for the creation of validation rules for type <typeparamref name="TEntity"/> and using the rules to validate instances of type <typeparamref name="TEntity"/>.
@@ -311,7 +349,7 @@
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,``0,`1}})">
             <inheritdoc/>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}})">
@@ -422,11 +460,12 @@
             <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator`4.WithContext``1">
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator`4.WithContext``1(System.Boolean)">
             <summary>
             Creates a configurator that uses a typed context of type <typeparamref name="TContext"/> used to create validatiion rules.
             </summary>
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+            <param name="required">If the context is required to be supplied. When set to true <see cref="P:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext`2.WasContextSupplied"/> must be set to true for the rules to trigger</param>
             <returns>Current configurator with a context of type <typeparamref name="TContext"/></returns>
         </member>
         <member name="T:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext`1">
@@ -567,7 +606,7 @@
             <param name="configurator">Configurator for creating validation rules</param>
             <returns>Configurator for creating validation rules</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,``0,`1}})">
             <summary>
             All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TContext"/>.
             </summary>
@@ -588,6 +627,102 @@
             All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TContext"/>.
             </summary>
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+            <param name="condition">Delegate that checks if validation rules can be executed</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3">
+            <summary>
+            Configurator for creating validation rules for objects of type <typeparamref name="TEntity"/> where all rules use a context of type <typeparamref name="TContext"/>.
+            </summary>
+            <typeparam name="TEntity">Type of object to create validation rules for</typeparam>
+            <typeparam name="TContext">Type of the validation context used by all rules</typeparam>
+            <typeparam name="TError">Type of validation error that this rule returns</typeparam>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ForSource(Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <summary>
+            Creates a configurator for creating validation rules for <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="settings">Extra settings for the rule</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ForSource``1(System.Func{`0,``0},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <summary>
+            Creates a configurator for creating validation rules for <typeparamref name="TValue"/> selected from <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="valueSelector">Selects the value to validate from an instance of <typeparamref name="TEntity"/></param>
+            <param name="settings">Extra settings for the rule</param>
+            <typeparam name="TValue">Type of value to validate</typeparam>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ForProperty``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <summary>
+            Creates a configurator for creating validation rules for <paramref name="property"/> on <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="property">Delegate that selects which property to validate. Will throw an <see cref="T:System.ArgumentException"/> when anything but a property is selected</param>
+            <param name="settings">Extra settings for the rule</param>
+            <typeparam name="TPropertyValue">Type of property to validate</typeparam>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ForProperty``2(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{``0,``1},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <summary>
+            Creates a configurator for creating validation rules for the value selected by <paramref name="valueSelector"/> from <paramref name="property"/> on <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="property">Delegate that selects which property to validate. Will throw an <see cref="T:System.ArgumentException"/> when anything but a property is selected</param>
+            <param name="valueSelector">Delegate that selects the value to validate on <paramref name="property"/></param>
+            <param name="settings">Extra settings for the rule</param>
+            <typeparam name="TPropertyValue">Type of property to validate</typeparam>
+            <typeparam name="TValue">Type of value to validate</typeparam>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ForElements``1(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <summary>
+            Creates a configurator for creating validation rules for the elements in <paramref name="property"/> on <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="property">Delegate that selects which property to validate. Will throw an <see cref="T:System.ArgumentException"/> when anything but a property is selected</param>
+            <param name="settings">Extra settings for the rule</param>
+            <typeparam name="TElement">Type of element to validate</typeparam>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ForElements``2(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},System.Func{``0,``1},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <summary>
+            Creates a configurator for creating validation rules for the value selected by <paramref name="valueSelector"/> for each element in <paramref name="property"/> on <typeparamref name="TEntity"/>.
+            </summary>
+            <param name="property">Delegate that selects which property to validate. Will throw an <see cref="T:System.ArgumentException"/> when anything but a property is selected</param>
+            <param name="valueSelector">Delegate that selects the value to validate on each element in <paramref name="property"/></param>
+            <param name="settings">Extra settings for the rule</param>
+            <typeparam name="TElement">Type of element to validate</typeparam>
+            <typeparam name="TValue">Type of value to validate</typeparam>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`1}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1,`2}})">
+            <summary>
+            All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes.
+            </summary>
+            <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
+            <param name="configurator">Configurator for creating validation rules</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,``0,`2}})">
+            <summary>
+            All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TNewContext"/>.
+            </summary>
+            <typeparam name="TNewContext">Optional context that can be supplied to a validation profile</typeparam>
+            <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
+            <param name="configurator">Configurator for creating validation rules</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`1}})">
+            <summary>
+            All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes.
+            </summary>
+            <param name="condition">Delegate that checks if validation rules can be executed</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
+            <summary>
+            All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TNewContext"/>.
+            </summary>
+            <typeparam name="TNewContext">Optional context that can be supplied to a validation profile</typeparam>
             <param name="condition">Delegate that checks if validation rules can be executed</param>
             <returns>Configurator for creating validation rules</returns>
         </member>
@@ -1750,11 +1885,12 @@
             </summary>
             <typeparam name="TError">Type of validation error to return</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.#ctor(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.#ctor(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},System.Boolean)">
             <summary>
             Creates a new instance.
             </summary>
             <param name="loggers">Optional loggers for tracing</param>
+            <param name="addDefaultIgnored">If the default ignored types must be added as ignore conditions</param>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.CreateValidationFor``1">
             <summary>
@@ -1763,62 +1899,79 @@
             <typeparam name="TEntity">Type of entity to create validation for</typeparam>
             <returns>A configurator for creating validation</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnoreForFallthrough(System.Predicate{System.ValueTuple{System.Object,System.Reflection.PropertyInfo,System.Object}})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.CreateValidationFor``2(System.Boolean,System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{``0,``1,`0}})">
             <summary>
-            Validation will not be called on the property or elements from a collection if <paramref name="condition"/> returns true.
+            Creates a new configurator for creating validation for objetcs of type <typeparamref name="TEntity"/>.
             </summary>
-            <param name="condition">Predicate that dictates when when a property/collection is ignored for fallthrough</param>
+            <typeparam name="TEntity">Type of entity to create validation for</typeparam>
+            <typeparam name="TContext">Type of the validation context used by the created validation rules</typeparam>
+            <param name="configurator">Delegate for creating the validation rules. Rules must created from delegate argument because otherwise the context information is lost</param>
+            <param name="contextRequired">If the context is required for the rules</param>
+            <returns>A configurator for creating validation</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnoreFor(System.Predicate{System.ValueTuple{System.Object,System.Reflection.PropertyInfo,System.Object}},Sels.ObjectValidationFramework.Templates.Profile.IgnoreType)">
+            <summary>
+            Property will be ignored when <paramref name="condition"/> returns true.
+            </summary>
+            <param name="condition">Predicate that dictates when a property is ignored</param>
+            <param name="ignoreType">Indicates when the property is ignored</param>
             <returns>Current profile for method chaining</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnoreForFallthrough``1(System.Predicate{System.ValueTuple{``0,System.Reflection.PropertyInfo,System.Object}})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnoreFor``1(System.Predicate{System.ValueTuple{``0,System.Reflection.PropertyInfo,System.Object}},Sels.ObjectValidationFramework.Templates.Profile.IgnoreType)">
             <summary>
-            Validation will not be called on the property or elements from a collection if <paramref name="condition"/> returns true. Only gets executed when property can be assigned to <typeparamref name="TEntity"/>.
+            Property will be ignored <paramref name="condition"/> returns true. Only gets executed when property can be assigned to <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of the property value</typeparam>
             <param name="condition">Predicate that dictates when when a property/collection is ignored for fallthrough</param>
+            <param name="ignoreType">Indicates when the property is ignored</param>
             <returns>Current profile for method chaining</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnoreForFallthroughWhenContext``1(System.Predicate{System.ValueTuple{System.Object,System.Reflection.PropertyInfo,``0}})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnoreForWhenContext``1(System.Predicate{System.ValueTuple{System.Object,System.Reflection.PropertyInfo,``0}},Sels.ObjectValidationFramework.Templates.Profile.IgnoreType)">
             <summary>
-            Validation will not be called on the property or elements from a collection if <paramref name="condition"/> returns true. Only gets executed when context can be assigned to <typeparamref name="TContext"/>.
+            Property will be ignored <paramref name="condition"/> returns true. Only gets executed when context can be assigned to <typeparamref name="TContext"/>.
             </summary>
             <typeparam name="TContext">Type of the supplied context</typeparam>
+            <param name="ignoreType">Indicates when the property is ignored</param>
             <param name="condition">Predicate that dictates when when a property/collection is ignored for fallthrough</param>
             <returns>Current profile for method chaining</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnoreForFallthroughWhenContext``2(System.Predicate{System.ValueTuple{System.Object,System.Reflection.PropertyInfo,``0}})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnoreForWhenContext``2(System.Predicate{System.ValueTuple{System.Object,System.Reflection.PropertyInfo,``0}},Sels.ObjectValidationFramework.Templates.Profile.IgnoreType)">
             <summary>
-            Validation will not be called on the property or elements from a collection if <paramref name="condition"/> returns true. Only gets executed when context can be assigned to <typeparamref name="TContext"/> and property can be assigned to <typeparamref name="TEntity"/>.
+            Property will be ignored <paramref name="condition"/> returns true. Only gets executed when context can be assigned to <typeparamref name="TContext"/> and property can be assigned to <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of the property value</typeparam>
             <typeparam name="TContext">Type of the supplied context</typeparam>
+            <param name="ignoreType">Indicates when the property is ignored</param>
             <param name="condition">Predicate that dictates when when a property/collection is ignored for fallthrough</param>
             <returns>Current profile for method chaining</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnorePropertyForFallthrough``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnorePropertyFor``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}},Sels.ObjectValidationFramework.Templates.Profile.IgnoreType)">
             <summary>
-            Validation will not be called for the property selected by <paramref name="property"/> on <typeparamref name="TEntity"/>.
+            Property will be ignored where the property is selected by <paramref name="property"/> on <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of the entity <paramref name="property"/> is from</typeparam>
+            <param name="ignoreType">Indicates when the property is ignored</param>
             <param name="property">Delegate that selects the property on <typeparamref name="TEntity"/></param>
             <returns>Current profile for method chaining</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnorePropertyForFallthrough``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Predicate{System.Object})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnorePropertyFor``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Predicate{System.Object},Sels.ObjectValidationFramework.Templates.Profile.IgnoreType)">
             <summary>
-            Validation will not be called for the property selected by <paramref name="property"/> on <typeparamref name="TEntity"/>. Property will only be ignored when <paramref name="contextCondition"/> returns true.
+            Property will be ignored where the property is selected by <paramref name="property"/> on <typeparamref name="TEntity"/>. Property will only be ignored when <paramref name="contextCondition"/> returns true.
             </summary>
             <typeparam name="TEntity">Type of the entity <paramref name="property"/> is from</typeparam>
             <param name="property">Delegate that selects the property on <typeparamref name="TEntity"/></param>
+            <param name="ignoreType">Indicates when the property is ignored</param>
             <param name="contextCondition">Condition supplied context must pass before <paramref name="property"/> is ignored.</param>
             <returns>Current profile for method chaining</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnorePropertyForFallthrough``2(System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Predicate{``1})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.IgnorePropertyFor``2(System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.Predicate{``1},Sels.ObjectValidationFramework.Templates.Profile.IgnoreType)">
             <summary>
-            Validation will not be called for the property selected by <paramref name="property"/> on <typeparamref name="TEntity"/>. Property will only be ignored when content is of type <typeparamref name="TContext"/> and when <paramref name="contextCondition"/> returns true.
+            Property will be ignored where the property is selected by <paramref name="property"/> on <typeparamref name="TEntity"/>. Property will only be ignored when content is of type <typeparamref name="TContext"/> and when <paramref name="contextCondition"/> returns true.
             </summary>
             <typeparam name="TEntity">Type of the entity <paramref name="property"/> is from</typeparam>
             <typeparam name="TContext">Type of the context</typeparam>
             <param name="property">Delegate that selects the property on <typeparamref name="TEntity"/></param>
+            <param name="ignoreType">Indicates when the property is ignored</param>
             <param name="contextCondition">Condition supplied context must pass before <paramref name="property"/> is ignored.</param>
             <returns>Current profile for method chaining</returns>
         </member>
@@ -1864,14 +2017,34 @@
             Import everything
             </summary>
         </member>
-        <member name="F:Sels.ObjectValidationFramework.Templates.Profile.ImportOptions.IgnoreConditions">
+        <member name="F:Sels.ObjectValidationFramework.Templates.Profile.ImportOptions.IgnoredForFallthrough">
             <summary>
-            Impors all conditions for what properties/collection to ignore for fallthough.
+            Impors all conditions for what properties to ignore for fallthough.
+            </summary>
+        </member>
+        <member name="F:Sels.ObjectValidationFramework.Templates.Profile.ImportOptions.IgnoredForCollections">
+            <summary>
+            Impors all conditions for what properties are ignored as collections.
             </summary>
         </member>
         <member name="F:Sels.ObjectValidationFramework.Templates.Profile.ImportOptions.Configuration">
             <summary>
-            Import all configured validation.
+            Import all configured validation rules.
+            </summary>
+        </member>
+        <member name="T:Sels.ObjectValidationFramework.Templates.Profile.IgnoreType">
+            <summary>
+            Indicates what is being ignored.
+            </summary>
+        </member>
+        <member name="F:Sels.ObjectValidationFramework.Templates.Profile.IgnoreType.Fallthrough">
+            <summary>
+            Property is ignored for fallthrough. 
+            </summary>
+        </member>
+        <member name="F:Sels.ObjectValidationFramework.Templates.Profile.IgnoreType.Collection">
+            <summary>
+            If the property is a collection the items will not be validated.
             </summary>
         </member>
         <member name="T:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4">
@@ -1901,7 +2074,7 @@
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.ValidIf(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,System.Object,`3}},System.Func{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,System.Object,`3},`1})">
             <inhericdoc />
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.WithContext``1">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.WithContext``1(System.Boolean)">
             <inhericdoc />
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.Validate(`0,System.Object,System.Nullable{System.Int32},Sels.ObjectValidationFramework.Components.Validators.Parent[])">
@@ -2094,7 +2267,7 @@
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
             <inhericdoc />
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,``0,`1}})">
             <inhericdoc />
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}})">

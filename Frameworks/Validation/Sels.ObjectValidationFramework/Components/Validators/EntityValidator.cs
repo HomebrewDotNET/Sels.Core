@@ -18,6 +18,79 @@ using Sels.Core.Extensions.Logging;
 
 namespace Sels.ObjectValidationFramework.Components.Validators
 {
+    /// <inheritdoc cref="IValidationConfigurator{TEntity, TContext, TError}"/>
+    internal class EntityValidator<TEntity, TContext, TError> : IValidationConfigurator<TEntity, TContext, TError>
+    {
+        // Fields
+        private readonly bool _contextRequired;
+        private readonly IValidationConfigurator<TEntity, TError> _parent;
+
+        /// <inheritdoc cref="EntityValidator{TEntity, TContext, TError}"/>
+        /// <param name="contextRequired">If the context is required by the created rules</param>
+        /// <param name="parent">The parent validator to delegate calls to</param>
+        public EntityValidator(bool contextRequired, IValidationConfigurator<TEntity, TError> parent)
+        {
+            _contextRequired = contextRequired;
+            _parent = parent.ValidateArgument(nameof(parent));
+        }
+
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
+        {
+            _parent.ValidateWhen(condition, configurator);
+            return this;
+        }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(Predicate<IValidationRuleContext<TEntity, TNewContext>> condition, Action<IValidationConfigurator<TEntity, TNewContext, TError>> configurator) where TNewContext : TContext
+        {
+            _parent.ValidateWhen(condition, configurator);
+            return this;
+        }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, TContext>> condition)
+        {
+            _parent.ValidateWhen(condition);
+            return this;
+        }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(Predicate<IValidationRuleContext<TEntity, TNewContext>> condition) where TNewContext : TContext
+        {
+            _parent.ValidateWhen(condition);
+            return this;
+        }
+
+        /// <inheritdoc/>
+        IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TContext, TElement> IValidationConfigurator<TEntity, TContext, TError>.ForElements<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, RuleSettings settings)
+        {
+            return _parent.ForElements(property, settings).WithContext<TContext>(_contextRequired);
+        }
+        /// <inheritdoc/>
+        IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TContext, TValue> IValidationConfigurator<TEntity, TContext, TError>.ForElements<TElement, TValue>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Func<TElement, TValue> valueSelector, RuleSettings settings)
+        {
+            return _parent.ForElements(property, valueSelector, settings).WithContext<TContext>(_contextRequired);
+        }
+        /// <inheritdoc/>
+        IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TContext, TPropertyValue> IValidationConfigurator<TEntity, TContext, TError>.ForProperty<TPropertyValue>(Expression<Func<TEntity, TPropertyValue>> property, RuleSettings settings)
+        {
+            return _parent.ForProperty(property, settings).WithContext<TContext>(_contextRequired);
+        }
+        /// <inheritdoc/>
+        IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TContext, TValue> IValidationConfigurator<TEntity, TContext, TError>.ForProperty<TPropertyValue, TValue>(Expression<Func<TEntity, TPropertyValue>> property, Func<TPropertyValue, TValue> valueSelector, RuleSettings settings)
+        {
+            return _parent.ForProperty(property, valueSelector, settings).WithContext<TContext>(_contextRequired);
+        }
+        /// <inheritdoc/>
+        IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TContext, TEntity> IValidationConfigurator<TEntity, TContext, TError>.ForSource(RuleSettings settings)
+        {
+            return _parent.ForSource(settings).WithContext<TContext>(_contextRequired);
+        }
+        /// <inheritdoc/>
+        IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TContext, TValue> IValidationConfigurator<TEntity, TContext, TError>.ForSource<TValue>(Func<TEntity, TValue> valueSelector, RuleSettings settings)
+        {
+            return _parent.ForSource(valueSelector, settings).WithContext<TContext>(_contextRequired);
+        }
+    }
+
     /// <summary>
     /// Validator that allows for the creation of validation rules for type <typeparamref name="TEntity"/> and using the rules to validate instances of type <typeparamref name="TEntity"/>.
     /// </summary>
@@ -142,17 +215,24 @@ namespace Sels.ObjectValidationFramework.Components.Validators
             }
         }
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator)
+        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
         {
             using (_loggers.TraceMethod(this))
             {
                 condition.ValidateArgument(nameof(condition));
                 configurator.ValidateArgument(nameof(configurator));
 
-                return ValidateWhen(x => {
+                Predicate<IValidationRuleContext<TEntity, object>> contextCondition = x => {
                     var context = new ValidationRuleContext<TEntity, TContext>(x.Source, x.Context, x.ElementIndex, x.Parents);
                     return condition(context);
-                }, configurator);
+                };
+
+                using (new ScopedAction(() => _currentConditions.Add(contextCondition), () => _currentConditions.Remove(contextCondition)))
+                {
+                    configurator(new EntityValidator<TEntity, TContext, TError>(false, this));
+                }
+
+                return this;
             }
         }
         /// <inheritdoc/>

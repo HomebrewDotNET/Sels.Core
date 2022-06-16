@@ -12,7 +12,7 @@ namespace Sels.ObjectValidationFramework.TestTool.ValidationProfiles
     {
         public PersonValidationProfile() : base()
         {
-            IgnorePropertyForFallthrough<Person>(x => x.Parent);
+            IgnorePropertyFor<Person>(x => x.Parent);
 
             CreateValidationFor<Person>()
                 .ForProperty(x => x.FirstName).ValidIf(x => x.Value.HasValue(), x => $"{x.GetFullDisplayName()} cannot be null or whitespace. Was <{x.Value}>")

@@ -199,6 +199,23 @@ namespace Sels.Core.Localization
 
                 return GetObjectKey($"{GetTypeAlias(property.DeclaringType)}.{property.Name}", culture, options, property.Name);
             }
+
+            /// <summary>
+            /// Returns the localized value name for a value assigned to <paramref name="property"/>.
+            /// </summary>
+            /// <param name="property">The name of the property to localize the value for</param>
+            /// <param name="value">The property value to get the localized name for</param>
+            /// <param name="culture">Optional culture to get the localized string in. If set to null either the default defined in <see cref="LocalizationOptions"/> is used or the default thread ui culture</param>
+            /// <param name="options">Optional delegate for configuring the options</param>
+            /// <returns>The localized string or another result based on <see cref="LocalizationOptions.MissingKeySettings"/></returns>
+            public static string? GetValue(PropertyInfo property, object value, string? culture = null, Action<LocalizationOptions>? options = null)
+            {
+                property.ValidateArgument(nameof(property));
+                var valueString = value.ValidateArgument(nameof(value)).ToString();
+
+                return GetObjectKey($"{GetTypeAlias(property.DeclaringType)}.{property.Name}.{valueString}", culture, options, valueString);
+            }
+
             /// <summary>
             /// Returns the localized name for enum <paramref name="value"/>.
             /// </summary>

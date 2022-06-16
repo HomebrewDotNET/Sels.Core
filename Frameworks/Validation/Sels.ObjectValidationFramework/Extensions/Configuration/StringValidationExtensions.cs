@@ -100,7 +100,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             errorConstructor.ValidateArgument(nameof(errorConstructor));
             regex.ValidateArgumentNotNullOrWhitespace(nameof(regex));
 
-            return configurator.ValidIf(info => Regex.IsMatch(info.Value, regex), errorConstructor);
+            return configurator.ValidIf(info => info.Value != null && Regex.IsMatch(info.Value, regex), errorConstructor);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             configurator.ValidateArgument(nameof(configurator));
             regex.ValidateArgumentNotNullOrWhitespace(nameof(regex));
 
-            return configurator.ValidIf(info => Regex.IsMatch(info.Value, regex), info => $"{info.GetFullDisplayNameDynamically(includeParents)} must match regex <{regex}> Was <{info.Value}>");
+            return configurator.ValidIf(info => info.Value != null && Regex.IsMatch(info.Value, regex), info => $"{info.GetFullDisplayNameDynamically(includeParents)} must match regex <{regex}> Was <{info.Value}>");
         }
 
         /// <summary>

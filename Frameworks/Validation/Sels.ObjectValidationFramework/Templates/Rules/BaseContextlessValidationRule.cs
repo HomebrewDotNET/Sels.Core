@@ -73,11 +73,13 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         }
 
         /// <inhericdoc />
-        public IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> WithContext<TContext>()
+        public IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> WithContext<TContext>(bool required = false)
         {
             using (_loggers.TraceMethod(this))
             {
-                return CreateNewConfiguratorAndRegister<TContext>();
+                var configurator = CreateNewConfiguratorAndRegister<TContext>();
+                if (required) configurator.ValidateWhen(x => x.WasContextSupplied == true);
+                return configurator;
             }
         }
         #endregion

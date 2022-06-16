@@ -39,15 +39,21 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         // Fields
         private readonly ILogger[] _loggers;
         internal readonly List<EntityValidator<TError>> _validators = new List<EntityValidator<TError>>();
-        internal readonly List<Predicate<(object Property, PropertyInfo Info, object Context)>> _ignoredPropertyConditions = new List<Predicate<(object Property, PropertyInfo Info, object Context)>>();
+        internal readonly Dictionary<IgnoreType, List<Predicate<(object Property, PropertyInfo Info, object Context)>>> _ignoredPropertyConditions = new Dictionary<IgnoreType, List<Predicate<(object Property, PropertyInfo Info, object Context)>>>();
 
         /// <summary>
         /// Creates a new instance.
         /// </summary>
         /// <param name="loggers">Optional loggers for tracing</param>
-        public ValidationProfile(IEnumerable<ILogger> loggers = null)
+        /// <param name="addDefaultIgnored">If the default ignored types must be added as ignore conditions</param>
+        public ValidationProfile(IEnumerable<ILogger> loggers = null, bool addDefaultIgnored = true)
         {
             _loggers = loggers.ToArrayOrDefault();
+
+            if (addDefaultIgnored) {
+                _defaultIgnoredPropertyConditions.Execute(x => IgnoreFor(x, IgnoreType.Fallthrough));
+                IgnoreFor(x => _specialIgnoredCollectionTypes.Contains(x.Info.PropertyType), IgnoreType.Collection);
+            } 
         }
 
         #region Configuration
@@ -65,36 +71,54 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                 return validator;
             }
         }
+
+        /// <summary>
+        /// Creates a new configurator for creating validation for objetcs of type <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">Type of entity to create validation for</typeparam>
+        /// <typeparam name="TContext">Type of the validation context used by the created validation rules</typeparam>
+        /// <param name="configurator">Delegate for creating the validation rules. Rules must created from delegate argument because otherwise the context information is lost</param>
+        /// <param name="contextRequired">If the context is required for the rules</param>
+        /// <returns>A configurator for creating validation</returns>
+        public IValidationConfigurator<TEntity, TError> CreateValidationFor<TEntity, TContext>(bool contextRequired, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                return CreateValidationFor<TEntity>().ValidateWhen<TContext>(x => !contextRequired || x.WasContextSupplied, configurator);
+            }
+        }
         #endregion
 
-        #region Ignore For Fallthrough
+        #region Ignore For
         /// <summary>
-        /// Validation will not be called on the property or elements from a collection if <paramref name="condition"/> returns true.
+        /// Property will be ignored when <paramref name="condition"/> returns true.
         /// </summary>
-        /// <param name="condition">Predicate that dictates when when a property/collection is ignored for fallthrough</param>
+        /// <param name="condition">Predicate that dictates when a property is ignored</param>
+        /// <param name="ignoreType">Indicates when the property is ignored</param>
         /// <returns>Current profile for method chaining</returns>
-        public ValidationProfile<TError> IgnoreForFallthrough(Predicate<(object Property, PropertyInfo Info, object Context)> condition)
+        public ValidationProfile<TError> IgnoreFor(Predicate<(object Property, PropertyInfo Info, object Context)> condition, IgnoreType ignoreType = IgnoreType.Fallthrough)
         {
             using (_loggers.TraceMethod(this))
             {
                 condition.ValidateArgument(nameof(condition));
-                _ignoredPropertyConditions.Add(condition);
+                _ignoredPropertyConditions.AddValueToList(ignoreType, condition);
                 return this;
             }
         }
 
         /// <summary>
-        /// Validation will not be called on the property or elements from a collection if <paramref name="condition"/> returns true. Only gets executed when property can be assigned to <typeparamref name="TEntity"/>.
+        /// Property will be ignored <paramref name="condition"/> returns true. Only gets executed when property can be assigned to <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">Type of the property value</typeparam>
         /// <param name="condition">Predicate that dictates when when a property/collection is ignored for fallthrough</param>
+        /// <param name="ignoreType">Indicates when the property is ignored</param>
         /// <returns>Current profile for method chaining</returns>
-        public ValidationProfile<TError> IgnoreForFallthrough<TEntity>(Predicate<(TEntity Property, PropertyInfo Info, object Context)> condition)
+        public ValidationProfile<TError> IgnoreFor<TEntity>(Predicate<(TEntity Property, PropertyInfo Info, object Context)> condition, IgnoreType ignoreType = IgnoreType.Fallthrough)
         {
             using (_loggers.TraceMethod(this))
             {
                 condition.ValidateArgument(nameof(condition));
-                return IgnoreForFallthrough(x =>
+                return IgnoreFor(x =>
                 {
                     if(x.Property is TEntity typedProperty)
                     {
@@ -102,22 +126,23 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                     }
 
                     return false;
-                });
+                }, ignoreType);
             }
         }
 
         /// <summary>
-        /// Validation will not be called on the property or elements from a collection if <paramref name="condition"/> returns true. Only gets executed when context can be assigned to <typeparamref name="TContext"/>.
+        /// Property will be ignored <paramref name="condition"/> returns true. Only gets executed when context can be assigned to <typeparamref name="TContext"/>.
         /// </summary>
         /// <typeparam name="TContext">Type of the supplied context</typeparam>
+        /// <param name="ignoreType">Indicates when the property is ignored</param>
         /// <param name="condition">Predicate that dictates when when a property/collection is ignored for fallthrough</param>
         /// <returns>Current profile for method chaining</returns>
-        public ValidationProfile<TError> IgnoreForFallthroughWhenContext<TContext>(Predicate<(object Property, PropertyInfo Info, TContext Context)> condition)
+        public ValidationProfile<TError> IgnoreForWhenContext<TContext>(Predicate<(object Property, PropertyInfo Info, TContext Context)> condition, IgnoreType ignoreType = IgnoreType.Fallthrough)
         {
             using (_loggers.TraceMethod(this))
             {
                 condition.ValidateArgument(nameof(condition));
-                return IgnoreForFallthrough(x =>
+                return IgnoreFor(x =>
                 {
                     if (x.Context is TContext typedContext)
                     {
@@ -125,23 +150,24 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                     }
 
                     return false;
-                });
+                }, ignoreType);
             }
         }
 
         /// <summary>
-        /// Validation will not be called on the property or elements from a collection if <paramref name="condition"/> returns true. Only gets executed when context can be assigned to <typeparamref name="TContext"/> and property can be assigned to <typeparamref name="TEntity"/>.
+        /// Property will be ignored <paramref name="condition"/> returns true. Only gets executed when context can be assigned to <typeparamref name="TContext"/> and property can be assigned to <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">Type of the property value</typeparam>
         /// <typeparam name="TContext">Type of the supplied context</typeparam>
+        /// <param name="ignoreType">Indicates when the property is ignored</param>
         /// <param name="condition">Predicate that dictates when when a property/collection is ignored for fallthrough</param>
         /// <returns>Current profile for method chaining</returns>
-        public ValidationProfile<TError> IgnoreForFallthroughWhenContext<TContext, TEntity>(Predicate<(object Property, PropertyInfo Info, TContext Context)> condition)
+        public ValidationProfile<TError> IgnoreForWhenContext<TContext, TEntity>(Predicate<(object Property, PropertyInfo Info, TContext Context)> condition, IgnoreType ignoreType = IgnoreType.Fallthrough)
         {
             using (_loggers.TraceMethod(this))
             {
                 condition.ValidateArgument(nameof(condition));
-                return IgnoreForFallthrough(x =>
+                return IgnoreFor(x =>
                 {
                     if (x.Property is TEntity typedProperty && x.Context is TContext typedContext)
                     {
@@ -149,53 +175,56 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                     }
 
                     return false;
-                });
+                }, ignoreType);
             }
         }
 
         /// <summary>
-        /// Validation will not be called for the property selected by <paramref name="property"/> on <typeparamref name="TEntity"/>.
+        /// Property will be ignored where the property is selected by <paramref name="property"/> on <typeparamref name="TEntity"/>.
         /// </summary>
         /// <typeparam name="TEntity">Type of the entity <paramref name="property"/> is from</typeparam>
+        /// <param name="ignoreType">Indicates when the property is ignored</param>
         /// <param name="property">Delegate that selects the property on <typeparamref name="TEntity"/></param>
         /// <returns>Current profile for method chaining</returns>
-        public ValidationProfile<TError> IgnorePropertyForFallthrough<TEntity>(Expression<Func<TEntity, object>> property)
+        public ValidationProfile<TError> IgnorePropertyFor<TEntity>(Expression<Func<TEntity, object>> property, IgnoreType ignoreType = IgnoreType.Fallthrough)
         {
             using (_loggers.TraceMethod(this))
             {
                 property.ValidateArgument(nameof(property));
 
-                return IgnorePropertyForFallthrough(property, x => true);
+                return IgnorePropertyFor(property, x => true, ignoreType);
             }
         }
 
         /// <summary>
-        /// Validation will not be called for the property selected by <paramref name="property"/> on <typeparamref name="TEntity"/>. Property will only be ignored when <paramref name="contextCondition"/> returns true.
+        /// Property will be ignored where the property is selected by <paramref name="property"/> on <typeparamref name="TEntity"/>. Property will only be ignored when <paramref name="contextCondition"/> returns true.
         /// </summary>
         /// <typeparam name="TEntity">Type of the entity <paramref name="property"/> is from</typeparam>
         /// <param name="property">Delegate that selects the property on <typeparamref name="TEntity"/></param>
+        /// <param name="ignoreType">Indicates when the property is ignored</param>
         /// <param name="contextCondition">Condition supplied context must pass before <paramref name="property"/> is ignored.</param>
         /// <returns>Current profile for method chaining</returns>
-        public ValidationProfile<TError> IgnorePropertyForFallthrough<TEntity>(Expression<Func<TEntity, object>> property, Predicate<object> contextCondition)
+        public ValidationProfile<TError> IgnorePropertyFor<TEntity>(Expression<Func<TEntity, object>> property, Predicate<object> contextCondition, IgnoreType ignoreType = IgnoreType.Fallthrough)
         {
             using (_loggers.TraceMethod(this))
             {
                 property.ValidateArgument(nameof(property));
                 contextCondition.ValidateArgument(nameof(contextCondition));
 
-                return IgnorePropertyForFallthrough<TEntity, object>(property, contextCondition);
+                return IgnorePropertyFor<TEntity, object>(property, contextCondition, ignoreType);
             }
         }
 
         /// <summary>
-        /// Validation will not be called for the property selected by <paramref name="property"/> on <typeparamref name="TEntity"/>. Property will only be ignored when content is of type <typeparamref name="TContext"/> and when <paramref name="contextCondition"/> returns true.
+        /// Property will be ignored where the property is selected by <paramref name="property"/> on <typeparamref name="TEntity"/>. Property will only be ignored when content is of type <typeparamref name="TContext"/> and when <paramref name="contextCondition"/> returns true.
         /// </summary>
         /// <typeparam name="TEntity">Type of the entity <paramref name="property"/> is from</typeparam>
         /// <typeparam name="TContext">Type of the context</typeparam>
         /// <param name="property">Delegate that selects the property on <typeparamref name="TEntity"/></param>
+        /// <param name="ignoreType">Indicates when the property is ignored</param>
         /// <param name="contextCondition">Condition supplied context must pass before <paramref name="property"/> is ignored.</param>
         /// <returns>Current profile for method chaining</returns>
-        public ValidationProfile<TError> IgnorePropertyForFallthrough<TEntity, TContext>(Expression<Func<TEntity, object>> property, Predicate<TContext> contextCondition)
+        public ValidationProfile<TError> IgnorePropertyFor<TEntity, TContext>(Expression<Func<TEntity, object>> property, Predicate<TContext> contextCondition, IgnoreType ignoreType = IgnoreType.Fallthrough)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -206,7 +235,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                 }
                 contextCondition.ValidateArgument(nameof(contextCondition));
 
-                return IgnoreForFallthrough(x =>
+                return IgnoreFor(x =>
                 {
                     if(x.Context is TContext typedContext)
                     {
@@ -214,7 +243,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                     }                   
 
                     return false;
-                });
+                }, ignoreType);
             }
         }
         #endregion
@@ -238,10 +267,16 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                     _validators.AddRange(profile._validators);
                 }
 
-                if (options.HasFlag(ImportOptions.IgnoreConditions))
+                if (options.HasFlag(ImportOptions.IgnoredForFallthrough))
                 {
-                    _loggers.Debug($"Importing ignore conditions from <{profile}>");
-                    _ignoredPropertyConditions.AddRange(profile._ignoredPropertyConditions);
+                    _loggers.Debug($"Importing ignore conditions from <{profile}> for ignore type <{IgnoreType.Fallthrough}>");
+                    if (profile._ignoredPropertyConditions.ContainsKey(IgnoreType.Fallthrough)) _ignoredPropertyConditions.AddValues(IgnoreType.Fallthrough, profile._ignoredPropertyConditions[IgnoreType.Fallthrough]);
+                }
+
+                if (options.HasFlag(ImportOptions.IgnoredForCollections))
+                {
+                    _loggers.Debug($"Importing ignore conditions from <{profile}> for ignore type <{IgnoreType.Collection}>");
+                    if (profile._ignoredPropertyConditions.ContainsKey(IgnoreType.Collection)) _ignoredPropertyConditions.AddValues(IgnoreType.Collection, profile._ignoredPropertyConditions[IgnoreType.Collection]);
                 }
 
                 return this;
@@ -353,17 +388,10 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
 
                     if(value != null)
                     {
-                        // Check if ignored by profile
-                        if (_ignoredPropertyConditions.Any(x => x((value, property, profileContext.Context))))
-                        {
-                            _loggers.Debug($"Property {property.Name} on <{objectToValidate}> is ignored. Skipping for fallthrough");
-                            continue;
-                        }
-
                         // Allowed if property is a collection but not any of the special collection types
-                        var isAllowedForCollectionFallthough = !_specialIgnoredCollectionTypes.Any(x => property.PropertyType.IsAssignableTo(x)) && property.PropertyType.IsContainer();
+                        var isAllowedForCollectionFallthough = value.GetType().IsContainer() && !IsIgnoredFor(IgnoreType.Collection, value, property, profileContext.Context);
                         // Allowed if the property doesn't have a validator explicitly defined and isn't a default ignored type
-                        var isAllowedForPropertyFallthough = !_validators.Any(x => x.CanValidate(value, profileContext.Context, null, currentParents)) && !_defaultIgnoredPropertyConditions.Any(x => x((value, property, profileContext.Context)));
+                        var isAllowedForPropertyFallthough = !IsIgnoredFor(IgnoreType.Fallthrough, value, property, profileContext.Context);
 
                         if(isAllowedForCollectionFallthough || isAllowedForPropertyFallthough)
                         {
@@ -390,7 +418,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                                 }
                                 else
                                 {
-                                    _loggers.Debug($"Property {property.Name} on <{objectToValidate}> is ignored by default. Skipping for property fallthrough");
+                                    _loggers.Debug($"Property {property.Name} on <{objectToValidate}> is ignored. Skipping for property fallthrough");
                                 }
                             }
                         }                                      
@@ -401,6 +429,13 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                     }                    
                 }
             }
+        }
+
+        private bool IsIgnoredFor(IgnoreType type, object value, PropertyInfo property, object context)
+        {
+            if (!_ignoredPropertyConditions.ContainsKey(type) && !_ignoredPropertyConditions[type].HasValue()) return false;
+
+            return _ignoredPropertyConditions[type].Any(x => x((value, property, context)));
         }
         #endregion
 
@@ -428,14 +463,33 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         /// <summary>
         /// Import everything
         /// </summary>
-        All = IgnoreConditions + Configuration,
+        All = IgnoredForFallthrough + IgnoredForCollections + Configuration,
         /// <summary>
-        /// Impors all conditions for what properties/collection to ignore for fallthough.
+        /// Impors all conditions for what properties to ignore for fallthough.
         /// </summary>
-        IgnoreConditions = 1,
+        IgnoredForFallthrough = 1,
         /// <summary>
-        /// Import all configured validation.
+        /// Impors all conditions for what properties are ignored as collections.
         /// </summary>
-        Configuration = 2
+        IgnoredForCollections = 2,
+        /// <summary>
+        /// Import all configured validation rules.
+        /// </summary>
+        Configuration = 3
+    }
+    /// <summary>
+    /// Indicates what is being ignored.
+    /// </summary>
+    [Flags]
+    public enum IgnoreType
+    {
+        /// <summary>
+        /// Property is ignored for fallthrough. 
+        /// </summary>
+        Fallthrough,
+        /// <summary>
+        /// If the property is a collection the items will not be validated.
+        /// </summary>
+        Collection
     }
 }

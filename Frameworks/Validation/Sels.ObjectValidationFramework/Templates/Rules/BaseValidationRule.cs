@@ -125,7 +125,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         }
 
         /// <inhericdoc />
-        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator)
+        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
         {
             using (_loggers.TraceMethod(this))
             {
