@@ -26,7 +26,7 @@ namespace Sels.Core.ServiceBuilder
     /// </summary>
     /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
     /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
-    public interface IServiceBuilder<T, TImpl>
+    public interface IServiceBuilder<T, TImpl> : IServiceBuilder
         where TImpl : class, T
         where T : class
     {
@@ -156,22 +156,37 @@ namespace Sels.Core.ServiceBuilder
 
         #region Register
         /// <summary>
-        /// Finish building the current service and add it to the service collection.
-        /// </summary>
-        /// <returns>The service collection that the service built using this builder was added to</returns>
-        IServiceCollection Register();
-        /// <summary>
-        /// <inheritdoc cref="Register"/>
+        /// <inheritdoc cref="IServiceBuilder.Register"/>
         /// Sets the register behaviour to <see cref="RegisterBehaviour.Replace"/>.
         /// </summary>
         /// <returns>The service collection that the service built using this builder was added to</returns>
         IServiceCollection ForceRegister() => ReplaceExisting().Register();
         /// <summary>
-        /// <inheritdoc cref="Register"/>
+        /// <inheritdoc cref="IServiceBuilder.Register"/>
         /// Sets the register behaviour to <see cref="RegisterBehaviour.TryAdd"/>.
         /// </summary>
         /// <returns>The service collection that the service built using this builder was added to</returns>
         IServiceCollection TryRegister() => AddIfMissing().Register();
         #endregion
+    }
+    /// <summary>
+    /// Builds a service that will be added to a service collection for dependency injection.
+    /// </summary>
+    public interface IServiceBuilder
+    {
+        /// <summary>
+        /// The service type that can be resolved as dependency.
+        /// </summary>
+        Type ServiceType { get; }
+        /// <summary>
+        /// The implementation type for <see cref="ServiceType"/>.
+        /// </summary>
+        Type ImplementationType { get; }
+
+        /// <summary>
+        /// Finish building the current service and add it to the service collection.
+        /// </summary>
+        /// <returns>The service collection that the service built using this builder was added to</returns>
+        IServiceCollection Register();
     }
 }

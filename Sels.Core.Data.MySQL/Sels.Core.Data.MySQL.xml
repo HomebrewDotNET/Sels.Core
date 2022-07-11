@@ -625,6 +625,34 @@
             The keyword for a recursive cte.
             </summary>
         </member>
+        <member name="T:Sels.Core.Data.MySQL.MySql.Builder">
+            <summary>
+            Contains extra helper methods for building queries.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MySql.Builder.BuildConditionsFrom``2(Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{``0},Dapper.DynamicParameters,``1,System.String[])">
+            <summary>
+            Builds a mysql condition clause using the public instance properties on <paramref name="conditions"/>. Condition will be based on the property type and name.
+            </summary>
+            <typeparam name="TEntity">Type of the main entity the query is built for</typeparam>
+            <typeparam name="T">Type of the object containing the conditions</typeparam>
+            <param name="builder">Builder to create the conditions</param>
+            <param name="parameters">Object where the parameters for the condition will be added to</param>
+            <param name="conditions">Object containing the conditions</param>
+            <param name="excludedProperties">Names of properties on <typeparamref name="T"/> to exclude from the condition</param>
+            <returns>Builder to chain more conditions or null if no conditions were created</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.MySql.Builder.BuildConditionFrom``1(Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{``0},Dapper.DynamicParameters,System.Reflection.PropertyInfo,System.Object)">
+            <summary>
+            Builds a mysql condition for <paramref name="property"/>. Condition will be based on the property type and name.
+            </summary>
+            <typeparam name="TEntity">Type of the main entity the query is built for</typeparam>
+            <param name="builder">Builder to create the conditions</param>
+            <param name="parameters">Object where the parameters for the condition will be added to</param>
+            <param name="property">The property to create the condition for</param>
+            <param name="propertyValue">The value contained in <paramref name="property"/></param>
+            <returns>Builder to chain more conditions or null if no conditions were created</returns>
+        </member>
         <member name="T:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2">
             <summary>
             Template for creating a new <see cref="T:Sels.Core.Data.Contracts.Repository.IDataRepository`2"/> using MariaDb as the backing database.

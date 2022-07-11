@@ -360,6 +360,12 @@
             If the current service registration is not an implementation for a service type but just a registration of the concrete type.
             </summary>
         </member>
+        <member name="P:Sels.Core.ServiceBuilder.ServiceBuilder`2.ServiceType">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.ServiceBuilder`2.ImplementationType">
+            <inheritdoc/>
+        </member>
         <member name="M:Sels.Core.ServiceBuilder.ServiceBuilder`2.#ctor(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <inheritdoc cref="T:Sels.Core.ServiceBuilder.ServiceBuilder`2"/>
             <param name="collection"><inheritdoc cref="F:Sels.Core.ServiceBuilder.ServiceBuilder`2._collection"/></param>
@@ -535,23 +541,38 @@
             </summary>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.Register">
-            <summary>
-            Finish building the current service and add it to the service collection.
-            </summary>
-            <returns>The service collection that the service built using this builder was added to</returns>
-        </member>
         <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.ForceRegister">
             <summary>
-            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.Register"/>
+            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder.Register"/>
             Sets the register behaviour to <see cref="F:Sels.Core.ServiceBuilder.RegisterBehaviour.Replace"/>.
             </summary>
             <returns>The service collection that the service built using this builder was added to</returns>
         </member>
         <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.TryRegister">
             <summary>
-            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.Register"/>
+            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder.Register"/>
             Sets the register behaviour to <see cref="F:Sels.Core.ServiceBuilder.RegisterBehaviour.TryAdd"/>.
+            </summary>
+            <returns>The service collection that the service built using this builder was added to</returns>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.IServiceBuilder">
+            <summary>
+            Builds a service that will be added to a service collection for dependency injection.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.IServiceBuilder.ServiceType">
+            <summary>
+            The service type that can be resolved as dependency.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.IServiceBuilder.ImplementationType">
+            <summary>
+            The implementation type for <see cref="P:Sels.Core.ServiceBuilder.IServiceBuilder.ServiceType"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder.Register">
+            <summary>
+            Finish building the current service and add it to the service collection.
             </summary>
             <returns>The service collection that the service built using this builder was added to</returns>
         </member>
@@ -604,7 +625,7 @@
             Contains static extension methods for working with interceptors
             </summary>
         </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Trace``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Action{Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder})">
+        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Trace``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder,Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder})">
             <summary>
             Addds an interceptor for tracing method duration and / or exceptions.
             </summary>
@@ -614,7 +635,7 @@
             <param name="interceptorBuilder">Builder for creating the interceptor</param>
             <returns>Current builder for method tracing</returns>
         </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Trace``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Action{Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Trace``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder,Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Addds an interceptor for tracing method duration and / or exceptions.
             </summary>
@@ -625,7 +646,7 @@
             <param name="loggers">The loggers to use for tracing</param>
             <returns>Current builder for method tracing</returns>
         </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Cache``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Action{Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder})">
+        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Cache``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder,Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder})">
             <summary>
             Adds an interceptor for caching method return values.
             </summary>
@@ -635,7 +656,7 @@
             <param name="interceptorBuilder">Builder for creating the interceptor</param>
             <returns>Current builder for method tracing</returns>
         </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Cache``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Action{Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Cache``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder,Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Adds an interceptor for caching method return values.
             </summary>

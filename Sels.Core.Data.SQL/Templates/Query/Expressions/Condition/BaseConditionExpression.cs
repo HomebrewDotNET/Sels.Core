@@ -24,7 +24,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions.Condition
         /// <summary>
         /// The currently configured condition expressions.
         /// </summary>
-        protected IConditionExpression[] Expressions => _expressions.ToArray();
+        public IConditionExpression[] Expressions => _expressions.ToArray();
 
         /// <inheritdoc cref=" BaseConditionExpression{TEntity}"/>
         /// <param name="builder">Delegate for configuring the current builder</param>

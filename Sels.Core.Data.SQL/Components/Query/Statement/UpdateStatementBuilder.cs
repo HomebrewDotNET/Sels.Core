@@ -24,6 +24,13 @@ namespace Sels.Core.Data.SQL.Query.Statement
         {
         }
 
+        /// <inheritdoc cref="UpdateStatementBuilder{TEntity}"/>
+        /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
+        /// <param name="expressions">The expressions for the current query</param>
+        public UpdateStatementBuilder(IQueryCompiler<UpdateExpressionPositions> compiler, Dictionary<UpdateExpressionPositions, List<IExpression>> expressions) : base(compiler, expressions)
+        {
+        }
+
         #region Base builder
         /// <inheritdoc/>
         public override IUpdateStatementBuilder<TEntity> Instance => this;
@@ -37,6 +44,11 @@ namespace Sels.Core.Data.SQL.Query.Statement
         protected override UpdateExpressionPositions GetPositionForJoinExpression(JoinExpression<TEntity, IUpdateStatementBuilder<TEntity>> joinExpression)
         {
             return UpdateExpressionPositions.Join;
+        }
+        /// <inheritdoc/>
+        protected override IUpdateStatementBuilder<TEntity> Clone(IQueryCompiler<UpdateExpressionPositions> compiler, Dictionary<UpdateExpressionPositions, List<IExpression>> expressions)
+        {
+            return new UpdateStatementBuilder<TEntity>(compiler, expressions);
         }
         #endregion
 

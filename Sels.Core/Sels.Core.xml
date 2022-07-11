@@ -1498,6 +1498,29 @@
             <param name="isForSection"></param>
             <param name="sections"></param>
         </member>
+        <member name="T:Sels.Core.Validation.ValidationException`2">
+            <summary>
+            Thrown when an entity of <typeparamref name="TEntity"/> contained validation errors.
+            </summary>
+            <typeparam name="TEntity">Type of the validated entity</typeparam>
+            <typeparam name="TError">Type of the validation error</typeparam>
+        </member>
+        <member name="P:Sels.Core.Validation.ValidationException`2.Entity">
+            <summary>
+            The entity that failed the validation.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Validation.ValidationException`2.Errors">
+            <summary>
+            The validation errors for <see cref="P:Sels.Core.Validation.ValidationException`2.Entity"/>
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Validation.ValidationException`2.#ctor(`0,System.Collections.Generic.IEnumerable{`1},System.String)">
+            <inheritdoc cref="T:Sels.Core.Validation.ValidationException`2"/>
+            <param name="entity"><inheritdoc cref="P:Sels.Core.Validation.ValidationException`2.Entity"/></param>
+            <param name="errors"><inheritdoc cref="P:Sels.Core.Validation.ValidationException`2.Errors"/></param>
+            <param name="entityName">Optional display name for <paramref name="entity"/></param>
+        </member>
         <member name="T:Sels.Core.Extensions.Calculation.CalculationExtensions">
             <summary>
             Contains extension for doing math related actions.
@@ -2083,6 +2106,143 @@
             <param name="message">Message to log</param>
             <param name="objectToTrace">Object to serialize and log</param>
             <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Debug(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Debug"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Warning(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Warning"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Log(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Information"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Log(Microsoft.Extensions.Logging.ILogger,System.Exception)">
+            <summary>
+            Logs an exception with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Error"/>.
+            </summary>
+            <param name="exception">Exception to log</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Log(Microsoft.Extensions.Logging.ILogger,System.String,System.Exception,System.Object[])">
+            <summary>
+            Logs a exception with an extra message with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Error"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="exception">Exception to log</param>
+            <param name="args">Optional logging parameters</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.Trace(Microsoft.Extensions.Logging.ILogger,System.String,System.Object[])">
+            <summary>
+            Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="args">Optional logging parameters</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceAction(Microsoft.Extensions.Logging.ILogger,System.String)">
+            <summary>
+            Traces how long an action took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="action">Action to trace</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceAction(Microsoft.Extensions.Logging.ILogger,System.String,System.Func{System.TimeSpan,System.String})">
+            <summary>
+            Traces how long an action took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="actionStartMessage">Log message when action starts</param>
+            <param name="actionFinishedMessage">Log message when action is finished</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceAction(Microsoft.Extensions.Logging.ILogger,Microsoft.Extensions.Logging.LogLevel,System.String,System.Func{System.TimeSpan,System.String})">
+            <summary>
+            Traces how long an action took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="actionStartMessage">Log message when action starts</param>
+            <param name="actionFinishedMessage">Log message when action is finished</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceAction(Microsoft.Extensions.Logging.ILogger,Microsoft.Extensions.Logging.LogLevel,System.String)">
+            <summary>
+            Traces how long an action took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="action">Action to trace</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceMethod(Microsoft.Extensions.Logging.ILogger,System.Object,System.String)">
+            <summary>
+            Traces how long a method took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="caller">Object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceMethod(Microsoft.Extensions.Logging.ILogger,Microsoft.Extensions.Logging.LogLevel,System.Object,System.String)">
+            <summary>
+            Traces how long a method took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="caller">Object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceMethod(Microsoft.Extensions.Logging.ILogger,System.Type,System.String)">
+            <summary>
+            Traces how long a method took to execute with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="caller">Type of object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceMethod(Microsoft.Extensions.Logging.ILogger,Microsoft.Extensions.Logging.LogLevel,System.Type,System.String)">
+            <summary>
+            Traces how long a method took to execute. Timer starts when calling method and stops when return value is disposed.
+            </summary>
+            <param name="level">Severity level for log</param>
+            <param name="caller">Type of object that wants it's method execution traced</param>
+            <param name="method">Name of method to trace. If not provider the calling method name will be used</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+            <returns>Timing scope</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceObject(Microsoft.Extensions.Logging.ILogger,System.Object)">
+            <summary>
+            Traces an object to the logs serialized to json with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <param name="objectToTrace">Object to serialize and log</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+        </member>
+        <member name="M:Sels.Core.Extensions.Logging.Advanced.AdvancedLoggingExtensions.TraceObject(Microsoft.Extensions.Logging.ILogger,System.String,System.Object)">
+            <summary>
+            Traces an object to the logs serialized to json with an extra message with severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="objectToTrace">Object to serialize and log</param>
+            <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
         </member>
         <member name="T:Sels.Core.Extensions.Logging.LoggingExtensions">
             <summary>
@@ -3468,6 +3628,22 @@
             <param name="argument">Method/Constructor argument</param>
             <param name="validationFailedMessage">Message for ArgumentException when validation fails</param>
             <returns><paramref name="argument"/></returns>
+        </member>
+        <member name="T:Sels.Core.Extensions.Validation.ValidationExtensions">
+            <summary>
+            Contains extension methods for validating objects.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Validation.ValidationExtensions.ThrowOnValidationErrors``2(System.Collections.Generic.IEnumerable{``1},``0,System.String)">
+            <summary>
+            Throws a <see cref="T:Sels.Core.Validation.ValidationException`2"/> if <paramref name="errors"/> is not empty.
+            </summary>
+            <typeparam name="TEntity">Type of the entity that was validated</typeparam>
+            <typeparam name="TError">Type of the validation error</typeparam>
+            <param name="errors">Enumerator containing the validation errors, can be null</param>
+            <param name="entity">The validated entity</param>
+            <param name="entityName">Optional display name for <paramref name="entity"/></param>
+            <exception cref="T:Sels.Core.Validation.ValidationException`2"></exception>
         </member>
         <member name="T:Sels.Core.Helper">
             <summary>

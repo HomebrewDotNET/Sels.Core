@@ -69,6 +69,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.MySQL.Migrat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.ServiceBuilder", "Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj", "{5EA2B53D-56E2-443B-AB63-06E35E28A5E8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Mediator", "Sels.Core.Mediator\Sels.Core.Mediator.csproj", "{764E278D-D3B6-4D73-ABDB-F37F28F27CFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -175,6 +177,10 @@ Global
 		{5EA2B53D-56E2-443B-AB63-06E35E28A5E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EA2B53D-56E2-443B-AB63-06E35E28A5E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5EA2B53D-56E2-443B-AB63-06E35E28A5E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{764E278D-D3B6-4D73-ABDB-F37F28F27CFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{764E278D-D3B6-4D73-ABDB-F37F28F27CFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{764E278D-D3B6-4D73-ABDB-F37F28F27CFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{764E278D-D3B6-4D73-ABDB-F37F28F27CFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -205,6 +211,7 @@ Global
 		{B3364E85-5B3E-46ED-9BCC-23E3585D11F1} = {9ADF9A39-B6EC-440C-AA22-6478FF9F7EA6}
 		{4F617683-A8D6-4AD4-946E-4A7EF42C219D} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
 		{5EA2B53D-56E2-443B-AB63-06E35E28A5E8} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
+		{764E278D-D3B6-4D73-ABDB-F37F28F27CFF} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9510E55C-920C-4EDB-9F77-D83C4E047361}

@@ -23,9 +23,21 @@ namespace Sels.Core.Data.SQL.Query.Statement
         {
         }
 
+        /// <inheritdoc cref="InsertStatementBuilder{TEntity}"/>
+        /// <param name="compiler">>Compiler to create the query using the expressions defined in the current builder</param>
+        /// <param name="expressions">The expressions for the current query</param>
+        public InsertStatementBuilder(IQueryCompiler<InsertExpressionPositions> compiler, Dictionary<InsertExpressionPositions, List<IExpression>> expressions) : base(compiler, expressions)
+        {
+        }
+
         #region Base Builder
         /// <inheritdoc/>
         public override IInsertStatementBuilder<TEntity> Instance => this;
+        /// <inheritdoc/>
+        protected override IInsertStatementBuilder<TEntity> Clone(IQueryCompiler<InsertExpressionPositions> compiler, Dictionary<InsertExpressionPositions, List<IExpression>> expressions)
+        {
+            return new InsertStatementBuilder<TEntity>(compiler, expressions);
+        }
 
         /// <inheritdoc/>
         protected override InsertExpressionPositions GetPositionForConditionExpression(ConditionGroupExpression<TEntity> conditionExpression)

@@ -41,6 +41,17 @@ namespace Sels.Core.Data.SQL.Query.Statement
         {
             _compiler = compiler.ValidateArgument(nameof(compiler));
         }
+        /// <summary>
+        /// <inheritdoc cref="BaseStatementBuilder{TEntity, TPosition, TDerived}"/>
+        /// Can set the default expressions.
+        /// </summary>
+        /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
+        /// <param name="expressions">The expressions for the current query</param>
+        protected BaseStatementBuilder(IQueryCompiler<TPosition> compiler, Dictionary<TPosition, List<IExpression>> expressions)
+        {
+            _compiler = compiler.ValidateArgument(nameof(compiler));
+            _expressions = expressions.ValidateArgument(nameof(expressions));
+        }
 
         #region Alias
         /// <inheritdoc/>
@@ -113,7 +124,8 @@ namespace Sels.Core.Data.SQL.Query.Statement
             builder.ValidateArgument(nameof(builder));
 
             var expression = new ConditionGroupExpression<TEntity>(builder, false);
-            Expression(expression, GetPositionForConditionExpression(expression));
+            if(expression.Expressions.Length != 0) Expression(expression, GetPositionForConditionExpression(expression));
+
             return Instance;
         }
         #endregion
@@ -175,5 +187,19 @@ namespace Sels.Core.Data.SQL.Query.Statement
         /// </summary>
         /// <param name="conditionExpression">The expression to get the position for</param>
         protected abstract TPosition GetPositionForConditionExpression(ConditionGroupExpression<TEntity> conditionExpression);
+
+        ///<inheritdoc/>
+        public TDerived Clone()
+        {
+            return Clone(_compiler, _expressions);
+        }
+
+        /// <summary>
+        /// Clones the current query builder with <paramref name="compiler"/> and <paramref name="expressions"/>.
+        /// </summary>
+        /// <param name="compiler">The compiler to use for the clone</param>
+        /// <param name="expressions">The expressions for the clone</param>
+        /// <returns>A cloned instance with the same expressions as the current instance</returns>
+        protected abstract TDerived Clone(IQueryCompiler<TPosition> compiler, Dictionary<TPosition, List<IExpression>> expressions);
     }
 }

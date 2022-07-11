@@ -932,7 +932,15 @@
             <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Statement.DeleteStatementBuilder`1"/>
             <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.DeleteStatementBuilder`1.#ctor(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{Sels.Core.Data.SQL.Query.Statement.DeleteExpressionPositions},System.Collections.Generic.Dictionary{Sels.Core.Data.SQL.Query.Statement.DeleteExpressionPositions,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Statement.DeleteStatementBuilder`1"/>
+            <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
+            <param name="expressions">The expressions for the current query</param>
+        </member>
         <member name="P:Sels.Core.Data.SQL.Query.Statement.DeleteStatementBuilder`1.Instance">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.DeleteStatementBuilder`1.Clone(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{Sels.Core.Data.SQL.Query.Statement.DeleteExpressionPositions},System.Collections.Generic.Dictionary{Sels.Core.Data.SQL.Query.Statement.DeleteExpressionPositions,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
             <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.Statement.DeleteStatementBuilder`1.GetPositionForConditionExpression(Sels.Core.Data.SQL.Query.Expressions.Condition.ConditionGroupExpression{`0})">
@@ -951,7 +959,15 @@
             <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Statement.InsertStatementBuilder`1"/>
             <param name="compiler">>Compiler to create the query using the expressions defined in the current builder</param>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.InsertStatementBuilder`1.#ctor(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{Sels.Core.Data.SQL.Query.Statement.InsertExpressionPositions},System.Collections.Generic.Dictionary{Sels.Core.Data.SQL.Query.Statement.InsertExpressionPositions,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Statement.InsertStatementBuilder`1"/>
+            <param name="compiler">>Compiler to create the query using the expressions defined in the current builder</param>
+            <param name="expressions">The expressions for the current query</param>
+        </member>
         <member name="P:Sels.Core.Data.SQL.Query.Statement.InsertStatementBuilder`1.Instance">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.InsertStatementBuilder`1.Clone(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{Sels.Core.Data.SQL.Query.Statement.InsertExpressionPositions},System.Collections.Generic.Dictionary{Sels.Core.Data.SQL.Query.Statement.InsertExpressionPositions,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
             <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.Statement.InsertStatementBuilder`1.GetPositionForConditionExpression(Sels.Core.Data.SQL.Query.Expressions.Condition.ConditionGroupExpression{`0})">
@@ -988,6 +1004,11 @@
             <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Statement.SelectStatementBuilder`1"/>
             <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.SelectStatementBuilder`1.#ctor(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{Sels.Core.Data.SQL.Query.Statement.SelectExpressionPositions},System.Collections.Generic.Dictionary{Sels.Core.Data.SQL.Query.Statement.SelectExpressionPositions,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Statement.SelectStatementBuilder`1"/>
+            <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
+            <param name="expressions">The expressions for the current query</param>
+        </member>
         <member name="M:Sels.Core.Data.SQL.Query.Statement.SelectStatementBuilder`1.Columns(System.Object,System.Collections.Generic.IEnumerable{System.String})">
             <inheritdoc/>
         </member>
@@ -1000,6 +1021,9 @@
         <member name="M:Sels.Core.Data.SQL.Query.Statement.SelectStatementBuilder`1.GetPositionForConditionExpression(Sels.Core.Data.SQL.Query.Expressions.Condition.ConditionGroupExpression{`0})">
             <inheritdoc/>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.SelectStatementBuilder`1.Clone(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{Sels.Core.Data.SQL.Query.Statement.SelectExpressionPositions},System.Collections.Generic.Dictionary{Sels.Core.Data.SQL.Query.Statement.SelectExpressionPositions,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
+            <inheritdoc/>
+        </member>
         <member name="T:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1">
             <summary>
             Builds an update query.
@@ -1010,6 +1034,11 @@
             <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1"/>
             <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1.#ctor(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{Sels.Core.Data.SQL.Query.Statement.UpdateExpressionPositions},System.Collections.Generic.Dictionary{Sels.Core.Data.SQL.Query.Statement.UpdateExpressionPositions,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1"/>
+            <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
+            <param name="expressions">The expressions for the current query</param>
+        </member>
         <member name="P:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1.Instance">
             <inheritdoc/>
         </member>
@@ -1017,6 +1046,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1.GetPositionForJoinExpression(Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression{`0,Sels.Core.Data.SQL.Query.Statement.IUpdateStatementBuilder{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1.Clone(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{Sels.Core.Data.SQL.Query.Statement.UpdateExpressionPositions},System.Collections.Generic.Dictionary{Sels.Core.Data.SQL.Query.Statement.UpdateExpressionPositions,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
             <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1.SetExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
@@ -2569,6 +2601,12 @@
             <param name="position">Where in the query the expression should be placed</param>
             <returns>Current builder for method chaining</returns>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.IStatementQueryBuilder`3.Clone">
+            <summary>
+            Clones the current builder to a new instance containing the same expressions.
+            </summary>
+            <returns>A query builder with the same expressions as the current builder</returns>
+        </member>
         <member name="T:Sels.Core.Data.SQL.Query.Statement.IStatementSetBuilder`2">
             <summary>
             Builder for setting sql objects to a new value.
@@ -2966,6 +3004,14 @@
             <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Statement.BaseStatementBuilder`3"/>
             <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.BaseStatementBuilder`3.#ctor(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{`1},System.Collections.Generic.Dictionary{`1,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
+            <summary>
+            <inheritdoc cref="T:Sels.Core.Data.SQL.Query.Statement.BaseStatementBuilder`3"/>
+            Can set the default expressions.
+            </summary>
+            <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
+            <param name="expressions">The expressions for the current query</param>
+        </member>
         <member name="M:Sels.Core.Data.SQL.Query.Statement.BaseStatementBuilder`3.AliasFor``1(System.String)">
             <inheritdoc/>
         </member>
@@ -3015,6 +3061,17 @@
             Gets the position for <paramref name="conditionExpression"/>.
             </summary>
             <param name="conditionExpression">The expression to get the position for</param>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.BaseStatementBuilder`3.Clone">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.BaseStatementBuilder`3.Clone(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{`1},System.Collections.Generic.Dictionary{`1,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
+            <summary>
+            Clones the current query builder with <paramref name="compiler"/> and <paramref name="expressions"/>.
+            </summary>
+            <param name="compiler">The compiler to use for the clone</param>
+            <param name="expressions">The expressions for the clone</param>
+            <returns>A cloned instance with the same expressions as the current instance</returns>
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.Compilation.IExpressionCompiler">
             <summary>

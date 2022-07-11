@@ -78,5 +78,11 @@ namespace Sels.Core.Data.SQL.Query.Statement
         /// <returns>Current builder for method chaining</returns>
         TDerived Expression(Action<StringBuilder> sqlExpression, TPosition position) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))), position);
         #endregion
+
+        /// <summary>
+        /// Clones the current builder to a new instance containing the same expressions.
+        /// </summary>
+        /// <returns>A query builder with the same expressions as the current builder</returns>
+        TDerived Clone();
     }
 }

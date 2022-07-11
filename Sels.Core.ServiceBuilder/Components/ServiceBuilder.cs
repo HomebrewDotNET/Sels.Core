@@ -37,6 +37,10 @@ namespace Sels.Core.ServiceBuilder
         /// If the current service registration is not an implementation for a service type but just a registration of the concrete type.
         /// </summary>
         public bool IsAbstractionless => typeof(T).Equals(typeof(TImpl));
+        /// <inheritdoc/>
+        public Type ServiceType => typeof(T);
+        /// <inheritdoc/>
+        public Type ImplementationType => typeof(TImpl);
 
         /// <inheritdoc cref="ServiceBuilder{T, TImpl}"/>
         /// <param name="collection"><inheritdoc cref="_collection"/></param>

@@ -1,0 +1,374 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Mediator</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations">
+            <summary>
+            Contains extension methods for registering services into a service collection.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddMessanger(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds all the required services for sending messages and subscribing to them.
+            </summary>
+            <param name="services">The service collection to add the services to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddSubscriber``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds service <typeparamref name="TSubscriber"/> as global subscriber that can received messages of type <typeparamref name="TMessage"/> sent from other services.
+            </summary>
+            <typeparam name="TMessage">The type of message to subscribe to</typeparam>
+            <typeparam name="TSubscriber">The type of the service to receive the messages with</typeparam>
+            <param name="services">The service collection to add the services to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddSubscriber``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Delegates.Async.AsyncAction{``1,System.Object,``0,System.Threading.CancellationToken})">
+            <summary>
+            Adds service <typeparamref name="THandler"/> as global subscriber that can received messages of type <typeparamref name="TMessage"/> sent from other services.
+            </summary>
+            <typeparam name="TMessage">The type of message to subscribe to</typeparam>
+            <typeparam name="THandler">The type of the service to receive the messages with</typeparam>
+            <param name="services">The service collection to add the services to</param>
+            <param name="action">Delegate used to handle messages of type <typeparamref name="TMessage"/> using an instance of <typeparamref name="THandler"/></param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddSubscriber``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Sels.Core.ServiceBuilder.IServiceBuilder{``1},Sels.Core.ServiceBuilder.IServiceBuilder},Sels.Core.Delegates.Async.AsyncAction{``1,System.Object,``0,System.Threading.CancellationToken})">
+            <summary>
+            Adds service <typeparamref name="THandler"/> as global subscriber that can received messages of type <typeparamref name="TMessage"/> sent from other services.
+            </summary>
+            <typeparam name="TMessage">The type of message to subscribe to</typeparam>
+            <typeparam name="THandler">The type of the service to receive the messages with</typeparam>
+            <param name="services">The service collection to add the services to</param>
+            <param name="handlerBuilder">Delegate for configuring the handler</param>
+            <param name="action">Delegate used to handle messages of type <typeparamref name="TMessage"/> using an instance of <typeparamref name="THandler"/></param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddSubscriber``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds service <typeparamref name="TSubscriber"/> as global subscriber that can received messages of all types sent from other services.
+            </summary>
+            <typeparam name="TSubscriber">The type of the service to receive the messages with</typeparam>
+            <param name="services">The service collection to add the services to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddSubscriber``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Delegates.Async.AsyncAction{``0,System.Object,System.Object,System.Threading.CancellationToken})">
+            <summary>
+            Adds service <typeparamref name="THandler"/> as global subscriber that can received messages of all types sent from other services.
+            </summary>
+            <typeparam name="THandler">The type of the service to receive the messages with</typeparam>
+            <param name="services">The service collection to add the services to</param>
+            <param name="action">Delegate used to handle messages of all types using an instance of <typeparamref name="THandler"/></param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddSubscriber``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Sels.Core.ServiceBuilder.IServiceBuilder{``0},Sels.Core.ServiceBuilder.IServiceBuilder},Sels.Core.Delegates.Async.AsyncAction{``0,System.Object,System.Object,System.Threading.CancellationToken})">
+            <summary>
+            Adds service <typeparamref name="THandler"/> as global subscriber that can received messages of all types sent from other services.
+            </summary>
+            <typeparam name="THandler">The type of the service to receive the messages with</typeparam>
+            <param name="services">The service collection to add the services to</param>
+            <param name="handlerBuilder">Delegate for configuring the handler</param>
+            <param name="action">Delegate used to handle messages of all types using an instance of <typeparamref name="THandler"/></param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.ScanForSubscribersIn(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly[])">
+            <summary>
+            Scans <paramref name="assemblies"/> for all types that implement <see cref="T:Sels.Core.Mediator.Messaging.ISubscriber`1"/> or <see cref="T:Sels.Core.Mediator.Messaging.ISubscriber"/> and registers them as scoped subscribers so they can receive the messages.
+            </summary>
+            <param name="services">The service collection to add the services to</param>
+            <param name="assemblies">The assemblies to scan</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.ScanForSubscribersIn(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Delegates.Condition{System.Type,System.Type},System.Reflection.Assembly[])">
+            <summary>
+            Scans <paramref name="assemblies"/> for all types that implement <see cref="T:Sels.Core.Mediator.Messaging.ISubscriber`1"/> or <see cref="T:Sels.Core.Mediator.Messaging.ISubscriber"/> and registers them as scoped subscribers so they can receive the messages.
+            </summary>
+            <param name="services">The service collection to add the services to</param>
+            <param name="condition">Predicate that dictates if the type can be added. First arg is the implementation type and the second arg is the interface type</param>
+            <param name="assemblies">The assemblies to scan</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Mediator.Messaging.DelegateSubscriber`2">
+            <summary>
+            Subscriber that delegates messages to a handler of type <typeparamref name="THandler"/> using a delegate.
+            </summary>
+            <typeparam name="THandler">The type of the handler</typeparam>
+            <typeparam name="TMessage">The type of the message to subscribe to</typeparam>
+        </member>
+        <member name="P:Sels.Core.Mediator.Messaging.DelegateSubscriber`2.Handler">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.DelegateSubscriber`2.#ctor(`0,Sels.Core.Delegates.Async.AsyncAction{`0,System.Object,`1,System.Threading.CancellationToken})">
+            <inheritdoc cref="T:Sels.Core.Mediator.Messaging.DelegateSubscriber`2"/>
+            <param name="handler">The instance to delegate the message to</param>
+            <param name="action">Delegate that handles any received message using <paramref name="action"/>. First arg is the object to handle the message with, second arg is the object that sent the message, third arg is the message received and the forth is an optional token to cancel a long running task</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.DelegateSubscriber`2.ReceiveAsync(System.Object,`1,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.DelegateSubscriber`2.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Mediator.Messaging.DelegateSubscriber`1">
+            <summary>
+            Subscriber that delegates messages to a handler of type <typeparamref name="THandler"/> using a delegate.
+            </summary>
+            <typeparam name="THandler">The type of the handler</typeparam>
+        </member>
+        <member name="P:Sels.Core.Mediator.Messaging.DelegateSubscriber`1.Handler">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.DelegateSubscriber`1.#ctor(`0,Sels.Core.Delegates.Async.AsyncAction{`0,System.Object,System.Object,System.Threading.CancellationToken})">
+            <inheritdoc cref="T:Sels.Core.Mediator.Messaging.DelegateSubscriber`2"/>
+            <param name="handler">The instance to delegate the message to</param>
+            <param name="action">Delegate that handles any received message using <paramref name="action"/>. First arg is the object to handle the message with, second arg is the object that sent the message, third arg is the message received and the forth is an optional token to cancel a long running task</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.DelegateSubscriber`1.ReceiveAsync(System.Object,System.Object,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.DelegateSubscriber`1.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Mediator.Messaging.Messenger`1">
+            <summary>
+            Messanger that relies on DI to get the subscribers to send to.
+            </summary>
+            <typeparam name="T">The type of the message that can be sent</typeparam>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.Messenger`1.#ctor(Sels.Core.Mediator.Messaging.IMessageSubscriber,System.Collections.Generic.IEnumerable{Sels.Core.Mediator.Messaging.ISubscriber{`0}},System.Collections.Generic.IEnumerable{Sels.Core.Mediator.Messaging.ISubscriber},Microsoft.Extensions.Logging.ILogger{Sels.Core.Mediator.Messaging.Messenger{`0}})">
+            <inheritdoc cref="T:Sels.Core.Mediator.Messaging.Messenger`1"/>
+            <param name="messageSubscriber">Manager used to get the runtime subscribers</param>
+            <param name="subscribers">The global subscribers defined by the DI container</param>
+            <param name="untypedSubscribers">The global subscribers defined by the DI container that can receive all messages</param>
+            <param name="logger">Logger used for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.Messenger`1.SendAsync(System.Object,`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Mediator.Messaging.SubscriptionManager">
+            <summary>
+            Thread safe singleton message subscriber that keeps a list of subscribers.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.#ctor(Microsoft.Extensions.Logging.ILogger{Sels.Core.Mediator.Messaging.SubscriptionManager})">
+            <inheritdoc cref="T:Sels.Core.Mediator.Messaging.SubscriptionManager"/>
+             <param name="logger">Logger used for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.GetSubscribers``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.Subscribe``1(Sels.Core.Mediator.Messaging.ISubscriber{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.Subscribe``1(System.Object,Sels.Core.Delegates.Async.AsyncAction{System.Object,``0,System.Threading.CancellationToken})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.Unsubscribe``1(Sels.Core.Mediator.Messaging.ISubscriber{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.Unsubscribe``1(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.GetSubscribers">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.Subscribe(Sels.Core.Mediator.Messaging.ISubscriber)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.Subscribe(System.Object,Sels.Core.Delegates.Async.AsyncAction{System.Object,System.Object,System.Threading.CancellationToken})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.Unsubscribe(Sels.Core.Mediator.Messaging.ISubscriber)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.SubscriptionManager.Unsubscribe(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Mediator.Messaging.IMessageSubscriber">
+            <summary>
+            Allows object to subscribe to messages of a certain type.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessageSubscriber.GetSubscribers``1">
+            <summary>
+            Get all objects subscribed to messages of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type of message that was subscribed to</typeparam>
+            <returns>All subscribed objects or an empty array if none are subscribed</returns>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessageSubscriber.Subscribe``1(Sels.Core.Mediator.Messaging.ISubscriber{``0})">
+            <summary>
+            Subscribes <paramref name="subscriber"/> to messages of type <typeparamref name="T"/> so <paramref name="subscriber"/> can receive them when they are sent from other objects.
+            </summary>
+            <typeparam name="T">The type of message to subscribe to</typeparam>
+            <param name="subscriber">The subscriber to received the messages with</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessageSubscriber.Subscribe``1(System.Object,Sels.Core.Delegates.Async.AsyncAction{System.Object,``0,System.Threading.CancellationToken})">
+            <summary>
+            Subscribes <paramref name="handler"/> to messages of type <typeparamref name="T"/> where <paramref name="action"/> will be used to receive the message.
+            </summary>
+            <typeparam name="T">The type of message to subscribe to</typeparam>
+            <param name="handler">Instance used as the subscribing instance, it is later used to unsubscribe</param>
+            <param name="action">Delegate that received the messages. First arg is the sender, second arg is the message and the third is an optional cancellation token used to cancel a long running task</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessageSubscriber.Unsubscribe``1(Sels.Core.Mediator.Messaging.ISubscriber{``0})">
+            <summary>
+            Unsubscribes <paramref name="subscriber"/> so it stops receiving messages of type <typeparamref name="T"/> and it can be garbage collected.
+            </summary>
+            <typeparam name="T">The type of message to unsubscribe from</typeparam>
+            <param name="subscriber">The subscriber to unsubscribe</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessageSubscriber.Unsubscribe``1(System.Object)">
+            <summary>
+            Unsubscribes <paramref name="handler"/> so it stops receiving messages of type <typeparamref name="T"/> and it can be garbage collected.
+            </summary>
+            <typeparam name="T">The type of message to unsubscribe from</typeparam>
+            <param name="handler">The handler to unsubscribe</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessageSubscriber.GetSubscribers">
+            <summary>
+            Get all objects subscribed to messages of all types.
+            </summary>
+            <returns>All subscribed objects or an empty array if none are subscribed</returns>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessageSubscriber.Subscribe(Sels.Core.Mediator.Messaging.ISubscriber)">
+            <summary>
+            Subscribes <paramref name="subscriber"/> to messages of all types so <paramref name="subscriber"/> can receive them when they are sent from other objects.
+            </summary>
+            <param name="subscriber">The subscriber to received the messages with</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessageSubscriber.Subscribe(System.Object,Sels.Core.Delegates.Async.AsyncAction{System.Object,System.Object,System.Threading.CancellationToken})">
+            <summary>
+            Subscribes <paramref name="handler"/> to messages ofall types where <paramref name="action"/> will be used to receive the message.
+            </summary>
+            <param name="handler">Instance used as the subscribing instance, it is later used to unsubscribe</param>
+            <param name="action">Delegate that received the messages. First arg is the sender, second arg is the message and the third is an optional cancellation token used to cancel a long running task</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessageSubscriber.Unsubscribe(Sels.Core.Mediator.Messaging.ISubscriber)">
+            <summary>
+            Unsubscribes <paramref name="subscriber"/> so it stops receiving messages of all types and it can be garbage collected.
+            </summary>
+            <param name="subscriber">The subscriber to unsubscribe</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessageSubscriber.Unsubscribe(System.Object)">
+            <summary>
+            Unsubscribes <paramref name="handler"/> so it stops receiving messages of all types and it can be garbage collected.
+            </summary>
+            <param name="handler">The handler to unsubscribe</param>
+        </member>
+        <member name="T:Sels.Core.Mediator.Messaging.IMessanger`1">
+            <summary>
+            Allows objects to send messages of type <typeparamref name="T"/> to other objects who are subscibed to that message.
+            </summary>
+            <typeparam name="T">The type of the message that can be sent</typeparam>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessanger`1.SendAsync(System.Object,`0,System.Threading.CancellationToken)">
+            <summary>
+            Sends <paramref name="message"/> to any subscribers.
+            </summary>
+            <param name="sender">The object sending the message</param>
+            <param name="message">The message to send</param>
+            <param name="token">Optional token for cancelling a long running task</param>
+            <returns>How many subscribers received the message</returns>
+        </member>
+        <member name="T:Sels.Core.Mediator.Messaging.ISubscriber`1">
+            <summary>
+            Allows an object to receive messages of type <typeparamref name="T"/> from messagers.
+            </summary>
+            <typeparam name="T">The type of message to subscribe to</typeparam>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.ISubscriber`1.ReceiveAsync(System.Object,`0,System.Threading.CancellationToken)">
+            <summary>
+            Handles <paramref name="message"/> which was sent from another object.
+            </summary>
+            <param name="sender">The object that sent the message</param>
+            <param name="message">The message that was sent</param>
+            <param name="token">Optional token for cancelling the request</param>
+            <returns>Task for awaiting the execution</returns>
+        </member>
+        <member name="T:Sels.Core.Mediator.Messaging.ISubscriber">
+            <summary>
+            Allows an object to receive messages of all messagers.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.ISubscriber.ReceiveAsync(System.Object,System.Object,System.Threading.CancellationToken)">
+            <summary>
+            Handles <paramref name="message"/> which was sent from another object.
+            </summary>
+            <param name="sender">The object that sent the message</param>
+            <param name="message">The message that was sent</param>
+            <param name="token">Optional token for cancelling the request</param>
+            <returns>Task for awaiting the execution</returns>
+        </member>
+        <member name="T:Sels.Core.Mediator.Messaging.IMessageHandler">
+            <summary>
+            Exposes the object that can handle messages.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Messaging.IMessageHandler.Handler">
+            <summary>
+            The actual object that handles the message.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1">
+            <summary>
+            Message containing objects who had a state change.
+            </summary>
+            <typeparam name="T">Type of the objects that changed state</typeparam>
+        </member>
+        <member name="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Lifecycle">
+            <inheritdoc cref="T:Sels.Core.Mediator.Models.Messages.State.ObjectLifecycle"/>
+        </member>
+        <member name="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Initiator">
+            <summary>
+            Optional object containing a reference to the object that triggered the state change.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Objects">
+            <summary>
+            Array of the objects had their state changed.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Reason">
+            <summary>
+            Optional reason why the objects were changed.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.#ctor(Sels.Core.Mediator.Models.Messages.State.ObjectLifecycle,System.Collections.Generic.IEnumerable{`0},System.Object,System.String)">
+            <inheritdoc cref="T:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1"/>
+            <param name="lifecycle"><see cref="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Lifecycle"/></param>
+            <param name="objects"><see cref="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Objects"/></param>
+            <param name="initiator"><see cref="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Initiator"/></param>
+            <param name="reason"><see cref="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Reason"/></param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.#ctor(Sels.Core.Mediator.Models.Messages.State.ObjectLifecycle,`0,System.Object,System.String)">
+            <inheritdoc cref="T:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1"/>
+            <param name="lifecycle"><see cref="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Lifecycle"/></param>
+            <param name="changed"><see cref="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Objects"/></param>
+            <param name="initiator"><see cref="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Initiator"/></param>
+            <param name="reason"><see cref="P:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1.Reason"/></param>
+        </member>
+        <member name="T:Sels.Core.Mediator.Models.Messages.State.ObjectLifecycle">
+            <summary>
+            Where in the lifecycle of an object the state change was triggered.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Mediator.Models.Messages.State.ObjectLifecycle.Created">
+            <summary>
+            Object is new.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Mediator.Models.Messages.State.ObjectLifecycle.Updated">
+            <summary>
+            Existing object was updated.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Mediator.Models.Messages.State.ObjectLifecycle.Delete">
+            <summary>
+            Existing object was deleted.
+            </summary>
+        </member>
+    </members>
+</doc>

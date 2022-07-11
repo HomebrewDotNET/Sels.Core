@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
     <ProjectReference Include="..\Sels.Core.Localization\Sels.Core.Localization.csproj" />
+    <ProjectReference Include="..\Sels.Core.Mediator\Sels.Core.Mediator.csproj" />
     <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
   </ItemGroup>
 

@@ -27,6 +27,13 @@ namespace Sels.Core.Data.SQL.Query.Statement
         {
         }
 
+        /// <inheritdoc cref="SelectStatementBuilder{TEntity}"/>
+        /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
+        /// <param name="expressions">The expressions for the current query</param>
+        public SelectStatementBuilder(IQueryCompiler<SelectExpressionPositions> compiler, Dictionary<SelectExpressionPositions, List<IExpression>> expressions) : base(compiler, expressions)
+        {
+        }
+
         #region Expressions        
         /// <inheritdoc/>
         public ISelectStatementBuilder<TEntity> Columns(object? dataset, IEnumerable<string> columns)
@@ -57,6 +64,11 @@ namespace Sels.Core.Data.SQL.Query.Statement
         protected override SelectExpressionPositions GetPositionForConditionExpression(ConditionGroupExpression<TEntity> conditionExpression)
         {
             return SelectExpressionPositions.Where;
+        }
+        /// <inheritdoc/>
+        protected override ISelectStatementBuilder<TEntity> Clone(IQueryCompiler<SelectExpressionPositions> compiler, Dictionary<SelectExpressionPositions, List<IExpression>> expressions)
+        {
+            return new SelectStatementBuilder<TEntity>(compiler, expressions);
         }
     }
 }

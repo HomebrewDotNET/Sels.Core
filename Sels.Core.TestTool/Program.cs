@@ -17,6 +17,8 @@ using Sels.Core.Components.Logging;
 using Sels.Core.Localization;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Sels.Core.Mediator.Messaging;
+using System.Threading.Tasks;
 
 namespace Sels.Core.TestTool
 {
@@ -27,36 +29,25 @@ namespace Sels.Core.TestTool
             Helper.Console.Run(() => {
                 LoggingServices.RegisterLogger(CreateLogger(LogLevel.Information));
 
-                Localizer.Setup(x =>
+                var provider = new ServiceCollection()
+                                    .AddMessanger()
+                                    .BuildServiceProvider();
+
+                var messageSubscriber = provider.GetRequiredService<IMessageSubscriber>();
+                var messager = provider.GetRequiredService<IMessanger<string>>();
+
+                var handler = new object();
+                messageSubscriber.Subscribe<string>(handler, (s, m, t) =>
                 {
-                    x.ScanIn(Assembly.GetExecutingAssembly()).UseLoggers(LoggingServices.Loggers);
+                    Console.WriteLine($"Received message <{m}>");
+                    return Task.CompletedTask;
                 });
 
-                var person = new PersonInfo<int>()
-                {
-                    Id = 1,
-                    Name = "Jens",
-                    FamilyName = "Sels",
-                    BirthDay = DateTime.Parse("04/01/1998 00:13:45"),
-                    IsGraduated = true
-                };
-
-                var type = person.GetType();
-
-                var cultures = new string[] { "nl-BE", "en-US", null };
-
-                foreach(var culture in cultures)
-                {
-                    LoggingServices.Log($"Localizing person in {culture ?? "Default"}");
-
-                    LoggingServices.Log(Localizer.Object.Get(type, culture) + ':');
-                    foreach(var property in new PropertyInfo[] { type.GetProperty(nameof(PersonInfo.Name)), type.GetProperty(nameof(PersonInfo.FamilyName)), type.GetProperty(nameof(PersonInfo.BirthDay)), type.GetProperty(nameof(PersonInfo.IsGraduated)) })
-                    {
-                        LoggingServices.Log($"{Localizer.Object.Get(property, culture)}: {property.GetValue(person)}");
-                    }
-
-                    LoggingServices.Log(Environment.NewLine);
-                }
+                var received = messager.SendAsync(new object(), "Hello from messager").Result;
+                Console.WriteLine($"Message received by <{received}> subscribers");
+                messageSubscriber.Unsubscribe<string>(handler);
+                received = messager.SendAsync(new object(), "Second message from messager").Result;
+                Console.WriteLine($"Message received by <{received}> subscribers");
             });
         }
 

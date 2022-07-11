@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
         /// <returns>Current builder for method tracing</returns>
-        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Action<ITracingInterceptorBuilder> interceptorBuilder)
+        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, ITracingInterceptorBuilder> interceptorBuilder)
             where TImpl : class, T
             where T : class
         {
@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
         /// <param name="loggers">The loggers to use for tracing</param>
         /// <returns>Current builder for method tracing</returns>
-        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Action<ITracingInterceptorBuilder> interceptorBuilder, IEnumerable<ILogger?>? loggers)
+        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, ITracingInterceptorBuilder> interceptorBuilder, IEnumerable<ILogger?>? loggers)
             where TImpl : class, T
             where T : class
         {
@@ -75,7 +75,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
         /// <returns>Current builder for method tracing</returns>
-        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Action<ICachingInterceptorBuilder> interceptorBuilder)
+        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder, ICachingInterceptorBuilder> interceptorBuilder)
             where TImpl : class, T
             where T : class
         {
@@ -98,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
         /// <param name="loggers">The loggers to use for tracing</param>
         /// <returns>Current builder for method tracing</returns>
-        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Action<ICachingInterceptorBuilder> interceptorBuilder, IEnumerable<ILogger?>? loggers)
+        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder, ICachingInterceptorBuilder> interceptorBuilder, IEnumerable<ILogger?>? loggers)
             where TImpl : class, T
             where T : class
         {

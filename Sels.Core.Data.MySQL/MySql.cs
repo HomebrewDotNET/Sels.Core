@@ -11,8 +11,10 @@ using Sels.Core.Data.SQL.Query;
 using Sels.Core.Data.SQL.Query.Expressions;
 using Sels.Core.Data.SQL.Query.Statement;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -440,6 +442,96 @@ namespace Sels.Core.Data.MySQL
             /// The keyword for a recursive cte.
             /// </summary>
             public const string Recursive = "RECURSIVE";
+        }
+
+        /// <summary>
+        /// Contains extra helper methods for building queries.
+        /// </summary>
+        public static class Builder
+        {
+            /// <summary>
+            /// Builds a mysql condition clause using the public instance properties on <paramref name="conditions"/>. Condition will be based on the property type and name.
+            /// </summary>
+            /// <typeparam name="TEntity">Type of the main entity the query is built for</typeparam>
+            /// <typeparam name="T">Type of the object containing the conditions</typeparam>
+            /// <param name="builder">Builder to create the conditions</param>
+            /// <param name="parameters">Object where the parameters for the condition will be added to</param>
+            /// <param name="conditions">Object containing the conditions</param>
+            /// <param name="excludedProperties">Names of properties on <typeparamref name="T"/> to exclude from the condition</param>
+            /// <returns>Builder to chain more conditions or null if no conditions were created</returns>
+            public static IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> BuildConditionsFrom<TEntity, T>(IStatementConditionExpressionBuilder<TEntity> builder, DynamicParameters parameters, T conditions, params string[] excludedProperties)
+            {
+                builder.ValidateArgument(nameof(builder));
+                conditions.ValidateArgument(nameof(conditions));
+                parameters.ValidateArgument(nameof(parameters));
+
+                var properties = conditions.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => !excludedProperties.HasValue() || excludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase)).ToArray();
+
+                IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> chainedBuilder = null;
+                for (int i = 0; i < properties.Length; i++)
+                {
+                    var property = properties[i];
+                    var value = property.GetValue(conditions);
+                    if (value == null) continue;
+                    if (value is string stringValue && !stringValue.HasValue()) continue;
+
+                    if (chainedBuilder != null) builder = chainedBuilder.And;
+
+                    chainedBuilder = BuildConditionFrom(builder, parameters, property, value);
+                }
+
+                return chainedBuilder;
+            }
+            /// <summary>
+            /// Builds a mysql condition for <paramref name="property"/>. Condition will be based on the property type and name.
+            /// </summary>
+            /// <typeparam name="TEntity">Type of the main entity the query is built for</typeparam>
+            /// <param name="builder">Builder to create the conditions</param>
+            /// <param name="parameters">Object where the parameters for the condition will be added to</param>
+            /// <param name="property">The property to create the condition for</param>
+            /// <param name="propertyValue">The value contained in <paramref name="property"/></param>
+            /// <returns>Builder to chain more conditions or null if no conditions were created</returns>
+            public static IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> BuildConditionFrom<TEntity>(IStatementConditionExpressionBuilder<TEntity> builder, DynamicParameters parameters, PropertyInfo property, object propertyValue)
+            {
+                builder.ValidateArgument(nameof(builder));
+                parameters.ValidateArgument(nameof(parameters));
+                property.ValidateArgument(nameof(property));
+                if (propertyValue == null) return null;
+                if (propertyValue is string stringValue && !stringValue.HasValue()) return null;
+
+                // Select operator based on type
+                if (property.PropertyType.Is<string>())
+                {
+                    parameters.AddParameter(property.Name, propertyValue);
+                    return builder.Column(property.ReflectedType, property.Name).LikeParameter(property.Name);
+                }
+                else if (property.PropertyType.IsContainer())
+                {
+                    var values = propertyValue.Cast<IEnumerable>().Enumerate().ToArray();
+                    for(int i = 0; i < values.Length; i++)
+                    {
+                        parameters.AddParameter($"{property.Name}[{i}]", values[i]);
+                    }
+                    return builder.Column(property.ReflectedType, property.Name.TrimEnd('s')).In.Values(LinqExtensions.Select(values, (i, x) => new ParameterExpression($"{property.Name}[{i}]")));
+                }
+                else
+                {
+                    parameters.AddParameter(property.Name, propertyValue);
+
+                    if (property.Name.EndsWith("From"))
+                    {
+                        return builder.Column(property.ReflectedType, property.Name[..property.Name.IndexOf("From")]).GreaterOrEqualTo.Parameter(property.Name);
+                    }
+                    else if (property.Name.EndsWith("To"))
+                    {
+                        return builder.Column(property.ReflectedType, property.Name[..property.Name.IndexOf("To")]).LesserOrEqualTo.Parameter(property.Name);
+                    }
+                    else
+                    {
+                        return builder.Column(property.ReflectedType, property.Name).EqualTo.Parameter(property.Name);
+                    }
+                }
+            }
         }
     }
 }
