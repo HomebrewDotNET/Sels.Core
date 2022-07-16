@@ -133,7 +133,15 @@ namespace Sels.Core.ServiceBuilder
                     // Create using defined factories
                     var interceptors = _interceptorFactories.Select(x => x(p)).Where(x => x != null).SelectMany(x => x).Where(x => x != null);
                     var generator = p.GetRequiredService<ProxyGenerator>();
-                    return generator.CreateInterfaceProxyWithTargetInterface<T>(instanceFactory != null ? instanceFactory(p) : p.GetRequiredService<TImpl>(), interceptors.ToArray());
+
+                    if (ServiceType.IsInterface)
+                    {
+                        return generator.CreateInterfaceProxyWithTargetInterface<T>(instanceFactory != null ? instanceFactory(p) : p.GetRequiredService<TImpl>(), interceptors.ToArray());
+                    }
+                    else
+                    {
+                        return generator.CreateClassProxyWithTarget(instanceFactory != null ? instanceFactory(p) : p.GetRequiredService<TImpl>(), interceptors.ToArray());
+                    }                    
                 });               
             }
             // Standard registration
@@ -157,7 +165,7 @@ namespace Sels.Core.ServiceBuilder
             if(_behaviour == RegisterBehaviour.Replace)
             {
                 // Remove existing implementations
-                var existing = _collection.Where(x => x.ServiceType == typeof(T));
+                var existing = _collection.Where(x => x.ServiceType == typeof(T)).ToArray();
                 existing.Execute(x => _collection.Remove(x));
             }
 

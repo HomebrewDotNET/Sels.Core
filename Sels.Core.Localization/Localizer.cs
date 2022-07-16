@@ -109,7 +109,7 @@ namespace Sels.Core.Localization
                     switch (locOptions.MissingKeySettings)
                     {
                         case MissingLocalizationSettings.Default:
-                            return $"{key}_{culture}";
+                            return $"{key}_{(culture.HasValue() ? culture : "Default")}";
                         case MissingLocalizationSettings.Key:
                             return key;
                         case MissingLocalizationSettings.Exception:
@@ -178,42 +178,29 @@ namespace Sels.Core.Localization
             /// </summary>
             /// <param name="objectType">The type of the object to localize</param>
             /// <param name="culture">Optional culture to get the localized string in. If set to null either the default defined in <see cref="LocalizationOptions"/> is used or the default thread ui culture</param>
+            /// <param name="suffix">Optional suffix that will be appended to the localization key if not null</param>
             /// <param name="options">Optional delegate for configuring the options</param>
             /// <returns>The localized string or another result based on <see cref="LocalizationOptions.MissingKeySettings"/></returns>
-            public static string? Get(Type objectType, string? culture = null, Action<LocalizationOptions>? options = null)
+            public static string? Get(Type objectType, string? culture = null, string? suffix = null, Action<LocalizationOptions>? options = null)
             {
                 objectType.ValidateArgument(nameof(objectType));
 
-                return GetObjectKey(GetTypeAlias(objectType), culture, options, objectType.Name);
+                return GetObjectKey($"{GetTypeAlias(objectType)}{suffix}", culture, options, objectType.Name);
             }
+
             /// <summary>
             /// Returns the localized name for <paramref name="property"/>.
             /// </summary>
             /// <param name="property">The name of the property to localize</param>
             /// <param name="culture">Optional culture to get the localized string in. If set to null either the default defined in <see cref="LocalizationOptions"/> is used or the default thread ui culture</param>
+            /// <param name="suffix">Optional suffix that will be appended to the localization key if not null</param>
             /// <param name="options">Optional delegate for configuring the options</param>
             /// <returns>The localized string or another result based on <see cref="LocalizationOptions.MissingKeySettings"/></returns>
-            public static string? Get(PropertyInfo property, string? culture = null, Action<LocalizationOptions>? options = null)
+            public static string? Get(PropertyInfo property, string? culture = null, string? suffix = null, Action<LocalizationOptions>? options = null)
             {
                 property.ValidateArgument(nameof(property));
 
-                return GetObjectKey($"{GetTypeAlias(property.DeclaringType)}.{property.Name}", culture, options, property.Name);
-            }
-
-            /// <summary>
-            /// Returns the localized value name for a value assigned to <paramref name="property"/>.
-            /// </summary>
-            /// <param name="property">The name of the property to localize the value for</param>
-            /// <param name="value">The property value to get the localized name for</param>
-            /// <param name="culture">Optional culture to get the localized string in. If set to null either the default defined in <see cref="LocalizationOptions"/> is used or the default thread ui culture</param>
-            /// <param name="options">Optional delegate for configuring the options</param>
-            /// <returns>The localized string or another result based on <see cref="LocalizationOptions.MissingKeySettings"/></returns>
-            public static string? GetValue(PropertyInfo property, object value, string? culture = null, Action<LocalizationOptions>? options = null)
-            {
-                property.ValidateArgument(nameof(property));
-                var valueString = value.ValidateArgument(nameof(value)).ToString();
-
-                return GetObjectKey($"{GetTypeAlias(property.DeclaringType)}.{property.Name}.{valueString}", culture, options, valueString);
+                return GetObjectKey($"{GetTypeAlias(property.DeclaringType)}.{property.Name}{suffix}", culture, options, property.Name);
             }
 
             /// <summary>
@@ -221,11 +208,12 @@ namespace Sels.Core.Localization
             /// </summary>
             /// <param name="value">The enum value to localize</param>
             /// <param name="culture">Optional culture to get the localized string in. If set to null either the default defined in <see cref="LocalizationOptions"/> is used or the default thread ui culture</param>
+            /// <param name="suffix">Optional suffix that will be appended to the localization key if not null</param>
             /// <param name="options">Optional delegate for configuring the options</param>
             /// <returns>The localized string or another result based on <see cref="LocalizationOptions.MissingKeySettings"/></returns>
-            public static string? Enum<T>(T value, string? culture = null, Action<LocalizationOptions>? options = null) where T : Enum
+            public static string? Enum<T>(T value, string? culture = null, string? suffix = null, Action<LocalizationOptions>? options = null) where T : Enum
             {
-                return GetObjectKey($"{GetTypeAlias(value.GetType())}.{value}", culture, options, value.ToString());
+                return GetObjectKey($"{GetTypeAlias(value.GetType())}.{value}{suffix}", culture, options, value.ToString());
             }
 
             private static string? GetObjectKey(string key, string? culture, Action<LocalizationOptions>? options, string defaultValue)

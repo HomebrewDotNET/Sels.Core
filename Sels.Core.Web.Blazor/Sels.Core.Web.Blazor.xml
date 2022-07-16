@@ -1,0 +1,363 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Web.Blazor</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations">
+            <summary>
+            Contains extension methods for registering services
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddJwtTokenService(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers the jwt token service where the settings are loading in from the jwt section.
+            </summary>
+            <param name="services">Collection to add the services to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddTokenStorageAuthenticationProvider(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Adds an authentication provider that manages tokens in the browser storage.
+            </summary>
+            <param name="services">Collection to add the services to</param>
+            <param name="storageKey">The key where the tokens are saved</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.BlazorConstants">
+            <summary>
+            Contains static values for Balzor servers apps.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.BlazorConstants.Form">
+            <summary>
+            Constants related to forms.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.BlazorConstants.Form.GlobalFieldName">
+            <summary>
+            The fake field name used to display global validation error messages that aren't tied to a field.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.BlazorConstants.Config">
+            <summary>
+            Constants related to the web app configuration.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.BlazorConstants.Config.Jwt">
+            <summary>
+            Constants related the the jwt configuration.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.BlazorConstants.Config.Jwt.Section">
+            <summary>
+            The jwt section name.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.BlazorConstants.Config.Jwt.Issuer">
+            <summary>
+            Config key pointing to the jwt issues.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.BlazorConstants.Config.Jwt.Audience">
+            <summary>
+            Config key pointing to the jwt audience.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.BlazorConstants.Config.Jwt.Secret">
+            <summary>
+            Config key pointing to the secret used to create the jwt token.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService">
+            <summary>
+            Authentication state provider that manages state by saving auth tokens to the browser storage.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.#ctor">
+            <summary>
+            Constructor for proxy generation.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.#ctor(Sels.Core.Web.Blazor.Authentication.Token.ITokenService,Blazored.LocalStorage.ILocalStorageService,System.String,Microsoft.Extensions.Logging.ILogger{Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService})">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService"/>
+            <param name="tokenService">Service used to validate the tokens</param>
+            <param name="localStorageService">Service used to access the tokens saved in the browser storage</param>
+            <param name="storageKey">The key used to retrieve the tokens from storage</param>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.GetAuthenticationStateAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.SignIn(System.Security.Claims.ClaimsPrincipal,System.Nullable{System.DateTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.SignOut">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService">
+            <summary>
+            Token service that generates jwt tokens.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService.#ctor(System.String,System.String,System.Byte[],Microsoft.Extensions.Logging.ILogger{Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService})">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService"/>
+            <param name="issuer">The issuer of the jwt tokens</param>
+            <param name="audience">The services that accept the jwt tokens</param>
+            <param name="secret">Bytes used to sign the jwt token</param>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService.CreateTokenAsync(System.Collections.Generic.IEnumerable{System.Security.Claims.Claim},System.Nullable{System.DateTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService.GetClaims(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService.GetPrincipal(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService.ValidateTokenAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Authentication.Token.ITokenService">
+            <summary>
+            Service that manages tokens used for authentication in Blazor servers apps.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.ITokenService.CreateTokenAsync(System.Collections.Generic.IEnumerable{System.Security.Claims.Claim},System.Nullable{System.DateTime})">
+            <summary>
+            Generates a token using <paramref name="claims"/> that describes the user.
+            </summary>
+            <param name="claims">The claims of the user</param>
+            <param name="expiryDate">Optional date when the token expires</param>
+            <returns>The generated token.</returns>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.ITokenService.ValidateTokenAsync(System.String)">
+            <summary>
+            Validates <paramref name="token"/>.
+            </summary>
+            <param name="token">The token to validate</param>
+            <returns>True if <paramref name="token"/> is valid, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.ITokenService.GetPrincipal(System.String)">
+            <summary>
+            Extracts the principal from <paramref name="token"/>.
+            </summary>
+            <param name="token">Token to get the principal from</param>
+            <returns>The principal embedded in <paramref name="token"/> or null if the token isn't valid anymore</returns>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Authentication.IAuthenticationService">
+            <summary>
+            Service that adds ways to set or clear the authentication state for server-side blazor applications.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.IAuthenticationService.SignIn(System.Security.Claims.ClaimsPrincipal,System.Nullable{System.DateTime})">
+            <summary>
+            Sets the authentication state using <paramref name="principal"/>.
+            </summary>
+            <param name="principal">The principal to sign in</param>
+            <param name="expiryDate">Time when the sign in state expires</param>
+            <returns>Task to await the result</returns>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.IAuthenticationService.SignOut">
+            <summary>
+            Clears any authentication state.
+            </summary>
+            <returns>Task to await the result</returns>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException">
+            <summary>
+            Exception thrown when a page expects a cascading parameter but none is provided.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException.#ctor(System.Object,System.Type,System.String)">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException"/>
+            <param name="page">The page that is missing the cascading parameter</param>
+            <param name="parameterType">The type of the cascading parameter</param>
+            <param name="parameterName">The name of the cascading parameter property</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException.ThrowOnNull``1(System.Object,``0,System.String)">
+            <summary>
+            Throws a new <see cref="T:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException"/> if <paramref name="parameter"/> is null.
+            </summary>
+            <typeparam name="T">Type of the cascading parameter</typeparam>
+            <param name="page">The page that is missing the cascading parameter</param>
+            <param name="parameter">The cascading parameter that was null. Compiler attributes are used to get the property name</param>
+            <param name="parameterName">Optional property name. Is filled out by the compiler</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException.ThrowOnNull``1(System.Object,System.Threading.Tasks.Task{``0},System.String)">
+            <summary>
+            Throws a new <see cref="T:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException"/> if <paramref name="parameter"/> is null.
+            </summary>
+            <typeparam name="T">Type of the cascading parameter</typeparam>
+            <param name="page">The page that is missing the cascading parameter</param>
+            <param name="parameter">The cascading parameter that was null. Compiler attributes are used to get the property name</param>
+            <param name="parameterName">Optional property name. Is filled out by the compiler</param>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.BasePage">
+            <summary>
+            Template for creating blazor page.
+            Contains a cancellation token that gets cancelled when the page is navigated away from.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BasePage.Token">
+            <summary>
+            Cancellation token that gets cancelled when the page is navigated away from. 
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.Form.CoreContextValidator`3">
+            <summary>
+            Validator for an edit form that delegates validation to <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/>.
+            </summary>
+            <typeparam name="TEntity">Type of objects to validate</typeparam>
+            <typeparam name="TError">Type of validation errors to returns</typeparam>
+            <typeparam name="TContext">Type of optional context to modify the behaviour of this validator</typeparam>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.Pages.Form.CoreContextValidator`3.GlobalFieldName">
+            <summary>
+            The name of the field for validation messages not tied to a field.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.CoreContextValidator`3.Validator">
+            <summary>
+            The validator that will be used to validate the form model
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.CoreContextValidator`3.Context">
+            <summary>
+            The edit context of the parent component.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.CoreContextValidator`3.GetErrorMessage">
+            <summary>
+            Optional delegate for getting the error message to display selected from <typeparamref name="TError"/>. Default is <see cref="M:System.Object.ToString"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.CoreContextValidator`3.GetFieldForError">
+            <summary>
+            Optional delegate that returns the name of the field that the error is for. If null then the error message will be added to the global field.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.CoreContextValidator`3.GetValidationContext">
+            <summary>
+            Optional delegate that returns the validation context supplied to the validator.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Form.CoreContextValidator`3.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.Form.CoreValidator`2">
+            <summary>
+            Validator for an edit form that delegates validation to <see cref="T:Sels.Core.Contracts.Validation.IValidator`2"/>.
+            </summary>
+            <typeparam name="TEntity">Type of objects to validate</typeparam>
+            <typeparam name="TError">Type of validation errors to returns</typeparam>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.Class">
+            <summary>
+            Optional css class for the label.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.For">
+            <summary>
+            Expression that points to the property to create the label for.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.Target">
+            <summary>
+            Optional target id for the label. Default is ReflectedType.Name + Property.Name
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.Culture">
+            <summary>
+            Optional culture to localize the property in.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.IncludeValidationMessage">
+            <summary>
+            If a validation message for the property needs to be included as well.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.PopUp.ModalContext">
+            <summary>
+            Allows modal content to interact with the modal itself.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.ModalContext.#ctor(Sels.Core.Web.Blazor.Pages.PopUp.Modal)">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Pages.PopUp.ModalContext"/>
+            <param name="modal">The modal to create the context for</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.ModalContext.CloseAsync">
+            <inheritdoc cref="M:Sels.Core.Web.Blazor.Pages.PopUp.Modal.CloseAsync"/>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.ShowOnRender">
+            <summary>
+            If the modal needs to be showed when rendered.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.WithBackdrop">
+            <summary>
+            If the modal can show the black background.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.Header">
+            <summary>
+            Content for the modal header.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.Body">
+            <summary>
+            Content for the modal body.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.Footer">
+            <summary>
+            Content for the modal footer.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.OnOpen">
+            <summary>
+            Event that gets raised when opening the modal.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.OnClose">
+            <summary>
+            Event that gets raised when closing the modal.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.Modal.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.Modal.OnAfterRenderAsync(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.Modal.OpenAsync">
+            <summary>
+            Displays the modal.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.Modal.CloseAsync">
+            <summary>
+            Closes the modal.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Routing.RedirectTo.Path">
+            <summary>
+            The path to navigate to.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Routing.RedirectTo.ForceLoad">
+            <summary>
+            If the page should be loaded from the server.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Routing.RedirectTo.Replace">
+            <summary>
+            If the current history must be replaced by <see cref="P:Sels.Core.Web.Blazor.Pages.Routing.RedirectTo.Path"/>
+            </summary>
+        </member>
+    </members>
+</doc>

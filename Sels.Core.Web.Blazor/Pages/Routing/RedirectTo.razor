@@ -1,0 +1,28 @@
+﻿@inject NavigationManager _navigationManager
+
+@code {
+    /// <summary>
+    /// The path to navigate to.
+    /// </summary>
+    [Parameter]
+    public string Path { get; set; }
+    /// <summary>
+    /// If the page should be loaded from the server.
+    /// </summary>
+    [Parameter]
+    public bool ForceLoad { get; set; }
+    /// <summary>
+    /// If the current history must be replaced by <see cref="Path"/>
+    /// </summary>
+    [Parameter]
+    public bool Replace { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Path.ValidateArgumentNotNullOrWhitespace(nameof(Path));
+
+        _navigationManager.NavigateTo(Path, ForceLoad, Replace);
+    }
+}

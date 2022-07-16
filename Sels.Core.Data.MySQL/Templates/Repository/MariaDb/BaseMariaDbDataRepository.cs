@@ -130,7 +130,11 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
 
                 // Execute query
                 var inserted = (await connection.Connection.QueryAsync<TEntity>(new CommandDefinition(query, parameters, connection.Transaction, cancellationToken: token))).ToArray();
-                var ids = entities.Select(x => IdGetter.Value(x));
+                List<TId> ids = new List<TId>();
+                foreach(var insertedItem in inserted)
+                {
+                    ids.Add(IdGetter.Value(insertedItem));
+                }
                 _loggers.Debug($"Inserted {inserted.Length} <{typeof(TEntity)}> with ids <{ids.JoinString(',')}>");
                 return inserted;
             }

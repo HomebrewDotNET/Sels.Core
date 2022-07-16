@@ -53,6 +53,31 @@ namespace Sels.Core.Components.Logging
                 _loggers.Add(logger);
             }
         }
+        /// <summary>
+        /// Adds a console logger that can be used during startup
+        /// </summary>
+        /// <param name="name">The name of the logger</param>
+        /// <param name="logLevel">The log level to use for the console logger</param>
+        public static void AddConsole(string name, LogLevel logLevel = LogLevel.Information)
+        {
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
+
+            lock (_threadLock)
+            {
+                var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger(name);
+                RegisterLogger(logger);
+            }
+        }
+        /// <summary>
+        /// Removes any registered logger.
+        /// </summary>
+        public static void Clear()
+        {
+            lock (_threadLock)
+            {
+                _loggers.Clear();
+            }
+        }
         #endregion
 
         #region Logging

@@ -205,11 +205,12 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         /// </summary>
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+        /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
         /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> WhenNotNull<TEntity, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> configurator)
+        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> WhenNotNull<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator)
         {
             configurator.ValidateArgument(nameof(configurator));
 
@@ -221,15 +222,48 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         /// </summary>
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+        /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
         /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> WhenNotDefault<TEntity, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> configurator)
+        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> WhenNotDefault<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator)
         {
             configurator.ValidateArgument(nameof(configurator));
 
             return configurator.ValidateWhen(info => !info.Value.IsDefault());
+        }
+
+        /// <summary>
+        /// Validation rules created after this method call will only be executed when value is null, empty or whitespace.
+        /// </summary>
+        /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+        /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+        /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
+        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="configurator">Configurator to configure validation</param>
+        /// <returns>Current configurator</returns>
+        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> WhenNotNullOrWhitespace<TEntity, TError, TInfo, TContext>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> configurator)
+        {
+            configurator.ValidateArgument(nameof(configurator));
+
+            return configurator.ValidateWhen(info => !string.IsNullOrWhiteSpace(info.Value));
+        }
+
+        /// <summary>
+        /// Validation rules created after this method call will only be executed when value is null or empty.
+        /// </summary>
+        /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+        /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+        /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
+        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="configurator">Configurator to configure validation</param>
+        /// <returns>Current configurator</returns>
+        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> WhenNotNullOrEmpty<TEntity, TError, TInfo, TContext>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> configurator)
+        {
+            configurator.ValidateArgument(nameof(configurator));
+
+            return configurator.ValidateWhen(info => !string.IsNullOrEmpty(info.Value));
         }
         #endregion
     }

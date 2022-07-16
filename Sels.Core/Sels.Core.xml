@@ -212,6 +212,18 @@
             </summary>
             <param name="logger">The logger to use</param>
         </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.AddConsole(System.String,Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Adds a console logger that can be used during startup
+            </summary>
+            <param name="name">The name of the logger</param>
+            <param name="logLevel">The log level to use for the console logger</param>
+        </member>
+        <member name="M:Sels.Core.Components.Logging.LoggingServices.Clear">
+            <summary>
+            Removes any registered logger.
+            </summary>
+        </member>
         <member name="M:Sels.Core.Components.Logging.LoggingServices.Debug(System.String,System.Object[])">
             <summary>
             Logs a message using severity <see cref="F:Microsoft.Extensions.Logging.LogLevel.Debug"/>.
@@ -1303,7 +1315,7 @@
             </summary>
             <typeparam name="TEntity">Type of objects to validate</typeparam>
             <typeparam name="TError">Type of validation errors to returns</typeparam>
-            <typeparam name="TContext">Type of optional context to moddify the behaviour of this validator</typeparam>
+            <typeparam name="TContext">Type of optional context to modify the behaviour of this validator</typeparam>
         </member>
         <member name="M:Sels.Core.Contracts.Validation.IValidator`3.Validate(`0,`2)">
             <summary>

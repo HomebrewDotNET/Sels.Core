@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// <summary>
     /// Contains extension methods for registering services into a <see cref="IServiceCollection"/>
     /// </summary>
-    public static class ServiceRegistrations
+    public static class ApplicationRegistrations
     {
         #region Profile
         /// <summary>

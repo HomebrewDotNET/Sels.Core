@@ -125,40 +125,33 @@
             Contains static helper methods for localizing objects.
             </summary>
         </member>
-        <member name="M:Sels.Core.Localization.Localizer.Object.Get(System.Type,System.String,System.Action{Sels.Core.Localization.LocalizationOptions})">
+        <member name="M:Sels.Core.Localization.Localizer.Object.Get(System.Type,System.String,System.String,System.Action{Sels.Core.Localization.LocalizationOptions})">
             <summary>
             Returns the localized name for object <paramref name="objectType"/>.
             </summary>
             <param name="objectType">The type of the object to localize</param>
             <param name="culture">Optional culture to get the localized string in. If set to null either the default defined in <see cref="T:Sels.Core.Localization.LocalizationOptions"/> is used or the default thread ui culture</param>
+            <param name="suffix">Optional suffix that will be appended to the localization key if not null</param>
             <param name="options">Optional delegate for configuring the options</param>
             <returns>The localized string or another result based on <see cref="P:Sels.Core.Localization.LocalizationOptions.MissingKeySettings"/></returns>
         </member>
-        <member name="M:Sels.Core.Localization.Localizer.Object.Get(System.Reflection.PropertyInfo,System.String,System.Action{Sels.Core.Localization.LocalizationOptions})">
+        <member name="M:Sels.Core.Localization.Localizer.Object.Get(System.Reflection.PropertyInfo,System.String,System.String,System.Action{Sels.Core.Localization.LocalizationOptions})">
             <summary>
             Returns the localized name for <paramref name="property"/>.
             </summary>
             <param name="property">The name of the property to localize</param>
             <param name="culture">Optional culture to get the localized string in. If set to null either the default defined in <see cref="T:Sels.Core.Localization.LocalizationOptions"/> is used or the default thread ui culture</param>
+            <param name="suffix">Optional suffix that will be appended to the localization key if not null</param>
             <param name="options">Optional delegate for configuring the options</param>
             <returns>The localized string or another result based on <see cref="P:Sels.Core.Localization.LocalizationOptions.MissingKeySettings"/></returns>
         </member>
-        <member name="M:Sels.Core.Localization.Localizer.Object.GetValue(System.Reflection.PropertyInfo,System.Object,System.String,System.Action{Sels.Core.Localization.LocalizationOptions})">
-            <summary>
-            Returns the localized value name for a value assigned to <paramref name="property"/>.
-            </summary>
-            <param name="property">The name of the property to localize the value for</param>
-            <param name="value">The property value to get the localized name for</param>
-            <param name="culture">Optional culture to get the localized string in. If set to null either the default defined in <see cref="T:Sels.Core.Localization.LocalizationOptions"/> is used or the default thread ui culture</param>
-            <param name="options">Optional delegate for configuring the options</param>
-            <returns>The localized string or another result based on <see cref="P:Sels.Core.Localization.LocalizationOptions.MissingKeySettings"/></returns>
-        </member>
-        <member name="M:Sels.Core.Localization.Localizer.Object.Enum``1(``0,System.String,System.Action{Sels.Core.Localization.LocalizationOptions})">
+        <member name="M:Sels.Core.Localization.Localizer.Object.Enum``1(``0,System.String,System.String,System.Action{Sels.Core.Localization.LocalizationOptions})">
             <summary>
             Returns the localized name for enum <paramref name="value"/>.
             </summary>
             <param name="value">The enum value to localize</param>
             <param name="culture">Optional culture to get the localized string in. If set to null either the default defined in <see cref="T:Sels.Core.Localization.LocalizationOptions"/> is used or the default thread ui culture</param>
+            <param name="suffix">Optional suffix that will be appended to the localization key if not null</param>
             <param name="options">Optional delegate for configuring the options</param>
             <returns>The localized string or another result based on <see cref="P:Sels.Core.Localization.LocalizationOptions.MissingKeySettings"/></returns>
         </member>

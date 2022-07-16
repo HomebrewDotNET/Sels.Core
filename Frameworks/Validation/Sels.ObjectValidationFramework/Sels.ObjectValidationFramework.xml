@@ -4,6 +4,197 @@
         <name>Sels.ObjectValidationFramework</name>
     </assembly>
     <members>
+        <member name="T:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations">
+            <summary>
+            Contains extension methods for registering services into a <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterProfile``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers validation profile <typeparamref name="TProfile"/> into the service collection.
+            </summary>
+            <typeparam name="TProfile">Type of profile to register</typeparam>
+            <typeparam name="TError">Type of validation error that the profile returns</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterProfile``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``0},Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Registers validation profile <typeparamref name="TProfile"/> into the service collection.
+            </summary>
+            <typeparam name="TProfile">Type of profile to register</typeparam>
+            <typeparam name="TError">Type of validation error that the profile returns</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="profileFactory">Factory that creates instances of <typeparamref name="TProfile"/></param>
+            <param name="scope">Which scope to use for the service</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterValidatorWithContext``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+            <typeparam name="TProfile">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterValidatorWithContext``5(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterValidatorWithContext``6(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterValidatorWithContext``7(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterValidatorWithContext``8(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFive">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterValidator``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TProfile">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterValidator``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterValidator``5(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterValidator``6(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterValidator``7(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFive">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
         <member name="T:Sels.ObjectValidationFramework.Components.Rules.CollectionPropertyValidationInfo">
             <summary>
             Validation info for validation rules created for a property that is a collection.
@@ -1487,25 +1678,49 @@
             <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
             <returns>Current configurator</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.GenericValidationExtensions.WhenNotNull``4(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,System.String,``1,``2,``3})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.GenericValidationExtensions.WhenNotNull``5(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,``1,``2,``3,``4})">
             <summary>
             Validation rules created after this method call will only be executed when value is not null.
             </summary>
             <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
             <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+            <typeparam name="TError">Type of validation error that this rule returns</typeparam>
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
             <param name="configurator">Configurator to configure validation</param>
             <returns>Current configurator</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.GenericValidationExtensions.WhenNotDefault``4(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,System.String,``1,``2,``3})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.GenericValidationExtensions.WhenNotDefault``5(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,``1,``2,``3,``4})">
             <summary>
             Validation rules created after this method call will only be executed when value is not the default value for it's type.
             </summary>
             <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
             <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+            <typeparam name="TError">Type of validation error that this rule returns</typeparam>
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
+            <param name="configurator">Configurator to configure validation</param>
+            <returns>Current configurator</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.GenericValidationExtensions.WhenNotNullOrWhitespace``4(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,``1,``2,``3,System.String})">
+            <summary>
+            Validation rules created after this method call will only be executed when value is null, empty or whitespace.
+            </summary>
+            <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+            <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+            <typeparam name="TError">Type of validation error that this rule returns</typeparam>
+            <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+            <param name="configurator">Configurator to configure validation</param>
+            <returns>Current configurator</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.GenericValidationExtensions.WhenNotNullOrEmpty``4(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,``1,``2,``3,System.String})">
+            <summary>
+            Validation rules created after this method call will only be executed when value is null or empty.
+            </summary>
+            <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+            <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+            <typeparam name="TError">Type of validation error that this rule returns</typeparam>
+            <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <param name="configurator">Configurator to configure validation</param>
             <returns>Current configurator</returns>
         </member>
@@ -2321,197 +2536,6 @@
             <summary>
             Ignore any exceptions throw by the rule. Rule will return valid instead.
             </summary>
-        </member>
-        <member name="T:Microsoft.Extensions.DependencyInjection.ServiceRegistrations">
-            <summary>
-            Contains extension methods for registering services into a <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>
-            </summary>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterProfile``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope)">
-            <summary>
-            Registers validation profile <typeparamref name="TProfile"/> into the service collection.
-            </summary>
-            <typeparam name="TProfile">Type of profile to register</typeparam>
-            <typeparam name="TError">Type of validation error that the profile returns</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterProfile``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,``0},Sels.Core.Components.IoC.ServiceScope)">
-            <summary>
-            Registers validation profile <typeparamref name="TProfile"/> into the service collection.
-            </summary>
-            <typeparam name="TProfile">Type of profile to register</typeparam>
-            <typeparam name="TError">Type of validation error that the profile returns</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="profileFactory">Factory that creates instances of <typeparamref name="TProfile"/></param>
-            <param name="scope">Which scope to use for the service</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterValidatorWithContext``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
-            <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">Type of entity to validate</typeparam>
-            <typeparam name="TError">Type of validation error to return</typeparam>
-            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
-            <typeparam name="TProfile">Type of profile to use for the validator</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
-            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
-            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterValidatorWithContext``5(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
-            <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">Type of entity to validate</typeparam>
-            <typeparam name="TError">Type of validation error to return</typeparam>
-            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
-            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
-            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
-            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterValidatorWithContext``6(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
-            <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">Type of entity to validate</typeparam>
-            <typeparam name="TError">Type of validation error to return</typeparam>
-            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
-            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
-            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
-            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterValidatorWithContext``7(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
-            <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">Type of entity to validate</typeparam>
-            <typeparam name="TError">Type of validation error to return</typeparam>
-            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
-            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
-            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
-            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterValidatorWithContext``8(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
-            <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">Type of entity to validate</typeparam>
-            <typeparam name="TError">Type of validation error to return</typeparam>
-            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
-            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileFive">Type of profile to use for the validator</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
-            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
-            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterValidator``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
-            <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">Type of entity to validate</typeparam>
-            <typeparam name="TError">Type of validation error to return</typeparam>
-            <typeparam name="TProfile">Type of profile to use for the validator</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
-            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
-            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterValidator``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
-            <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">Type of entity to validate</typeparam>
-            <typeparam name="TError">Type of validation error to return</typeparam>
-            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
-            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
-            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterValidator``5(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
-            <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">Type of entity to validate</typeparam>
-            <typeparam name="TError">Type of validation error to return</typeparam>
-            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
-            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
-            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterValidator``6(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
-            <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">Type of entity to validate</typeparam>
-            <typeparam name="TError">Type of validation error to return</typeparam>
-            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
-            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
-            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
-            <returns>Self</returns>
-        </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceRegistrations.RegisterValidator``7(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
-            <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
-            </summary>
-            <typeparam name="TEntity">Type of entity to validate</typeparam>
-            <typeparam name="TError">Type of validation error to return</typeparam>
-            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
-            <typeparam name="TProfileFive">Type of profile to use for the validator</typeparam>
-            <param name="services">Service collection to add service to</param>
-            <param name="scope">Which scope to use for the service</param>
-            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
-            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
-            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
-            <returns>Self</returns>
         </member>
     </members>
 </doc>
