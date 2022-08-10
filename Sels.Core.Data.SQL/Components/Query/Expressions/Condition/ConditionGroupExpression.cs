@@ -25,7 +25,7 @@ namespace Sels.Core.Data.SQL.Query.Expressions.Condition
         /// <inheritdoc/>
         /// <param name="builder">Delegate for configuring the current condition group</param>
         /// <param name="isGrouped">If the condition in this expression should be grouped using ()</param>
-        public ConditionGroupExpression(Action<IStatementConditionExpressionBuilder<TEntity>> builder, bool isGrouped) : base(builder, true)
+        public ConditionGroupExpression(Action<IStatementConditionExpressionBuilder<TEntity>> builder, bool isGrouped) : base(builder, false)
         {
             _isGrouped = isGrouped;
         }

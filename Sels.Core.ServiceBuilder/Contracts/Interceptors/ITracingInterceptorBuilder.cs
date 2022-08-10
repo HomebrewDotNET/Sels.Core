@@ -55,19 +55,19 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         /// </summary>
         /// <param name="method">The method not to trace</param>
         /// <returns>Current builder for method chaining</returns>
-        IAllMethodDurationInterceptorBuilder ExceptMethod(MethodInfo method) => Except(x => x.MethodInvocationTarget.AreEqual(method.ValidateArgument(nameof(method))));
+        IAllMethodDurationInterceptorBuilder ExceptMethod(MethodInfo method) => Except(x => x.Method.AreEqual(method.ValidateArgument(nameof(method))));
         /// <summary>
         /// Methods with <paramref name="methodname"/> will not be traced.
         /// </summary>
         /// <param name="methodname">The name of the methods not to trace</param>
         /// <returns>Current builder for method chaining</returns>
-        IAllMethodDurationInterceptorBuilder ExceptMethod(string methodname) => Except(x => x.MethodInvocationTarget.Name.Equals(methodname.ValidateArgumentNotNullOrWhitespace(methodname)));
+        IAllMethodDurationInterceptorBuilder ExceptMethod(string methodname) => Except(x => x.Method.Name.Equals(methodname.ValidateArgumentNotNullOrWhitespace(methodname)));
         /// <summary>
         /// Methods with <paramref name="methodNames"/> will not be traced.
         /// </summary>
         /// <param name="methodNames">The names of the methods not to trace</param>
         /// <returns>Current builder for method chaining</returns>
-        IAllMethodDurationInterceptorBuilder ExceptMethods(params string[] methodNames) => Except(x => methodNames.ValidateArgument(nameof(methodNames)).Contains(x.MethodInvocationTarget.Name));
+        IAllMethodDurationInterceptorBuilder ExceptMethods(params string[] methodNames) => Except(x => methodNames.ValidateArgument(nameof(methodNames)).Contains(x.Method.Name));
     }
     /// <summary>
     /// Builder for creating an interceptor that traces the duration of specific methods.
@@ -85,19 +85,19 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         /// </summary>
         /// <param name="method">The method to trace</param>
         /// <returns>Current builder for method chaining</returns>
-        ISpecificMethodDurationInterceptorBuilder Method(MethodInfo method) => Methods(x => x.MethodInvocationTarget.AreEqual(method.ValidateArgument(nameof(method))));
+        ISpecificMethodDurationInterceptorBuilder Method(MethodInfo method) => Methods(x => x.Method.AreEqual(method.ValidateArgument(nameof(method))));
         /// <summary>
         /// Methods with <paramref name="methodname"/> will be traced.
         /// </summary>
         /// <param name="methodname">The name of the methods not to trace</param>
         /// <returns>Current builder for method chaining</returns>
-        ISpecificMethodDurationInterceptorBuilder Method(string methodname) => Methods(x => x.MethodInvocationTarget.Name.Equals(methodname.ValidateArgumentNotNullOrWhitespace(methodname)));
+        ISpecificMethodDurationInterceptorBuilder Method(string methodname) => Methods(x => x.Method.Name.Equals(methodname.ValidateArgumentNotNullOrWhitespace(methodname)));
         /// <summary>
         /// Methods with <paramref name="methodNames"/> will be traced.
         /// </summary>
         /// <param name="methodNames">The names of the methods to trace</param>
         /// <returns>Current builder for method chaining</returns>
-        ISpecificMethodDurationInterceptorBuilder Methods(params string[] methodNames) => Methods(x => methodNames.ValidateArgument(nameof(methodNames)).Contains(x.MethodInvocationTarget.Name));
+        ISpecificMethodDurationInterceptorBuilder Methods(params string[] methodNames) => Methods(x => methodNames.ValidateArgument(nameof(methodNames)).Contains(x.Method.Name));
     }
 
     /// <summary>

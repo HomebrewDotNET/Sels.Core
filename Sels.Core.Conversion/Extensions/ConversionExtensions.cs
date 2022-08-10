@@ -44,5 +44,42 @@ namespace Sels.Core.Conversion.Extensions
         {
             return value.ConvertTo<T>(arguments.HasValue() ? arguments.ToDictionary(x => x.Argument, x => x.Value) : null);
         }
+        /// <summary>
+        /// Attempts to convert <paramref name="value"/> to <typeparamref name="T"/>. Will return the default value of <typeparamref name="T"/> when conversion fails.
+        /// </summary>
+        /// <typeparam name="T">Type to convert to</typeparam>
+        /// <param name="value">Object to convert</param>
+        /// <param name="arguments">Optional arguments for conversion</param>
+        /// <returns>Converted object or default of <typeparamref name="T"/> if the conversion fails</returns>
+        public static T ConvertToOrDefault<T>(this object value, Dictionary<string, string> arguments)
+        {
+            try
+            {
+                return value.ConvertTo<T>(arguments);
+            }
+            catch 
+            {
+                return default;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to convert <paramref name="value"/> to <typeparamref name="T"/>. Will return the default value of <typeparamref name="T"/> when conversion fails.
+        /// </summary>
+        /// <typeparam name="T">Type to convert to</typeparam>
+        /// <param name="value">Object to convert</param>
+        /// <param name="arguments">Optional arguments for conversion</param>
+        /// <returns>Converted object or default of <typeparamref name="T"/> if the conversion fails</returns>
+        public static T ConvertToOrDefault<T>(this object value, params (string Argument, string Value)[] arguments)
+        {
+            try
+            {
+                return value.ConvertTo<T>(arguments);
+            }
+            catch
+            {
+                return default;
+            }
+        }
     }
 }

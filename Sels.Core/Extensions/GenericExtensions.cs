@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.CSharp;
+using System.Reflection;
 
 namespace Sels.Core.Extensions
 {
@@ -121,6 +122,35 @@ namespace Sels.Core.Extensions
             return false;
         }
         #endregion
-        #endregion        
+        #endregion
+
+        #region CopyTo
+        /// <summary>
+        /// Shallow copies all properties on <paramref name="source"/> to matching properties on <paramref name="source"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the object to copy to</typeparam>
+        /// <param name="source">The source object to copy from</param>
+        /// <param name="target">The target object to copy to</param>
+        /// <param name="bindingFlags">Binding flags of which properties to copy from</param>
+        /// <returns><paramref name="source"/></returns>
+        public static T CopyTo<T>(this object source, T target, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public)
+        {
+            source.ValidateArgument(nameof(source));
+            target.ValidateArgument(nameof(target));
+            var targetType = typeof(T);
+
+            foreach(var property in source.GetType().GetProperties(bindingFlags).Where(x => x.CanRead))
+            {
+                var matchingProperty = targetType.GetProperty(property.Name);
+
+                if(matchingProperty != null && matchingProperty.CanWrite && property.PropertyType.IsAssignableTo(matchingProperty.PropertyType))
+                {
+                    matchingProperty.SetValue(target, property.GetValue(source));
+                }
+            }
+
+            return target;
+        }
+        #endregion
     }
 }

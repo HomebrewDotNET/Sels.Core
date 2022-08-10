@@ -195,6 +195,171 @@
             <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
             <returns>Self</returns>
         </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterAsyncValidatorWithContext``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+            <typeparam name="TProfile">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterAsyncValidatorWithContext``5(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterAsyncValidatorWithContext``6(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterAsyncValidatorWithContext``7(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterAsyncValidatorWithContext``8(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFive">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterAsyncValidator``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TProfile">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterAsyncValidator``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterAsyncValidator``5(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterAsyncValidator``6(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.RegisterAsyncValidator``7(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Components.IoC.ServiceScope,System.Boolean,System.Boolean,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger}})">
+            <summary>
+            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            </summary>
+            <typeparam name="TEntity">Type of entity to validate</typeparam>
+            <typeparam name="TError">Type of validation error to return</typeparam>
+            <typeparam name="TProfileOne">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileTwo">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileThree">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFour">Type of profile to use for the validator</typeparam>
+            <typeparam name="TProfileFive">Type of profile to use for the validator</typeparam>
+            <param name="services">Service collection to add service to</param>
+            <param name="scope">Which scope to use for the service</param>
+            <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="T:System.ArgumentNullException"/></param>
+            <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
+            <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
+            <returns>Self</returns>
+        </member>
         <member name="T:Sels.ObjectValidationFramework.Components.Rules.CollectionPropertyValidationInfo">
             <summary>
             Validation info for validation rules created for a property that is a collection.
@@ -220,7 +385,7 @@
             <typeparam name="TElement">Type of the elements from the property</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.CollectionPropertyValidationRule`5.#ctor(System.Reflection.PropertyInfo,System.Func{`3,`4},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.CollectionPropertyValidationRule`5.#ctor(System.Reflection.PropertyInfo,System.Func{`3,`4},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -240,7 +405,7 @@
             <typeparam name="TElement">Type of the elements from the property</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.CollectionPropertyValidationRule`4.#ctor(System.Reflection.PropertyInfo,System.Func{`2,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.CollectionPropertyValidationRule`4.#ctor(System.Reflection.PropertyInfo,System.Func{`2,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -286,7 +451,7 @@
             <typeparam name="TPropertyValue">Type of the property</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.PropertyValidationRule`5.#ctor(System.Reflection.PropertyInfo,System.Boolean,System.Func{`3,`4},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.PropertyValidationRule`5.#ctor(System.Reflection.PropertyInfo,System.Boolean,System.Func{`3,`4},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -313,7 +478,7 @@
             <typeparam name="TPropertyValue">Type of the property</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.PropertyValidationRule`4.#ctor(System.Reflection.PropertyInfo,System.Boolean,System.Func{`2,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.PropertyValidationRule`4.#ctor(System.Reflection.PropertyInfo,System.Boolean,System.Func{`2,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -337,7 +502,7 @@
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.SourceValidationRule`4.#ctor(System.Func{`0,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.SourceValidationRule`4.#ctor(System.Func{`0,`3},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -361,7 +526,7 @@
             <typeparam name="TError">Type of validation error that this rule returns</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Components.Rules.SourceValidationRule`3.#ctor(System.Func{`0,`2},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Components.Rules.SourceValidationRule`3.#ctor(System.Func{`0,`2},Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -462,6 +627,12 @@
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.DynamicValidator`3.Validate(System.Collections.Generic.IEnumerable{`0},`2)">
             <inheritdoc/>
         </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.DynamicValidator`3.ValidateAsync(`0,`2)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.DynamicValidator`3.ValidateAsync(System.Collections.Generic.IEnumerable{`0},`2)">
+            <inheritdoc/>
+        </member>
         <member name="T:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3">
             <inheritdoc cref="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3"/>
         </member>
@@ -480,6 +651,18 @@
             <inheritdoc/>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`1}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1,`2}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.ValidateWhen``1(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,``0,`2}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`1}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.ValidateWhen``1(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
             <inheritdoc/>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`3.Sels#ObjectValidationFramework#Contracts#Validators#IValidationConfigurator{TEntity,TContext,TError}#ForElements``1(System.Linq.Expressions.Expression{System.Func{`0,System.Collections.Generic.IEnumerable{``0}}},Sels.ObjectValidationFramework.Models.RuleSettings)">
@@ -535,6 +718,18 @@
             <inheritdoc/>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ForSource``1(System.Func{`0,``0},Sels.ObjectValidationFramework.Models.RuleSettings)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen``1(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,``0,`1}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen``1(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
             <inheritdoc/>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Components.Validators.EntityValidator`2.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
@@ -636,6 +831,29 @@
             <returns>Current configurator</returns>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator`5.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4}})">
+            <summary>
+            Validation rules configured after this method call will only be performed when <paramref name="condition"/> returns true.
+            </summary>
+            <param name="condition">Delegate that checks if the validation rules configured after this method call can be executed</param>
+            <returns>Current configurator</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator`5.ValidIf(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4}},Sels.Core.Delegates.Async.AsyncFunc{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4},`1})">
+            <summary>
+            Creates a new validation rule that validates values of type <typeparamref name="TValue"/> using <paramref name="condition"/>. <paramref name="errorConstructor"/> will create a validation error of type <typeparamref name="TError"/> when <paramref name="condition"/> fails.
+            </summary>
+            <param name="condition">Delegate that checks if <see cref="P:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext`4.Value"/> is a valid value</param>
+            <param name="errorConstructor">Delegate that creates a validation error when <see cref="P:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext`4.Value"/> is not a valid value</param>
+            <returns>Current configurator</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator`5.InvalidIf(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4}},Sels.Core.Delegates.Async.AsyncFunc{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4},`1})">
+            <summary>
+            Creates a new validation rule that validates values of type <typeparamref name="TValue"/> using <paramref name="condition"/>. <paramref name="errorConstructor"/> will create a validation error of type <typeparamref name="TError"/> when <paramref name="condition"/> succeeds.
+            </summary>
+            <param name="condition">Delegate that checks if <see cref="P:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext`4.Value"/> is a valid value</param>
+            <param name="errorConstructor">Delegate that creates a validation error when <see cref="P:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext`4.Value"/> is not a valid value</param>
+            <returns>Current configurator</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator`5.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4}})">
             <summary>
             Validation rules configured after this method call will only be performed when <paramref name="condition"/> returns true.
             </summary>
@@ -821,6 +1039,38 @@
             <param name="condition">Delegate that checks if validation rules can be executed</param>
             <returns>Configurator for creating validation rules</returns>
         </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
+            <summary>
+            All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes.
+            </summary>
+            <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
+            <param name="configurator">Configurator for creating validation rules</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ValidateWhen``1(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,``0,`1}})">
+            <summary>
+            All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TContext"/>.
+            </summary>
+            <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+            <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
+            <param name="configurator">Configurator for creating validation rules</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}})">
+            <summary>
+            All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes.
+            </summary>
+            <param name="condition">Delegate that checks if validation rules can be executed</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`2.ValidateWhen``1(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
+            <summary>
+            All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TContext"/>.
+            </summary>
+            <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+            <param name="condition">Delegate that checks if validation rules can be executed</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
         <member name="T:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3">
             <summary>
             Configurator for creating validation rules for objects of type <typeparamref name="TEntity"/> where all rules use a context of type <typeparamref name="TContext"/>.
@@ -910,6 +1160,38 @@
             <returns>Configurator for creating validation rules</returns>
         </member>
         <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
+            <summary>
+            All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TNewContext"/>.
+            </summary>
+            <typeparam name="TNewContext">Optional context that can be supplied to a validation profile</typeparam>
+            <param name="condition">Delegate that checks if validation rules can be executed</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`1}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1,`2}})">
+            <summary>
+            All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes.
+            </summary>
+            <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
+            <param name="configurator">Configurator for creating validation rules</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ValidateWhen``1(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,``0,`2}})">
+            <summary>
+            All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TNewContext"/>.
+            </summary>
+            <typeparam name="TNewContext">Optional context that can be supplied to a validation profile</typeparam>
+            <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
+            <param name="configurator">Configurator for creating validation rules</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`1}})">
+            <summary>
+            All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes.
+            </summary>
+            <param name="condition">Delegate that checks if validation rules can be executed</param>
+            <returns>Configurator for creating validation rules</returns>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator`3.ValidateWhen``1(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
             <summary>
             All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TNewContext"/>.
             </summary>
@@ -2222,6 +2504,14 @@
             <param name="context">Optional context that can be used by the validation configuration</param>
             <returns>All validation errors for <paramref name="objectToValidate"/></returns>
         </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ValidationProfile`1.ValidateAsync(System.Object,System.Object)">
+            <summary>
+            Validates <paramref name="objectToValidate"/> using the configuration in the profile and returns alls validation errors.
+            </summary>
+            <param name="objectToValidate">The object to validate</param>
+            <param name="context">Optional context that can be used by the validation configuration</param>
+            <returns>All validation errors for <paramref name="objectToValidate"/></returns>
+        </member>
         <member name="T:Sels.ObjectValidationFramework.Templates.Profile.ImportOptions">
             <summary>
             Tells what to import from another profile.
@@ -2271,7 +2561,7 @@
             <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -2287,6 +2577,15 @@
             <inhericdoc />
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.ValidIf(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,System.Object,`3}},System.Func{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,System.Object,`3},`1})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.ValidIf(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,System.Object,`3}},Sels.Core.Delegates.Async.AsyncFunc{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,System.Object,`3},`1})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.InvalidIf(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,System.Object,`3}},Sels.Core.Delegates.Async.AsyncFunc{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,System.Object,`3},`1})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,System.Object,`3}})">
             <inhericdoc />
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextlessValidationRule`4.WithContext``1(System.Boolean)">
@@ -2312,7 +2611,7 @@
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -2320,6 +2619,15 @@
             <param name="settings">Extra settings for the rule</param>
             <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
             <param name="loggers">Option loggers for logging</param>
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextValidationRule`5.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4}})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextValidationRule`5.ValidIf(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4}},Sels.Core.Delegates.Async.AsyncFunc{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4},`1})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextValidationRule`5.InvalidIf(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4}},Sels.Core.Delegates.Async.AsyncFunc{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4},`1})">
+            <inhericdoc />
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseContextValidationRule`5.ValidateWhen(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,`2,`3,`4}})">
             <inhericdoc />
@@ -2387,7 +2695,7 @@
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseMultiValueValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseMultiValueValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -2425,7 +2733,7 @@
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseSingleValueValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseSingleValueValidationRule`5.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -2452,7 +2760,7 @@
             <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
             <typeparam name="TError">Type of validation error that this rule returns</typeparam>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.#ctor(Sels.ObjectValidationFramework.Components.Validators.EntityValidator{`0,`1},Sels.ObjectValidationFramework.Models.RuleSettings,System.Collections.Generic.IEnumerable{Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Creates a new instance.
             </summary>
@@ -2489,6 +2797,18 @@
             <inhericdoc />
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen``1(System.Predicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,`1}})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen``1(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}},System.Action{Sels.ObjectValidationFramework.Contracts.Validators.IValidationConfigurator{`0,``0,`1}})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object}})">
+            <inhericdoc />
+        </member>
+        <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.ValidateWhen``1(Sels.Core.Delegates.Async.AsyncPredicate{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,``0}})">
             <inhericdoc />
         </member>
         <member name="M:Sels.ObjectValidationFramework.Templates.Rules.BaseValidationRule`2.CanValidate(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{`0,System.Object})">

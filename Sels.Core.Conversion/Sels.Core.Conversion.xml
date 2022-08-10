@@ -1109,6 +1109,24 @@
             <param name="arguments">Optional arguments for conversion</param>
             <returns>Converted object</returns>
         </member>
+        <member name="M:Sels.Core.Conversion.Extensions.ConversionExtensions.ConvertToOrDefault``1(System.Object,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Attempts to convert <paramref name="value"/> to <typeparamref name="T"/>. Will return the default value of <typeparamref name="T"/> when conversion fails.
+            </summary>
+            <typeparam name="T">Type to convert to</typeparam>
+            <param name="value">Object to convert</param>
+            <param name="arguments">Optional arguments for conversion</param>
+            <returns>Converted object or default of <typeparamref name="T"/> if the conversion fails</returns>
+        </member>
+        <member name="M:Sels.Core.Conversion.Extensions.ConversionExtensions.ConvertToOrDefault``1(System.Object,System.ValueTuple{System.String,System.String}[])">
+            <summary>
+            Attempts to convert <paramref name="value"/> to <typeparamref name="T"/>. Will return the default value of <typeparamref name="T"/> when conversion fails.
+            </summary>
+            <typeparam name="T">Type to convert to</typeparam>
+            <param name="value">Object to convert</param>
+            <param name="arguments">Optional arguments for conversion</param>
+            <returns>Converted object or default of <typeparamref name="T"/> if the conversion fails</returns>
+        </member>
         <member name="T:Sels.Core.Conversion.Extensions.SerializationExtensions">
             <summary>
             Contains extensions for serializing/deserializing objects to/from string using data formats like json, xml, ...

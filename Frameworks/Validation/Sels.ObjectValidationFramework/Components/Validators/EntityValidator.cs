@@ -15,6 +15,8 @@ using Sels.Core.Components.Scope;
 using System.Linq.Expressions;
 using Sels.ObjectValidationFramework.Models;
 using Sels.Core.Extensions.Logging;
+using System.Threading.Tasks;
+using static Sels.Core.Delegates.Async;
 
 namespace Sels.ObjectValidationFramework.Components.Validators
 {
@@ -54,6 +56,31 @@ namespace Sels.ObjectValidationFramework.Components.Validators
         }
         /// <inheritdoc/>
         public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(Predicate<IValidationRuleContext<TEntity, TNewContext>> condition) where TNewContext : TContext
+        {
+            _parent.ValidateWhen(condition);
+            return this;
+        }
+
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
+        {
+            _parent.ValidateWhen(condition, configurator);
+            return this;
+        }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(AsyncPredicate<IValidationRuleContext<TEntity, TNewContext>> condition, Action<IValidationConfigurator<TEntity, TNewContext, TError>> configurator) where TNewContext : TContext
+        {
+            _parent.ValidateWhen(condition, configurator);
+            return this;
+        }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition)
+        {
+            _parent.ValidateWhen(condition);
+            return this;
+        }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(AsyncPredicate<IValidationRuleContext<TEntity, TNewContext>> condition) where TNewContext : TContext
         {
             _parent.ValidateWhen(condition);
             return this;
@@ -100,7 +127,7 @@ namespace Sels.ObjectValidationFramework.Components.Validators
     {
         // Fields
         private readonly List<BaseValidationRule<TEntity, TError>> _rules = new List<BaseValidationRule<TEntity, TError>>();
-        private readonly List<Predicate<IValidationRuleContext<TEntity, object>>> _currentConditions = new List<Predicate<IValidationRuleContext<TEntity, object>>>();
+        private readonly List<AsyncPredicate<IValidationRuleContext<TEntity, object>>> _currentConditions = new List<AsyncPredicate<IValidationRuleContext<TEntity, object>>>();
 
         /// <summary>
         /// Creates a new instance.
@@ -199,7 +226,7 @@ namespace Sels.ObjectValidationFramework.Components.Validators
             }
         }
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, object>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator)
+        public IValidationConfigurator<TEntity, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, object>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -215,14 +242,14 @@ namespace Sels.ObjectValidationFramework.Components.Validators
             }
         }
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
+        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
         {
             using (_loggers.TraceMethod(this))
             {
                 condition.ValidateArgument(nameof(condition));
                 configurator.ValidateArgument(nameof(configurator));
 
-                Predicate<IValidationRuleContext<TEntity, object>> contextCondition = x => {
+                AsyncPredicate<IValidationRuleContext<TEntity, object>> contextCondition = x => {
                     var context = new ValidationRuleContext<TEntity, TContext>(x.Source, x.Context, x.ElementIndex, x.Parents);
                     return condition(context);
                 };
@@ -236,7 +263,7 @@ namespace Sels.ObjectValidationFramework.Components.Validators
             }
         }
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, object>> condition)
+        public IValidationConfigurator<TEntity, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, object>> condition)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -248,7 +275,7 @@ namespace Sels.ObjectValidationFramework.Components.Validators
             }
         }
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition)
+        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -257,6 +284,49 @@ namespace Sels.ObjectValidationFramework.Components.Validators
                 _currentConditions.Add(x => condition(new ValidationRuleContext<TEntity, TContext>(x.Source, x.Context, x.ElementIndex, x.Parents)));
 
                 return this;
+            }
+        }
+
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, object>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+                configurator.ValidateArgument(nameof(configurator));
+
+                return ValidateWhen(x => Task.FromResult(condition(x)), configurator);
+            }
+        }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+                configurator.ValidateArgument(nameof(configurator));
+
+                return ValidateWhen<TContext>(x => Task.FromResult(condition(x)), configurator);
+            }
+        }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, object>> condition)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+
+                return ValidateWhen(x => Task.FromResult(condition(x)));
+            }
+        }
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+
+                return ValidateWhen<TContext>(x => Task.FromResult(condition(x)));
             }
         }
         #endregion
@@ -272,7 +342,7 @@ namespace Sels.ObjectValidationFramework.Components.Validators
         }
 
         /// <inheritdoc/>
-        internal override TError[] Validate(object objectToValidate, object context, int? elementIndex = null, Parent[] parents = null)
+        internal override async Task<TError[]> Validate(object objectToValidate, object context, int? elementIndex = null, Parent[] parents = null)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -280,26 +350,37 @@ namespace Sels.ObjectValidationFramework.Components.Validators
 
                 var typedObjectToValidate = objectToValidate.Cast<TEntity>();
                 var validationRuleContext = new ValidationRuleContext<TEntity, object>(typedObjectToValidate, context, elementIndex, parents);
+                var errors = new List<TError>();
 
-                return _rules.Where(rule => rule.CanValidate(validationRuleContext)).SelectMany(rule =>
+                foreach(var rule in _rules)
                 {
-                    try
+                    if(await rule.CanValidate(validationRuleContext))
                     {
-                        return rule.Validate(typedObjectToValidate, context, elementIndex, parents) ?? new TError[0];
-                    }
-                    catch(Exception ex)
-                    {
-                        if (rule.IgnoreExceptions)
+                        try
                         {
-                            _loggers.LogException(LogLevel.Warning, $"Rule has ignore exception enabled. Ignoring", ex);
-                            return new TError[0];
+                            var validationErrors = await rule.Validate(typedObjectToValidate, context, elementIndex, parents);
+
+                            if (validationErrors.HasValue())
+                            {
+                                errors.AddRange(validationErrors);
+                            }
                         }
-                        else
+                        catch(Exception ex)
                         {
-                            throw;
+                            if (rule.IgnoreExceptions)
+                            {
+                                _loggers.LogException(LogLevel.Warning, $"Rule has ignore exception enabled. Ignoring", ex);
+                            }
+                            else
+                            {
+                                throw;
+                            }
                         }
+                        
                     }
-                }).ToArray();
+                }
+
+                return errors.ToArray();
             }
         }
         #endregion
@@ -337,7 +418,7 @@ namespace Sels.ObjectValidationFramework.Components.Validators
         /// <param name="elementIndex">Index of <paramref name="objectToValidate"/> if it was part of a collection. Will be null if it wasn't part of a collection.</param>
         /// <param name="parents">Hierarchy of object if property fallthrough is enabled. The previous element is always the parent of the next element.</param>
         /// <returns>All the validation errors for <paramref name="objectToValidate"/></returns>
-        internal abstract TError[] Validate(object objectToValidate, object context, int? elementIndex = null, Parent[] parents = null);
+        internal abstract Task<TError[]> Validate(object objectToValidate, object context, int? elementIndex = null, Parent[] parents = null);
         #endregion
     }
 }

@@ -1,0 +1,53 @@
+﻿@using Sels.Core.Web.Blazor.Exceptions
+@typeparam TModel
+@attribute [CascadingTypeParameter(nameof(TModel))]
+
+@code {
+    /// <summary>
+    /// The unique id of the column.
+    /// </summary>
+    [Parameter]
+    public string ColumnId { get; set; }
+    /// <summary>
+    /// The content that will be displayed in the header.
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    /// <summary>
+    /// Optional css class for the th tag.
+    /// </summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+    /// <summary>
+    /// Cascaded content from parent model table.
+    /// </summary>
+    [CascadingParameter(Name = "TableContext")]
+    public LazyTableContext<TModel> TableContext { get; set; }
+    /// <summary>
+    /// Indicates if this column can be sorted on.
+    /// </summary>
+    [Parameter]
+    public bool CanSort { get; set; } = true;
+    /// <summary>
+    /// Used to determine the order. Lower means rendered first.
+    /// </summary>
+    [Parameter]
+    public int Order { get; set; } = 1;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        MissingCascadingParameterException.ThrowOnNull(this, TableContext);
+        ColumnId.ValidateArgumentNotNullOrWhitespace(nameof(ColumnId));
+        ChildContent.ValidateArgument(nameof(ChildContent));
+
+        await TableContext.AddHeader(ColumnId, ChildContent, Order, CanSort, CssClass);
+        await base.OnInitializedAsync();
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (ChildContent != null && TableContext != null) TableContext.RemoveHeaderComponent(ChildContent);
+    }
+}

@@ -1,0 +1,92 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using Sels.Core.Web.Bootstrap.Components.Color
+
+<CascadingValue Value="this" Name="TabContainer">
+@if(ChildContent != null)
+{
+    <div style="display: none">
+        @ChildContent
+    </div>
+}
+@if (Tabs.HasValue())
+{
+
+    <div class="container-fluid">
+        <div class="row">
+            <ul class="nav nav-tabs">             
+            @foreach(var tab in Tabs)
+            {
+                <li class="nav-item" style="cursor: pointer">
+                    <a class="nav-link @(tab.Equals(SelectedTab) ? "active " + ActiveColor.ToCss() : tab.Color.ToCss()) @tab.CssClass" @onclick="x => SetActiveTab(tab)" @onclick:preventDefault>@tab.Header</a>
+                </li>
+            }
+            </ul>
+        </div>
+         <div class="row border border-top-0">
+            @if(SelectedTab != null)
+            {
+                @SelectedTab.ChildContent
+            }
+        </div>
+    </div>
+}
+</CascadingValue>
+
+
+@code {
+    private Tab? _selectedTab;
+
+    /// <summary>
+    /// List of the tabs in the container.
+    /// </summary>
+    private List<Tab> Tabs { get; } = new List<Tab>();
+    /// <summary>
+    /// The currently selected tab.
+    /// </summary>
+    public Tab? SelectedTab => _selectedTab ?? Tabs.FirstOrDefault();
+    /// <summary>
+    /// Optional color for the link text of the active tab.
+    /// </summary>
+    [Parameter]
+    public LinkColor ActiveColor { get; set; }
+    /// <summary>
+    /// The content to render.
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    /// <summary>
+    /// Adds a tab to the container.
+    /// </summary>
+    /// <param name="tab">The tab to add</param>
+    public void AddTab(Tab tab)
+    {
+        Tabs.Add(tab.ValidateArgument(nameof(tab)));
+        StateHasChanged();
+    }
+    /// <summary>
+    /// Removes a tab from the container.
+    /// </summary>
+    /// <param name="tab">The tab to remove</param>
+    public void RemoveTab(Tab tab)
+    {
+        Tabs.Remove(tab.ValidateArgument(nameof(tab)));
+        if (tab.Equals(_selectedTab)) _selectedTab = null;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Event that gets raised when the active tab swithes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<Tab> OnTabChanged { get; set; }
+
+    private async Task SetActiveTab(Tab tab)
+    {
+        tab.ValidateArgument(nameof(tab));
+
+        await OnTabChanged.InvokeAsync(tab);
+        _selectedTab = tab;
+        StateHasChanged();
+    }
+}

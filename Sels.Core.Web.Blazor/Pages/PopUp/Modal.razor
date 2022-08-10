@@ -1,33 +1,37 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
+@using Sels.Core.Web.Bootstrap.Components
 
 @if(_context != null)
 {
-    <div class="modal @(_show ? "show" : "")" tabindex="-1" style="display:@(_display ? "block" : "none")">
-      <div class="modal-dialog">
+    <div class="modal @(_show ? "show" : "") @(IsScrollable ? "modal-dialog-scrollable" : string.Empty) @(IsVerticallyCentered ? "modal-dialog-centered" : string.Empty)" tabindex="-1" style="display:@(_display ? "block" : "none")" data-bs-backdrop="@(IsStatic ? "static" : "none")">
+      <div class="modal-dialog @Size.ToCss()">
         <div class="modal-content">
           <div class="modal-header">
             @if(Header != null){
                 @Header(_context)
             }
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CloseAsync"/>
-          </div>        
-            @if(Body != null){
-                 <div class="modal-body">
-                    @Body(_context)
-                 </div> 
-            }        
-            @if(Footer != null){
-                <div class="modal-footer">
-                    @Footer(_context)
-                </div>
-            }          
+            @if (WithCloseButton)
+            {
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CloseAsync"/>     
+            }
+        </div>        
+        @if(Body != null){
+            <div class="modal-body">
+            @Body(_context)
+            </div> 
+        }        
+        @if(Footer != null){
+            <div class="modal-footer">
+                @Footer(_context)
+            </div>
+        }          
         </div>
       </div>
     </div>
 
     @if (WithBackdrop)
     {
-        <div class="modal-backdrop fade @(_show ? "show" : "")" style="display:@(_display ? "block" : "none")" tabindex="-1" @onclick="CloseAsync"></div>
+        <div class="modal-backdrop fade @(_show ? "show" : "")" style="display:@(_display ? "block" : "none")" tabindex="-1" @onclick="x => IsStatic ? Task.CompletedTask : CloseAsync()"></div>
     }
 }
 
@@ -39,6 +43,11 @@
 
     // Settings
     /// <summary>
+    /// The size of the modal.
+    /// </summary>
+    [Parameter]
+    public ModalSize Size { get; set; } = ModalSize.Default;
+    /// <summary>
     /// If the modal needs to be showed when rendered.
     /// </summary>
     [Parameter]
@@ -48,6 +57,26 @@
     /// </summary>
     [Parameter]
     public bool WithBackdrop { get; set; } = true;
+    /// <summary>
+    /// If the modal can be closed by clicking the backdrop. When set to true it can't be closed by clicking the backdrop.
+    /// </summary>
+    [Parameter]
+    public bool IsStatic { get; set; } = false;
+    /// <summary>
+    /// If the close button in the top right must be rendered.
+    /// </summary>
+    [Parameter]
+    public bool WithCloseButton { get; set; } = true;
+    /// <summary>
+    /// If the modal itself is scrollable when the content becomes too long.
+    /// </summary>
+    [Parameter]
+    public bool IsScrollable { get; set; } = false;
+    /// <summary>
+    /// If the modal must be vertically centered.
+    /// </summary>
+    [Parameter]
+    public bool IsVerticallyCentered { get; set; } = false;
 
     // Content
     /// <summary>
@@ -102,6 +131,7 @@
     public async Task OpenAsync()
     {
         _display = true;
+        StateHasChanged();
         await Task.Delay(100);
         _show = true;
         StateHasChanged();
@@ -113,6 +143,7 @@
     public async Task CloseAsync()
     {
         _show = false;
+        StateHasChanged();
         await Task.Delay(100);
         _display = false;
         StateHasChanged();

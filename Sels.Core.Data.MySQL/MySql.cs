@@ -457,15 +457,16 @@ namespace Sels.Core.Data.MySQL
             /// <param name="builder">Builder to create the conditions</param>
             /// <param name="parameters">Object where the parameters for the condition will be added to</param>
             /// <param name="conditions">Object containing the conditions</param>
+            /// <param name="dataSet">Optional dataset for the columns in the where condition, when set to null, <see cref="MemberInfo.ReflectedType"/> is taken as the dataset</param>
             /// <param name="excludedProperties">Names of properties on <typeparamref name="T"/> to exclude from the condition</param>
             /// <returns>Builder to chain more conditions or null if no conditions were created</returns>
-            public static IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> BuildConditionsFrom<TEntity, T>(IStatementConditionExpressionBuilder<TEntity> builder, DynamicParameters parameters, T conditions, params string[] excludedProperties)
+            public static IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> BuildConditionsFrom<TEntity, T>(IStatementConditionExpressionBuilder<TEntity> builder, DynamicParameters parameters, T conditions, object? dataSet = null, params string[] excludedProperties)
             {
                 builder.ValidateArgument(nameof(builder));
                 conditions.ValidateArgument(nameof(conditions));
                 parameters.ValidateArgument(nameof(parameters));
 
-                var properties = conditions.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => !excludedProperties.HasValue() || excludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase)).ToArray();
+                var properties = conditions.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => !excludedProperties.HasValue() || !excludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase)).ToArray();
 
                 IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> chainedBuilder = null;
                 for (int i = 0; i < properties.Length; i++)
@@ -477,7 +478,7 @@ namespace Sels.Core.Data.MySQL
 
                     if (chainedBuilder != null) builder = chainedBuilder.And;
 
-                    chainedBuilder = BuildConditionFrom(builder, parameters, property, value);
+                    chainedBuilder = BuildConditionFrom(builder, parameters, property, value, dataSet);
                 }
 
                 return chainedBuilder;
@@ -490,20 +491,22 @@ namespace Sels.Core.Data.MySQL
             /// <param name="parameters">Object where the parameters for the condition will be added to</param>
             /// <param name="property">The property to create the condition for</param>
             /// <param name="propertyValue">The value contained in <paramref name="property"/></param>
+            /// <param name="dataSet">Optional dataset for the columns in the where condition, when set to null, <see cref="MemberInfo.ReflectedType"/> is taken as the dataset</param>
             /// <returns>Builder to chain more conditions or null if no conditions were created</returns>
-            public static IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> BuildConditionFrom<TEntity>(IStatementConditionExpressionBuilder<TEntity> builder, DynamicParameters parameters, PropertyInfo property, object propertyValue)
+            public static IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> BuildConditionFrom<TEntity>(IStatementConditionExpressionBuilder<TEntity> builder, DynamicParameters parameters, PropertyInfo property, object propertyValue, object? dataSet = null)
             {
                 builder.ValidateArgument(nameof(builder));
                 parameters.ValidateArgument(nameof(parameters));
                 property.ValidateArgument(nameof(property));
                 if (propertyValue == null) return null;
                 if (propertyValue is string stringValue && !stringValue.HasValue()) return null;
+                dataSet ??= property.ReflectedType;
 
                 // Select operator based on type
                 if (property.PropertyType.Is<string>())
                 {
                     parameters.AddParameter(property.Name, propertyValue);
-                    return builder.Column(property.ReflectedType, property.Name).LikeParameter(property.Name);
+                    return builder.Column(dataSet, property.Name).LikeParameter(property.Name);
                 }
                 else if (property.PropertyType.IsContainer())
                 {
@@ -512,7 +515,7 @@ namespace Sels.Core.Data.MySQL
                     {
                         parameters.AddParameter($"{property.Name}[{i}]", values[i]);
                     }
-                    return builder.Column(property.ReflectedType, property.Name.TrimEnd('s')).In.Values(LinqExtensions.Select(values, (i, x) => new ParameterExpression($"{property.Name}[{i}]")));
+                    return builder.Column(dataSet, property.Name.TrimEnd('s')).In.Values(LinqExtensions.Select(values, (i, x) => new ParameterExpression($"{property.Name}[{i}]")));
                 }
                 else
                 {
@@ -520,15 +523,15 @@ namespace Sels.Core.Data.MySQL
 
                     if (property.Name.EndsWith("From"))
                     {
-                        return builder.Column(property.ReflectedType, property.Name[..property.Name.IndexOf("From")]).GreaterOrEqualTo.Parameter(property.Name);
+                        return builder.Column(dataSet, property.Name[..property.Name.IndexOf("From")]).GreaterOrEqualTo.Parameter(property.Name);
                     }
                     else if (property.Name.EndsWith("To"))
                     {
-                        return builder.Column(property.ReflectedType, property.Name[..property.Name.IndexOf("To")]).LesserOrEqualTo.Parameter(property.Name);
+                        return builder.Column(dataSet, property.Name[..property.Name.IndexOf("To")]).LesserOrEqualTo.Parameter(property.Name);
                     }
                     else
                     {
-                        return builder.Column(property.ReflectedType, property.Name).EqualTo.Parameter(property.Name);
+                        return builder.Column(dataSet, property.Name).EqualTo.Parameter(property.Name);
                     }
                 }
             }

@@ -50,7 +50,8 @@ namespace Sels.Core.Data.SQL.Query.Statement
         protected BaseStatementBuilder(IQueryCompiler<TPosition> compiler, Dictionary<TPosition, List<IExpression>> expressions)
         {
             _compiler = compiler.ValidateArgument(nameof(compiler));
-            _expressions = expressions.ValidateArgument(nameof(expressions));
+            // Create new reference
+            _expressions = expressions.ValidateArgument(nameof(expressions)).ToDictionary(x => x.Key, x => x.Value.ToList());
         }
 
         #region Alias

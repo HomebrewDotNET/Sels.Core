@@ -19,6 +19,9 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Sels.Core.Mediator.Messaging;
 using System.Threading.Tasks;
+using Sels.Core.Components.IoC;
+using Sels.Core.Contracts.Configuration;
+using Sels.Core.Components.Configuration;
 
 namespace Sels.Core.TestTool
 {
@@ -27,28 +30,50 @@ namespace Sels.Core.TestTool
         static void Main(string[] args)
         {
             Helper.Console.Run(() => {
-                LoggingServices.RegisterLogger(CreateLogger(LogLevel.Information));
-
-                var provider = new ServiceCollection()
-                                    .AddMessanger()
-                                    .BuildServiceProvider();
-
-                var messageSubscriber = provider.GetRequiredService<IMessageSubscriber>();
-                var messager = provider.GetRequiredService<IMessanger<string>>();
-
-                var handler = new object();
-                messageSubscriber.Subscribe<string>(handler, (s, m, t) =>
-                {
-                    Console.WriteLine($"Received message <{m}>");
-                    return Task.CompletedTask;
-                });
-
-                var received = messager.SendAsync(new object(), "Hello from messager").Result;
-                Console.WriteLine($"Message received by <{received}> subscribers");
-                messageSubscriber.Unsubscribe<string>(handler);
-                received = messager.SendAsync(new object(), "Second message from messager").Result;
-                Console.WriteLine($"Message received by <{received}> subscribers");
+                TestInterceptors();
             });
+        }
+
+        internal static void TestInterceptors()
+        {
+            LoggingServices.RegisterLogger(CreateLogger(LogLevel.Information));
+
+            var provider = new ServiceCollection()
+                                .AddSingleton(Helper.Configuration.BuildDefaultConfigurationFile())
+                                .AddDistributedMemoryCache()
+                                .New<IConfigurationService, ConfigurationService>()
+                                    .Trace(x => x.Duration.OfAll)
+                                    .Cache(x => x.Method(m => m.Get(default, default, default)))
+                                    .Register()
+                                .BuildServiceProvider();
+
+            var service = provider.GetRequiredService<IConfigurationService>();
+            var value = service.Get("Test");
+        }
+
+        internal static void TestMessanger()
+        {
+            LoggingServices.RegisterLogger(CreateLogger(LogLevel.Information));
+
+            var provider = new ServiceCollection()
+                                .AddMessanger()
+                                .BuildServiceProvider();
+
+            var messageSubscriber = provider.GetRequiredService<IMessageSubscriber>();
+            var messager = provider.GetRequiredService<IMessanger<string>>();
+
+            var handler = new object();
+            messageSubscriber.Subscribe<string>(handler, (s, m, t) =>
+            {
+                Console.WriteLine($"Received message <{m}>");
+                return Task.CompletedTask;
+            });
+
+            var received = messager.SendAsync(new object(), "Hello from messager").Result;
+            Console.WriteLine($"Message received by <{received}> subscribers");
+            messageSubscriber.Unsubscribe<string>(handler);
+            received = messager.SendAsync(new object(), "Second message from messager").Result;
+            Console.WriteLine($"Message received by <{received}> subscribers");
         }
 
         internal static ILogger CreateLogger(LogLevel level = LogLevel.Trace)

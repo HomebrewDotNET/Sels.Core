@@ -20,7 +20,8 @@ namespace Sels.Core.ServiceBuilder.Interceptors
     /// <summary>
     /// Interceptor that caches the return values of methods.
     /// </summary>
-    public class CachingInterceptor : BaseResultOnlyInterceptor, ICachingInterceptorBuilder
+    /// <typeparam name="TImpl">The type of the object to cache values on</typeparam>
+    public class CachingInterceptor<TImpl> : BaseResultOnlyInterceptor, ICachingInterceptorBuilder<TImpl>
     {
         // Fields
         private readonly IDistributedCache _cache;
@@ -59,7 +60,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
             _converter = defaultConverter ?? GenericConverter.DefaultJsonConverter;
 
             // Set default settings
-            var builder = this.Cast<ICachingInterceptorBuilder>();
+            var builder = this.Cast<ICachingInterceptorBuilder<TImpl>>();
             builder.ConvertUsingDefault(_converter)
                    .GetKeyWithDefault(GetDefaultKey)
                    .WithDefaultOptions(GetDefaultOptions);
@@ -71,7 +72,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
             var loggers = GetLoggersFor(invocation);
 
             var cacher = _cachers.FirstOrDefault(x => x.CanCache(invocation));
-            var methodName = invocation.MethodInvocationTarget.GetDisplayName(true);
+            var methodName = invocation.Method.GetDisplayName(true);
 
             if(cacher != null)
             {
@@ -123,7 +124,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
 
         #region Building
         /// <inheritdoc/>
-        public ICachingMethodInterceptorBuilder Method(MethodInfo method)
+        public ICachingMethodInterceptorBuilder<TImpl> Method(MethodInfo method)
         {
             method.ValidateArgument(nameof(method));
 
@@ -132,7 +133,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
             return cacher;
         }
         /// <inheritdoc/>
-        public ICachingInterceptorBuilder ConvertUsingDefault(Func<object, string> serializeFunc, Func<string, Type, object> deserializeFunc)
+        public ICachingInterceptorBuilder<TImpl> ConvertUsingDefault(Func<object, string> serializeFunc, Func<string, Type, object> deserializeFunc)
         {
             _serializeFunc = serializeFunc.ValidateArgument(nameof(serializeFunc));
             _deserializeFunc = deserializeFunc.ValidateArgument(nameof(deserializeFunc));
@@ -140,26 +141,26 @@ namespace Sels.Core.ServiceBuilder.Interceptors
             return this;
         }
         /// <inheritdoc/>
-        public ICachingInterceptorBuilder GetKeyWithDefault(Func<IInvocation, string> keyGetter)
+        public ICachingInterceptorBuilder<TImpl> GetKeyWithDefault(Func<IInvocation, string> keyGetter)
         {
             _keyGetter = keyGetter.ValidateArgument(nameof(keyGetter));
 
             return this;
         }
         /// <inheritdoc/>
-        public ICachingInterceptorBuilder WithDefaultOptions(Func<IInvocation, DistributedCacheEntryOptions> optionGetter)
+        public ICachingInterceptorBuilder<TImpl> WithDefaultOptions(Func<IInvocation, DistributedCacheEntryOptions> optionGetter)
         {
             _optionGetter = optionGetter.ValidateArgument(nameof(optionGetter));
             return this;
         }
 
-        private class MethodCacher : ICachingMethodInterceptorBuilder
+        private class MethodCacher : ICachingMethodInterceptorBuilder<TImpl>
         {
             // Fields
             private Predicate<IInvocation> _condition;
 
             // Properties
-            public ICachingInterceptorBuilder And { get; }
+            public ICachingInterceptorBuilder<TImpl> And { get; }
             public MethodInfo Method { get; }
 
             public Func<object, string> SerializeFunc { get; private set; }
@@ -167,7 +168,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
             public Func<IInvocation, string> KeyGetter { get; private set; }
             public Func<IInvocation, DistributedCacheEntryOptions> OptionGetter { get; private set; }
 
-            public MethodCacher(ICachingInterceptorBuilder parent, MethodInfo method)
+            public MethodCacher(ICachingInterceptorBuilder<TImpl> parent, MethodInfo method)
             {
                 And = parent.ValidateArgument(nameof(parent));
                 Method = method.ValidateArgument(nameof(method));
@@ -177,11 +178,11 @@ namespace Sels.Core.ServiceBuilder.Interceptors
             {
                 invocation.ValidateArgument(nameof(invocation));
 
-                return invocation.MethodInvocationTarget.AreEqual(Method) && (_condition == null || _condition(invocation));
+                return invocation.Method.AreEqual(Method) && (_condition == null || _condition(invocation));
             }
 
             /// <inheritdoc/>
-            public ICachingMethodInterceptorBuilder ConvertUsing(Func<object, string> serializeFunc, Func<string, Type, object> deserializeFunc)
+            public ICachingMethodInterceptorBuilder<TImpl> ConvertUsing(Func<object, string> serializeFunc, Func<string, Type, object> deserializeFunc)
             {
                 SerializeFunc = serializeFunc.ValidateArgument(nameof(serializeFunc));
                 DeserializeFunc = deserializeFunc.ValidateArgument(nameof(deserializeFunc));
@@ -189,19 +190,19 @@ namespace Sels.Core.ServiceBuilder.Interceptors
                 return this;
             }
             /// <inheritdoc/>
-            public ICachingMethodInterceptorBuilder When(Predicate<IInvocation> condition)
+            public ICachingMethodInterceptorBuilder<TImpl> When(Predicate<IInvocation> condition)
             {
                 _condition = condition.ValidateArgument(nameof(condition));
                 return this;
             }
             /// <inheritdoc/>
-            public ICachingMethodInterceptorBuilder WithOptions(Func<IInvocation, DistributedCacheEntryOptions> optionGetter)
+            public ICachingMethodInterceptorBuilder<TImpl> WithOptions(Func<IInvocation, DistributedCacheEntryOptions> optionGetter)
             {
                 OptionGetter = optionGetter.ValidateArgument(nameof(optionGetter));
                 return this;
             }
             /// <inheritdoc/>
-            public ICachingMethodInterceptorBuilder WithKey(Func<IInvocation, string> keyGetter)
+            public ICachingMethodInterceptorBuilder<TImpl> WithKey(Func<IInvocation, string> keyGetter)
             {
                 KeyGetter = keyGetter.ValidateArgument(nameof(keyGetter));
 
@@ -214,7 +215,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
 
         private string GetDefaultKey(IInvocation invocation)
         {
-            return invocation.MethodInvocationTarget.GetDisplayName(true, invocation != null ? invocation.Arguments.Select(x => _converter.ConvertTo<string>(x)).ToArray() : null);
+            return invocation.Method.GetDisplayName(true, invocation != null ? invocation.Arguments.Select(x => _converter.ConvertTo<string>(x)).ToArray() : null);
         }
 
         private DistributedCacheEntryOptions GetDefaultOptions(IInvocation invocation)

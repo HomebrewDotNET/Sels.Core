@@ -75,7 +75,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
         /// <returns>Current builder for method tracing</returns>
-        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder, ICachingInterceptorBuilder> interceptorBuilder)
+        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder<TImpl>, object> interceptorBuilder)
             where TImpl : class, T
             where T : class
         {
@@ -84,7 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder.InterceptedBy(x =>
             {
-                var interceptor = new CachingInterceptor(x.GetRequiredService<IDistributedCache>(), x.GetService<ITypeConverter>(), x.GetService<ILoggerFactory>());
+                var interceptor = new CachingInterceptor<TImpl>(x.GetRequiredService<IDistributedCache>(), x.GetService<ITypeConverter>(), x.GetService<ILoggerFactory>());
                 interceptorBuilder(interceptor);
                 return interceptor;
             });
@@ -98,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
         /// <param name="loggers">The loggers to use for tracing</param>
         /// <returns>Current builder for method tracing</returns>
-        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder, ICachingInterceptorBuilder> interceptorBuilder, IEnumerable<ILogger?>? loggers)
+        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder<TImpl>, object> interceptorBuilder, IEnumerable<ILogger?>? loggers)
             where TImpl : class, T
             where T : class
         {
@@ -107,7 +107,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder.InterceptedBy(x =>
             {
-                var interceptor = new CachingInterceptor(x.GetRequiredService<IDistributedCache>(), x.GetService<ITypeConverter>(), loggers);
+                var interceptor = new CachingInterceptor<TImpl>(x.GetRequiredService<IDistributedCache>(), x.GetService<ITypeConverter>(), loggers);
                 interceptorBuilder(interceptor);
                 return interceptor;
             });

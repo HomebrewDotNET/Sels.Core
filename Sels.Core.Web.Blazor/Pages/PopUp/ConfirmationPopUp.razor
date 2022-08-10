@@ -1,0 +1,94 @@
+﻿@using Sels.Core.Web.Bootstrap.Components
+@using Microsoft.AspNetCore.Components.Web
+@typeparam TArg
+
+<Modal @ref="_modal" IsScrollable="true" IsVerticallyCentered="true" IsStatic="true" OnClose="Cancel">
+    <Header>
+        <h3>@_title</h3>
+    </Header>
+    <Body>
+        <p>@_content</p>
+    </Body>
+    <Footer>
+        <button class="btn @CancelButtonType.ToCss()" @onclick="Cancel">@CancelButtonText</button>
+        <button class="btn @ConfirmButtonType.ToCss()" @onclick="Confirm">@ConfirmButtonText</button>
+    </Footer>
+</Modal>
+
+@code {
+    private string _title;
+    private string _content;
+
+    private Modal _modal;
+
+    // State
+    private TArg? _argument;
+
+    /// <summary>
+    /// The text for the cancel button.
+    /// </summary>
+    [Parameter]
+    public string CancelButtonText { get; set; } = "Cancel";
+    /// <summary>
+    /// The type of the cancel button.
+    /// </summary>
+    [Parameter]
+    public ButtonType CancelButtonType { get; set; } = ButtonType.Secondary;
+    /// <summary>
+    /// The text for the confirm button.
+    /// </summary>
+    [Parameter]
+    public string ConfirmButtonText { get; set; } = "Confirm";
+    /// <summary>
+    /// The type of the confirm button.
+    /// </summary>
+    [Parameter]
+    public ButtonType ConfirmButtonType { get; set; } = ButtonType.Primary;
+
+    // Events
+    /// <summary>
+    /// Events that gets raised when the confirm popup closes or is cancelled.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TArg> OnCancel { get; set; }
+    /// <summary>
+    /// Event that gets raised when the confirm button is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TArg> OnConfirm { get; set; }
+    /// <summary>
+    /// Event that gets raised with a boolean indicating if the popup was confirmed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<(bool Confirmed, TArg argument)> OnResult { get; set; }
+
+    /// <summary>
+    /// Opens the confirmation modal.
+    /// </summary>
+    /// <param name="title">The titel for the modal</param>
+    /// <param name="content">The content for the modal</param>
+    /// <param name="arg">Optional argument that gets supplied to the events that trigger when the popup gets cancelled or confirmed. Can be used to pass data to handlers</param>
+    public Task AskForConfirmation(string title, string content, TArg? arg = default)
+    {
+        _title = title.ValidateArgumentNotNullOrWhitespace(nameof(title));
+        _content = content.ValidateArgumentNotNullOrWhitespace(nameof(content));
+
+        _argument = arg;
+
+        return _modal.OpenAsync();
+    }
+
+    private async Task Confirm()
+    {
+        await OnResult.InvokeAsync((true, _argument));
+        await OnConfirm.InvokeAsync(_argument);
+        await _modal.CloseAsync();
+    }
+
+    private async Task Cancel()
+    {
+        await OnResult.InvokeAsync((false, _argument));
+        await OnCancel.InvokeAsync(_argument);
+        await _modal.CloseAsync();
+    }
+}

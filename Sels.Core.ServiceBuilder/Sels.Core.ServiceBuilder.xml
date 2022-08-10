@@ -4,48 +4,49 @@
         <name>Sels.Core.ServiceBuilder</name>
     </assembly>
     <members>
-        <member name="T:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor">
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1">
             <summary>
             Interceptor that caches the return values of methods.
             </summary>
+            <typeparam name="TImpl">The type of the object to cache values on</typeparam>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Sels.Core.Conversion.Converters.ITypeConverter,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
-            <inheritdoc cref="T:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor"/>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Sels.Core.Conversion.Converters.ITypeConverter,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc cref="!:CachingInterceptor"/>
             <param name="cache">The cache to use to store method return values</param>
             <param name="defaultConverter">Optional default converter for serializing and deserializing method return values</param>
             <param name="loggers">Static loggers to use for tracing</param>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Sels.Core.Conversion.Converters.ITypeConverter,Microsoft.Extensions.Logging.ILoggerFactory)">
-            <inheritdoc cref="T:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor"/>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Sels.Core.Conversion.Converters.ITypeConverter,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <inheritdoc cref="!:CachingInterceptor"/>
             <param name="cache">The cache to use to store method return values</param>
             <param name="defaultConverter">Optional default converter for serializing and deserializing method return values</param>
             <param name="factory">Logger factory for creating loggers based on the target type</param>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.InterceptAsync``1(Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Func{Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Threading.Tasks.Task{``0}})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.InterceptAsync``1(Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Func{Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Threading.Tasks.Task{``0}})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.Method(System.Reflection.MethodInfo)">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.Method(System.Reflection.MethodInfo)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.ConvertUsingDefault(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.ConvertUsingDefault(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.GetKeyWithDefault(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.GetKeyWithDefault(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.WithDefaultOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.WithDefaultOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.MethodCacher.ConvertUsing(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.MethodCacher.ConvertUsing(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.MethodCacher.When(System.Predicate{Castle.DynamicProxy.IInvocation})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.MethodCacher.When(System.Predicate{Castle.DynamicProxy.IInvocation})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.MethodCacher.WithOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.MethodCacher.WithOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor.MethodCacher.WithKey(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.MethodCacher.WithKey(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor">
@@ -76,19 +77,20 @@
         <member name="M:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor.InterceptAsync(Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Func{Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Threading.Tasks.Task})">
             <inheritdoc/>
         </member>
-        <member name="T:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder">
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1">
             <summary>
             Builder for creating an interceptor that caches method return values.
             </summary>
+            <typeparam name="T">The type of the object to cache values on</typeparam>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder.Method(System.Reflection.MethodInfo)">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.Method(System.Reflection.MethodInfo)">
             <summary>
             Cache return values from <paramref name="method"/>.
             </summary>
             <param name="method">The method to cache</param>
             <returns>Builder for configuring the caching of <paramref name="method"/></returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder.Method``1(System.String)">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.Method(System.String)">
             <summary>
             Cache return values from the first method on <typeparamref name="T"/> with <paramref name="methodName"/>.
             </summary>
@@ -96,7 +98,7 @@
             <param name="methodName">The name of the method to cache</param>
             <returns>Builder for configuring the caching of <paramref name="methodName"/></returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder.Method``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.Method(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
             <summary>
             Cache return values from the method selected by <paramref name="methodSelector"/>.
             </summary>
@@ -104,7 +106,7 @@
             <param name="methodSelector">Expression that points to the method to cache</param>
             <returns>Builder for configuring the caching of method selected by <paramref name="methodSelector"/></returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder.GetKeyWithDefault(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.GetKeyWithDefault(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
             <summary>
             Defines a delegate for converting a method and it's parameters into a caching key. The default uses the method name and the parameters converted to strings.
             Sets the default that is used unless overwritten for specific methods.
@@ -112,7 +114,7 @@
             <param name="keyGetter">Delegate that converts the method information into a caching key</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder.WithDefaultOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.WithDefaultOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
             <summary>
             Defines a delegate that returns the caching options for a method.
             Sets the default that is used unless overwritten for specific methods.
@@ -120,7 +122,7 @@
             <param name="optionGetter">Delegate that returns the options for the provided method</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder.WithDefaultExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.WithDefaultExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
             <summary>
             Sets the default absolute expiry time for all cached entries.
             Sets the default that is used unless overwritten for specific methods.
@@ -128,7 +130,7 @@
             <param name="expiryGetter">Delegate that returns the offset when a cached entry expires</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder.WithDefaultSlidingExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.WithDefaultSlidingExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
             <summary>
             Sets the default sliding expiry time for all cached entries.
             Sets the default that is used unless overwritten for specific methods.
@@ -136,7 +138,7 @@
             <param name="expiryGetter">Delegate that returns the offset when a cached entry expires if it hasn't been accessed during the offset</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder.ConvertUsingDefault(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.ConvertUsingDefault(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
             <summary>
             Defines custom delegates for serializing and deserializing method returns values so they can be cached as strings. The default uses <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultJsonConverter"/>.
             Sets the default that is used unless overwritten for specific methods.
@@ -145,7 +147,7 @@
             <param name="deserializeFunc">Func that deserializes the cached string</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder.ConvertUsingDefault(Sels.Core.Conversion.Converters.ITypeConverter)">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.ConvertUsingDefault(Sels.Core.Conversion.Converters.ITypeConverter)">
             <summary>
             Defines custom delegates for serializing and deserializing method returns values so they can be cached as strings. The default uses <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultJsonConverter"/>.
             Sets the default that is used unless overwritten for specific methods.
@@ -153,45 +155,46 @@
             <param name="converter">Type converted used to serialize and deserialize the cache values</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="T:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder">
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1">
             <summary>
             Builder for defining how a method is cached.
             </summary>
+            <typeparam name="T">The type of the object to cache values on</typeparam>
         </member>
-        <member name="P:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder.And">
+        <member name="P:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.And">
             <summary>
             Returns the parent builder for defining more methods to cache.
             </summary>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder.WithKey(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.WithKey(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
             <summary>
             Defines a delegate for converting a method and it's parameters into a caching key. The default uses the method name and the parameters converted to strings.
             </summary>
             <param name="keyGetter">Delegate that converts the method information into a caching key</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder.WithOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.WithOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
             <summary>
             Defines a delegate that returns the caching options for a method.
             </summary>
             <param name="optionGetter">Delegate that returns the options for the provided method</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder.WithExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.WithExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
             <summary>
             Sets the default absolute expiry time for all cached entries.
             </summary>
             <param name="expiryGetter">Delegate that returns the offset when a cached entry expires</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder.WithSlidingExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.WithSlidingExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
             <summary>
             Sets the default sliding expiry time for all cached entries.
             </summary>
             <param name="expiryGetter">Delegate that returns the offset when a cached entry expires if it hasn't been accessed during the offset</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder.ConvertUsing(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.ConvertUsing(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
             <summary>
             Defines custom delegates for serializing and deserializing method returns values so they can be cached as strings. The default uses <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultJsonConverter"/>.
             </summary>
@@ -199,14 +202,14 @@
             <param name="deserializeFunc">Func that deserializes the cached string</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder.ConvertUsing(Sels.Core.Conversion.Converters.ITypeConverter)">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.ConvertUsing(Sels.Core.Conversion.Converters.ITypeConverter)">
             <summary>
             Defines custom delegates for serializing and deserializing method returns values so they can be cached as strings. The default uses <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultJsonConverter"/>.
             </summary>
             <param name="converter">Type converted used to serialize and deserialize the cache values</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder.When(System.Predicate{Castle.DynamicProxy.IInvocation})">
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.When(System.Predicate{Castle.DynamicProxy.IInvocation})">
             <summary>
             Defines a condition when this method can be cached. If condition is false caching will be skipped.
             </summary>
@@ -646,7 +649,7 @@
             <param name="loggers">The loggers to use for tracing</param>
             <returns>Current builder for method tracing</returns>
         </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Cache``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder,Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder})">
+        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Cache``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder{``1},System.Object})">
             <summary>
             Adds an interceptor for caching method return values.
             </summary>
@@ -656,7 +659,7 @@
             <param name="interceptorBuilder">Builder for creating the interceptor</param>
             <returns>Current builder for method tracing</returns>
         </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Cache``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder,Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Cache``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder{``1},System.Object},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Adds an interceptor for caching method return values.
             </summary>

@@ -5,6 +5,7 @@ using System.Text;
 using Sels.ObjectValidationFramework.Components.Rules;
 using Sels.ObjectValidationFramework.Contracts.Rules;
 using Sels.ObjectValidationFramework.Models;
+using static Sels.Core.Delegates.Async;
 
 namespace Sels.ObjectValidationFramework.Contracts.Validators
 {
@@ -100,6 +101,36 @@ namespace Sels.ObjectValidationFramework.Contracts.Validators
         /// <param name="condition">Delegate that checks if validation rules can be executed</param>
         /// <returns>Configurator for creating validation rules</returns>
         IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition);
+
+        /// <summary>
+        /// All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes.
+        /// </summary>
+        /// <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
+        /// <param name="configurator">Configurator for creating validation rules</param>
+        /// <returns>Configurator for creating validation rules</returns>
+        IValidationConfigurator<TEntity, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, object>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator);
+
+        /// <summary>
+        /// All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TContext"/>.
+        /// </summary>
+        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
+        /// <param name="configurator">Configurator for creating validation rules</param>
+        /// <returns>Configurator for creating validation rules</returns>
+        IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator);
+        /// <summary>
+        /// All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes.
+        /// </summary>
+        /// <param name="condition">Delegate that checks if validation rules can be executed</param>
+        /// <returns>Configurator for creating validation rules</returns>
+        IValidationConfigurator<TEntity, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, object>> condition);
+        /// <summary>
+        /// All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TContext"/>.
+        /// </summary>
+        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="condition">Delegate that checks if validation rules can be executed</param>
+        /// <returns>Configurator for creating validation rules</returns>
+        IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition);
     }
 
     /// <summary>
@@ -194,5 +225,34 @@ namespace Sels.ObjectValidationFramework.Contracts.Validators
         /// <param name="condition">Delegate that checks if validation rules can be executed</param>
         /// <returns>Configurator for creating validation rules</returns>
         IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(Predicate<IValidationRuleContext<TEntity, TNewContext>> condition) where TNewContext : TContext;
+
+        /// <summary>
+        /// All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes.
+        /// </summary>
+        /// <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
+        /// <param name="configurator">Configurator for creating validation rules</param>
+        /// <returns>Configurator for creating validation rules</returns>
+        IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator);
+        /// <summary>
+        /// All validation rules created with <paramref name="configurator"/> will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TNewContext"/>.
+        /// </summary>
+        /// <typeparam name="TNewContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="condition">Delegate that checks if validation rules created with <paramref name="configurator"/> can be executed</param>
+        /// <param name="configurator">Configurator for creating validation rules</param>
+        /// <returns>Configurator for creating validation rules</returns>
+        IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(AsyncPredicate<IValidationRuleContext<TEntity, TNewContext>> condition, Action<IValidationConfigurator<TEntity, TNewContext, TError>> configurator) where TNewContext : TContext;
+        /// <summary>
+        /// All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes.
+        /// </summary>
+        /// <param name="condition">Delegate that checks if validation rules can be executed</param>
+        /// <returns>Configurator for creating validation rules</returns>
+        IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition);
+        /// <summary>
+        /// All validation rules created fter calling this method will only be executed when <paramref name="condition"/> passes. Condition uses a context of type <typeparamref name="TNewContext"/>.
+        /// </summary>
+        /// <typeparam name="TNewContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="condition">Delegate that checks if validation rules can be executed</param>
+        /// <returns>Configurator for creating validation rules</returns>
+        IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(AsyncPredicate<IValidationRuleContext<TEntity, TNewContext>> condition) where TNewContext : TContext;
     }
 }

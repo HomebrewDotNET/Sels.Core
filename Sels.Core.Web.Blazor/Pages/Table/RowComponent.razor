@@ -1,0 +1,38 @@
+﻿@using Sels.Core.Web.Blazor.Exceptions
+@typeparam TModel
+@attribute [CascadingTypeParameter(nameof(TModel))]
+
+@code {
+    /// <summary>
+    /// The content that will be displayed in the top row.
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    /// <summary>
+    /// Optional css class for the div tag.
+    /// </summary>
+    [Parameter]
+    public string? CssClass { get; set; } = "col-auto";
+    /// <summary>
+    /// Used to determine the order. Lower means rendered first.
+    /// </summary>
+    [Parameter]
+    public int Order { get; set; } = 1;
+
+    /// <summary>
+    /// Cascaded content from parent model table.
+    /// </summary>
+    [CascadingParameter(Name = "TableContext")]
+    public LazyTableContext<TModel> TableContext { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        MissingCascadingParameterException.ThrowOnNull(this, TableContext);
+        ChildContent.ValidateArgument(nameof(ChildContent));
+
+        await TableContext.AddRowComponent(ChildContent, Order, CssClass);
+    }
+}

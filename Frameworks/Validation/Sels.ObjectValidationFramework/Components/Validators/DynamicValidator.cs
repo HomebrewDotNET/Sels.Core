@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sels.ObjectValidationFramework.Components.Validators
 {
@@ -18,7 +19,7 @@ namespace Sels.ObjectValidationFramework.Components.Validators
     /// <typeparam name="TEntity">Type of entity to validate</typeparam>
     /// <typeparam name="TError">Type of validation error to return</typeparam>
     /// <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
-    internal class DynamicValidator<TEntity, TError, TContext> : IValidator<TEntity, TError, TContext>
+    internal class DynamicValidator<TEntity, TError, TContext> : IValidator<TEntity, TError, TContext>, IAsyncValidator<TEntity, TError, TContext>
     {
         // Fields
         private readonly IEnumerable<ILogger> _loggers;
@@ -73,6 +74,45 @@ namespace Sels.ObjectValidationFramework.Components.Validators
                 _loggers.Log($"Validating {entities.GetCount()} entities using {_profiles.Length} validation profiles");
 
                 return _profiles.SelectMany(x => x.Validate(entities, context)).ToArray();
+            }
+        }
+        /// <inheritdoc/>
+        public async Task<TError[]> ValidateAsync(TEntity entity, TContext context = default)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                entity.ValidateArgument(nameof(entity));
+                if (_contextIsRequired) context.ValidateArgument(nameof(context));
+
+                _loggers.Log($"Validating <{entity}> using {_profiles.Length} validation profiles");
+                var errors = new List<TError>();
+
+                foreach(var profile in _profiles)
+                {
+                    errors.AddRange(await profile.ValidateAsync(entity, context));
+                }
+
+                return errors.ToArray();
+            }
+        }
+        /// <inheritdoc/>
+        public async Task<TError[]> ValidateAsync(IEnumerable<TEntity> entities, TContext context = default)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                entities.ValidateArgument(nameof(entities));
+                if (_contextIsRequired) context.ValidateArgument(nameof(context));
+
+                _loggers.Log($"Validating {entities.GetCount()} entities using {_profiles.Length} validation profiles");
+
+                var errors = new List<TError>();
+
+                foreach (var profile in _profiles)
+                {
+                    errors.AddRange(await profile.ValidateAsync(entities, context));
+                }
+
+                return errors.ToArray();
             }
         }
     }

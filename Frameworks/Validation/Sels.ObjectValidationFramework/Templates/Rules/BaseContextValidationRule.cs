@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using static Sels.Core.Delegates.Async;
 
 namespace Sels.ObjectValidationFramework.Templates.Rules
 {
@@ -25,7 +27,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
     internal abstract class BaseContextValidationRule<TEntity, TError, TInfo, TContext, TValue> : BaseValidationRule<TEntity, TError>, IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue>
     {
         // Fields
-        protected readonly List<Predicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>>> _currentConditions = new List<Predicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>>>();
+        protected readonly List<AsyncPredicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>>> _currentConditions = new List<AsyncPredicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>>>();
         protected readonly List<ValidationRuleValidator> _validationRules = new List<ValidationRuleValidator>();
 
         /// <summary>
@@ -35,13 +37,13 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        internal BaseContextValidationRule(EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
+        internal BaseContextValidationRule(EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<AsyncPredicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
         }
 
         #region Rule Configurator
         /// <inhericdoc />
-        public IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> ValidateWhen(Predicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>> condition)
+        public IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>> condition)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -53,7 +55,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
             }
         }
         /// <inhericdoc />
-        public IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> ValidIf(Predicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>> condition, Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor)
+        public IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> ValidIf(AsyncPredicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>> condition, AsyncFunc<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -68,6 +70,39 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
             }
         }
         /// <inhericdoc />
+        public IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> InvalidIf(AsyncPredicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>> condition, AsyncFunc<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+                errorConstructor.ValidateArgument(nameof(errorConstructor));
+
+                return ValidIf(async x => !(await condition(x)), errorConstructor);
+            }
+        }
+
+        /// <inhericdoc />
+        public IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> ValidateWhen(Predicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>> condition)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+
+                return ValidateWhen(x => Task.FromResult(condition(x)));
+            }
+        }
+        /// <inhericdoc />
+        public IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> ValidIf(Predicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>> condition, Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+                errorConstructor.ValidateArgument(nameof(errorConstructor));
+
+                return ValidIf(x => Task.FromResult(condition(x)), x => Task.FromResult(errorConstructor(x)));
+            }
+        }
+        /// <inhericdoc />
         public IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> InvalidIf(Predicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>> condition, Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor)
         {
             using (_loggers.TraceMethod(this))
@@ -75,7 +110,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
                 condition.ValidateArgument(nameof(condition));
                 errorConstructor.ValidateArgument(nameof(errorConstructor));
 
-                return ValidIf(x => !condition(x), errorConstructor);
+                return InvalidIf(x => Task.FromResult(condition(x)), x => Task.FromResult(errorConstructor(x)));
             }
         }
         #endregion
@@ -85,11 +120,30 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         /// </summary>
         /// <param name="context">Context of the current <typeparamref name="TEntity"/> that is being validated</param>
         /// <returns>All enabled validators</returns>
-        protected ValidationRuleValidator[] GetEnabledValidatorsFor(IValidationRuleContext<TEntity, TInfo, TContext, TValue> context)
+        protected async Task<ValidationRuleValidator[]> GetEnabledValidatorsFor(IValidationRuleContext<TEntity, TInfo, TContext, TValue> context)
         {
             using (_loggers.TraceMethod(this))
             {
-                return _validationRules.Where(x => x.Conditions.All(c => c(context))).ToArray();
+                var validators = new List<ValidationRuleValidator>();
+
+                foreach(var validationRule in _validationRules)
+                {
+                    bool canAdd = true;
+                    foreach(var condition in validationRule.Conditions)
+                    {
+                        if (!(await condition(context))) {
+                            canAdd = false;
+                            break;
+                        }
+                    }
+
+                    if (canAdd)
+                    {
+                        validators.Add(validationRule);
+                    }
+                }
+
+                return validators.ToArray();
             }
         }
 
@@ -114,15 +168,15 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
             /// <summary>
             /// Predicates that tell when the rule is allowed to run.
             /// </summary>
-            public List<Predicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>>> Conditions { get; } = new List<Predicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>>>();
+            public List<AsyncPredicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>>> Conditions { get; } = new List<AsyncPredicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>>>();
             /// <summary>
             /// Predicate that tells if the <see cref="IValidationRuleContext{TEntity, TInfo, TContext, TValue}.Value"/> is valid or not.
             /// </summary>
-            public Predicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>> Validator { get; set; }
+            public AsyncPredicate<IValidationRuleContext<TEntity, TInfo, TContext, TValue>> Validator { get; set; }
             /// <summary>
             /// Function that creates the error in case that the value is not valid.
             /// </summary>
-            public Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> ErrorContructor { get; set; }
+            public AsyncFunc<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> ErrorContructor { get; set; }
 
         }
 

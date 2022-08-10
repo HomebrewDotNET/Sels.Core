@@ -1302,6 +1302,37 @@
             <param name="additionalObjectsToSearch">Optional additional objects to search</param>
             <returns>An enumerator that returns all instances of <typeparamref name="T"/> in <paramref name="objectToSearch"/></returns>
         </member>
+        <member name="T:Sels.Core.Contracts.Validation.IAsyncValidator`2">
+            <summary>
+            Validator that can validate objects of type <typeparamref name="TEntity"/> and returns validation errors of type <typeparamref name="TError"/>.
+            </summary>
+            <typeparam name="TEntity">Type of objects to validate</typeparam>
+            <typeparam name="TError">Type of validation errors to returns</typeparam>
+        </member>
+        <member name="T:Sels.Core.Contracts.Validation.IAsyncValidator`3">
+            <summary>
+            Validator that can validate objects of type <typeparamref name="TEntity"/> and returns validation errors of type <typeparamref name="TError"/>.
+            </summary>
+            <typeparam name="TEntity">Type of objects to validate</typeparam>
+            <typeparam name="TError">Type of validation errors to returns</typeparam>
+            <typeparam name="TContext">Type of optional context to modify the behaviour of this validator</typeparam>
+        </member>
+        <member name="M:Sels.Core.Contracts.Validation.IAsyncValidator`3.ValidateAsync(`0,`2)">
+            <summary>
+            Validates <paramref name="entity"/> and returns all validation errors.
+            </summary>
+            <param name="entity">Entity to validate</param>
+            <param name="context">Optional context to modify the behaviour of the validator</param>
+            <returns>All validation errors for <paramref name="entity"/></returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Validation.IAsyncValidator`3.ValidateAsync(System.Collections.Generic.IEnumerable{`0},`2)">
+            <summary>
+            Validates <paramref name="entities"/> and returns all validation errors.
+            </summary>
+            <param name="entities">Entities to validate</param>
+            <param name="context">Optional context to modify the behaviour of the validator</param>
+            <returns>All validation errors for <paramref name="entities"/></returns>
+        </member>
         <member name="T:Sels.Core.Contracts.Validation.IValidator`2">
             <summary>
             Validator that can validate objects of type <typeparamref name="TEntity"/> and returns validation errors of type <typeparamref name="TError"/>.
@@ -1726,6 +1757,16 @@
             The object returned will be the used for the next item. When null is returned the last non-null object is returned</param>
             <returns><paramref name="source"/> or the last object returned by <paramref name="action"/></returns>
         </member>
+        <member name="M:Sels.Core.Extensions.Fluent.FluentExtensions.When``1(``0,System.Boolean,System.Func{``0,``0})">
+            <summary>
+            Executes <paramref name="action"/> when <paramref name="condition"/> is set to true.
+            </summary>
+            <typeparam name="T">Type of the fluent object</typeparam>
+            <param name="source">The fluent object to perform the actions on</param>
+            <param name="condition">Boolean that indicates if we can execute <paramref name="action"/></param>
+            <param name="action">The action to execute with <paramref name="source"/></param>
+            <returns><paramref name="source"/> or the return value from <paramref name="action"/> when <paramref name="condition"/> was true</returns>
+        </member>
         <member name="T:Sels.Core.Extensions.GenericExtensions">
             <summary>
             Contains generic extension methods.
@@ -1789,6 +1830,16 @@
             <typeparam name="T">Type of the element</typeparam>
             <param name="value">The value to check</param>
             <returns>True if <paramref name="value"/> is not null and contains at least 1 element, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Extensions.GenericExtensions.CopyTo``1(System.Object,``0,System.Reflection.BindingFlags)">
+            <summary>
+            Shallow copies all properties on <paramref name="source"/> to matching properties on <paramref name="source"/>.
+            </summary>
+            <typeparam name="T">Type of the object to copy to</typeparam>
+            <param name="source">The source object to copy from</param>
+            <param name="target">The target object to copy to</param>
+            <param name="bindingFlags">Binding flags of which properties to copy from</param>
+            <returns><paramref name="source"/></returns>
         </member>
         <member name="T:Sels.Core.Extensions.Hashing.HashingExtensions">
             <summary>
@@ -3396,6 +3447,19 @@
             <param name="type">Type to check</param>
             <returns>Boolean indicating if <paramref name="type"/> and <typeparamref name="T"/> are the same type</returns>
         </member>
+        <member name="T:Sels.Core.Extensions.Tasks.TaskExtensions">
+            <summary>
+            Contains extenion methods for wrkong with <see cref="T:System.Threading.Tasks.Task"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Tasks.TaskExtensions.ToTaskResult``1(``0)">
+            <summary>
+            Creates a task result using <paramref name="result"/>.
+            </summary>
+            <typeparam name="T">Type of the result</typeparam>
+            <param name="result">The result to wrap</param>
+            <returns>Task wrapped around <paramref name="result"/></returns>
+        </member>
         <member name="T:Sels.Core.Extensions.ArgumentValidationExtensions">
             <summary>
             Contains extensions for validating the argumetns supplied to methods/constructors.
@@ -3926,6 +3990,21 @@
         <member name="P:Sels.Core.Models.Disposables.NullDisposer.Instance">
             <summary>
             The singleton instance.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Models.Sorting.SortOrder">
+            <summary>
+            Contains in what order to sort something.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Models.Sorting.SortOrder.Ascending">
+            <summary>
+            Sort by smallest first.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Models.Sorting.SortOrder.Descending">
+            <summary>
+            Sort by largest first.
             </summary>
         </member>
         <member name="T:System.IO.DirectoryInfoExtensions">

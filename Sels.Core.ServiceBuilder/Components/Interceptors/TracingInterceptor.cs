@@ -55,7 +55,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
 
             try
             {
-                using (_methodTracer != null && _methodTracer.CanTrace(invocation) ? loggers.TraceMethod(invocation.MethodInvocationTarget.ReflectedType, invocation.MethodInvocationTarget.Name) : NullDisposer.Instance)
+                using (_methodTracer != null && _methodTracer.CanTrace(invocation) ? loggers.TraceMethod(invocation.TargetType, invocation.Method.Name) : NullDisposer.Instance)
                 {
                     await proceed(invocation, proceedInfo);
                 }               

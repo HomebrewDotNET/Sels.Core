@@ -1,0 +1,71 @@
+﻿@using System.Linq.Expressions
+@using Sels.Core.Localization
+@using Sels.Core.Web.Blazor.Models.Localization
+@using System.Reflection
+@using Sels.Core.Extensions.Reflection;
+@typeparam TModel
+@typeparam TValue
+@attribute [CascadingTypeParameter(nameof(TModel))]
+
+@if(_getter != null && _property != null)
+{
+    <Header TModel="TModel" ColumnId="@_property.Name" CssClass="@HeaderCss" Order="Order">
+        @Localizer.Object.Get(_property, LocalizationContext?.Culture?.Name, null, x => x.MissingKeySettings = MissingLocalizationSettings.Default)
+    </Header>
+    <Column TModel="TModel" CssClass="@ColumnCss" Order="Order">
+        @_getter(context)
+    </Column>
+}
+
+@code {
+    private Func<TModel, string> _getter;
+    private PropertyInfo _property;
+
+    /// <summary>
+    /// Optional localization context cascaded from a parent.
+    /// </summary>
+    [CascadingParameter(Name = "LocalizationContext")]
+    public LocalizationContext LocalizationContext { get; set; }
+    /// <summary>
+    /// Expression that points to the property to create a header and label for.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<TModel, TValue>> For { get; set; }
+    /// <summary>
+    /// Optional delegate that transforms the property value into a string to render.
+    /// </summary>
+    [Parameter]
+    public Func<TValue, string>? Display { get; set; }
+    /// <summary>
+    /// Used to determine the order. Lower means rendered first.
+    /// </summary>
+    [Parameter]
+    public int Order { get; set; } = 1;
+    /// <summary>
+    /// Optional css for the th element.
+    /// </summary>
+    [Parameter]
+    public string HeaderCss { get; set; }
+    /// <summary>
+    /// Optional css for the td element.
+    /// </summary>
+    [Parameter]
+    public string ColumnCss { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        For.ValidateArgument(nameof(For));
+        _property = For.ExtractProperty(nameof(For));
+        var propertyGetter = For.Compile();
+
+        _getter = new Func<TModel, string>(x =>
+        {
+            var value = propertyGetter(x);
+            if (value == null) return string.Empty;
+            return Display != null ? Display(value) : value.ToString();
+        });
+    }
+}

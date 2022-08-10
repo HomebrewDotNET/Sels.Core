@@ -14,6 +14,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sels.ObjectValidationFramework.Templates.Profile
 {
@@ -323,13 +324,23 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         /// <returns>All validation errors for <paramref name="objectToValidate"/></returns>
         public TError[] Validate(object objectToValidate, object context = null)
         {
+            return ValidateAsync(objectToValidate, context).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Validates <paramref name="objectToValidate"/> using the configuration in the profile and returns alls validation errors.
+        /// </summary>
+        /// <param name="objectToValidate">The object to validate</param>
+        /// <param name="context">Optional context that can be used by the validation configuration</param>
+        /// <returns>All validation errors for <paramref name="objectToValidate"/></returns>
+        public async Task<TError[]> ValidateAsync(object objectToValidate, object context = null)
+        {
             using (_loggers.TraceMethod(this))
             {
                 var profileContext = new ProfileValidationContext(context);
 
                 using(_loggers.TraceAction($"Validating root object <{objectToValidate}>", x => $"Validated root object <{objectToValidate}> by checking {profileContext.History.Count} objects which returned {profileContext.Errors.Count} errors in {x.PrintTotalMs()}"))
                 {
-                    Validate(profileContext, objectToValidate, null);
+                    await Validate(profileContext, objectToValidate, null);
 
                     var objectType = objectToValidate.GetType();
                     if (!_specialIgnoredCollectionTypes.Any(x => objectType.IsAssignableTo(x)) && objectType.IsContainer())
@@ -338,7 +349,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                         var counter = 0;
                         foreach (var element in objectToValidate.Cast<IEnumerable>())
                         {
-                            Validate(profileContext, element, counter);
+                            await Validate(profileContext, element, counter);
                         }
                         counter++;
                     }
@@ -348,7 +359,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             }
         }
 
-        private void Validate(ProfileValidationContext profileContext, object objectToValidate, int? elementIndex = null)
+        private async Task Validate(ProfileValidationContext profileContext, object objectToValidate, int? elementIndex = null)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -376,7 +387,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                 {
                     var validator = validators[i];
                     _loggers.Debug($"Using validator {i+1} for <{objectToValidate}>");
-                    var errors = validator.Validate(objectToValidate, profileContext.Context, elementIndex, currentParents);
+                    var errors = await validator.Validate(objectToValidate, profileContext.Context, elementIndex, currentParents);
                     _loggers.Debug($"Validator {i + 1} for <{objectToValidate}> returned {errors.Length} errors");
                     profileContext.Errors.AddRange(errors);
                 }
@@ -405,7 +416,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                                     var counter = 0;
                                     foreach (var element in value.Cast<IEnumerable>())
                                     {
-                                        Validate(profileContext, element, counter);
+                                        await Validate(profileContext, element, counter);
                                     }
                                     counter++;
                                 }
@@ -414,7 +425,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
                                 if (isAllowedForPropertyFallthough)
                                 {
                                     _loggers.Debug($"Triggering fallthough for property {property.Name} on <{objectToValidate}>.");
-                                    Validate(profileContext, value, 0);
+                                    await Validate(profileContext, value, 0);
                                 }
                                 else
                                 {
@@ -463,7 +474,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         /// <summary>
         /// Import everything
         /// </summary>
-        All = IgnoredForFallthrough + IgnoredForCollections + Configuration,
+        All = IgnoredForFallthrough | IgnoredForCollections | Configuration,
         /// <summary>
         /// Impors all conditions for what properties to ignore for fallthough.
         /// </summary>

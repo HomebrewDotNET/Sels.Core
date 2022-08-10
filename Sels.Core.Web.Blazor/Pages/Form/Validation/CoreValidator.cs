@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Web.Blazor.Exceptions;
 
-namespace Sels.Core.Web.Blazor.Pages.Form
+namespace Sels.Core.Web.Blazor.Pages.Form.Validation
 {
     /// <summary>
     /// Validator for an edit form that delegates validation to <see cref="IValidator{TEntity, TError, TContext}"/>.
@@ -17,28 +17,14 @@ namespace Sels.Core.Web.Blazor.Pages.Form
     /// <typeparam name="TEntity">Type of objects to validate</typeparam>
     /// <typeparam name="TError">Type of validation errors to returns</typeparam>
     /// <typeparam name="TContext">Type of optional context to modify the behaviour of this validator</typeparam>
-    public class CoreContextValidator<TEntity, TError, TContext> : ComponentBase
+    public class CoreContextValidator<TEntity, TError, TContext> : ValidationCleaner
     {
-        // Constants
-        /// <summary>
-        /// The name of the field for validation messages not tied to a field.
-        /// </summary>
-        public const string GlobalFieldName = BlazorConstants.Form.GlobalFieldName;
-
-        // Fields
-        private ValidationMessageStore? _messageStore;
-
         // Properties
         /// <summary>
         /// The validator that will be used to validate the form model
         /// </summary>
         [Inject]
         public IValidator<TEntity, TError, TContext> Validator { get; set; }
-        /// <summary>
-        /// The edit context of the parent component.
-        /// </summary>
-        [CascadingParameter]
-        public EditContext Context { get; set; }
         /// <summary>
         /// Optional delegate for getting the error message to display selected from <typeparamref name="TError"/>. Default is <see cref="object.ToString()"/>.
         /// </summary>
@@ -61,28 +47,13 @@ namespace Sels.Core.Web.Blazor.Pages.Form
             base.OnInitialized();
 
             MissingCascadingParameterException.ThrowOnNull(this, Context);
-            _messageStore = new ValidationMessageStore(Context);
-
-            Context.OnValidationRequested += (s, e) =>
-            {
-                _messageStore?.Clear();
-                Context.NotifyValidationStateChanged();
-            };
-                
-            Context.OnFieldChanged += (s, e) =>
-            {
-                _messageStore?.Clear(e.FieldIdentifier);
-                // Clear global
-                _messageStore.Clear(Context.Field(GlobalFieldName));
-                Context.NotifyValidationStateChanged();
-            };
             Context.OnValidationRequested += HandleValidation;
         }
 
         private void HandleValidation(object? sender, ValidationRequestedEventArgs args)
         {
             args.ValidateArgument(nameof(args));
-            _messageStore.Clear();
+            MessageStore.Clear();
 
             var model = Context.Model.Cast<TEntity>();
             var errors = Validator.Validate(model, GetValidationContext != null ? GetValidationContext(model) : default);
@@ -94,7 +65,7 @@ namespace Sels.Core.Web.Blazor.Pages.Form
                     var fieldName = (GetFieldForError != null ? GetFieldForError(error) : null) ?? GlobalFieldName;
                     var message = GetErrorMessage != null ? GetErrorMessage(error) : error.ToString();
 
-                    _messageStore.Add(Context.Field(fieldName), message);
+                    MessageStore.Add(Context.Field(fieldName), message);
                 }
             }
 

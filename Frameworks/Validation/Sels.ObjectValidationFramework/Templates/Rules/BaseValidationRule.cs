@@ -12,6 +12,8 @@ using Sels.ObjectValidationFramework.Components.Validators;
 using System.Linq;
 using System.Linq.Expressions;
 using Sels.ObjectValidationFramework.Models;
+using static Sels.Core.Delegates.Async;
+using System.Threading.Tasks;
 
 namespace Sels.ObjectValidationFramework.Templates.Rules
 {
@@ -24,7 +26,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
     {
         // Fields
         protected readonly EntityValidator<TEntity, TError> _validator;
-        protected readonly List<Predicate<IValidationRuleContext<TEntity, object>>> _globalConditions = new List<Predicate<IValidationRuleContext<TEntity, object>>>();
+        protected readonly List<AsyncPredicate<IValidationRuleContext<TEntity, object>>> _globalConditions = new List<AsyncPredicate<IValidationRuleContext<TEntity, object>>>();
         protected readonly IEnumerable<ILogger> _loggers;
 
         // Properties
@@ -37,7 +39,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        internal BaseValidationRule(EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null)
+        internal BaseValidationRule(EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<AsyncPredicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null)
         {
             _validator = validator.ValidateArgument(nameof(validator));
             _loggers = loggers;
@@ -155,6 +157,50 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
                 return _validator.ValidateWhen(condition);
             }
         }
+
+        /// <inhericdoc />
+        public IValidationConfigurator<TEntity, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, object>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+                configurator.ValidateArgument(nameof(configurator));
+
+                return _validator.ValidateWhen(condition, configurator);
+            }
+        }
+
+        /// <inhericdoc />
+        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+                configurator.ValidateArgument(nameof(configurator));
+
+                return _validator.ValidateWhen(condition, configurator);
+            }
+        }
+        /// <inhericdoc />
+        public IValidationConfigurator<TEntity, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, object>> condition)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+
+                return _validator.ValidateWhen(condition);
+            }
+        }
+        /// <inhericdoc />
+        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition)
+        {
+            using (_loggers.TraceMethod(this))
+            {
+                condition.ValidateArgument(nameof(condition));
+
+                return _validator.ValidateWhen(condition);
+            }
+        }
         #endregion
 
         #region Validation
@@ -162,11 +208,19 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         /// If this validation rule is enabled by checking all global conditions against <paramref name="context"/>.
         /// </summary>
         /// <param name="context">Context of the current <typeparamref name="TEntity"/> that is being validated</param>
-        internal bool CanValidate(IValidationRuleContext<TEntity, object> context)
+        internal async Task<bool> CanValidate(IValidationRuleContext<TEntity, object> context)
         {
             using (_loggers.TraceMethod(this))
             {
-                return !_globalConditions.HasValue() || _globalConditions.All(x => x(context));
+                if (_globalConditions.HasValue())
+                {
+                    foreach(var condition in _globalConditions)
+                    {
+                        if (!(await condition(context))) return false;
+                    }
+                }
+
+                return true;
             }
         }
 
@@ -178,7 +232,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         /// <param name="elementIndex">Index of <paramref name="objectToValidate"/> if it was part of a collection. Will be null if it wasn't part of a collection.</param>
         /// <param name="parents">Hierarchy of object if property fallthrough is enabled. The previous element is always the parent of the next element.</param>
         /// <returns>All the validation errors for <paramref name="objectToValidate"/></returns>
-        internal abstract TError[] Validate(TEntity objectToValidate, object context, int? elementIndex = null, Parent[] parents = null);
+        internal abstract Task<TError[]> Validate(TEntity objectToValidate, object context, int? elementIndex = null, Parent[] parents = null);
         #endregion
     }
 

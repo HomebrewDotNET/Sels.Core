@@ -37,7 +37,7 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
             { SelectExpressionPositions.Column, (false, null, Constants.Strings.Comma, false) },
             { SelectExpressionPositions.From, (true, Sql.Clauses.From, null, true) },
             { SelectExpressionPositions.Join, (true, null, Environment.NewLine, false) },
-            { SelectExpressionPositions.Where, (true, Sql.Clauses.Where, Constants.Strings.Space, false) },
+            { SelectExpressionPositions.Where, (true, Sql.Clauses.Where, Constants.Strings.Comma + Sql.LogicOperators.And, false) },
             { SelectExpressionPositions.OrderBy, (true, Sql.Clauses.OrderBy, Constants.Strings.Comma, false) },
             { SelectExpressionPositions.GroupBy, (true, Sql.Clauses.GroupBy, Constants.Strings.Comma, false) },
             { SelectExpressionPositions.After, (true, null, Environment.NewLine, false) },
@@ -47,13 +47,13 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
             { UpdateExpressionPositions.Table, (false, null, new string[] {  Constants.Strings.Comma}, null, false) },
             { UpdateExpressionPositions.Join, (true, null, new string[] {  Environment.NewLine}, null, false) },
             { UpdateExpressionPositions.Set, (true, Sql.Clauses.Set + Constants.Strings.Space, new string[] {  Environment.NewLine , Constants.Strings.Comma }, null, false) },
-            { UpdateExpressionPositions.Where, (true, Sql.Clauses.Where + Constants.Strings.Space, new string[] {  Constants.Strings.Space }, null, false) }
+            { UpdateExpressionPositions.Where, (true, Sql.Clauses.Where + Constants.Strings.Space, new string[] { Constants.Strings.Comma, Sql.LogicOperators.And }, null, false) }
         };
         private static readonly IReadOnlyDictionary<DeleteExpressionPositions, (bool IsNewLine, string? Clause, string? ExpressionJoinValue, bool IsSingleExpression)> _deletePositionConfigs = new Dictionary<DeleteExpressionPositions, (bool IsNewLine, string? Clause, string? ExpressionJoinValue, bool IsSingleExpression)>()
         {
             { DeleteExpressionPositions.From, (true, Sql.Clauses.From, Constants.Strings.Comma, false) },
             { DeleteExpressionPositions.Join, (true, null, Environment.NewLine, false) },
-            { DeleteExpressionPositions.Where, (true, Sql.Clauses.Where, Constants.Strings.Space, false) },
+            { DeleteExpressionPositions.Where, (true, Sql.Clauses.Where, Constants.Strings.Comma + Sql.LogicOperators.And, false) },
             { DeleteExpressionPositions.After, (true, null, Environment.NewLine, false) },
         };
         #endregion
