@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Web.Bootstrap.Components
+namespace Sels.Core.Web.Bootstrap.V5.Components
 {
     /// <summary>
     /// The sizes for a bootstrap modal.

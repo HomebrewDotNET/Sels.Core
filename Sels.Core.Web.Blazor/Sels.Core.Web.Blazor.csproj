@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -61,7 +61,7 @@
     <ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
     <ProjectReference Include="..\Sels.Core.Localization\Sels.Core.Localization.csproj" />
     <ProjectReference Include="..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
-    <ProjectReference Include="..\Sels.Core.Web.Bootstrap\Sels.Core.Web.Bootstrap.csproj" />
+    <ProjectReference Include="..\Sels.Core.Web.Bootstrap.V5\Sels.Core.Web.Bootstrap.V5.csproj" />
     <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
   </ItemGroup>
 

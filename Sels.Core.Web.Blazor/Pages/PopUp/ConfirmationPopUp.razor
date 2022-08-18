@@ -1,4 +1,5 @@
-﻿@using Sels.Core.Web.Bootstrap.Components
+﻿@using Sels.Core.Web.Bootstrap.V5.Components
+@using Sels.Core.Web.Bootstrap.V5.Helpers
 @using Microsoft.AspNetCore.Components.Web
 @typeparam TArg
 
@@ -10,8 +11,8 @@
         <p>@_content</p>
     </Body>
     <Footer>
-        <button class="btn @CancelButtonType.ToCss()" @onclick="Cancel">@CancelButtonText</button>
-        <button class="btn @ConfirmButtonType.ToCss()" @onclick="Confirm">@ConfirmButtonText</button>
+        <button class="btn @CancelButtonColor.ToCss()" @onclick="Cancel">@CancelButtonText</button>
+        <button class="btn @ConfirmButtonColor.ToCss()" @onclick="Confirm">@ConfirmButtonText</button>
     </Footer>
 </Modal>
 
@@ -33,7 +34,7 @@
     /// The type of the cancel button.
     /// </summary>
     [Parameter]
-    public ButtonType CancelButtonType { get; set; } = ButtonType.Secondary;
+    public ButtonColor CancelButtonColor { get; set; } = ButtonColor.Secondary;
     /// <summary>
     /// The text for the confirm button.
     /// </summary>
@@ -43,7 +44,7 @@
     /// The type of the confirm button.
     /// </summary>
     [Parameter]
-    public ButtonType ConfirmButtonType { get; set; } = ButtonType.Primary;
+    public ButtonColor ConfirmButtonColor { get; set; } = ButtonColor.Primary;
 
     // Events
     /// <summary>

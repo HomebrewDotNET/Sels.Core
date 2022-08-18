@@ -54,6 +54,51 @@ namespace Sels.Core
                 /// </summary>
                 public const string ConnectionStrings = "ConnectionStrings";
             }
+            /// <summary>
+            /// Config settings related to logging
+            /// </summary>
+            public static class Logging
+            {
+                /// <summary>
+                /// The logging section name.
+                /// </summary>
+                public const string Name = "Logging";
+                /// <summary>
+                /// The directory where log files are placed.
+                /// </summary>
+                public const string Directory = "Directory";
+                /// <summary>
+                /// The directory where old log files are placed.
+                /// </summary>
+                public const string ArchiveDirectory = "ArchiveDirectory";
+                /// <summary>
+                /// The max file size of log files before a new one is created.
+                /// </summary>
+                public const string MaxFileSize = "MaxFileSize";
+
+                /// <summary>
+                /// The log section related to the log levels of the various logging categories.
+                /// </summary>
+                public static class LogLevel
+                {
+                    /// <summary>
+                    /// The log level section name.
+                    /// </summary>
+                    public const string Name = "Logging";
+                    /// <summary>
+                    /// The name of the default log category used for non-defined categories.
+                    /// </summary>
+                    public const string Default = "Default";
+                    /// <summary>
+                    /// The name of microsoft logging category.
+                    /// </summary>
+                    public const string Microsoft = "Microsoft";
+                    /// <summary>
+                    /// The name of microsoft logging category and all it sub directories.
+                    /// </summary>
+                    public const string MicrosoftAll = Microsoft + "*";
+                }
+            }
         }
 
     }

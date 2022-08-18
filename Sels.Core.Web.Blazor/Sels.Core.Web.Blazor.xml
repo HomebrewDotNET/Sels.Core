@@ -417,7 +417,7 @@
             The text for the cancel button.
             </summary>
         </member>
-        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.CancelButtonType">
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.CancelButtonColor">
             <summary>
             The type of the cancel button.
             </summary>
@@ -427,7 +427,7 @@
             The text for the confirm button.
             </summary>
         </member>
-        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.ConfirmButtonType">
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.ConfirmButtonColor">
             <summary>
             The type of the confirm button.
             </summary>
@@ -924,6 +924,56 @@
         </member>
         <member name="M:Sels.Core.Web.Blazor.Pages.Display.DisplayField`1.OnInitializedAsync">
             <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.Type">
+            <summary>
+            The type of spinner icon to render.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.Color">
+            <summary>
+            The color for the spinner.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.IsSmall">
+            <summary>
+            If the icon needs to be rendered as a small icon.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.ContainerType">
+            <summary>
+            The type of the flex container wrapped around the spinner.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.Direction">
+            <summary>
+            Direction of the flex items in the flex container.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.MainAlignment">
+            <summary>
+            Alignment of the flex items along the main axis.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.CrossAlignment">
+            <summary>
+            Alignment of the flex items along the cros axis.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.CssSpinner">
+            <summary>
+            Optional css for the spinner div.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.CssContainer">
+            <summary>
+            Optional css for the flex container div.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.ChildContent">
+            <summary>
+            Optional content to render in front of the loading icon.
+            </summary>
         </member>
         <member name="P:Sels.Core.Web.Blazor.Pages.Pagination.PageNavigator.Page">
             <summary>

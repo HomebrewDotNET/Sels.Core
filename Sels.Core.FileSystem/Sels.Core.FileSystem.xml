@@ -883,6 +883,20 @@
             </summary>
             <param name="info">Directory info to wrap</param>
         </member>
+        <member name="T:Sels.Core.Contracts.Configuration.ConfigurationExceptions">
+            <summary>
+            Contains extension methods related to reading application configuration.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.ConfigurationExceptions.GetMaxLogFileSize``1(Sels.Core.Contracts.Configuration.IConfigurationService,System.Boolean)">
+            <summary>
+            Reads <see cref="F:Sels.Core.Constants.Configuration.Logging.MaxFileSize"/> from configuration where it it defined in filesize <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of the file size in config</typeparam>
+            <param name="configurationService">Service used to access the application configuration</param>
+            <param name="required">Wether or not the filesize is expected to be set in config. When set to true and it's missing an exception will be thrown</param>
+            <returns>The configured max file size or null if missing</returns>
+        </member>
         <member name="T:Sels.Core.FileSystem.Extensions.FileSizes.FileSizeExtensions">
             <summary>
             Contains extension methods for working with <see cref="T:Sels.Core.FileSystem.Templates.FileSizes.FileSize"/>.

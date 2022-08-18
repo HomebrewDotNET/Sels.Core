@@ -1016,6 +1016,56 @@
             The name of the default connection strings section.
             </summary>
         </member>
+        <member name="T:Sels.Core.Constants.Configuration.Logging">
+            <summary>
+            Config settings related to logging
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Constants.Configuration.Logging.Name">
+            <summary>
+            The logging section name.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Constants.Configuration.Logging.Directory">
+            <summary>
+            The directory where log files are placed.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Constants.Configuration.Logging.ArchiveDirectory">
+            <summary>
+            The directory where old log files are placed.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Constants.Configuration.Logging.MaxFileSize">
+            <summary>
+            The max file size of log files before a new one is created.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Constants.Configuration.Logging.LogLevel">
+            <summary>
+            The log section related to the log levels of the various logging categories.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Constants.Configuration.Logging.LogLevel.Name">
+            <summary>
+            The log level section name.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Constants.Configuration.Logging.LogLevel.Default">
+            <summary>
+            The name of the default log category used for non-defined categories.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Constants.Configuration.Logging.LogLevel.Microsoft">
+            <summary>
+            The name of microsoft logging category.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Constants.Configuration.Logging.LogLevel.MicrosoftAll">
+            <summary>
+            The name of microsoft logging category and all it sub directories.
+            </summary>
+        </member>
         <member name="T:Sels.Core.Contracts.Configuration.IConfigurationService">
             <summary>
             Service for accessing application configuration.
@@ -1141,6 +1191,44 @@
             <summary>
             An <see cref="T:Sels.Core.Exceptions.Configuration.ConfigurationMissingException"/> will be thrown when the requested configuration is missing.
             </summary>
+        </member>
+        <member name="T:Sels.Core.Contracts.Configuration.ConfigurationExtenions">
+            <summary>
+            Contains extension methods for reading configuration.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.ConfigurationExtenions.GetLoggingDirectory(Sels.Core.Contracts.Configuration.IConfigurationService,System.Boolean)">
+            <summary>
+            Reads <see cref="F:Sels.Core.Constants.Configuration.Logging.Directory"/> from configuration.
+            
+            </summary>
+            <param name="configurationService">Service used to access the application configuration</param>
+            <param name="required">Wether or not the directory is expected to be set in config. When set to true and it's missing an exception will be thrown</param>
+            <returns>The configured logging directory</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.ConfigurationExtenions.GetArchiveLoggingDirectory(Sels.Core.Contracts.Configuration.IConfigurationService,System.Boolean)">
+            <summary>
+            Reads <see cref="F:Sels.Core.Constants.Configuration.Logging.ArchiveDirectory"/> from configuration.
+            </summary>
+            <param name="configurationService">Service used to access the application configuration</param>
+            <param name="required">Wether or not the directory is expected to be set in config. When set to true and it's missing an exception will be thrown</param>
+            <returns>The configured archive logging directory</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.ConfigurationExtenions.GetMaxLogFileSize(Sels.Core.Contracts.Configuration.IConfigurationService,System.Boolean)">
+            <summary>
+            Reads <see cref="F:Sels.Core.Constants.Configuration.Logging.MaxFileSize"/> from configuration.
+            </summary>
+            <param name="configurationService">Service used to access the application configuration</param>
+            <param name="required">Wether or not the filesize is expected to be set in config. When set to true and it's missing an exception will be thrown</param>
+            <returns>The configured max file size</returns>
+        </member>
+        <member name="M:Sels.Core.Contracts.Configuration.ConfigurationExtenions.GetDefaultLogLevel(Sels.Core.Contracts.Configuration.IConfigurationService,Microsoft.Extensions.Logging.LogLevel)">
+            <summary>
+            Reads <see cref="F:Sels.Core.Constants.Configuration.Logging.LogLevel.Default"/> from configuration.
+            </summary>
+            <param name="configurationService">Service used to access the application configuration</param>
+            <param name="defaultLogLevel">The default log level to return when missing from config</param>
+            <returns>The configured default log level</returns>
         </member>
         <member name="T:Sels.Core.Contracts.Factory.IFactory`1">
             <summary>
