@@ -22,14 +22,14 @@
             Uses localization defined in all resource contained within <paramref name="assembly"/>.
             </summary>
             <param name="assembly">The assembly to scan</param>
-            <param name="canLoad">Optional delegate that checks if the resource can be loaded.  When set to null everything is loaded</param>
+            <param name="canLoad">Optional delegate that checks if the resource can be loaded.  When set to null everything is loaded. Arg is the resource name</param>
             <returns>Current builder for method chaining</returns>
         </member>
         <member name="M:Sels.Core.Localization.ILocalizationBuilder.ScanInAllLoaded(Sels.Core.Delegates.Condition{System.Reflection.Assembly,System.String})">
             <summary>
             Uses localization defined in all resources in all currently loaded assemblies.
             </summary>
-            <param name="canLoad">Optional delegate that checks if the resource can be loaded.  When set to null everything is loaded</param>
+            <param name="canLoad">Optional delegate that checks if the resource can be loaded.  When set to null everything is loaded. First arg is the assembly, second arg is the resource name</param>
             <returns>Current builder for method chaining</returns>
         </member>
         <member name="M:Sels.Core.Localization.ILocalizationBuilder.UseLogger(Microsoft.Extensions.Logging.ILogger)">

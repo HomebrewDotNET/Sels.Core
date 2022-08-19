@@ -223,6 +223,31 @@
             Cancellation token that gets cancelled when the page is navigated away from. 
             </summary>
         </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BasePage.Rendered">
+            <summary>
+            If the component has been rendered for the first time.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.GetValue``1(System.String)">
+            <summary>
+            Gets the value for property with name <paramref name="property"/>.
+            </summary>
+            <typeparam name="T">Type of the property value</typeparam>
+            <param name="property">The name of the property. When not provided the compiler will fill out the property name</param>
+            <returns>The value for property with name <paramref name="property"/></returns>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.SetValue``1(``0,System.String)">
+            <summary>
+            Sets the value for property with name <paramref name="property"/>.
+            Calls <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.StateHasChanged"/> so a render is triggered.
+            </summary>
+            <typeparam name="T">Type of the property value</typeparam>
+            <param name="value">The value to set</param>
+            <param name="property">The name of the property. When not provided the compiler will fill out the property name</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.OnAfterRender(System.Boolean)">
+            <inheritdoc/>
+        </member>
         <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.Dispose">
             <inheritdoc/>
         </member>
@@ -895,6 +920,54 @@
             </summary>
         </member>
         <member name="M:Sels.Core.Web.Blazor.Pages.Table.RowComponent`1.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.ChildContent">
+            <summary>
+            The content of the button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.IsSubmit">
+            <summary>
+            If the button is a submit button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.IsExecuting">
+            <summary>
+            Indicates that the action caused by the button is executing.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.ButtonColor">
+            <summary>
+            The color of the button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.TextColor">
+            <summary>
+            The color of the button text.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.CssButton">
+            <summary>
+            Optional css for the button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.SpinnerType">
+            <summary>
+            The type of the loading icon that gets displayed when <see cref="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.IsExecuting" /> is set to true .
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.IsExecutingChanged">
+            <summary>
+            Event that gets raised when <see cref="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.IsExecuting" /> changes.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.OnClick">
+            <summary>
+            Event that gets raised when the button gets clicked.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BootstrapButton.OnInitialized">
             <inheritdoc />
         </member>
         <member name="P:Sels.Core.Web.Blazor.Pages.Display.DisplayField`1.LocalizationContext">

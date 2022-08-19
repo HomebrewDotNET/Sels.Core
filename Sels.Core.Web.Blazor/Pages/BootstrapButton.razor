@@ -1,0 +1,77 @@
+﻿@using Sels.Core.Web.Bootstrap.V5.Components
+@using Sels.Core.Web.Bootstrap.V5.Models.Components
+@using Sels.Core.Web.Bootstrap.V5.Utilities
+@using Microsoft.AspNetCore.Components.Web
+
+@if(ChildContent != null)
+{
+    <button class="btn @ButtonColor.ToCss() @TextColor.ToCss() @CssButton" type="@(IsSubmit ? "submit" : "button")" disabled="@IsExecuting" @onclick="OnButtonClick">
+        @if (IsExecuting)
+        {
+            <span class="@SpinnerType.ToCss(true) me-1" role="status" aria-hidden="true"></span>
+        }
+        @ChildContent(IsExecuting)
+    </button>
+}
+
+@code {
+    /// <summary>
+    /// The content of the button.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<bool> ChildContent { get; set; }
+    /// <summary>
+    /// If the button is a submit button.
+    /// </summary>
+    [Parameter]
+    public bool IsSubmit { get; set; }
+    /// <summary>
+    /// Indicates that the action caused by the button is executing.
+    /// </summary>
+    [Parameter]
+    public bool IsExecuting { get; set; } = false;
+    /// <summary>
+    /// The color of the button.
+    /// </summary>
+    [Parameter]
+    public ButtonColor ButtonColor { get; set; } = ButtonColor.None;
+    /// <summary>
+    /// The color of the button text.
+    /// </summary>
+    [Parameter]
+    public TextColor TextColor { get; set; }
+    /// <summary>
+    /// Optional css for the button.
+    /// </summary>
+    [Parameter]
+    public string? CssButton { get; set; }
+    /// <summary>
+    /// The type of the loading icon that gets displayed when <see cref="IsExecuting" /> is set to true .
+    /// </summary>
+    [Parameter]
+    public SpinnerType SpinnerType { get; set; } = SpinnerType.Grow;
+
+    /// <summary>
+    /// Event that gets raised when <see cref="IsExecuting" /> changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> IsExecutingChanged { get; set; }
+    /// <summary>
+    /// Event that gets raised when the button gets clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        ChildContent.ValidateArgument(nameof(ChildContent));
+    }
+
+    private async Task OnButtonClick()
+    {
+        if (!IsExecuting) await OnClick.InvokeAsync();
+    }
+}

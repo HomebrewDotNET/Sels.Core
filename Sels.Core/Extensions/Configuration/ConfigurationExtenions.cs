@@ -71,7 +71,7 @@ namespace Sels.Core.Contracts.Configuration
             var loglevel = configurationService
                     .ValidateArgument(nameof(configurationService))
                     .Get<LogLevel?>(Constants.Configuration.Logging.LogLevel.Default,
-                        x => x.FromSection(Constants.Configuration.Logging.LogLevel.Name)
+                        x => x.FromSection(Constants.Configuration.Logging.Name, Constants.Configuration.Logging.LogLevel.Name)
                               .SetDefault(defaultLogLevel)
                         , ConfigurationSettings.None);
             return loglevel.HasValue ? loglevel.Value : LogLevel.Information;

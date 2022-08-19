@@ -29,13 +29,13 @@ namespace Sels.Core.Localization
         /// Uses localization defined in all resource contained within <paramref name="assembly"/>.
         /// </summary>
         /// <param name="assembly">The assembly to scan</param>
-        /// <param name="canLoad">Optional delegate that checks if the resource can be loaded.  When set to null everything is loaded</param>
+        /// <param name="canLoad">Optional delegate that checks if the resource can be loaded.  When set to null everything is loaded. Arg is the resource name</param>
         /// <returns>Current builder for method chaining</returns>
         ILocalizationBuilder ScanIn(Assembly assembly, Predicate<string>? canLoad = null);
         /// <summary>
         /// Uses localization defined in all resources in all currently loaded assemblies.
         /// </summary>
-        /// <param name="canLoad">Optional delegate that checks if the resource can be loaded.  When set to null everything is loaded</param>
+        /// <param name="canLoad">Optional delegate that checks if the resource can be loaded.  When set to null everything is loaded. First arg is the assembly, second arg is the resource name</param>
         /// <returns>Current builder for method chaining</returns>
         ILocalizationBuilder ScanInAllLoaded(Condition<Assembly, string>? canLoad = null);
         #endregion

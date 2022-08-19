@@ -84,7 +84,7 @@ namespace Sels.Core
                     /// <summary>
                     /// The log level section name.
                     /// </summary>
-                    public const string Name = "Logging";
+                    public const string Name = "LogLevel";
                     /// <summary>
                     /// The name of the default log category used for non-defined categories.
                     /// </summary>

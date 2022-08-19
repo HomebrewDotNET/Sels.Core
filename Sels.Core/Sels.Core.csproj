@@ -47,12 +47,15 @@ Used by projects maintained here: https://github.com/Jenssels1998
 		<Compile Remove="Components\Execution\**" />
 		<Compile Remove="Components\Newtonsoft\**" />
 		<Compile Remove="Contracts\Conversion\**" />
+		<Compile Remove="Templates\**" />
 		<EmbeddedResource Remove="Components\Execution\**" />
 		<EmbeddedResource Remove="Components\Newtonsoft\**" />
 		<EmbeddedResource Remove="Contracts\Conversion\**" />
+		<EmbeddedResource Remove="Templates\**" />
 		<None Remove="Components\Execution\**" />
 		<None Remove="Components\Newtonsoft\**" />
 		<None Remove="Contracts\Conversion\**" />
+		<None Remove="Templates\**" />
 	</ItemGroup>
 
   <ItemGroup>
@@ -67,9 +70,5 @@ Used by projects maintained here: https://github.com/Jenssels1998
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
   </ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Templates\" />
-	</ItemGroup>
 
 </Project>
