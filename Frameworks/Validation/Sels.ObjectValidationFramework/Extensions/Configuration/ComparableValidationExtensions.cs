@@ -29,6 +29,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
             comparator.ValidateArgument(nameof(comparator));
+            comparator.ValidateArgumentAssignableTo(nameof(comparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(comparator) > 0, errorConstructor);
         }
@@ -48,6 +49,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         {
             configurator.ValidateArgument(nameof(configurator));
             comparator.ValidateArgument(nameof(comparator));
+            comparator.ValidateArgumentAssignableTo(nameof(comparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(comparator) > 0, info => $"{info.GetFullDisplayNameDynamically(includeParents)} must be larger than <{comparator}>. Was <{info.Value}>");
         }
@@ -69,6 +71,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
             comparator.ValidateArgument(nameof(comparator));
+            comparator.ValidateArgumentAssignableTo(nameof(comparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(comparator) >= 0, errorConstructor);
         }
@@ -88,6 +91,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         {
             configurator.ValidateArgument(nameof(configurator));
             comparator.ValidateArgument(nameof(comparator));
+            comparator.ValidateArgumentAssignableTo(nameof(comparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(comparator) >= 0, info => $"{info.GetFullDisplayNameDynamically(includeParents)} must be larger or equal to <{comparator}>. Was <{info.Value}>");
         }
@@ -109,6 +113,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
             comparator.ValidateArgument(nameof(comparator));
+            comparator.ValidateArgumentAssignableTo(nameof(comparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(comparator) < 0, errorConstructor);
         }
@@ -128,6 +133,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         {
             configurator.ValidateArgument(nameof(configurator));
             comparator.ValidateArgument(nameof(comparator));
+            comparator.ValidateArgumentAssignableTo(nameof(comparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(comparator) < 0, info => $"{info.GetFullDisplayNameDynamically(includeParents)} must be smaller than <{comparator}>. Was <{info.Value}>");
         }
@@ -149,6 +155,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
             comparator.ValidateArgument(nameof(comparator));
+            comparator.ValidateArgumentAssignableTo(nameof(comparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(comparator) <= 0, errorConstructor);
         }
@@ -168,6 +175,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         {
             configurator.ValidateArgument(nameof(configurator));
             comparator.ValidateArgument(nameof(comparator));
+            comparator.ValidateArgumentAssignableTo(nameof(comparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(comparator) <= 0, info => $"{info.GetFullDisplayNameDynamically(includeParents)} must be smaller or equal to <{comparator}>. Was <{info.Value}>");
         }
@@ -191,6 +199,8 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             errorConstructor.ValidateArgument(nameof(errorConstructor));
             minComparator.ValidateArgument(nameof(minComparator));
             maxComparator.ValidateArgument(nameof(maxComparator));
+            minComparator.ValidateArgumentAssignableTo(nameof(minComparator), typeof(TValue));
+            maxComparator.ValidateArgumentAssignableTo(nameof(maxComparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(minComparator) > 0 && info.Value.CompareTo(maxComparator) < 0, errorConstructor);
         }
@@ -212,6 +222,8 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             configurator.ValidateArgument(nameof(configurator));
             minComparator.ValidateArgument(nameof(minComparator));
             maxComparator.ValidateArgument(nameof(maxComparator));
+            minComparator.ValidateArgumentAssignableTo(nameof(minComparator), typeof(TValue));
+            maxComparator.ValidateArgumentAssignableTo(nameof(maxComparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(minComparator) > 0 && info.Value.CompareTo(maxComparator) < 0, info => $"{info.GetFullDisplayNameDynamically(includeParents)} must be larger than <{minComparator}> and smaller than <{maxComparator}>. Was <{info.Value}>");
         }
@@ -235,6 +247,8 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             errorConstructor.ValidateArgument(nameof(errorConstructor));
             minComparator.ValidateArgument(nameof(minComparator));
             maxComparator.ValidateArgument(nameof(maxComparator));
+            minComparator.ValidateArgumentAssignableTo(nameof(minComparator), typeof(TValue));
+            maxComparator.ValidateArgumentAssignableTo(nameof(maxComparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(minComparator) >= 0 && info.Value.CompareTo(maxComparator) <= 0, errorConstructor);
         }
@@ -256,6 +270,8 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             configurator.ValidateArgument(nameof(configurator));
             minComparator.ValidateArgument(nameof(minComparator));
             maxComparator.ValidateArgument(nameof(maxComparator));
+            minComparator.ValidateArgumentAssignableTo(nameof(minComparator), typeof(TValue));
+            maxComparator.ValidateArgumentAssignableTo(nameof(maxComparator), typeof(TValue));
 
             return configurator.ValidIf(info => info.Value.CompareTo(minComparator) >= 0 && info.Value.CompareTo(maxComparator) <= 0, info => $"{info.GetFullDisplayNameDynamically(includeParents)} must be larger or equal to <{minComparator}> and smaller or equal to <{maxComparator}>. Was <{info.Value}>");
         }

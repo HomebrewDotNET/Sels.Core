@@ -68,6 +68,6 @@ namespace Sels.Core.Mediator.Models.Messages.State
         /// <summary>
         /// Existing object was deleted.
         /// </summary>
-        Delete
+        Deleted
     }
 }

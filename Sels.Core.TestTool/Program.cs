@@ -22,6 +22,8 @@ using System.Threading.Tasks;
 using Sels.Core.Components.IoC;
 using Sels.Core.Contracts.Configuration;
 using Sels.Core.Components.Configuration;
+using Sels.Core.Deployment;
+using Sels.Core.Data.MySQL.Models;
 
 namespace Sels.Core.TestTool
 {
@@ -30,7 +32,7 @@ namespace Sels.Core.TestTool
         static void Main(string[] args)
         {
             Helper.Console.Run(() => {
-                TestInterceptors();
+                TestEnvironmentParser();
             });
         }
 
@@ -74,6 +76,19 @@ namespace Sels.Core.TestTool
             messageSubscriber.Unsubscribe<string>(handler);
             received = messager.SendAsync(new object(), "Second message from messager").Result;
             Console.WriteLine($"Message received by <{received}> subscribers");
+        }
+
+        internal static void TestEnvironmentParser()
+        {
+            Environment.SetEnvironmentVariable("ConnectionString.Database", "localhost");
+            Environment.SetEnvironmentVariable("ConnectionString.Port", "3039");
+            Environment.SetEnvironmentVariable("ConnectionString.Username", "jenssels");
+            Environment.SetEnvironmentVariable("ConnectionString.Password", "mysupersecretpassword");
+            Environment.SetEnvironmentVariable("ConnectionString.SslMode", "Required");
+
+            var connectionString = Deploy.Environment.ParseFrom<ConnectionString>(x => x.UsePrefix("ConnectionString"));
+
+            Console.WriteLine($"Parsed <{connectionString}> from environment variables");
         }
 
         internal static ILogger CreateLogger(LogLevel level = LogLevel.Trace)

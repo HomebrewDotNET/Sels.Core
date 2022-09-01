@@ -365,7 +365,7 @@
             Existing object was updated.
             </summary>
         </member>
-        <member name="F:Sels.Core.Mediator.Models.Messages.State.ObjectLifecycle.Delete">
+        <member name="F:Sels.Core.Mediator.Models.Messages.State.ObjectLifecycle.Deleted">
             <summary>
             Existing object was deleted.
             </summary>

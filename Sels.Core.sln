@@ -75,6 +75,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Web.Blazor", "Sel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Web.Bootstrap.V5", "Sels.Core.Web.Bootstrap.V5\Sels.Core.Web.Bootstrap.V5.csproj", "{D0E84F27-E603-4583-BB1F-38756EB8B3B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sels.Core.Deployment", "Sels.Core.Deployment\Sels.Core.Deployment.csproj", "{6DBC5215-55EA-457B-89DE-64E4DB5B4FD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -193,6 +195,10 @@ Global
 		{D0E84F27-E603-4583-BB1F-38756EB8B3B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0E84F27-E603-4583-BB1F-38756EB8B3B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0E84F27-E603-4583-BB1F-38756EB8B3B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DBC5215-55EA-457B-89DE-64E4DB5B4FD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DBC5215-55EA-457B-89DE-64E4DB5B4FD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DBC5215-55EA-457B-89DE-64E4DB5B4FD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DBC5215-55EA-457B-89DE-64E4DB5B4FD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -226,6 +232,7 @@ Global
 		{764E278D-D3B6-4D73-ABDB-F37F28F27CFF} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
 		{4477E7B7-2EF9-4692-9F24-4BE7B0EBC695} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
 		{D0E84F27-E603-4583-BB1F-38756EB8B3B3} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
+		{6DBC5215-55EA-457B-89DE-64E4DB5B4FD4} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9510E55C-920C-4EDB-9F77-D83C4E047361}

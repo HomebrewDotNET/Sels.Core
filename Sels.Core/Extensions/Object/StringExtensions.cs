@@ -214,7 +214,7 @@ namespace System
         {
             values.ValidateArgument(nameof(values));
 
-            return values.JoinString();
+            return values.JoinString(Constants.Strings.Comma);
         }
         /// <summary>
         /// Joins all <see cref="object.ToString"/> strings from <paramref name="values"/> using the environment new line character.

@@ -60,7 +60,32 @@ namespace Sels.Core.Web.Blazor.Pages
         protected override void OnAfterRender(bool firstRender)
         {
             base.OnAfterRender(firstRender);
-            if (firstRender) Rendered = true;
+            if (firstRender)
+            {
+                Rendered = true;
+                OnAfterFirstRender();
+            }
+        }
+        /// <inheritdoc/>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+            if (firstRender) await OnAfterFirstRenderAsync();
+        }
+
+        /// <summary>
+        /// Method invoked after the first render.
+        /// </summary>
+        protected virtual Task OnAfterFirstRenderAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Method invoked after the first render.
+        /// </summary>
+        protected virtual void OnAfterFirstRender()
+        {
         }
 
         /// <inheritdoc/>

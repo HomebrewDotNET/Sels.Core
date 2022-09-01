@@ -248,6 +248,19 @@
         <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.OnAfterRender(System.Boolean)">
             <inheritdoc/>
         </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.OnAfterRenderAsync(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.OnAfterFirstRenderAsync">
+            <summary>
+            Method invoked after the first render.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.OnAfterFirstRender">
+            <summary>
+            Method invoked after the first render.
+            </summary>
+        </member>
         <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.Dispose">
             <inheritdoc/>
         </member>

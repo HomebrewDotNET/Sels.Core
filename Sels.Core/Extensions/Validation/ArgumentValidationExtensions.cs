@@ -317,7 +317,7 @@ namespace Sels.Core.Extensions
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
             if (assignableType == null) throw new ArgumentException($"{nameof(assignableType)} cannot be null");
 
-            return argument.ValidateArgument(x => argument != null && assignableType.IsAssignableFrom(argument.GetType()), $"{parameterName} cannot be null && Type <{assignableType}> must be assignable from the type of argument");
+            return argument.ValidateArgument(x => argument != null && assignableType.IsAssignableFrom(argument.GetType()), $"{parameterName} cannot be null && Type <{assignableType}> must be assignable from type <{typeof(T)}>");
         }
 
         /// <summary>
