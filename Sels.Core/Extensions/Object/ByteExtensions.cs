@@ -43,6 +43,7 @@ namespace Sels.Core.Extensions
         /// </summary>
         /// <param name="sourceObject">The object to get the bytes from</param>
         /// <returns>The bytes from <paramref name="sourceObject"/></returns>
+        [Obsolete]
         public static byte[] GetBytes(this object sourceObject)
         {
             sourceObject.ValidateArgument(nameof(sourceObject));

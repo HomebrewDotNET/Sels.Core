@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace System.IO
 {
@@ -84,6 +86,24 @@ namespace System.IO
             return File.ReadAllText(file.FullName);
         }
         /// <summary>
+        /// Reads the file content from <paramref name="file"/>.
+        /// </summary>
+        /// <param name="file">File to read content from</param>
+        /// <returns>File content of <paramref name="file"/></returns>
+        public static async Task<string> ReadAsync(this FileInfo file)
+        {
+            file.ValidateArgumentExists(nameof(file));
+
+            using(var stream = file.OpenRead())
+            {
+                using(var reader = new StreamReader(stream, true))
+                {
+                    return await reader.ReadToEndAsync();
+                }
+            }
+        }
+
+        /// <summary>
         /// Creates a new file using the filename of <paramref name="file"/> and writes <paramref name="content"/> into the file.
         /// </summary>
         /// <param name="file">File to write</param>
@@ -120,6 +140,25 @@ namespace System.IO
             content.ValidateArgument(nameof(content));
 
             File.WriteAllText(file.FullName, content);
+        }
+        /// <summary>
+        /// Writes <paramref name="content"/> to <paramref name="file"/>.
+        /// </summary>
+        /// <param name="file">The file to write to</param>
+        /// <param name="content">The file content to write</param>
+        /// <param name="fileShare">The file share options while reading the file</param>
+        public static async Task WriteAsync(this FileInfo file, string content, FileShare fileShare = FileShare.None)
+        {
+            file.ValidateArgument(nameof(file));
+            content.ValidateArgument(nameof(content));
+
+            using(var fileStream = file.Open(file.Exists ? FileMode.Truncate : FileMode.CreateNew, FileAccess.Write, fileShare))
+            {
+                using(var writer = new StreamWriter(fileStream))
+                {
+                    await writer.WriteAsync(content);
+                }
+            }
         }
         /// <summary>
         /// Replaces the file content of <paramref name="file"/> with an empty string.

@@ -815,6 +815,232 @@
             Triggers the stop action.
             </summary>
         </member>
+        <member name="T:Sels.Core.Process.ProcessRunner">
+            <inheritdoc cref="T:Sels.Core.Process.IProcessRunner"/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Process.ProcessRunner"/>
+            <param name="fileName">Filename of the process to run</param>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.AsUser(System.String,System.Action{System.Security.SecureString},System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.AsUser(System.String,System.String,System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.OnErrorOutput(System.Action{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.OnExit(System.Action)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.OnStandardOutput(System.Action{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.OnOutput(System.Action{System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.UseShell">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.WithKillTime(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.WithLogger(Microsoft.Extensions.Logging.ILogger)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.WithSleepTime(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.WithWindow">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.WithPriority(System.Diagnostics.ProcessPriorityClass)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.WithoutStandardOutput">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.WithoutErrorOutput">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.WithoutOutput">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessRunner.ExecuteAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Process.IProcessRunner">
+            <summary>
+            Executes a process and exposes a fluent api for configuring the execution of the process.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.AsUser(System.String,System.Action{System.Security.SecureString},System.String)">
+            <summary>
+            Runs the process as another user.
+            </summary>
+            <param name="username">The username of the user</param>
+            <param name="passwordBuilder">Delegate for inputting the password for the user</param>
+            <param name="domain">Optional domain that the user is located in</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.AsUser(System.String,System.String,System.String)">
+            <summary>
+            Runs the process as another user.
+            </summary>
+            <param name="username">The username of the user</param>
+            <param name="password">Optional password for the user</param>
+            <param name="domain">Optional domain that the user is located in</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.WithLogger(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Optional logger to enable tracing of the process execution.
+            </summary>
+            <param name="logger">Optional logger for tracing</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.WithKillTime(System.Int32)">
+            <summary>
+            How long to wait for the process to exit when a kill request was sent.
+            </summary>
+            <param name="killTime">How long in milliseconds to wait for a process to exit after sending a kill request</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.WithSleepTime(System.Int32)">
+            <summary>
+            How long to sleep if the process is still running. (frees up the thread during the sleep time)
+            </summary>
+            <param name="sleepTime">How long to sleep in milliseconds</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.WithWindow">
+            <summary>
+            Indicates that a new window should be created when starting the process.
+            </summary>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.UseShell">
+            <summary>
+            Uses the operating system shell to start the process.
+            </summary>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.WithPriority(System.Diagnostics.ProcessPriorityClass)">
+            <summary>
+            Sets the priority of the process.
+            </summary>
+            <param name="processPriority">The priority for the process</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.WithoutStandardOutput">
+            <summary>
+            The standard output of the process will not be kept in memory.
+            </summary>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.WithoutErrorOutput">
+            <summary>
+            The error output of the process will not be kept in memory.
+            </summary>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.WithoutOutput">
+            <summary>
+            The standard and error output of the process will not be kept in memory.
+            </summary>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.OnExit(System.Action)">
+            <summary>
+            Triggered when the process exits.
+            </summary>
+            <param name="action">The action to execute</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.OnStandardOutput(System.Action{System.String})">
+            <summary>
+            Triggered when the process outputs a line to the standard output stream.
+            </summary>
+            <param name="handler">Delegate that handles the outputted line</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.OnErrorOutput(System.Action{System.String})">
+            <summary>
+            Triggered when the process outputs a line to the error output stream.
+            </summary>
+            <param name="handler">Delegate that handles the outputted line</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.OnOutput(System.Action{System.String})">
+            <summary>
+            Triggered when the process outputs a line to the standard or error output stream.
+            </summary>
+            <param name="handler">Delegate that handles the outputted line</param>
+            <returns>Current instance for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Process.IProcessRunner.ExecuteAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Executes the current process and waits until it exists.
+            </summary>
+            <param name="arguments">Optional arguments for running the process</param>
+            <param name="token">Optional cancellation token for cancelling the execution of the process</param>
+            <returns>The result from executing the process</returns>
+        </member>
+        <member name="T:Sels.Core.Process.ProcessExecutionResult">
+            <summary>
+            Contains the result from executing a process.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Process.ProcessExecutionResult.ExitCode">
+            <summary>
+            The exit code returned by the process.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Process.ProcessExecutionResult.StandardOutputLines">
+            <summary>
+            All the lines outputted from the standard output.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Process.ProcessExecutionResult.StandardOutput">
+            <summary>
+            The standard output of the process.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Process.ProcessExecutionResult.ErrorOutputLines">
+            <summary>
+            All the lines outputted from the error output.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Process.ProcessExecutionResult.ErrorOutput">
+            <summary>
+            The error output of the process.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Process.ProcessExecutionResult.StartedTime">
+            <summary>
+            When the process was started.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Process.ProcessExecutionResult.ExitTime">
+            <summary>
+            When the process exited.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Process.ProcessExecutionResult.Duration">
+            <summary>
+            How long the process ran for.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Process.ProcessExecutionResult.#ctor(System.Int32,System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.String},System.DateTime,System.DateTime,System.TimeSpan)">
+            <inheritdoc cref="T:Sels.Core.Process.ProcessExecutionResult"/>
+            <param name="exitCode"><inheritdoc cref="P:Sels.Core.Process.ProcessExecutionResult.ExitCode"/></param>
+            <param name="standardOutputLines"><inheritdoc cref="P:Sels.Core.Process.ProcessExecutionResult.StandardOutputLines"/></param>
+            <param name="errorOutputLines"><inheritdoc cref="P:Sels.Core.Process.ProcessExecutionResult.ErrorOutputLines"/></param>
+            <param name="startedTime"><inheritdoc cref="P:Sels.Core.Process.ProcessExecutionResult.StartedTime"/></param>
+            <param name="exitTime"><inheritdoc cref="P:Sels.Core.Process.ProcessExecutionResult.ExitTime"/></param>
+            <param name="duration"><inheritdoc cref="P:Sels.Core.Process.ProcessExecutionResult.Duration"/></param>
+        </member>
         <member name="T:Sels.Core.RegularExpressions.RegexBuilder">
             <summary>
             Represents a instance used to create regular expressions.
@@ -3995,6 +4221,38 @@
             <param name="loggers">Optional loggers for tracing</param>
             <returns>The program exit code</returns>
         </member>
+        <member name="M:Sels.Core.Helper.Program.RunAsync(System.String,System.String,System.Action{System.String},System.Action{System.String},System.Threading.CancellationToken,Microsoft.Extensions.Logging.ILogger,System.Int32)">
+            <summary>
+            Runs program <paramref name="programFileName"/> with argument <paramref name="arguments"/>.
+            </summary>
+            <param name="programFileName">The filename of the program to run</param>
+            <param name="arguments">Optional command line arguments for the process</param>
+            <param name="outputHandler">Optional delegate that gets triggered for each line writter to the standard output</param>
+            <param name="errorOutputHandler">Optional delegate that gets triggered for each line writter to the error output</param>
+            <param name="token">Optional token for cancelling the executing of the process. Will try to make the process exit gracefully</param>
+            <param name="logger">Optional logger for debugging the execution of the process</param>
+            <param name="killWaitTime">How long in milliseconds to wait for the process to exit when <paramref name="token"/> receives it's cancellation request</param>
+            <returns>The exit code of the process</returns>
+        </member>
+        <member name="M:Sels.Core.Helper.Program.RunAsync(System.String,System.String,System.Action{System.String},System.Threading.CancellationToken,Microsoft.Extensions.Logging.ILogger,System.Int32)">
+            <summary>
+            Runs program <paramref name="programFileName"/> with argument <paramref name="arguments"/>.
+            </summary>
+            <param name="programFileName">The filename of the program to run</param>
+            <param name="arguments">Optional command line arguments for the process</param>
+            <param name="outputHandler">Optional delegate that gets triggered for each line writter to the standard/error output</param>
+            <param name="token">Optional token for cancelling the executing of the process. Will try to make the process exit gracefully</param>
+            <param name="logger">Optional logger for debugging the execution of the process</param>
+            <param name="killWaitTime">How long in milliseconds to wait for the process to exit when <paramref name="token"/> receives it's cancellation request</param>
+            <returns>The exit code of the process</returns>
+        </member>
+        <member name="M:Sels.Core.Helper.Program.Run(System.String)">
+            <summary>
+            Returns a builder for running a program.
+            </summary>
+            <param name="programFileName">Filename of the process to run</param>
+            <returns>Builder for configuring and executing a program</returns>
+        </member>
         <member name="T:Sels.Core.Helper.Console">
             <summary>
             Contains helper methods for working with the console.
@@ -4007,6 +4265,19 @@
             <param name="entryMethod">The action to execute</param>
         </member>
         <member name="M:Sels.Core.Helper.Console.Run(System.Action,System.Action)">
+            <summary>
+            Helper method for running code in a console. Catches and logs exceptions and asks for a key press to exit.
+            </summary>
+             <param name="entryMethod">The action to execute</param>
+            <param name="exitHandler">The code to run when closing the console</param>
+        </member>
+        <member name="M:Sels.Core.Helper.Console.RunAsync(Sels.Core.Delegates.Async.AsyncAction)">
+            <summary>
+            Helper method for running code in a console. Catches and logs exceptions and asks for a key press to exit.
+            </summary>
+            <param name="entryMethod">The action to execute</param>
+        </member>
+        <member name="M:Sels.Core.Helper.Console.RunAsync(Sels.Core.Delegates.Async.AsyncAction,System.Action)">
             <summary>
             Helper method for running code in a console. Catches and logs exceptions and asks for a key press to exit.
             </summary>
@@ -4066,6 +4337,38 @@
             <param name="expectedRoot">The expected reflected type of the first property</param>
             <param name="nestedProperties">The nested properties to check</param>
             <exception cref="T:System.IO.InvalidDataException"></exception>
+        </member>
+        <member name="T:Sels.Core.Helper.Json">
+            <summary>
+            Contains static extension methods for working with json.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Helper.Json.Set(Newtonsoft.Json.Linq.JObject,System.String,System.Object)">
+            <summary>
+            Sets a value in a json using a json path string.
+            </summary>
+            <param name="json">The json to update</param>
+            <param name="path">The path of the value to set</param>
+            <param name="value">Object containing the value to set</param>
+        </member>
+        <member name="M:Sels.Core.Helper.Json.ReadAsync(System.IO.FileInfo)">
+            <summary>
+            Reads a json object from a file.
+            </summary>
+            <param name="file">The file to read the json object from</param>
+            <returns>The json object read from <paramref name="file"/></returns>
+        </member>
+        <member name="T:Sels.Core.Helper.Async">
+            <summary>
+            Contains static helper methods when coding asynchronous.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Helper.Async.Sleep(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Sleeps for <paramref name="waitTime"/> milliseconds asynchronously.
+            </summary>
+            <param name="waitTime">How many milliseconds to sleep for</param>
+            <param name="token">Optional token to cancel the sleeping</param>
         </member>
         <member name="T:Sels.Core.Models.Disposables.NullDisposer">
             <summary>
@@ -4199,6 +4502,13 @@
             <param name="file">File to read content from</param>
             <returns>File content of <paramref name="file"/></returns>
         </member>
+        <member name="M:System.IO.FileInfoExtensions.ReadAsync(System.IO.FileInfo)">
+            <summary>
+            Reads the file content from <paramref name="file"/>.
+            </summary>
+            <param name="file">File to read content from</param>
+            <returns>File content of <paramref name="file"/></returns>
+        </member>
         <member name="M:System.IO.FileInfoExtensions.Create(System.IO.FileInfo,System.String,System.Boolean)">
             <summary>
             Creates a new file using the filename of <paramref name="file"/> and writes <paramref name="content"/> into the file.
@@ -4214,6 +4524,14 @@
             </summary>
             <param name="file">The file to write to</param>
             <param name="content">The file content to write</param>
+        </member>
+        <member name="M:System.IO.FileInfoExtensions.WriteAsync(System.IO.FileInfo,System.String,System.IO.FileShare)">
+            <summary>
+            Writes <paramref name="content"/> to <paramref name="file"/>.
+            </summary>
+            <param name="file">The file to write to</param>
+            <param name="content">The file content to write</param>
+            <param name="fileShare">The file share options while reading the file</param>
         </member>
         <member name="M:System.IO.FileInfoExtensions.Clear(System.IO.FileInfo)">
             <summary>
@@ -4492,7 +4810,7 @@
             <param name="values">The values to join</param>
             <returns>The joined string</returns>
         </member>
-        <member name="M:System.StringExtensions.Split(System.String,System.String,System.StringSplitOptions)">
+        <member name="M:System.StringExtensions.Split(System.String,System.Object,System.StringSplitOptions)">
             <summary>
             Splits <paramref name="source"/> on <paramref name="splitValue"/>.
             </summary>

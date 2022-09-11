@@ -133,5 +133,15 @@ namespace Sels.Core.Cli
         /// </summary>
         /// <returns>A builder for creating a tool for running code within a command line tool</returns>
         public static ICommandLineAsyncToolBuilder<NullArguments> CreateAsyncTool() => CreateAsyncTool<NullArguments>();
+
+        /// <summary>
+        /// Throws a <see cref="InvalidCommandLineArgumentsException"/> when <paramref name="errors"/> contains items.
+        /// </summary>
+        /// <param name="errors">Enumerator returning any argument errors</param>
+        /// <exception cref="InvalidCommandLineArgumentsException"></exception>
+        public static void ThrowOnArgumentErrors(IEnumerable<string>? errors)
+        {
+            if (errors.HasValue()) throw new InvalidCommandLineArgumentsException(errors);
+        }
     }
 }

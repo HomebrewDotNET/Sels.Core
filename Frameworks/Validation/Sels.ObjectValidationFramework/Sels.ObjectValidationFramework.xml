@@ -1606,11 +1606,12 @@
             <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
             <returns>Display name representing the current value that's being validated</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ContextExtensions.GetFullDisplayName``3(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{``0,Sels.ObjectValidationFramework.Components.Rules.NullValidationInfo,``1,``2},System.Boolean)">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.ContextExtensions.GetFullDisplayName``4(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{``0,``1,``2,``3},System.Boolean)">
             <summary>
             Returns a display name for the current value that being validated.
             </summary>
             <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+            <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
             <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
             <typeparam name="TValue">Type of value that is being validated</typeparam>
             <param name="ruleContext">Validation rule context for the currently being validated value</param>
@@ -1803,7 +1804,7 @@
             Contains generic configuration extensions for file system types.
             </summary>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.FileSystemValidationExtensions.MustExists``5(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,``1,``2,``3,``4},System.Func{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{``0,``2,``3,``4},``1})">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.FileSystemValidationExtensions.MustExist``5(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,``1,``2,``3,``4},System.Func{Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext{``0,``2,``3,``4},``1})">
             <summary>
             Value is only valid when it exists on the file system.
             </summary>
@@ -1816,7 +1817,7 @@
             <param name="errorConstructor">Delegate that creates a validation error when <see cref="P:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext`4.Value"/> is not a valid value</param>
             <returns>Current configurator</returns>
         </member>
-        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.FileSystemValidationExtensions.MustExists``4(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,System.String,``1,``2,``3},System.Boolean)">
+        <member name="M:Sels.ObjectValidationFramework.Templates.Profile.FileSystemValidationExtensions.MustExist``4(Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleConfigurator{``0,System.String,``1,``2,``3},System.Boolean)">
             <summary>
             Value is only valid when it exists on the file system.
             </summary>

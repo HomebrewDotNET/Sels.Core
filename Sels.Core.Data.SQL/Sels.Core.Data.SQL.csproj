@@ -35,10 +35,10 @@
 	  <PackageReference Include="Dapper" Version="2.0.123" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
+	  <Folder Include="Contracts\Query\Generic\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Contracts\Query\Generic\" />
+	  <ProjectReference Include="..\Sels.Core.Data\Sels.Core.Data.csproj" />
 	</ItemGroup>
 
 	<!--Include non-NuGet package projects in NuGet package-->

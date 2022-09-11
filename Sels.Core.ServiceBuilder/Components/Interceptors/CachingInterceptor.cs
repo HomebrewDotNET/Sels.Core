@@ -36,7 +36,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         private Func<IInvocation, string> _keyGetter;
         private Func<IInvocation, DistributedCacheEntryOptions> _optionGetter;
 
-        /// <inheritdoc cref="CachingInterceptor"/>
+        /// <inheritdoc cref="CachingInterceptor{TImpl}"/>
         /// <param name="cache">The cache to use to store method return values</param>
         /// <param name="defaultConverter">Optional default converter for serializing and deserializing method return values</param>
         /// <param name="loggers">Static loggers to use for tracing</param>
@@ -45,7 +45,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
             _loggers = loggers != null ? loggers.Where(x => x != null) : null;
         }
 
-        /// <inheritdoc cref="CachingInterceptor"/>
+        /// <inheritdoc cref="CachingInterceptor{TImpl}"/>
         /// <param name="cache">The cache to use to store method return values</param>
         /// <param name="defaultConverter">Optional default converter for serializing and deserializing method return values</param>
         /// <param name="factory">Logger factory for creating loggers based on the target type</param>

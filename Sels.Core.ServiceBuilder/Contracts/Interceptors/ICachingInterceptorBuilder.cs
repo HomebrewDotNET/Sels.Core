@@ -28,14 +28,12 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         /// <summary>
         /// Cache return values from the first method on <typeparamref name="T"/> with <paramref name="methodName"/>.
         /// </summary>
-        /// <typeparam name="T">Type of which to cache a method from</typeparam>
         /// <param name="methodName">The name of the method to cache</param>
         /// <returns>Builder for configuring the caching of <paramref name="methodName"/></returns>
         ICachingMethodInterceptorBuilder<T> Method(string methodName) => Method(typeof(T).GetMethods().First(x => x.Name.Equals(methodName.ValidateArgumentNotNullOrWhitespace(nameof(methodName)))));
         /// <summary>
         /// Cache return values from the method selected by <paramref name="methodSelector"/>.
         /// </summary>
-        /// <typeparam name="T">Type of which to cache a method from</typeparam>
         /// <param name="methodSelector">Expression that points to the method to cache</param>
         /// <returns>Builder for configuring the caching of method selected by <paramref name="methodSelector"/></returns>
         ICachingMethodInterceptorBuilder<T> Method(Expression<Func<T, object>> methodSelector) => Method(methodSelector.ValidateArgument(nameof(methodSelector)).ExtractMethod(nameof(methodSelector)));

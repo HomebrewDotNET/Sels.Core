@@ -46,6 +46,11 @@
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
 	<ItemGroup>
+	  <Compile Remove="NewFolder\**" />
+	  <EmbeddedResource Remove="NewFolder\**" />
+	  <None Remove="NewFolder\**" />
+	</ItemGroup>
+	<ItemGroup>
 	  <PackageReference Include="CommandLineParser" Version="2.8.0" />
 	  <PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
 	  <PackageReference Include="FluentMigrator.Runner.MySql" Version="3.3.2" />
@@ -55,9 +60,6 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Sels.Core.Cli\Sels.Core.Cli.csproj" />
 	  <ProjectReference Include="..\Sels.Core.Data.MySQL\Sels.Core.Data.MySQL.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="NewFolder\" />
 	</ItemGroup>
 
 </Project>

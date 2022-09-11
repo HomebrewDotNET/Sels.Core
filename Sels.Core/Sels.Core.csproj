@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net6</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
@@ -23,6 +23,10 @@ Used by projects maintained here: https://github.com/Jenssels1998
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 	</PropertyGroup>
 
+	<Target Name="GetTargetPath">
+
+	</Target>
+	
 	<!--Exclude pdb files from release build-->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<DebugType>None</DebugType>

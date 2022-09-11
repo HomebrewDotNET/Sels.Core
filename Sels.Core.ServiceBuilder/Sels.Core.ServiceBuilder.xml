@@ -11,13 +11,13 @@
             <typeparam name="TImpl">The type of the object to cache values on</typeparam>
         </member>
         <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Sels.Core.Conversion.Converters.ITypeConverter,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
-            <inheritdoc cref="!:CachingInterceptor"/>
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1"/>
             <param name="cache">The cache to use to store method return values</param>
             <param name="defaultConverter">Optional default converter for serializing and deserializing method return values</param>
             <param name="loggers">Static loggers to use for tracing</param>
         </member>
         <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Sels.Core.Conversion.Converters.ITypeConverter,Microsoft.Extensions.Logging.ILoggerFactory)">
-            <inheritdoc cref="!:CachingInterceptor"/>
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1"/>
             <param name="cache">The cache to use to store method return values</param>
             <param name="defaultConverter">Optional default converter for serializing and deserializing method return values</param>
             <param name="factory">Logger factory for creating loggers based on the target type</param>
@@ -94,7 +94,6 @@
             <summary>
             Cache return values from the first method on <typeparamref name="T"/> with <paramref name="methodName"/>.
             </summary>
-            <typeparam name="T">Type of which to cache a method from</typeparam>
             <param name="methodName">The name of the method to cache</param>
             <returns>Builder for configuring the caching of <paramref name="methodName"/></returns>
         </member>
@@ -102,7 +101,6 @@
             <summary>
             Cache return values from the method selected by <paramref name="methodSelector"/>.
             </summary>
-            <typeparam name="T">Type of which to cache a method from</typeparam>
             <param name="methodSelector">Expression that points to the method to cache</param>
             <returns>Builder for configuring the caching of method selected by <paramref name="methodSelector"/></returns>
         </member>

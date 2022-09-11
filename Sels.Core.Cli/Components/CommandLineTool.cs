@@ -95,6 +95,17 @@ namespace Sels.Core.Cli
         {
             try
             {
+                // Setup token
+                var cancellationSource = new CancellationTokenSource();
+                // Cancel token when application is about to exit.
+                Helper.App.OnExit(() => cancellationSource.Cancel());
+                // Cancel token when user wants to abort
+                Console.CancelKeyPress += (s, e) =>
+                {
+                    cancellationSource.Cancel();
+                    e.Cancel = true;
+                };
+
                 // Parse arguments
                 TArg arguments = default;
                 if (typeof(TArg).Is<string[]>()) arguments = args.CastOrDefault<TArg>();
@@ -123,7 +134,7 @@ namespace Sels.Core.Cli
                     {
                         return handler(ex);
                     }
-                    Console.Error.WriteLine(ex.Message);
+                    Console.Error.WriteLine($"Could not execute successfully: {ex.Message}");
                     return CommandLine.ErrorExitCode;
                 }
             }
@@ -182,7 +193,7 @@ namespace Sels.Core.Cli
                     {
                         return handler(ex);
                     }
-                    Console.Error.WriteLine(ex.Message);
+                    Console.Error.WriteLine($"Could not execute successfully: {ex.Message}");
                     return CommandLine.ErrorExitCode;
                 }
             }

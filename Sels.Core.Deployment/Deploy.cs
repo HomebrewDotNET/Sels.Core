@@ -41,7 +41,7 @@ namespace Sels.Core.Deployment
 
                 var config = new ParserConfig(x =>
                 {
-                    configurator(x);
+                    configurator?.Invoke(x);
                     // Ignore string by default as collection
                     x.IgnoreSubProperties(x => x.PropertyType.IsString());
                     if (ignoreSystemTypes) x.IgnoreSubProperties(x => x.PropertyType.FullName.StartsWith("System.") || x.PropertyType.FullName.StartsWith("Microsoft."));

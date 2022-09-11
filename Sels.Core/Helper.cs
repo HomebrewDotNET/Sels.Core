@@ -13,7 +13,11 @@ using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions.Logging;
 using SystemConsole = System.Console;
 using SystemRandom = System.Random;
+using SystemProcess = System.Diagnostics.Process;
 using Sels.Core.Extensions.Reflection;
+using static Sels.Core.Delegates.Async;
+using Newtonsoft.Json.Linq;
+using Sels.Core.Process;
 
 namespace Sels.Core
 {
@@ -142,7 +146,7 @@ namespace Sels.Core
             /// </summary>
             public static void SetCurrentDirectoryToProcess()
             {
-                var baseDir = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                var baseDir = Path.GetDirectoryName(SystemProcess.GetCurrentProcess().MainModule.FileName);
 
                 // Used for published configs
                 Directory.SetCurrentDirectory(baseDir);
@@ -351,10 +355,11 @@ namespace Sels.Core
             /// <returns>The program exit code</returns>
             public static int Run(string programFileName, string arguments, out string output, out string error, CancellationToken token = default, IEnumerable<ILogger> loggers = null, int killWaitTime = 10000)
             {
-                using (var logger = loggers.CreateTimedLogger(LogLevel.Debug, $"Executing program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)}", x => $"Executed program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)} in {x.PrintTotalMs()}")) {
-                    programFileName.ValidateArgument(nameof(programFileName));
+                using (var logger = loggers.CreateTimedLogger(LogLevel.Debug, $"Executing program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)}", x => $"Executed program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)} in {x.PrintTotalMs()}"))
+                {
+                    programFileName.ValidateArgumentNotNullOrWhitespace(nameof(programFileName));
 
-                    var process = new Process()
+                    var process = new SystemProcess()
                     {
                         StartInfo = new ProcessStartInfo(programFileName, arguments)
                         {
@@ -412,8 +417,109 @@ namespace Sels.Core
                         process.Dispose();
                     }
                 }
-                
+
             }
+
+            /// <summary>
+            /// Runs program <paramref name="programFileName"/> with argument <paramref name="arguments"/>.
+            /// </summary>
+            /// <param name="programFileName">The filename of the program to run</param>
+            /// <param name="arguments">Optional command line arguments for the process</param>
+            /// <param name="outputHandler">Optional delegate that gets triggered for each line writter to the standard output</param>
+            /// <param name="errorOutputHandler">Optional delegate that gets triggered for each line writter to the error output</param>
+            /// <param name="token">Optional token for cancelling the executing of the process. Will try to make the process exit gracefully</param>
+            /// <param name="logger">Optional logger for debugging the execution of the process</param>
+            /// <param name="killWaitTime">How long in milliseconds to wait for the process to exit when <paramref name="token"/> receives it's cancellation request</param>
+            /// <returns>The exit code of the process</returns>
+            public static async Task<int> RunAsync(string programFileName, string arguments, Action<string> outputHandler, Action<string> errorOutputHandler, CancellationToken token = default, ILogger logger = null, int killWaitTime = 10000)
+            {
+                using (var timedLogger = logger.CreateTimedLogger(LogLevel.Debug, $"Executing program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)}", x => $"Executed program {programFileName}{(arguments.HasValue() ? $" with arguments {arguments}" : string.Empty)} in {x.PrintTotalMs()}"))
+                {
+                    programFileName.ValidateArgumentNotNullOrWhitespace(nameof(programFileName));
+                    killWaitTime.ValidateArgumentLargerOrEqual(nameof(killWaitTime), 1);
+
+                    var process = new SystemProcess()
+                    {
+                        StartInfo = new ProcessStartInfo(programFileName, arguments)
+                        {
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        }
+                    };
+
+                    process.EnableRaisingEvents = true;
+
+                    try
+                    {
+                        if (outputHandler != null) process.OutputDataReceived += (s, a) => outputHandler(a.Data);
+                        if (errorOutputHandler != null) process.ErrorDataReceived += (s, a) => errorOutputHandler(a.Data);
+                        process.Start();
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
+                        timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Started process {process.Id} ({time.PrintTotalMs()})"));
+
+                        // Wait for process to finish
+                        while (!process.HasExited)
+                        {
+                            timedLogger.Log((time, log) => log.LogMessage(LogLevel.Trace, $"Waiting for process {process.Id} to exit ({time.PrintTotalMs()})"));
+                            await Task.Delay(100);
+
+                            // Wait for process to exit
+                            if (token.IsCancellationRequested)
+                            {
+                                timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killing process {process.Id} ({time.PrintTotalMs()})"));
+                                var killTask = Task.Run(process.Kill);
+                                timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Sent kill signal to process {process.Id} and will now wait for maximum {killWaitTime}ms for it to exit ({time.PrintTotalMs()})"));
+
+                                if (!process.WaitForExit(killWaitTime))
+                                {
+                                    timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killed process {process.Id} could not gracefully exit within {killWaitTime}ms ({time.PrintTotalMs()})"));
+                                    throw new TaskCanceledException($"Process {process.Id} could not properly stop in {killWaitTime}ms");
+                                }
+                                else
+                                {
+                                    timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killed process {process.Id} exited gracefully ({time.PrintTotalMs()})"));
+                                    await killTask;
+                                    break;
+                                }
+                            }
+                        }
+
+                        timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Process {process.Id} has exited with code {process.ExitCode} ({time.PrintTotalMs()})"));
+
+                        return process.ExitCode;
+                    }
+                    finally
+                    {
+                        timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Disposing process {process.Id} ({time.PrintTotalMs()})"));
+                        process.Dispose();
+                    }
+                }
+
+            }
+            /// <summary>
+            /// Runs program <paramref name="programFileName"/> with argument <paramref name="arguments"/>.
+            /// </summary>
+            /// <param name="programFileName">The filename of the program to run</param>
+            /// <param name="arguments">Optional command line arguments for the process</param>
+            /// <param name="outputHandler">Optional delegate that gets triggered for each line writter to the standard/error output</param>
+            /// <param name="token">Optional token for cancelling the executing of the process. Will try to make the process exit gracefully</param>
+            /// <param name="logger">Optional logger for debugging the execution of the process</param>
+            /// <param name="killWaitTime">How long in milliseconds to wait for the process to exit when <paramref name="token"/> receives it's cancellation request</param>
+            /// <returns>The exit code of the process</returns>
+            public static Task<int> RunAsync(string programFileName, string arguments, Action<string> outputHandler, CancellationToken token = default, ILogger logger = null, int killWaitTime = 10000)
+            {
+                return RunAsync(programFileName, arguments, x => outputHandler?.Invoke(x), x => outputHandler?.Invoke(x), token, logger, killWaitTime);
+            }
+
+            /// <summary>
+            /// Returns a builder for running a program.
+            /// </summary>
+            /// <param name="programFileName">Filename of the process to run</param>
+            /// <returns>Builder for configuring and executing a program</returns>
+            public static IProcessRunner Run(string programFileName) => new ProcessRunner(programFileName.ValidateArgumentNotNullOrWhitespace(nameof(programFileName)));
         }
         #endregion
 
@@ -463,6 +569,44 @@ namespace Sels.Core
                 App.OnExit(exitHandler);
 
                 Run(entryMethod);
+            }
+
+            /// <summary>
+            /// Helper method for running code in a console. Catches and logs exceptions and asks for a key press to exit.
+            /// </summary>
+            /// <param name="entryMethod">The action to execute</param>
+            public static async Task RunAsync(AsyncAction entryMethod)
+            {
+                entryMethod.ValidateArgument(nameof(entryMethod));
+
+                try
+                {
+                    await entryMethod();
+                }
+                catch (Exception ex)
+                {
+                    SystemConsole.WriteLine($"Something went wrong while execuring console app: {Environment.NewLine + ex.ToString()}");
+                }
+                finally
+                {
+                    SystemConsole.WriteLine("Press any key to close");
+                    SystemConsole.Read();
+                }
+            }
+
+            /// <summary>
+            /// Helper method for running code in a console. Catches and logs exceptions and asks for a key press to exit.
+            /// </summary>
+            ///  <param name="entryMethod">The action to execute</param>
+            /// <param name="exitHandler">The code to run when closing the console</param>
+            public static Task RunAsync(AsyncAction entryMethod, Action exitHandler)
+            {
+                entryMethod.ValidateArgument(nameof(entryMethod));
+                exitHandler.ValidateArgument(nameof(exitHandler));
+
+                App.OnExit(exitHandler);
+
+                return RunAsync(entryMethod);
             }
 
             /// <summary>
@@ -573,6 +717,100 @@ namespace Sels.Core
                         currentProperty = property;
                     }
                 }
+            }
+        }
+        #endregion
+
+        #region Json
+        /// <summary>
+        /// Contains static extension methods for working with json.
+        /// </summary>
+        public static class Json
+        {
+            #region Modifying 
+            /// <summary>
+            /// Sets a value in a json using a json path string.
+            /// </summary>
+            /// <param name="json">The json to update</param>
+            /// <param name="path">The path of the value to set</param>
+            /// <param name="value">Object containing the value to set</param>
+            public static void Set(JObject json, string path, object value)
+            {
+                path.ValidateArgument(nameof(path));
+                value.ValidateArgument(nameof(value));
+
+                JToken current = json;
+                var tokens = path.Split('.', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
+
+                for (int i = 0; i < tokens.Length; i++)
+                {
+                    var token = tokens[i];
+                    var isLast = i >= tokens.Length - 1;
+                    var target = current.SelectToken(token);
+
+                    // Try and set value
+                    if (isLast)
+                    {
+                        if(target == null)
+                        {
+                            ((JObject)current).Add(token, JToken.FromObject(value));
+                        }
+                        else
+                        {
+                            target.Replace(JToken.FromObject(value));
+                        }                       
+                    }
+                    // Traverse json
+                    else
+                    {                     
+                        if (target == null)
+                        {
+                            ((JObject)current).Add(token, new JObject());
+                            target = current.SelectToken(token);
+                        }
+
+                        current = target;
+                    }
+                }
+            }
+            #endregion
+
+            #region File
+            /// <summary>
+            /// Reads a json object from a file.
+            /// </summary>
+            /// <param name="file">The file to read the json object from</param>
+            /// <returns>The json object read from <paramref name="file"/></returns>
+            public static async Task<JObject> ReadAsync(FileInfo file)
+            {
+                file.ValidateArgumentExists(nameof(file));
+
+                return JObject.Parse(await file.ReadAsync());
+            }
+            #endregion
+        }
+        #endregion
+
+        #region Async
+        /// <summary>
+        /// Contains static helper methods when coding asynchronous.
+        /// </summary>
+        public static class Async
+        {
+            /// <summary>
+            /// Sleeps for <paramref name="waitTime"/> milliseconds asynchronously.
+            /// </summary>
+            /// <param name="waitTime">How many milliseconds to sleep for</param>
+            /// <param name="token">Optional token to cancel the sleeping</param>
+            public static async Task Sleep(int waitTime, CancellationToken token = default)
+            {
+                if (waitTime <= 0) return;
+
+                try
+                {
+                    await Task.Delay(waitTime, token);
+                }
+                catch (TaskCanceledException) { }
             }
         }
         #endregion

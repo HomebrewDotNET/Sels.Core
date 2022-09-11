@@ -50,19 +50,14 @@
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.0.123" />
 	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
-		<ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
-	</ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MySqlConnector" Version="2.1.8" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
     <ProjectReference Include="..\Sels.Core.Data.SQL\Sels.Core.Data.SQL.csproj" />
-    <ProjectReference Include="..\Sels.Core.Data\Sels.Core.Data.csproj" />
-    <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
   </ItemGroup>
 
 </Project>

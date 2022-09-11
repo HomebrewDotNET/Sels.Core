@@ -46,5 +46,8 @@
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
+	</ItemGroup>
 
 </Project>

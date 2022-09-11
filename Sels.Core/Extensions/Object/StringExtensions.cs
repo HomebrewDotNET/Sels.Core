@@ -274,12 +274,12 @@ namespace System
         /// <param name="splitValue">What value to split <paramref name="source"/> on</param>
         /// <param name="options">Option to omit empty string values from the return value</param>
         /// <returns>Substrings after splitting <paramref name="source"/></returns>
-        public static string[] Split(this string source, string splitValue, StringSplitOptions options = StringSplitOptions.None)
+        public static string[] Split(this string source, object splitValue, StringSplitOptions options = StringSplitOptions.None)
         {
             source.ValidateArgument(nameof(source));
             splitValue.ValidateArgument(nameof(splitValue));
 
-            return source.Split(new string[] { splitValue }, options);
+            return source.Split(new string[] { splitValue.ToString() }, options);
         }
 
         /// <summary>

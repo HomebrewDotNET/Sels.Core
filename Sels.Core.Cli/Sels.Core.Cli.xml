@@ -149,6 +149,13 @@
             </summary>
             <returns>A builder for creating a tool for running code within a command line tool</returns>
         </member>
+        <member name="M:Sels.Core.Cli.CommandLine.ThrowOnArgumentErrors(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Throws a <see cref="T:Sels.Core.Cli.ArgumentParsing.InvalidCommandLineArgumentsException"/> when <paramref name="errors"/> contains items.
+            </summary>
+            <param name="errors">Enumerator returning any argument errors</param>
+            <exception cref="T:Sels.Core.Cli.ArgumentParsing.InvalidCommandLineArgumentsException"></exception>
+        </member>
         <member name="T:Sels.Core.Cli.ArgumentParsing.ArgumentParser`1">
             <inheritdoc cref="T:Sels.Core.Cli.ArgumentParsing.IArgumentParser`1"/>
         </member>
