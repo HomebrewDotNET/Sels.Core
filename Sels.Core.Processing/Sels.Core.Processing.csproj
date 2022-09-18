@@ -16,7 +16,7 @@
 	  <PackageTags>Sels</PackageTags>
 	  <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 	  <!--For NuGet package-->
-	  <VersionPrefix>1.0.0</VersionPrefix>
+	  <VersionPrefix>1.0.1</VersionPrefix>
 	  <BuildNumber>$([System.DateTime]::Now.ToString('yyyyMMdd-HHmmss'))</BuildNumber>
 	  
 	  <VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>

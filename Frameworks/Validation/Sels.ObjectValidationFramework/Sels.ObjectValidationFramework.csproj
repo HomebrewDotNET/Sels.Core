@@ -15,7 +15,7 @@ Used by projects maintained here: https://github.com/Jenssels1998
     <Copyright>Jens Sels</Copyright>
     <PackageTags>Sels</PackageTags>
 	  <!--For NuGet package-->
-	  <VersionPrefix>5.0.0</VersionPrefix>
+	  <VersionPrefix>5.0.1</VersionPrefix>
 	  <BuildNumber>$([System.DateTime]::Now.ToString('yyyyMMdd-HHmmss'))</BuildNumber>
 	  
 	  <VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
