@@ -15,7 +15,7 @@ Used by projects maintained here: https://github.com/Jenssels1998
     <Copyright>Jens Sels</Copyright>
     <PackageTags>Sels</PackageTags>
 	  <!--For NuGet package-->
-	  <VersionPrefix>5.0.1</VersionPrefix>
+	  <VersionPrefix>5.0.2</VersionPrefix>
 	  <BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
 	  <BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
 	  <VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>

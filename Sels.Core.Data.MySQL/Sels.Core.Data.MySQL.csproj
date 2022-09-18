@@ -19,7 +19,7 @@
 	  <PackageTags>Sels</PackageTags>
 	  <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 	  <!--For NuGet package-->
-	  <VersionPrefix>1.0.1</VersionPrefix>
+	  <VersionPrefix>1.0.2</VersionPrefix>
 	  <BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
 	  <BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
 	  <VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
