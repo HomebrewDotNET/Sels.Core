@@ -17,8 +17,8 @@
 	  <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 	  <!--For NuGet package-->
 	  <VersionPrefix>1.0.0</VersionPrefix>
-	  <BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
-	  <BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)) ))</BuildNumber>
+	  <BuildNumber>$([System.DateTime]::Now.ToString('yyyyMMdd-HHmmss'))</BuildNumber>
+	  
 	  <VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
 	  <DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
 	  <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
