@@ -239,7 +239,7 @@ namespace Sels.Core.Process
                         await Helper.Async.Sleep(_sleepTime);
 
                         // Wait for process to exit
-                        if (token.IsCancellationRequested)
+                        if (token.IsCancellationRequested && !process.HasExited)
                         {
                             timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killing process {process.Id} ({time.PrintTotalMs()})"));
                             var killTask = Task.Run(process.Kill);
