@@ -222,7 +222,7 @@ namespace Sels.Core.Data.MySQL
                                 // Keep reading until the last result which is the one we want
                                 while (!result.IsConsumed)
                                 {
-                                    databaseLock = await result.ReadSingleAsync<DatabaseLock>().ConfigureAwait(false);
+                                    databaseLock = await result.ReadSingleOrDefaultAsync<DatabaseLock>().ConfigureAwait(false);
                                 }
                                 
                                 // Get result from last select
@@ -282,7 +282,7 @@ namespace Sels.Core.Data.MySQL
                         {
                             while (!result.IsConsumed)
                             {
-                                databaseLock = await result.ReadSingleAsync<DatabaseLock>().ConfigureAwait(false);
+                                databaseLock = await result.ReadSingleOrDefaultAsync<DatabaseLock>().ConfigureAwait(false);
                             }
 
                             // Get result from last select

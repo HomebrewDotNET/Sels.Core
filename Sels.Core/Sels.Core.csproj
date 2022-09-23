@@ -13,7 +13,6 @@ Used by projects maintained here: https://github.com/Jenssels1998
 		<Copyright>Jens Sels</Copyright>
 		<PackageTags>Sels</PackageTags>
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
-		<Test>$([System.Int32]::Parse('0'))</Test>
 		<!--For NuGet package-->
 		<VersionPrefix>4.0.2</VersionPrefix>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
