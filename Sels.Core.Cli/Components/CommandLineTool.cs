@@ -134,7 +134,7 @@ namespace Sels.Core.Cli
                     {
                         return handler(ex);
                     }
-                    Console.Error.WriteLine($"Could not execute successfully: {ex.Message}");
+                    Console.Error.WriteLine($"Could not execute tool successfully: {ex.Message}");
                     return CommandLine.ErrorExitCode;
                 }
             }
@@ -193,7 +193,7 @@ namespace Sels.Core.Cli
                     {
                         return handler(ex);
                     }
-                    Console.Error.WriteLine($"Could not execute successfully: {ex.Message}");
+                    Console.Error.WriteLine($"Could not execute tool successfully: {ex.Message}");
                     return CommandLine.ErrorExitCode;
                 }
             }

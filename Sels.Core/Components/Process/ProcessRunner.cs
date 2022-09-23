@@ -226,6 +226,8 @@ namespace Sels.Core.Process
                 try
                 {
                     process.Start();
+                    var startTime = DateTime.Now;
+                    if (!process.HasExited) startTime = process.StartTime;
                     if(_priority.HasValue) process.PriorityClass = _priority.Value;
                     timer.Start();
                     process.BeginOutputReadLine();
@@ -242,7 +244,7 @@ namespace Sels.Core.Process
                         if (token.IsCancellationRequested && !process.HasExited)
                         {
                             timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killing process {process.Id} ({time.PrintTotalMs()})"));
-                            var killTask = Task.Run(process.Kill);
+                            var killTask = Task.Run(() => { if (!process.HasExited) process.Kill(); });
                             timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Sent kill signal to process {process.Id} and will now wait for maximum {_killTime}ms for it to exit ({time.PrintTotalMs()})"));
 
 #if NET5_0_OR_GREATER
@@ -279,7 +281,7 @@ namespace Sels.Core.Process
                     timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Process {process.Id} has exited with code {process.ExitCode} ({time.PrintTotalMs()})"));
                     timer.Stop();
 
-                    return new ProcessExecutionResult(process.ExitCode, outputLines, errorLines, process.StartTime, exitTime ?? DateTime.Now, timer.Elapsed);
+                    return new ProcessExecutionResult(process.ExitCode, outputLines, errorLines, startTime, exitTime ?? DateTime.Now, timer.Elapsed);
                 }
                 finally
                 {
