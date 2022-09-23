@@ -14,6 +14,7 @@ using Sels.Core.Components.Scope;
 using Sels.Core.Conversion.Converters;
 using System.Text.RegularExpressions;
 using Sels.Core.Conversion.Attributes.Serialization;
+using System.Linq.Expressions;
 
 namespace Sels.Core.Deployment
 {
@@ -58,6 +59,52 @@ namespace Sels.Core.Deployment
             /// <param name="ignoreSystemTypes">If sub properties on types starting with System or Microsoft in the namespace are ignored</param>
             /// <returns>An instance of <typeparamref name="T"/> with the properties deserialized from environment variables</returns>
             public static T ParseFrom<T>(Action<IEnvironmentParserConfigurator>? configurator = null, bool ignoreSystemTypes = true) where T : new() => ParseFrom(new T(), configurator, ignoreSystemTypes);
+
+            /// <summary>
+            /// Returns the defined environment variable name for the property selected by <paramref name="property"/> on type <typeparamref name="T"/>.
+            /// </summary>
+            /// <typeparam name="T">Type of the source object to get the name from</typeparam>
+            /// <param name="property">Expression pointing to the property</param>
+            /// <returns>The defined environment variable name or null if nothing is defined</returns>
+            public static string? GetEnvironmentVariableNameFrom<T>(Expression<Func<T, object>> property)
+            {
+                property.ValidateArgument(nameof(property));
+
+                var propertyInfo = property.GetPropertyInfo(nameof(property));
+                return propertyInfo.GetEnvironmentVariableName();
+            }
+
+            /// <summary>
+            /// Returns the defined environment variable name for the property selected by <paramref name="property"/> on type <typeparamref name="T"/>.
+            /// </summary>
+            /// <typeparam name="T">Type of the source object to get the name from</typeparam>
+            /// <param name="property">Expression pointing to the property</param>
+            /// <returns>The defined environment variable name or null if nothing is defined</returns>
+            public static string? GetEnvironmentVariableValueFrom<T>(Expression<Func<T, object>> property)
+            {
+                property.ValidateArgument(nameof(property));
+
+                var propertyInfo = property.ExtractProperty(nameof(property));
+                return propertyInfo.GetEnvironmentVariableName();
+            }
+
+            /// <summary>
+            /// Sets an environment variable value by using the value of a property on <paramref name="source"/>.
+            /// </summary>
+            /// <typeparam name="T">Type of the source object to set the value from</typeparam>
+            /// <param name="source">Instance to set the value from</param>
+            /// <param name="property">Expression pointing to the property. If <see cref="EnvironmentVariableNameAttribute"/> is defined that name will be used, otherwise the property name</param>
+            /// <param name="target">Specifies where to save the variable</param>
+            /// <returns></returns>
+            public static void SetEnvironmentVariableValueFrom<T>(T source, Expression<Func<T, object>> property, EnvironmentVariableTarget target = default)
+            {
+                source.ValidateArgument(nameof(source));
+                property.ValidateArgument(nameof(property));
+
+                var propertyInfo = property.ExtractProperty(nameof(property));
+                var name = propertyInfo.GetEnvironmentVariableName() ?? property.Name;
+                SystemEnvironment.SetEnvironmentVariable(name, property.Compile()(source).ToString(), target);
+            }
 
             #region Helpers
             private static void Parse(object? currentInstance, Type instanceType, List<HierarchyParent> parents, ParserConfig config, List<object> alreadyChecked)

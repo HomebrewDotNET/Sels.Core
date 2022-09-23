@@ -250,5 +250,31 @@
             <param name="ignoreSystemTypes">If sub properties on types starting with System or Microsoft in the namespace are ignored</param>
             <returns>An instance of <typeparamref name="T"/> with the properties deserialized from environment variables</returns>
         </member>
+        <member name="M:Sels.Core.Deployment.Deploy.Environment.GetEnvironmentVariableNameFrom``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+            <summary>
+            Returns the defined environment variable name for the property selected by <paramref name="property"/> on type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of the source object to get the name from</typeparam>
+            <param name="property">Expression pointing to the property</param>
+            <returns>The defined environment variable name or null if nothing is defined</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Deploy.Environment.GetEnvironmentVariableValueFrom``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+            <summary>
+            Returns the defined environment variable name for the property selected by <paramref name="property"/> on type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of the source object to get the name from</typeparam>
+            <param name="property">Expression pointing to the property</param>
+            <returns>The defined environment variable name or null if nothing is defined</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Deploy.Environment.SetEnvironmentVariableValueFrom``1(``0,System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.EnvironmentVariableTarget)">
+            <summary>
+            Sets an environment variable value by using the value of a property on <paramref name="source"/>.
+            </summary>
+            <typeparam name="T">Type of the source object to set the value from</typeparam>
+            <param name="source">Instance to set the value from</param>
+            <param name="property">Expression pointing to the property. If <see cref="T:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttribute"/> is defined that name will be used, otherwise the property name</param>
+            <param name="target">Specifies where to save the variable</param>
+            <returns></returns>
+        </member>
     </members>
 </doc>
