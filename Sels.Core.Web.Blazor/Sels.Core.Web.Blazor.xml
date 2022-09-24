@@ -345,6 +345,11 @@
             Optional culture to localize the property in.
             </summary>
         </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.LocalizationContext">
+            <summary>
+            Optional localization context cascaded from a parent.
+            </summary>
+        </member>
         <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.IncludeValidationMessage">
             <summary>
             If a validation message for the property needs to be included as well.

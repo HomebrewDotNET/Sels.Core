@@ -137,10 +137,10 @@ namespace Sels.Core.Localization
                     {
                         foreach (var resource in _resources)
                         {
-                            _loggers.Debug($"Attempting to localize <{key}> using culture <{culture.Name}> and resource <{resource.BaseName}>");
+                            _loggers.Trace($"Attempting to localize <{key}> using culture <{culture.Name}> and resource <{resource.BaseName}>");
                             var result = resource.GetString(key, culture);
                             if (result != null) {
-                                _loggers.Trace($"Localized <{key}> using culture <{culture.Name}> and resource <{resource.BaseName}> to: {result}");
+                                _loggers.Debug($"Localized <{key}> using culture <{culture.Name}> and resource <{resource.BaseName}> to: {result}");
                                 return result;
                             } 
                         }
@@ -152,11 +152,11 @@ namespace Sels.Core.Localization
                     var culture = Thread.CurrentThread.CurrentUICulture; 
                     foreach (var resource in _resources)
                     {
-                        _loggers.Debug($"Attempting to localize <{key}> using ui culture <{culture.Name}> and resource <{resource.BaseName}>");
+                        _loggers.Trace($"Attempting to localize <{key}> using ui culture <{culture.Name}> and resource <{resource.BaseName}>");
                         var result = resource.GetString(key, culture);
                         if (result != null)
                         {
-                            _loggers.Trace($"Localized <{key}> using ui culture <{culture.Name}> and resource <{resource.BaseName}> to: {result}");
+                            _loggers.Debug($"Localized <{key}> using ui culture <{culture.Name}> and resource <{resource.BaseName}> to: {result}");
                             return result;
                         }
                     }

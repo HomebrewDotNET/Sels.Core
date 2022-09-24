@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Sels.Core.Extensions.Reflection
 @using Sels.Core.Localization
+@using Sels.Core.Web.Blazor.Models.Localization
 
 <ValidationMessage For="For" />
 <label class="@Class" for="@_target">@_label</label>
@@ -32,6 +33,11 @@
     [Parameter]
     public string? Culture { get; set; }
     /// <summary>
+    /// Optional localization context cascaded from a parent.
+    /// </summary>
+    [CascadingParameter(Name = "LocalizationContext")]
+    public LocalizationContext LocalizationContext { get; set; }
+    /// <summary>
     /// If a validation message for the property needs to be included as well.
     /// </summary>
     [Parameter]
@@ -45,7 +51,9 @@
 
         var property = For.ExtractProperty(nameof(For));
 
-        _label = Localizer.Object.Get(property, Culture, options: x => x.MissingKeySettings = MissingLocalizationSettings.Default) ?? string.Empty;
+        var actualCulture = Culture ?? LocalizationContext?.Culture?.ToString();
+
+        _label = Localizer.Object.Get(property, actualCulture, options: x => x.MissingKeySettings = MissingLocalizationSettings.Default) ?? property.Name;
         _target = Target ?? $"{property.ReflectedType.Name}.{property.Name}";
     }
 }
