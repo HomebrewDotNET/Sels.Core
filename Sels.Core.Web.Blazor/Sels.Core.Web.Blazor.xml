@@ -533,6 +533,11 @@
             If the modal must be vertically centered.
             </summary>
         </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.ForceRender">
+            <summary>
+            Forces child components to rerender when the modal opens. Default is true.
+            </summary>
+        </member>
         <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.Header">
             <summary>
             Content for the modal header.

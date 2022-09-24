@@ -7,7 +7,7 @@
       <div class="modal-dialog @Size.ToCss()">
         <div class="modal-content">
           <div class="modal-header">
-            @if(Header != null){
+            @if(Header != null && _render){
                 @Header(_context)
             }
             @if (WithCloseButton)
@@ -15,12 +15,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CloseAsync"/>     
             }
         </div>        
-        @if(Body != null){
+        @if(Body != null && _render){
             <div class="modal-body">
             @Body(_context)
             </div> 
         }        
-        @if(Footer != null){
+        @if(Footer != null && _render){
             <div class="modal-footer">
                 @Footer(_context)
             </div>
@@ -39,6 +39,7 @@
     // Fields
     private bool _show;
     private bool _display;
+    private bool _render = true;
     private ModalContext _context;
 
     // Settings
@@ -77,6 +78,11 @@
     /// </summary>
     [Parameter]
     public bool IsVerticallyCentered { get; set; } = false;
+    /// <summary>
+    /// Forces child components to rerender when the modal opens. Default is true.
+    /// </summary>
+    [Parameter]
+    public bool ForceRender { get; set; } = true;
 
     // Content
     /// <summary>
@@ -130,6 +136,7 @@
     /// </summary>
     public async Task OpenAsync()
     {
+        _render = true;
         _display = true;
         StateHasChanged();
         await Task.Delay(100);
@@ -148,5 +155,6 @@
         _display = false;
         StateHasChanged();
         await OnClose.InvokeAsync();
+        if (ForceRender) _render = false;
     }
 }
