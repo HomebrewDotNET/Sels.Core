@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Processing</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction">
+            <summary>
+            Runs code on a schedule using a timer.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.LastRunTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.EstimatedNextRunTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.IsRunning">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.Action">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.ExceptionHandler">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.HaltOnException">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.#ctor(System.Int32)">
+            <summary>
+            Runs code on a schedule using a timer.
+            </summary>
+            <param name="schedule">Interval in milliseconds when to run <see cref="P:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.Action"/></param>
+        </member>
+        <member name="M:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.#ctor(System.Action{System.Threading.CancellationToken},System.Int32)">
+            <summary>
+            Runs code on a schedule using a timer.
+            </summary>
+            <param name="schedule">Interval in milliseconds when to run <see cref="P:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.Action"/></param>
+            <param name="action">The action to execute</param>
+        </member>
+        <member name="M:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.Start">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.Stop">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction.ExecuteAndStart">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction">
+            <summary>
+            Runs code based on a schedule
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.LastRunTime">
+            <summary>
+            Time when this action last ran. Null if it hasn't run once.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.EstimatedNextRunTime">
+            <summary>
+            Estimated time when this action will execute. Null if not running.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.IsRunning">
+            <summary>
+            If this action is currently running and is executing code on a schedule.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.Action">
+            <summary>
+            The action to execute. The arg is the cancellation token that will be used when calling <see cref="M:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.Stop"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.ExceptionHandler">
+            <summary>
+            Optional delegate to handle any exceptions that are thrown.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.HaltOnException">
+            <summary>
+            If this action should stop running when an uncaught exception is thrown.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.Start">
+            <summary>
+            Starts this action so code starts running on the internally defined schedule.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.ExecuteAndStart">
+            <summary>
+            Execute <see cref="P:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.Action"/> and then start executing on the internally defined schedule.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.Contracts.ScheduledAction.IScheduledAction.Stop">
+            <summary>
+            Stops this action and waits if it still executing.
+            </summary>
+        </member>
+    </members>
+</doc>

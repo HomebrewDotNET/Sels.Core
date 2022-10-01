@@ -7,7 +7,7 @@ using System.Text;
 namespace Sels.Core.Contracts.Factory
 {
     /// <summary>
-    /// IoC factory that is able to resolve services based on the type and/or the name of the service.
+    /// A factory that is able to create named/unnamed servics based on the provided type.
     /// </summary>
     public interface IServiceFactory
     {
@@ -81,56 +81,18 @@ namespace Sels.Core.Contracts.Factory
         bool IsRegistered<T>(string name);
         #endregion
 
-        #region Registering
+        #region Loading
         /// <summary>
-        /// Adds a new service of Type <paramref name="type"/> to the factory.
+        /// Loads all services fron <paramref name="collection"/> into the factory.
         /// </summary>
-        /// <param name="type">Type of service to add</param>
-        /// <param name="scope">Scope of the service</param>
-        void Register(ServiceScope scope, Type type);
+        /// <param name="collection">The collection with the services to add</param>
+        /// <returns>Current factory for method chaning</returns>
+        IServiceFactory LoadFrom(IServiceCollection collection);
         /// <summary>
-        /// Adds a new service of Type <typeparamref name="T"/> to the factory.
+        /// Creates a copy of the current factory.
         /// </summary>
-        /// <typeparam name="T">Type of service to add</typeparam>
-        /// <param name="scope">Scope of the service</param> 
-        void Register<T>(ServiceScope scope);
-        /// <summary>
-        /// Adds a new service of Type <paramref name="type"/> with Name <paramref name="name"/> to the factory.
-        /// </summary>
-        /// <param name="type">Type of service to add</param>
-        /// <param name="name">Name of service</param>
-        /// <param name="scope">Scope of the service</param>
-        void Register(ServiceScope scope, Type type, string name);
-        /// <summary>
-        /// Adds a new service of Type <typeparamref name="T"/> with Name <paramref name="name"/> to the factory.
-        /// </summary>
-        /// <typeparam name="T">Type of service to add</typeparam>
-        /// <param name="name">Name of service</param>
-        /// <param name="scope">Scope of the service</param>
-        void Register<T>(ServiceScope scope, string name);
-
-        /// <summary>
-        /// Adds a new service of Type <paramref name="implementationType"/> that can be resolved as an implementation for <paramref name="serviceType"/> with Name <paramref name="name"/>.
-        /// </summary>
-        /// <param name="scope">Scope of the service</param>
-        /// <param name="serviceType">Type of service to register <paramref name="implementationType"/> under</param>
-        /// <param name="implementationType">Type of service to add</param>
-        /// <param name="name">Name of service</param>
-        void Register(ServiceScope scope, Type serviceType, Type implementationType, string name);
-        /// <summary>
-        /// Adds a new service of Type <typeparamref name="TImplementation"/> that can be resolved as an implementation for <typeparamref name="TService"/> with Name <paramref name="name"/>.
-        /// </summary>
-        /// <typeparam name="TService">Type of service to register <typeparamref name="TImplementation"/> under</typeparam>
-        /// <typeparam name="TImplementation">Type of service to add</typeparam>
-        /// <param name="scope">Scope of the service</param>
-        /// <param name="name">Name of service</param>
-        void Register<TService, TImplementation>(ServiceScope scope, string name) where TImplementation : TService;
-        /// <summary>
-        /// Load all registered services from <paramref name="collection"/> into this factory.
-        /// </summary>
-        /// <param name="collection">Collection with registered services</param>
-        /// <returns><paramref name="collection"/></returns>
-        IServiceCollection LoadFrom(IServiceCollection collection);
+        /// <returns>The new factory</returns>
+        IServiceFactory CreateChild();
         #endregion
     }
 }

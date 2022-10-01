@@ -1,0 +1,280 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Deployment</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttribute">
+            <summary>
+            Attribute that defines the env variable name to parse the property value from.
+            Used to overwrite the default naming convention.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttribute.Name">
+            <summary>
+            The name of the environment variable to get the value from.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttribute.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttribute"/>
+            <param name="name"><inheritdoc cref="P:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttribute.Name"/></param>
+        </member>
+        <member name="T:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttributeExtensions">
+            <summary>
+            Contains extension methods for <see cref="T:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttribute"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttributeExtensions.GetEnvironmentVariableName(System.Reflection.PropertyInfo)">
+            <summary>
+            Returns the environment variable name defined by <see cref="T:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttribute"/>.
+            </summary>
+            <param name="property">The property to check the name for</param>
+            <returns>The environment variable name or null if no attribute is defined</returns>
+        </member>
+        <member name="T:Sels.Core.Deployment.Parsing.Environment.ParserConfig">
+            <summary>
+            Contains the config for an environment parser.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Logger">
+            <summary>
+            Optional logger for tracing.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Converter">
+            <summary>
+            The converter to use.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Prefix">
+            <summary>
+            The prefix to use for environment variable names.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Splitter">
+            <summary>
+            The character to use to split a string into different key/value pairs used as properties for an object.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Deployment.Parsing.Environment.ParserConfig.IgnoreConversionErrors">
+            <summary>
+            If conversion errors can be ignored.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Deployment.Parsing.Environment.ParserConfig.ToUppercaseNames">
+            <summary>
+            If environment variables names need to be uppercased when searching for them.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Deployment.Parsing.Environment.ParserConfig.IgnoreMultiVariableArrays">
+            <summary>
+            Disables the default behaviour of handling elements using multiple env variables.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.ParserConfig.#ctor(System.Action{Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator})">
+            <inheritdoc cref="T:Sels.Core.Deployment.Parsing.Environment.ParserConfig"/>
+            <param name="configurator">Option delegate to configure this instance</param>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.ParserConfig.IsIgnoredAsCollection(System.Reflection.PropertyInfo)">
+            <summary>
+            Checks if <paramref name="property"/> is ignored as a collection.
+            </summary>
+            <param name="property">The property to check</param>
+            <returns>True if <paramref name="property"/> is ignored, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.ParserConfig.CanFallthrough(System.Reflection.PropertyInfo)">
+            <summary>
+            Checks if we are allowed to check the sub properties of <paramref name="property"/>.
+            </summary>
+            <param name="property">The property to check</param>
+            <returns>True if we are allowed to check <paramref name="property"/>, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Sels#Core#Deployment#Parsing#Environment#IEnvironmentParserConfigurator#UseConverter(Sels.Core.Conversion.Converters.ITypeConverter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Sels#Core#Deployment#Parsing#Environment#IEnvironmentParserConfigurator#UseLogger(Microsoft.Extensions.Logging.ILogger)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Sels#Core#Deployment#Parsing#Environment#IEnvironmentParserConfigurator#UseOptions(Sels.Core.Deployment.Parsing.Environment.EnvironmentParserOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Sels#Core#Deployment#Parsing#Environment#IEnvironmentParserConfigurator#UsePrefix(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Sels#Core#Deployment#Parsing#Environment#IEnvironmentParserConfigurator#UseSplitter(System.Char)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Sels#Core#Deployment#Parsing#Environment#IEnvironmentParserConfigurator#IgnoreAsCollection(System.Predicate{System.Reflection.PropertyInfo})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.ParserConfig.Sels#Core#Deployment#Parsing#Environment#IEnvironmentParserConfigurator#IgnoreSubProperties(System.Predicate{System.Reflection.PropertyInfo})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator">
+            <summary>
+            Exposes extra settings/options for a environment parser.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator.UseLogger(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Adds an optional logger that allows the parser to log.
+            </summary>
+            <param name="logger">The logger instance to use</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator.UseConverter(Sels.Core.Conversion.Converters.ITypeConverter)">
+            <summary>
+            Defines a custom converter to used instead of the default one.
+            The converter is used to convert the environment variable value to the property type.
+            </summary>
+            <param name="converter">The converter to use</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator.UsePrefix(System.String)">
+            <summary>
+            Defines a prefix that will be added in front of each expected environment variable name.
+            (e.g. with a prefix of 'MyApp' and an expected name of 'AppSettings.DevMode' the parser will search for an environment variable with name 'MyApp.AppSettings.DevMode')
+            </summary>
+            <param name="prefix">The prefix to use</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator.UseOptions(Sels.Core.Deployment.Parsing.Environment.EnvironmentParserOptions)">
+            <summary>
+            Define the options to use for this parser.
+            </summary>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator.UseSplitter(System.Char)">
+            <summary>
+            Overwrites the default splitter used to split a string into multiple elements. Default is ;
+            (e.g. With a splitter ; an object can be defined as: PropertyOneName:{Value};PropertyTwoName:{Value};PropertyTwoName:{Value})
+            (e.g. With a splitter ; an array can be defined as: Element1; Element2; Element3)
+            </summary>
+            <param name="splitter">The character to use</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator.IgnoreAsCollection(System.Predicate{System.Reflection.PropertyInfo})">
+            <summary>
+            Adds a predicate that checks if a property is ignored as a collection.
+            This causes the property value to be parsed as a regular value instead of a collection.
+            (e.g. string is parsed as a string instead of as a char[])
+            Can be called multiple times.
+            </summary>
+            <param name="predicate">Predicate that dictates if a property is ignored as a collection</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator.IgnoreSubProperties(System.Predicate{System.Reflection.PropertyInfo})">
+            <summary>
+            Adds that predicate that dictates if sub properties are allowed to be checked.
+            This causes the parser to ignore sub properties if the value couldn't be parsed.
+            (e.g. Don't check sub properties on List{T} if it couldn't be parsed)
+            Can be called multiple times.
+            </summary>
+            <param name="predicate">Predicate that dictates if sub properties aren't checked</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Deployment.Parsing.Environment.CouldNotParseEnvironmentVariableException">
+            <summary>
+            Thrown when an environment variable has an incorrect format and could not be parsed.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Deployment.Parsing.Environment.CouldNotParseEnvironmentVariableException.Name">
+            <summary>
+            The name of the environment variable.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Deployment.Parsing.Environment.CouldNotParseEnvironmentVariableException.Value">
+            <summary>
+            The value of the variable.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Deployment.Parsing.Environment.CouldNotParseEnvironmentVariableException.#ctor(System.String,System.String)">
+            <inheritdoc cref="T:Sels.Core.Deployment.Parsing.Environment.CouldNotParseEnvironmentVariableException"/>
+            <param name="name"><inheritdoc cref="P:Sels.Core.Deployment.Parsing.Environment.CouldNotParseEnvironmentVariableException.Name"/></param>
+            <param name="value"><inheritdoc cref="P:Sels.Core.Deployment.Parsing.Environment.CouldNotParseEnvironmentVariableException.Value"/></param>
+        </member>
+        <member name="T:Sels.Core.Deployment.Parsing.Environment.EnvironmentParserOptions">
+            <summary>
+            Exposes options that modifies the behaviour of an environment parser.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Deployment.Parsing.Environment.EnvironmentParserOptions.None">
+            <summary>
+            Use the default behaviours.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Deployment.Parsing.Environment.EnvironmentParserOptions.IgnoreConversionErrors">
+            <summary>
+            Instead of throwing an exception if converting from the environment variable value to the property type fails, the parser will ignore the property instead.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Deployment.Parsing.Environment.EnvironmentParserOptions.UppercaseNames">
+            <summary>
+            Uppercase the expected environment variables names when searching for them.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Deployment.Parsing.Environment.EnvironmentParserOptions.IgnoreMultiVariableArrays">
+            <summary>
+            By default properties that are assignable to <see cref="T:System.Collections.IEnumerable"/> will handled differently. Elements for the collection will be searched for by appending a counter starting at 1 behind the environment variable name.
+            (e.g. With an environment variable name 'MyApp.Sources' the elements can be defined as: MyApp.Sources.1: Source 1, MyApp.Sources.2: Source 2, MyApp.Sources.3: Source 3)
+            This behaviour will be disabled. The fallback behaviour of splitting the env variable will be used instead.
+            (e.g. With an environment variable name 'MyApp.Sources' the elements can be defined as: MyApp.Source: Source 1; Source 2; Source 3)
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Deployment.Deploy">
+            <summary>
+            Contains helper methods for the deployment of applications.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Deployment.Deploy.Environment">
+            <summary>
+            Contains helpers methods for working with environment variables.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Deployment.Deploy.Environment.ParseFrom``1(``0,System.Action{Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator},System.Boolean)">
+            <summary>
+            Parses all environment variables to the properties on <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type of the instance to parse to</typeparam>
+            <param name="instance">The object instance to parse to</param>
+            <param name="configurator">Optional delegate to configure the parser</param>
+            <param name="ignoreSystemTypes">If sub properties on types starting with System or Microsoft in the namespace are ignored</param>
+            <returns><paramref name="instance"/> with the properties deserialized from environment variables</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Deploy.Environment.ParseFrom``1(System.Action{Sels.Core.Deployment.Parsing.Environment.IEnvironmentParserConfigurator},System.Boolean)">
+            <summary>
+            Parses all environment variables to the properties on <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type of the instance to parse to</typeparam>
+            <param name="configurator">Optional delegate to configure the parser</param>
+            <param name="ignoreSystemTypes">If sub properties on types starting with System or Microsoft in the namespace are ignored</param>
+            <returns>An instance of <typeparamref name="T"/> with the properties deserialized from environment variables</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Deploy.Environment.GetEnvironmentVariableNameFrom``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+            <summary>
+            Returns the defined environment variable name for the property selected by <paramref name="property"/> on type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of the source object to get the name from</typeparam>
+            <param name="property">Expression pointing to the property</param>
+            <returns>The defined environment variable name or null if nothing is defined</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Deploy.Environment.GetEnvironmentVariableValueFrom``1(System.Linq.Expressions.Expression{System.Func{``0,System.Object}})">
+            <summary>
+            Returns the defined environment variable name for the property selected by <paramref name="property"/> on type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of the source object to get the name from</typeparam>
+            <param name="property">Expression pointing to the property</param>
+            <returns>The defined environment variable name or null if nothing is defined</returns>
+        </member>
+        <member name="M:Sels.Core.Deployment.Deploy.Environment.SetEnvironmentVariableValueFrom``1(``0,System.Linq.Expressions.Expression{System.Func{``0,System.Object}},System.EnvironmentVariableTarget)">
+            <summary>
+            Sets an environment variable value by using the value of a property on <paramref name="source"/>.
+            </summary>
+            <typeparam name="T">Type of the source object to set the value from</typeparam>
+            <param name="source">Instance to set the value from</param>
+            <param name="property">Expression pointing to the property. If <see cref="T:Sels.Core.Deployment.Parsing.Environment.EnvironmentVariableNameAttribute"/> is defined that name will be used, otherwise the property name</param>
+            <param name="target">Specifies where to save the variable</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

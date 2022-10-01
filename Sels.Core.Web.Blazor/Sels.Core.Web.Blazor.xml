@@ -1,0 +1,1113 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Web.Blazor</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations">
+            <summary>
+            Contains extension methods for registering services
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddJwtTokenService(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Registers the jwt token service where the settings are loading in from the jwt section.
+            </summary>
+            <param name="services">Collection to add the services to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddTokenStorageAuthenticationProvider(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Adds an authentication provider that manages tokens in the browser storage.
+            </summary>
+            <param name="services">Collection to add the services to</param>
+            <param name="storageKey">The key where the tokens are saved</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.BlazorConstants">
+            <summary>
+            Contains static values for Balzor servers apps.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.BlazorConstants.Form">
+            <summary>
+            Constants related to forms.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.BlazorConstants.Form.GlobalFieldName">
+            <summary>
+            The fake field name used to display global validation error messages that aren't tied to a field.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.BlazorConstants.Config">
+            <summary>
+            Constants related to the web app configuration.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.BlazorConstants.Config.Jwt">
+            <summary>
+            Constants related the the jwt configuration.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.BlazorConstants.Config.Jwt.Section">
+            <summary>
+            The jwt section name.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.BlazorConstants.Config.Jwt.Issuer">
+            <summary>
+            Config key pointing to the jwt issues.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.BlazorConstants.Config.Jwt.Audience">
+            <summary>
+            Config key pointing to the jwt audience.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.BlazorConstants.Config.Jwt.Secret">
+            <summary>
+            Config key pointing to the secret used to create the jwt token.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService">
+            <summary>
+            Authentication state provider that manages state by saving auth tokens to the browser storage.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.#ctor">
+            <summary>
+            Constructor for proxy generation.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.#ctor(Sels.Core.Web.Blazor.Authentication.Token.ITokenService,Blazored.LocalStorage.ILocalStorageService,System.String,Microsoft.Extensions.Logging.ILogger{Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService})">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService"/>
+            <param name="tokenService">Service used to validate the tokens</param>
+            <param name="localStorageService">Service used to access the tokens saved in the browser storage</param>
+            <param name="storageKey">The key used to retrieve the tokens from storage</param>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.GetAuthenticationStateAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.SignIn(System.Security.Claims.ClaimsPrincipal,System.Nullable{System.DateTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.SignOut">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService">
+            <summary>
+            Token service that generates jwt tokens.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService.#ctor(System.String,System.String,System.Byte[],Microsoft.Extensions.Logging.ILogger{Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService})">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService"/>
+            <param name="issuer">The issuer of the jwt tokens</param>
+            <param name="audience">The services that accept the jwt tokens</param>
+            <param name="secret">Bytes used to sign the jwt token</param>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService.CreateTokenAsync(System.Collections.Generic.IEnumerable{System.Security.Claims.Claim},System.Nullable{System.DateTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService.GetClaims(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService.GetPrincipal(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService.ValidateTokenAsync(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Authentication.Token.ITokenService">
+            <summary>
+            Service that manages tokens used for authentication in Blazor servers apps.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.ITokenService.CreateTokenAsync(System.Collections.Generic.IEnumerable{System.Security.Claims.Claim},System.Nullable{System.DateTime})">
+            <summary>
+            Generates a token using <paramref name="claims"/> that describes the user.
+            </summary>
+            <param name="claims">The claims of the user</param>
+            <param name="expiryDate">Optional date when the token expires</param>
+            <returns>The generated token.</returns>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.ITokenService.ValidateTokenAsync(System.String)">
+            <summary>
+            Validates <paramref name="token"/>.
+            </summary>
+            <param name="token">The token to validate</param>
+            <returns>True if <paramref name="token"/> is valid, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.Token.ITokenService.GetPrincipal(System.String)">
+            <summary>
+            Extracts the principal from <paramref name="token"/>.
+            </summary>
+            <param name="token">Token to get the principal from</param>
+            <returns>The principal embedded in <paramref name="token"/> or null if the token isn't valid anymore</returns>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Authentication.IAuthenticationService">
+            <summary>
+            Service that adds ways to set or clear the authentication state for server-side blazor applications.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.IAuthenticationService.SignIn(System.Security.Claims.ClaimsPrincipal,System.Nullable{System.DateTime})">
+            <summary>
+            Sets the authentication state using <paramref name="principal"/>.
+            </summary>
+            <param name="principal">The principal to sign in</param>
+            <param name="expiryDate">Time when the sign in state expires</param>
+            <returns>Task to await the result</returns>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.IAuthenticationService.SignOut">
+            <summary>
+            Clears any authentication state.
+            </summary>
+            <returns>Task to await the result</returns>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException">
+            <summary>
+            Exception thrown when a page expects a cascading parameter but none is provided.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException.#ctor(System.Object,System.Type,System.String)">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException"/>
+            <param name="page">The page that is missing the cascading parameter</param>
+            <param name="parameterType">The type of the cascading parameter</param>
+            <param name="parameterName">The name of the cascading parameter property</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException.ThrowOnNull``1(System.Object,``0,System.String)">
+            <summary>
+            Throws a new <see cref="T:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException"/> if <paramref name="parameter"/> is null.
+            </summary>
+            <typeparam name="T">Type of the cascading parameter</typeparam>
+            <param name="page">The page that is missing the cascading parameter</param>
+            <param name="parameter">The cascading parameter that was null. Compiler attributes are used to get the property name</param>
+            <param name="parameterName">Optional property name. Is filled out by the compiler</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException.ThrowOnNull``1(System.Object,System.Threading.Tasks.Task{``0},System.String)">
+            <summary>
+            Throws a new <see cref="T:Sels.Core.Web.Blazor.Exceptions.MissingCascadingParameterException"/> if <paramref name="parameter"/> is null.
+            </summary>
+            <typeparam name="T">Type of the cascading parameter</typeparam>
+            <param name="page">The page that is missing the cascading parameter</param>
+            <param name="parameter">The cascading parameter that was null. Compiler attributes are used to get the property name</param>
+            <param name="parameterName">Optional property name. Is filled out by the compiler</param>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Models.Localization.LocalizationContext">
+            <summary>
+            Context that contains localization info that can be provided to child components as cascading value.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Models.Localization.LocalizationContext.Culture">
+            <summary>
+            The culture to localize in.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Models.Localization.LocalizationContext.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Models.Localization.LocalizationContext"/>
+            <param name="culture">The name of the culture to localize in</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Models.Localization.LocalizationContext.#ctor(System.Globalization.CultureInfo)">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Models.Localization.LocalizationContext"/>
+            <param name="culture"><inheritdoc cref="P:Sels.Core.Web.Blazor.Models.Localization.LocalizationContext.Culture"/></param>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.BasePage">
+            <summary>
+            Template for creating blazor page.
+            Contains a cancellation token that gets cancelled when the page is navigated away from.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BasePage.Token">
+            <summary>
+            Cancellation token that gets cancelled when the page is navigated away from. 
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BasePage.Rendered">
+            <summary>
+            If the component has been rendered for the first time.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.GetValue``1(System.String)">
+            <summary>
+            Gets the value for property with name <paramref name="property"/>.
+            </summary>
+            <typeparam name="T">Type of the property value</typeparam>
+            <param name="property">The name of the property. When not provided the compiler will fill out the property name</param>
+            <returns>The value for property with name <paramref name="property"/></returns>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.SetValue``1(``0,System.String)">
+            <summary>
+            Sets the value for property with name <paramref name="property"/>.
+            Calls <see cref="M:Microsoft.AspNetCore.Components.ComponentBase.StateHasChanged"/> so a render is triggered.
+            </summary>
+            <typeparam name="T">Type of the property value</typeparam>
+            <param name="value">The value to set</param>
+            <param name="property">The name of the property. When not provided the compiler will fill out the property name</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.OnAfterRender(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.OnAfterRenderAsync(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.OnAfterFirstRenderAsync">
+            <summary>
+            Method invoked after the first render.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.OnAfterFirstRender">
+            <summary>
+            Method invoked after the first render.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BasePage.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.Form.Validation.CoreContextValidator`3">
+            <summary>
+            Validator for an edit form that delegates validation to <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/>.
+            </summary>
+            <typeparam name="TEntity">Type of objects to validate</typeparam>
+            <typeparam name="TError">Type of validation errors to returns</typeparam>
+            <typeparam name="TContext">Type of optional context to modify the behaviour of this validator</typeparam>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.Validation.CoreContextValidator`3.Validator">
+            <summary>
+            The validator that will be used to validate the form model
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.Validation.CoreContextValidator`3.GetErrorMessage">
+            <summary>
+            Optional delegate for getting the error message to display selected from <typeparamref name="TError"/>. Default is <see cref="M:System.Object.ToString"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.Validation.CoreContextValidator`3.GetFieldForError">
+            <summary>
+            Optional delegate that returns the name of the field that the error is for. If null then the error message will be added to the global field.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.Validation.CoreContextValidator`3.GetValidationContext">
+            <summary>
+            Optional delegate that returns the validation context supplied to the validator.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Form.Validation.CoreContextValidator`3.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.Form.Validation.CoreValidator`2">
+            <summary>
+            Validator for an edit form that delegates validation to <see cref="T:Sels.Core.Contracts.Validation.IValidator`2"/>.
+            </summary>
+            <typeparam name="TEntity">Type of objects to validate</typeparam>
+            <typeparam name="TError">Type of validation errors to returns</typeparam>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.Form.Validation.ValidationCleaner">
+            <summary>
+            Removes markup from fields in an edit form when the input changes. Handy for custom async validation that is triggered in the submit.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.Pages.Form.Validation.ValidationCleaner.GlobalFieldName">
+            <summary>
+            The name of the field for validation messages not tied to a field.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.Validation.ValidationCleaner.Context">
+            <summary>
+            The edit context of the parent component.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.Validation.ValidationCleaner.MessageStore">
+            <summary>
+            The message store used by the validator.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Form.Validation.ValidationCleaner.OnInitialized">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.Class">
+            <summary>
+            Optional css class for the label.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.For">
+            <summary>
+            Expression that points to the property to create the label for.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.Target">
+            <summary>
+            Optional target id for the label. Default is ReflectedType.Name + Property.Name
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.Culture">
+            <summary>
+            Optional culture to localize the property in.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.LocalizationContext">
+            <summary>
+            Optional localization context cascaded from a parent.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Form.ModelLabel.IncludeValidationMessage">
+            <summary>
+            If a validation message for the property needs to be included as well.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.Tab.Header">
+            <summary>
+            The header for the tab.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.Tab.CssClass">
+            <summary>
+            Optional css class for the a tag.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.Tab.Color">
+            <summary>
+            Optional color for the link text when not active.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.Tab.ChildContent">
+            <summary>
+            The content of the tab.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.Tab.Container">
+            <summary>
+            The parent tab container.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Layout.Tabs.Tab.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Layout.Tabs.Tab.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.TabContainer.Tabs">
+            <summary>
+            List of the tabs in the container.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.TabContainer.SelectedTab">
+            <summary>
+            The currently selected tab.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.TabContainer.ActiveColor">
+            <summary>
+            Optional color for the link text of the active tab.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.TabContainer.ChildContent">
+            <summary>
+            The content to render.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Layout.Tabs.TabContainer.AddTab(Sels.Core.Web.Blazor.Pages.Layout.Tabs.Tab)">
+            <summary>
+            Adds a tab to the container.
+            </summary>
+            <param name="tab">The tab to add</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Layout.Tabs.TabContainer.RemoveTab(Sels.Core.Web.Blazor.Pages.Layout.Tabs.Tab)">
+            <summary>
+            Removes a tab from the container.
+            </summary>
+            <param name="tab">The tab to remove</param>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.TabContainer.OnTabChanged">
+            <summary>
+            Event that gets raised when the active tab swithes.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Collapsible.Label">
+            <summary>
+            Content next to the icon.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Collapsible.Content">
+            <summary>
+            The content that is collapsible.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Collapsible.IsCollapsed">
+            <summary>
+            If the content is currently collapsed.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Collapsible.IsCollapsedChanged">
+            <summary>
+            Event that gets raised when <see cref="P:Sels.Core.Web.Blazor.Pages.Layout.Collapsible.IsCollapsed" /> changes.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.PopUp.ModalContext">
+            <summary>
+            Allows modal content to interact with the modal itself.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.ModalContext.#ctor(Sels.Core.Web.Blazor.Pages.PopUp.Modal)">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Pages.PopUp.ModalContext"/>
+            <param name="modal">The modal to create the context for</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.ModalContext.CloseAsync">
+            <inheritdoc cref="M:Sels.Core.Web.Blazor.Pages.PopUp.Modal.CloseAsync"/>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.CancelButtonText">
+            <summary>
+            The text for the cancel button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.CancelButtonColor">
+            <summary>
+            The type of the cancel button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.ConfirmButtonText">
+            <summary>
+            The text for the confirm button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.ConfirmButtonColor">
+            <summary>
+            The type of the confirm button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.OnCancel">
+            <summary>
+            Events that gets raised when the confirm popup closes or is cancelled.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.OnConfirm">
+            <summary>
+            Event that gets raised when the confirm button is clicked.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.OnResult">
+            <summary>
+            Event that gets raised with a boolean indicating if the popup was confirmed.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.ConfirmationPopUp`1.AskForConfirmation(System.String,System.String,`0)">
+            <summary>
+            Opens the confirmation modal.
+            </summary>
+            <param name="title">The titel for the modal</param>
+            <param name="content">The content for the modal</param>
+            <param name="arg">Optional argument that gets supplied to the events that trigger when the popup gets cancelled or confirmed. Can be used to pass data to handlers</param>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.Size">
+            <summary>
+            The size of the modal.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.ShowOnRender">
+            <summary>
+            If the modal needs to be showed when rendered.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.WithBackdrop">
+            <summary>
+            If the modal can show the black background.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.IsStatic">
+            <summary>
+            If the modal can be closed by clicking the backdrop. When set to true it can't be closed by clicking the backdrop.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.WithCloseButton">
+            <summary>
+            If the close button in the top right must be rendered.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.IsScrollable">
+            <summary>
+            If the modal itself is scrollable when the content becomes too long.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.IsVerticallyCentered">
+            <summary>
+            If the modal must be vertically centered.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.ForceRender">
+            <summary>
+            Forces child components to rerender when the modal opens. Default is true.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.Header">
+            <summary>
+            Content for the modal header.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.Body">
+            <summary>
+            Content for the modal body.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.Footer">
+            <summary>
+            Content for the modal footer.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.OnOpen">
+            <summary>
+            Event that gets raised when opening the modal.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.PopUp.Modal.OnClose">
+            <summary>
+            Event that gets raised when closing the modal.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.Modal.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.Modal.OnAfterRenderAsync(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.Modal.OpenAsync">
+            <summary>
+            Displays the modal.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.PopUp.Modal.CloseAsync">
+            <summary>
+            Closes the modal.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.Table.ModelTableOptions">
+            <summary>
+            Contains options for a model table of what features to enable/disable.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.Pages.Table.ModelTableOptions.None">
+            <summary>
+            Disables nothing.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.Pages.Table.ModelTableOptions.DisableSelection">
+            <summary>
+            Disables the checkbox column for selecting rows.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.Pages.Table.ModelTableOptions.DisablePagination">
+            <summary>
+            Disables the pagination components.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Blazor.Pages.Table.ModelTableOptions.DisableSorting">
+            <summary>
+            Disables the option to order the columns.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1">
+            <summary>
+            Context object for a model table component.
+            </summary>
+            <typeparam name="TModel">Type of the objects to display</typeparam>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.Headers">
+            <summary>
+            Array of all the headers for the table.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.Columns">
+            <summary>
+            Array of all the render components that will be used to render a value from <typeparamref name="TModel"/> in a column.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.RowComponents">
+            <summary>
+            Array of all render components that will be used to render additional components in the row above the table.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.State">
+            <summary>
+            The current state of the table.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.OnStateChanged">
+            <summary>
+            Event that gets raised when the table state changes. Does not trigger when selected models change.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.OnSelectedChanged">
+            <summary>
+            Event that gets raised when the selected models change.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.OnRenderRequested">
+            <summary>
+            Event that gets raised when the razor page needs to be refreshed.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.#ctor">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1"/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.AddHeader(System.String,Microsoft.AspNetCore.Components.RenderFragment,System.Int32,System.Boolean,System.String)">
+            <summary>
+            Add a new header to the current table.
+            </summary>
+            <param name="columnId">The id of the column that will be provided as the sorted column</param>
+            <param name="header">The value that will be displayed as the header</param>
+            <param name="order">Used to determine the order. Lower means rendered first</param>
+            <param name="canSort">If this column can be sorted by</param>
+            <param name="cssClass">Optional css class for the th tag</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.AddColumnComponent(Microsoft.AspNetCore.Components.RenderFragment{`0},System.Int32,System.String)">
+            <summary>
+            Adds a component that will render a value from <typeparamref name="TModel"/> in a column.
+            </summary>
+            <param name="order">Used to determine the order. Lower means rendered first</param>
+            <param name="component">The render component</param>
+            <param name="cssClass">Optional css class for the td tag</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.AddRowComponent(Microsoft.AspNetCore.Components.RenderFragment,System.Int32,System.String)">
+            <summary>
+            Adds a components that will be rendered in the row above the table.
+            </summary>
+            <param name="component">The component to render</param>
+            <param name="order">Used to determine the order. Lower means rendered first</param>
+            <param name="cssClass">Optional css class for the td tag</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.RemoveColumnComponent(Microsoft.AspNetCore.Components.RenderFragment{`0})">
+            <summary>
+            Removes a column component.
+            </summary>
+            <param name="component">The reference of the column component to remove</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableContext`1.RemoveHeaderComponent(Microsoft.AspNetCore.Components.RenderFragment)">
+            <summary>
+            Removes a header component.
+            </summary>
+            <param name="component">The reference of the header component to remove</param>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1">
+            <summary>
+            Contains the state of a model table.
+            </summary>
+            <typeparam name="TModel">Type of the objects to display</typeparam>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.Models">
+            <summary>
+            All the models displayed in the table.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.Selected">
+            <summary>
+            The currently selected models
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.Page">
+            <summary>
+            The current page.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.TotalPages">
+            <summary>
+            How many pages there are.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.PageSize">
+            <summary>
+            Max amount of items to display per page.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.SortColumn">
+            <summary>
+            Contains the column id of the column that is selected as the sort column.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.SortOrder">
+            <summary>
+            The sort order for <see cref="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.SortColumn"/> if one is selected.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.SetModels(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Sets the current models to display.
+            </summary>
+            <param name="models">Enumerator returning the models to display</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.SetPage(System.Int32)">
+            <summary>
+            Sets <see cref="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.Page"/>.
+            </summary>
+            <param name="page">What page the table is currently on</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.SetPageSize(System.Int32)">
+            <summary>
+            Sets <see cref="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.PageSize"/>.
+            </summary>
+            <param name="size">How many items to display per page</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.SetTotalPages(System.Int32)">
+            <summary>
+            Sets <see cref="P:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.TotalPages"/>.
+            </summary>
+            <param name="pageAmount">How many pages there are to display</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.SetSelected(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Sets the currently selected models.
+            </summary>
+            <param name="models">Enumerator returning the models to set as selected</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.SetSortColumn(System.String,Sels.Core.Models.Sorting.SortOrder)">
+            <summary>
+            Sets the current column to order by and in which direction.
+            </summary>
+            <param name="columnId">The id of the column to order by</param>
+            <param name="sortOrder">In which order to sort the column</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTableState`1.IsSelected(`0)">
+            <summary>
+            Checks if <paramref name="model"/> is selected in the table.
+            </summary>
+            <param name="model">The model to check</param>
+            <returns>True if <paramref name="model"/> is selected in the table, otherwise false</returns>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.Column`1.ChildContent">
+            <summary>
+            The content that will be displayed in the column for the model.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.Column`1.TableContext">
+            <summary>
+            Cascaded content from parent model table.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.Column`1.CssClass">
+            <summary>
+            Optional css class for the td tag.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.Column`1.Order">
+            <summary>
+            Used to determine the order. Lower means rendered first.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.Column`1.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.Column`1.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.Header`1.ColumnId">
+            <summary>
+            The unique id of the column.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.Header`1.ChildContent">
+            <summary>
+            The content that will be displayed in the header.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.Header`1.CssClass">
+            <summary>
+            Optional css class for the th tag.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.Header`1.TableContext">
+            <summary>
+            Cascaded content from parent model table.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.Header`1.CanSort">
+            <summary>
+            Indicates if this column can be sorted on.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.Header`1.Order">
+            <summary>
+            Used to determine the order. Lower means rendered first.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.Header`1.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.Header`1.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.Context">
+            <summary>
+            Context object for the model table that gets cascaded to child components.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.LocalizationContext">
+            <summary>
+            Optional localization context cascaded from a parent.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.Options">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Pages.Table.ModelTableOptions" />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.RowCssClassSelector">
+            <summary>
+            Optional delegate that returns the css class for the table row based on the provided model.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.CssClass">
+            <summary>
+            Optional css class for the table.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.Models">
+            <summary>
+            The models to render initially.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.PageOffset">
+            <summary>
+            Optional page offset for the pagination component if enabled.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.MaxPageSize">
+            <summary>
+            The max page size for the input field.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.ChildContent">
+            <summary>
+            Contains the headers and column components.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.OnStateChanged">
+            <summary>
+            Event that gets raised when the table state changes. Does not trigger when selected models change.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.OnSelectedChanged">
+            <summary>
+            Event that gets raised when the selected models change.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.ModelColumn`2.LocalizationContext">
+            <summary>
+            Optional localization context cascaded from a parent.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.ModelColumn`2.For">
+            <summary>
+            Expression that points to the property to create a header and label for.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.ModelColumn`2.Display">
+            <summary>
+            Optional delegate that transforms the property value into a string to render.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.ModelColumn`2.Order">
+            <summary>
+            Used to determine the order. Lower means rendered first.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.ModelColumn`2.HeaderCss">
+            <summary>
+            Optional css for the th element.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.ModelColumn`2.ColumnCss">
+            <summary>
+            Optional css for the td element.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.ModelColumn`2.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.RowComponent`1.ChildContent">
+            <summary>
+            The content that will be displayed in the top row.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.RowComponent`1.CssClass">
+            <summary>
+            Optional css class for the div tag.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.RowComponent`1.Order">
+            <summary>
+            Used to determine the order. Lower means rendered first.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.RowComponent`1.TableContext">
+            <summary>
+            Cascaded content from parent model table.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Table.RowComponent`1.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.ChildContent">
+            <summary>
+            The content of the button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.IsSubmit">
+            <summary>
+            If the button is a submit button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.IsExecuting">
+            <summary>
+            Indicates that the action caused by the button is executing.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.ButtonColor">
+            <summary>
+            The color of the button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.TextColor">
+            <summary>
+            The color of the button text.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.CssButton">
+            <summary>
+            Optional css for the button.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.SpinnerType">
+            <summary>
+            The type of the loading icon that gets displayed when <see cref="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.IsExecuting" /> is set to true .
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.IsExecutingChanged">
+            <summary>
+            Event that gets raised when <see cref="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.IsExecuting" /> changes.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.BootstrapButton.OnClick">
+            <summary>
+            Event that gets raised when the button gets clicked.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.BootstrapButton.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.DisplayField`1.LocalizationContext">
+            <summary>
+            Optional localization context cascaded from a parent.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.DisplayField`1.For">
+            <summary>
+            Expression that points to the property to create a header and label for.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.DisplayField`1.Display">
+            <summary>
+            Optional delegate that transforms the property value into a string to render.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.DisplayField`1.LabelCss">
+            <summary>
+            Optional css for the label element.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.DisplayField`1.InputCss">
+            <summary>
+            Optional css for the input element.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Display.DisplayField`1.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.Type">
+            <summary>
+            The type of spinner icon to render.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.Color">
+            <summary>
+            The color for the spinner.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.IsSmall">
+            <summary>
+            If the icon needs to be rendered as a small icon.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.ContainerType">
+            <summary>
+            The type of the flex container wrapped around the spinner.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.Direction">
+            <summary>
+            Direction of the flex items in the flex container.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.MainAlignment">
+            <summary>
+            Alignment of the flex items along the main axis.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.CrossAlignment">
+            <summary>
+            Alignment of the flex items along the cros axis.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.CssSpinner">
+            <summary>
+            Optional css for the spinner div.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.CssContainer">
+            <summary>
+            Optional css for the flex container div.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Display.LoadingSpinner.ChildContent">
+            <summary>
+            Optional content to render in front of the loading icon.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Pagination.PageNavigator.Page">
+            <summary>
+            The current selected page.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Pagination.PageNavigator.TotalPages">
+            <summary>
+            How many total pages there are.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Pagination.PageNavigator.PageOffset">
+            <summary>
+            How many page buttons to render before and after the selected page button. When set to null all page buttons will be rendered.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Pagination.PageNavigator.OnPageChange">
+            <summary>
+            Event that gets raised when the selected page changes.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Pages.Pagination.PageNavigator.OnInitializedAsync">
+            <inheritdoc />
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Routing.RedirectTo.Path">
+            <summary>
+            The path to navigate to.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Routing.RedirectTo.ForceLoad">
+            <summary>
+            If the page should be loaded from the server.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Routing.RedirectTo.Replace">
+            <summary>
+            If the current history must be replaced by <see cref="P:Sels.Core.Web.Blazor.Pages.Routing.RedirectTo.Path"/>
+            </summary>
+        </member>
+    </members>
+</doc>

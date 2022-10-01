@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
@@ -15,14 +14,18 @@ Used by projects maintained here: https://github.com/Jenssels1998
 		<PackageTags>Sels</PackageTags>
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 		<!--For NuGet package-->
-		<VersionPrefix>3.0.1</VersionPrefix>
+		<VersionPrefix>4.0.2</VersionPrefix>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
-		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$(BUILD_NUMBER)</BuildNumber>
+		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
 		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
 		<DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 	</PropertyGroup>
 
+	<Target Name="GetTargetPath">
+
+	</Target>
+	
 	<!--Exclude pdb files from release build-->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<DebugType>None</DebugType>
@@ -38,38 +41,37 @@ Used by projects maintained here: https://github.com/Jenssels1998
 
 	<!--Clear local versions if already added and add NuGet package to local repository-->
 	<Target Name="NuGetPushToLocal" AfterTargets="Pack" Condition="'$(OS)' == 'Windows_NT' And Exists('C:\NuGet\nuget.exe')">
-    <Exec Command="if exist %USERPROFILE%\.nuget\packages\$(PackageId)\$(PackageVersion) rmdir /s /q %USERPROFILE%\.nuget\packages\$(PackageId)\$(PackageVersion)" />
-    <Exec Command="if exist C:\NuGet\$(PackageId)\$(PackageVersion) rmdir /s /q C:\NuGet\$(PackageId)\$(PackageVersion)" />
+    <Exec Command="if exist %USERPROFILE%\.nuget\packages\$(PackageId) rmdir /s /q %USERPROFILE%\.nuget\packages\$(PackageId)" />
+    <Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
 
 	<ItemGroup>
 		<Compile Remove="Components\Execution\**" />
 		<Compile Remove="Components\Newtonsoft\**" />
+		<Compile Remove="Contracts\Conversion\**" />
+		<Compile Remove="Templates\**" />
 		<EmbeddedResource Remove="Components\Execution\**" />
 		<EmbeddedResource Remove="Components\Newtonsoft\**" />
+		<EmbeddedResource Remove="Contracts\Conversion\**" />
+		<EmbeddedResource Remove="Templates\**" />
 		<None Remove="Components\Execution\**" />
 		<None Remove="Components\Newtonsoft\**" />
+		<None Remove="Contracts\Conversion\**" />
+		<None Remove="Templates\**" />
 	</ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Extensions\Execution\AsyncLinqExtensions.cs~RFeee5d92.TMP" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
   </ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Components\Parameters\Exceptions\" />
-		<Folder Include="Templates\Command\" />
-	</ItemGroup>
 
 </Project>

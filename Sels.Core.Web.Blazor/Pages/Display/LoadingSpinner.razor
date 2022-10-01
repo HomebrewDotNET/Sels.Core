@@ -1,0 +1,70 @@
+﻿@using Sels.Core.Web.Bootstrap.V5.Models.Components
+@using Sels.Core.Web.Bootstrap.V5.Utilities
+@using Sels.Core.Web.Bootstrap.V5.Utilities.Flex
+
+<div class="@ContainerType.ToCss() @Direction.ToCss() @MainAlignment.ToCss() @CrossAlignment.ToCss() @Color.ToCss() @CssContainer">    
+    @if(ChildContent != null)
+    {
+        @ChildContent
+        <div class="@Type.ToCss(IsSmall) @CssSpinner" role="status" aria-hidden="true" />         
+    }
+    else
+    {
+        <div class="@Type.ToCss(IsSmall) @CssSpinner" role="status">
+           <span class="visually-hidden">Loading...</span>  
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// The type of spinner icon to render.
+    /// </summary>
+    [Parameter]
+    public SpinnerType Type { get; set; } = SpinnerType.Border;
+    /// <summary>
+    /// The color for the spinner.
+    /// </summary>
+    [Parameter]
+    public TextColor Color { get; set; } = TextColor.Default;
+    /// <summary>
+    /// If the icon needs to be rendered as a small icon.
+    /// </summary>
+    [Parameter]
+    public bool IsSmall { get; set; } = false;
+    /// <summary>
+    /// The type of the flex container wrapped around the spinner.
+    /// </summary>
+    [Parameter]
+    public FlexContainerType ContainerType { get; set; } = FlexContainerType.Default;
+    /// <summary>
+    /// Direction of the flex items in the flex container.
+    /// </summary>
+    [Parameter]
+    public FlexDirection Direction { get; set; } = FlexDirection.Row;
+    /// <summary>
+    /// Alignment of the flex items along the main axis.
+    /// </summary>
+    [Parameter]
+    public FlexMainAlignment MainAlignment { get; set; } = FlexMainAlignment.Start;
+    /// <summary>
+    /// Alignment of the flex items along the cros axis.
+    /// </summary>
+    [Parameter]
+    public FlexCrossAlignment CrossAlignment { get; set; } = FlexCrossAlignment.Start;
+    /// <summary>
+    /// Optional css for the spinner div.
+    /// </summary>
+    [Parameter]
+    public string? CssSpinner { get; set; }
+    /// <summary>
+    /// Optional css for the flex container div.
+    /// </summary>
+    [Parameter]
+    public string? CssContainer { get; set; }
+    /// <summary>
+    /// Optional content to render in front of the loading icon.
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

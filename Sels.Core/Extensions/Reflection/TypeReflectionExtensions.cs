@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +12,9 @@ using System.Text;
 
 namespace Sels.Core.Extensions.Reflection
 {
+    /// <summary>
+    /// Contains extension methods for <see cref="Type"/>.
+    /// </summary>
     public static class TypeReflectionExtensions
     {
         private static readonly HashSet<Type> _numericTypes = new HashSet<Type>
@@ -22,8 +26,10 @@ namespace Sels.Core.Extensions.Reflection
         };
 
         /// <summary>
-        /// Returns source type of it's not null, otherwise return null
+        ///  Returns the type of <paramref name="source"/> if it's not null, otherwise return null.
         /// </summary>
+        /// <param name="source">The object to get the type from</param>
+        /// <returns>The type of <paramref name="source"/> if it is not null, otherwise false</returns>
         public static Type GetTypeOrDefault(this object source)
         {
             return source != null ? source.GetType() : null;
@@ -34,24 +40,34 @@ namespace Sels.Core.Extensions.Reflection
         /// </summary>
         /// <param name="type">Type to check</param>
         /// <returns>Boolean indicating if type is an item container</returns>
-        public static bool IsItemContainer(this Type type)
+        public static bool IsContainer(this Type type)
         {
+            type.ValidateArgument(nameof(type));
+
             return !type.IsValueType && type.IsArray || type.IsEnumerable() || type.IsTypedEnumerable();
         }
 
+        /// <summary>
+        /// Checks if <paramref name="type"/> is assignable to <see cref="IEnumerable"/>.
+        /// </summary>
+        /// <param name="type">The type to check</param>
+        /// <returns>If <paramref name="type"/> is assignable to <see cref="IEnumerable"/></returns>
         public static bool IsEnumerable(this Type type)
         {
+            type.ValidateArgument(nameof(type));
+
             return !type.IsValueType && type.IsArray || typeof(IEnumerable).IsAssignableFrom(type);
         }
-
+        /// <summary>
+        /// Checks if <paramref name="type"/> is assignable to <see cref="IEnumerable{T}"/>.
+        /// </summary>
+        /// <param name="type">The type to check</param>
+        /// <returns>If <paramref name="type"/> is assignable to <see cref="IEnumerable{T}"/></returns>
         public static bool IsTypedEnumerable(this Type type)
         {
-            return !type.IsValueType && type.IsArray || type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)); ;
-        }
+            type.ValidateArgument(nameof(type));
 
-        public static bool IsDictionary(this Type type)
-        {
-            return type.IsGenericType && type.GetGenericTypeDefinition().Equals(typeof(Dictionary<,>));
+            return !type.IsValueType && type.IsArray || type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>);
         }
 
         /// <summary>
@@ -61,14 +77,26 @@ namespace Sels.Core.Extensions.Reflection
         {
             return !type.IsValueType;
         }
-
+        /// <summary>
+        /// Checks if <paramref name="type"/> is <see cref="string"/>.
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <returns>If <paramref name="type"/> is <see cref="string"/></returns>
         public static bool IsString(this Type type)
         {
-            return type.Equals(typeof(string));
-        }
+            type.ValidateArgument(nameof(type));
 
+            return type.Is<string>();
+        }
+        /// <summary>
+        /// Checks if <paramref name="type"/> is any of the numeric types.
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <returns>If <paramref name="type"/> is any of the numeric types</returns>
         public static bool IsNumeric(this Type type)
         {
+            type.ValidateArgument(nameof(type));
+
             return _numericTypes.Contains(Nullable.GetUnderlyingType(type) ?? type);
         }
 
@@ -124,7 +152,7 @@ namespace Sels.Core.Extensions.Reflection
         /// <returns>Boolean indicating if <paramref name="source"/> can be assigned to <paramref name="type"/></returns>
         public static bool IsAssignableTo(this object source, Type type)
         {
-            return source != null && type.IsAssignableFrom(source.GetType());
+            return source != null && type != null && type.IsAssignableFrom(source.GetType());
         }
 
         /// <summary>
@@ -135,12 +163,18 @@ namespace Sels.Core.Extensions.Reflection
         /// <returns>Boolean indicating if an instance of <paramref name="sourceType"/> can be assigned to <paramref name="type"/></returns>
         public static bool IsAssignableTo(this Type sourceType, Type type)
         {
-            return sourceType != null && type.IsAssignableFrom(sourceType);
+            return sourceType != null && type != null && type.IsAssignableFrom(sourceType);
         }
 
-        public static Type GetItemTypeFromContainer(this Type containerType)
+        /// <summary>
+        /// Tries to get the element type from <paramref name="containerType"/>.
+        /// </summary>
+        /// <param name="containerType">Type to get the element type from</param>
+        /// <returns>The element type for <paramref name="containerType"/></returns>
+        /// <exception cref="NotSupportedException"></exception>
+        public static Type GetElementTypeFromCollection(this Type containerType)
         {
-            containerType.ValidateVariable(x => x.IsItemContainer(), () => $"{nameof(containerType)} must be an item container like IEnumerable, Array, Dictionary");
+            containerType.ValidateArgument(x => x.IsContainer(), $"{nameof(containerType)} must be an item container like IEnumerable, Array, Dictionary, ...");
 
             if (containerType.IsArray)
             {
@@ -157,7 +191,23 @@ namespace Sels.Core.Extensions.Reflection
                 if (!elementType.IsDefault()) return elementType;
             }
 
-            throw new NotSupportedException($"Could not extract underlying item type from type {containerType}");
+            throw new NotSupportedException($"Could not extract underlying element type from type {containerType}");
+        }
+
+        /// <summary>
+        /// Tries to get the element type from <paramref name="container"/>.
+        /// </summary>
+        /// <param name="container">Object to get the element type from</param>
+        /// <returns>The element type for <paramref name="container"/></returns>
+        /// <exception cref="NotSupportedException"></exception>
+        public static Type GetElementTypeFromCollection(this object container)
+        {
+            if(container != null)
+            {
+                return container.GetType().GetElementTypeFromCollection();
+            }
+
+            throw new NotSupportedException($"Could not extract underlying item type");
         }
 
         /// <summary>
@@ -167,7 +217,7 @@ namespace Sels.Core.Extensions.Reflection
         /// <returns>Default value for <paramref name="type"/></returns>
         public static object GetDefaultValue(this Type type)
         {
-            type.ValidateVariable(nameof(type));
+            type.ValidateArgument(nameof(type));
 
             if (type.IsValueType)
             {
@@ -177,50 +227,121 @@ namespace Sels.Core.Extensions.Reflection
             return null;
         }
 
-        #region Property Finder
-        public static PropertyInfo FindProperty(this Type type, string propertyName)
+        /// <summary>
+        /// Gets all constant fields on <paramref name="type"/>.
+        /// </summary>
+        /// <param name="type">Type to get the constant fields from</param>
+        /// <returns>All constant fields on <paramref name="type"/></returns>
+        public static IEnumerable<FieldInfo> GetConstants(this Type type)
         {
-            return type.GetProperties().Where(x => x.Name.Equals(propertyName)).FirstOrDefault();
+            type.ValidateArgument(nameof(type));
+
+            return type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(x => x.IsLiteral && !x.IsInitOnly);
         }
 
-        public static bool TryFindProperty(this Type type, string propertyName, out PropertyInfo property)
+        #region DisplayName
+        /// <summary>
+        /// Returns a display name where in case of a generic type the types are fully filled out.
+        /// </summary>
+        /// <param name="type">Type to get the display name for</param>
+        /// <param name="includeNamespace">If the namespace needs to be included</param>
+        /// <returns>The display name for <paramref name="type"/></returns>
+        public static string GetDisplayName(this Type type, bool includeNamespace = true)
         {
-            property = type.GetProperties().Where(x => x.Name.Equals(propertyName)).FirstOrDefault();
+            type.ValidateArgument(nameof(type));
 
-            return property != null;
+            return new StringBuilder().GetDisplayName(type, includeNamespace).ToString();
         }
-
-        public static PropertyInfo FindProperty(this object source, string propertyName)
+        /// <summary>
+        /// Appends a display name where in case of a generic type the types are fully filled out to <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder">The builder to append to</param>
+        /// <param name="type">Type to get the display name for</param>
+        /// <param name="includeNamespace">If the namespace needs to be included</param>
+        /// <returns><paramref name="builder"/> for method chaining</returns>
+        public static StringBuilder GetDisplayName(this StringBuilder builder, Type type, bool includeNamespace = true)
         {
-            if (source.HasValue())
+            builder.ValidateArgument(nameof(builder));
+            type.ValidateArgument(nameof(type));
+
+            var baseName = type.GetBaseName(includeNamespace);
+            if (type.IsArray)
             {
-                return source.GetType().FindProperty(propertyName);
+                builder.Append(GetDisplayName(type.GetElementType(), includeNamespace)).Append('[').Append(']');
+            }
+            else if (type.IsGenericTypeDefinition)
+            {
+                // Add generic type arguments in name
+                builder.Append(baseName).Append('<');
+
+                var argumentsCount = type.GetGenericArguments().Length;
+
+                for (int i = 0; i < argumentsCount - 1; i++)
+                {
+                    builder.Append(',');
+                }
+                builder.Append('>');
+            }
+            else if (type.IsGenericType)
+            {
+                // Add generic type arguments in name
+                builder.Append(baseName).Append('<');
+
+                var arguments = type.GetGenericArguments();
+                arguments.Execute((i, t) =>
+                {
+                    builder.GetDisplayName(t, includeNamespace);
+                    if (i < arguments.Length - 1) builder.Append(',');
+                });
+                builder.Append('>');
+            }
+            else
+            {
+                builder.Append(baseName);
             }
 
-            return null;
+            return builder;
         }
-
-        public static bool TryFindProperty(this object source, string propertyName, out PropertyInfo property)
+        /// <summary>
+        /// Returns the type name of <paramref name="type"/> without any generic information.
+        /// </summary>
+        /// <param name="type">Type to get the name from</param>
+        /// <param name="includeNamespace">If the namespace needs to be included</param>
+        /// <returns>The type name for <paramref name="type"/></returns>
+        public static string GetBaseName(this Type type, bool includeNamespace = true)
         {
-            property = null;
-            if (source.HasValue())
-            {
-                return source.GetType().TryFindProperty(propertyName, out property);
-            }
+            type.ValidateArgument(nameof(type));
 
-            return false;
+            string name = includeNamespace ? type.FullName != null ? type.FullName : type.Name : type.Name;
+            int index = name.IndexOf('`');
+            return index == -1 ? name : name.Substring(0, index);
         }
+        #endregion
 
+        #region Delegate Types 
+        /// <summary>
+        /// Returns the return type and the parameter types in the right order so they can be used to create a delegate.
+        /// </summary>
+        /// <param name="method">The method to get the types from</param>
+        /// <returns>The return type and the parameter types in the right order so they can be used to create a delegate</returns>
         public static Type[] GetDelegateTypes(this MethodInfo method)
         {
+            method.ValidateArgument(nameof(method));
+
             return (from parameter in method.GetParameters() select parameter.ParameterType)
             .Concat(new[] { method.ReturnType })
             .ToArray();
         }
-
+        /// <summary>
+        /// Gets the generic <see cref="Action"/> or <see cref="Func{T, TResult}"/> type that is equal to the definition of <paramref name="method"/>.
+        /// </summary>
+        /// <param name="method">The method to get the type for</param>
+        /// <returns>The generic <see cref="Action"/> or <see cref="Func{T, TResult}"/> type that is equal to the definition of <paramref name="method"/></returns>
         public static Type GetAsDelegateType(this MethodInfo method)
         {
-            return Expression.GetDelegateType(method.GetDelegateTypes());
+            method.ValidateArgument(nameof(method));
+
+            return System.Linq.Expressions.Expression.GetDelegateType(method.GetDelegateTypes());
         }
         #endregion
 
@@ -236,7 +357,7 @@ namespace Sels.Core.Extensions.Reflection
         {
             type.ValidateArgument(nameof(type));
 
-            return Activator.CreateInstance(type).As<T>();
+            return Activator.CreateInstance(type).Cast<T>();
         }
 
         /// <summary>
@@ -250,7 +371,7 @@ namespace Sels.Core.Extensions.Reflection
         {
             type.ValidateArgument(nameof(type));
 
-            return Activator.CreateInstance(type, parameters).As<T>();
+            return Activator.CreateInstance(type, parameters).Cast<T>();
         }
 
         /// <summary>
@@ -262,7 +383,16 @@ namespace Sels.Core.Extensions.Reflection
         {
             type.ValidateArgument(nameof(type));
 
-            var instance = Activator.CreateInstance(type);
+            object instance;
+            // No arg constructor
+            if (type.GetConstructors().Any(x => x.GetParameters().Length == 0))
+            {
+                instance = Activator.CreateInstance(type);
+            }
+            else
+            {
+                instance = Activator.CreateInstance(type, null);
+            }
 
             return instance;
         }
@@ -292,8 +422,7 @@ namespace Sels.Core.Extensions.Reflection
             type.ValidateArgument(nameof(type));
 
             foreach (var constructor in type.GetConstructors())
-            {
-                
+            {                
                 var parameters = constructor.GetParameters();
 
                 // Count how many parameters don't have a default value

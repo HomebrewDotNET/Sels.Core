@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Sels.Core.Components.Parameters
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public abstract class Parameter
     {
         // Fields
@@ -18,7 +19,7 @@ namespace Sels.Core.Components.Parameters
 
         public Parameter(string name)
         {
-            Name = name.ValidateVariable(nameof(name));
+            Name = name.ValidateArgument(nameof(name));
         }
 
         #region GenerateNewValue
@@ -46,8 +47,8 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public Parameter AddDependency(string name)
         {
-            name.ValidateVariable(nameof(name));
-            name.ValidateVariable(x => !_dependencies.Contains(name), () => $"Dependency to {name} already added");
+            name.ValidateArgument(nameof(name));
+            name.ValidateArgument(x => !_dependencies.Contains(name), $"Dependency to {name} already added");
 
             _dependencies.Add(name);
 
@@ -59,7 +60,7 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public Parameter AddDependency(Parameter parameter)
         {
-            parameter.ValidateVariable(nameof(parameter));
+            parameter.ValidateArgument(nameof(parameter));
             AddDependency(parameter.Name);
 
             return this;
@@ -68,7 +69,7 @@ namespace Sels.Core.Components.Parameters
 
         internal Parameter SetParameterResolver(Func<string, string, string> parameterValueResolver)
         {
-            parameterValueResolver.ValidateVariable(nameof(parameterValueResolver));
+            parameterValueResolver.ValidateArgument(nameof(parameterValueResolver));
 
             _parameterValueResolver = parameterValueResolver;
 
@@ -80,8 +81,8 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         protected string GetParameterValue(string name, string argument = null)
         {
-            name.ValidateVariable(nameof(name));
-            _parameterValueResolver.ValidateVariable(x => x.HasValue(), () => new NotSupportedException($"Parameter value resolver is not set"));
+            name.ValidateArgument(nameof(name));
+            _parameterValueResolver.ValidateArgument(x => x.HasValue(), x => new NotSupportedException($"Parameter value resolver is not set"));
 
             return _parameterValueResolver(name, argument);
         }
@@ -115,8 +116,8 @@ namespace Sels.Core.Components.Parameters
 
         protected override string GenerateValue(object scope)
         {
-            scope.ValidateVariable(nameof(scope));
-            scope.ValidateIfType<TContext>(nameof(scope));
+            scope.ValidateArgument(nameof(scope));
+            scope.ValidateArgumentAssignableTo(nameof(scope), typeof(TContext));
             var typedScope = (TContext) scope;
 
             return GenerateValue(typedScope);
@@ -124,8 +125,8 @@ namespace Sels.Core.Components.Parameters
 
         protected override string GenerateValue(object scope, string argument)
         {
-            scope.ValidateVariable(nameof(scope));
-            scope.ValidateIfType<TContext>(nameof(scope));
+            scope.ValidateArgument(nameof(scope));
+            scope.ValidateArgumentAssignableTo(nameof(scope), typeof(TContext));
             var typedScope = (TContext)scope;
 
             return GenerateValue(typedScope, argument);
@@ -145,4 +146,5 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         protected abstract string GenerateValue(TContext scope, string argument);
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

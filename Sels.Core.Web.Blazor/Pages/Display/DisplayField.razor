@@ -1,0 +1,64 @@
+﻿@using System.Linq.Expressions
+@using Sels.Core.Localization
+@using Sels.Core.Web.Blazor.Models.Localization
+@using System.Reflection
+@using Sels.Core.Extensions.Reflection;
+@typeparam TValue
+
+@if(_getter != null && _property != null)
+{
+    <label class="@LabelCss" for="@Id">
+        @Localizer.Object.Get(_property, LocalizationContext?.Culture?.Name, null, x => x.MissingKeySettings = MissingLocalizationSettings.Default)
+    </label>
+    <input type="text" class="@InputCss" value="@_getter()" disabled/>
+}
+
+@code {
+    private Func<string> _getter;
+    private PropertyInfo _property;
+
+    private string Id => $"{_property.ReflectedType.Name}.{_property.Name}";
+
+    /// <summary>
+    /// Optional localization context cascaded from a parent.
+    /// </summary>
+    [CascadingParameter(Name = "LocalizationContext")]
+    public LocalizationContext LocalizationContext { get; set; }
+    /// <summary>
+    /// Expression that points to the property to create a header and label for.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<TValue>> For { get; set; }
+    /// <summary>
+    /// Optional delegate that transforms the property value into a string to render.
+    /// </summary>
+    [Parameter]
+    public Func<TValue, string>? Display { get; set; }
+    /// <summary>
+    /// Optional css for the label element.
+    /// </summary>
+    [Parameter]
+    public string LabelCss { get; set; }
+    /// <summary>
+    /// Optional css for the input element.
+    /// </summary>
+    [Parameter]
+    public string InputCss { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        For.ValidateArgument(nameof(For));
+        _property = For.ExtractProperty(nameof(For));
+        var propertyGetter = For.Compile();
+
+        _getter = new Func<string>(() =>
+        {
+            var value = propertyGetter();
+            if (value == null) return string.Empty;
+            return Display != null ? Display(value) : value.ToString();
+        });
+    }
+}

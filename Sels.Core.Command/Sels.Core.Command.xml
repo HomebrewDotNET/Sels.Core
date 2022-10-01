@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Command</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Command.CommandConstants">
+            <summary>
+            Contains constants for command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.CommandConstants.SuccessExitCode">
+            <summary>
+            The default exit code returned by commands that indicates a succesful execution.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Components.Commands.CommandExecutionOptions">
+            <summary>
+            Provides extra options when executing a <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Components.Commands.CommandExecutionOptions.#ctor(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Provides extra options when executing a <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/>.
+            </summary>
+            <param name="loggers">Optional loggers for tracing command executions</param>
+        </member>
+        <member name="M:Sels.Core.Command.Components.Commands.CommandExecutionOptions.#ctor(Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Provides extra options when executing a <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/>.
+            </summary>
+            <param name="logger">Optional logger for tracing command executions</param>
+        </member>
+        <member name="P:Sels.Core.Command.Components.Commands.CommandExecutionOptions.Token">
+            <summary>
+            Token for cancelling the execution of long running <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Components.Commands.CommandExecutionOptions.SuccessExitCode">
+            <summary>
+            Command will succeed when the exit code returned from executing a <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/> is equal to this value. If left null the default success exit code of the <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/> will be used. 
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Components.Commands.CommandExecutionOptions.FailOnErrorOutput">
+            <summary>
+            If set to true the <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/> execution will fail regardless of the exit code returned when the error output has value.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Components.Commands.CommandExecutionOptions.Loggers">
+            <summary>
+            Allows <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/> to log.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Components.Commands.MultiCommandBuilder`1">
+            <summary>
+            Builder for <see cref="T:Sels.Core.Command.Contracts.Commands.IMultiCommandStartSetup`1"/>, <see cref="T:Sels.Core.Command.Contracts.Commands.IMultiCommandSetup`1"/> and <see cref="T:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1"/>
+            </summary>
+            <typeparam name="TChain">Type of object used that dictates how to link commands</typeparam>
+        </member>
+        <member name="P:Sels.Core.Command.Components.Commands.MultiCommandBuilder`1.StartCommand">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Command.Components.Commands.MultiCommandBuilder`1.IntermediateCommands">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Command.Components.Commands.MultiCommandBuilder`1.FinalChain">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Command.Components.Commands.MultiCommandBuilder`1.FinalCommand">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Components.Commands.MultiCommandBuilder`1.StartWith(Sels.Core.Command.Contracts.Commands.ICommand)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Components.Commands.MultiCommandBuilder`1.ContinueWith(`0,Sels.Core.Command.Contracts.Commands.ICommand)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Components.Commands.MultiCommandBuilder`1.EndWith(`0,Sels.Core.Command.Contracts.Commands.ICommand)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Contracts.Commands.ICommand">
+            <summary>
+            Exposes methods to run commands (powershell, linux, ...) and build the command string.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Contracts.Commands.ICommand.RunCommand(System.String@,System.String@,System.Int32@,Sels.Core.Command.Components.Commands.CommandExecutionOptions)">
+            <summary>
+            Executed the current command and returns it's output.
+            </summary>
+            <param name="output">Standard output received from executing the command. Equals the Stout</param>
+            <param name="error">Error output received from executing the command. Equals the Sterr</param>
+            <param name="exitCode">The exit returned by the command process</param>
+            <param name="options">Optional options for modifying the execution behaviour</param>
+            <returns>If the command was succesfully executed</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Contracts.Commands.ICommand.BuildCommand">
+            <summary>
+            Builds a string that represents the command that will be executed.
+            </summary>
+            <returns>The command string that will be executed if <see cref="M:Sels.Core.Command.Contracts.Commands.ICommand.RunCommand(System.String@,System.String@,System.Int32@,Sels.Core.Command.Components.Commands.CommandExecutionOptions)"/> is called</returns>
+        </member>
+        <member name="T:Sels.Core.Command.Contracts.Commands.ICommand`1">
+            <summary>
+            Used to execute commands and return the result as <typeparamref name="TCommandResult"/>.
+            </summary>
+            <typeparam name="TCommandResult">Type of result returned by the command</typeparam>
+        </member>
+        <member name="M:Sels.Core.Command.Contracts.Commands.ICommand`1.Execute(Sels.Core.Command.Components.Commands.CommandExecutionOptions)">
+            <summary>
+            Executes this command and parses it's command output to <typeparamref name="TCommandResult"/>.
+            </summary>
+            <param name="options">Optional options for modifying the execution behaviour</param>
+            <returns>The parsed command output from executing this command</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Contracts.Commands.ICommand`1.Execute(System.Int32@,Sels.Core.Command.Components.Commands.CommandExecutionOptions)">
+            <summary>
+            Executes this command and parses it's command output to <typeparamref name="TCommandResult"/>.
+            </summary>
+            <param name="exitCode">Exit code from executing the command</param>
+            <param name="options">Optional options for modifying the execution behaviour</param>
+            <returns>The parsed command output from executing this command</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Contracts.Commands.ICommand`1.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Parses <paramref name="exitCode"/> and <paramref name="error"/> from command execution to an object of type <typeparamref name="TCommandResult"/>.
+            </summary>
+            <param name="exitCode">Exit code of command execution</param>
+            <param name="error">Sterr of command execution</param>
+            <param name="output">Stout of command execution</param>
+            <param name="wasSuccesful">Boolean indicating if command execution was successful</param>
+            <param name="loggers">Optional loggers for tracing</param>
+            <returns>Result from command execution</returns>
+        </member>
+        <member name="T:Sels.Core.Command.Contracts.Commands.IMultiCommandStartSetup`1">
+            <summary>
+            Used to start to setup a command chain for a command that consists of multiple commands.
+            </summary>
+            <typeparam name="TChain">Type of objects that tells how commands should be chained</typeparam>
+        </member>
+        <member name="M:Sels.Core.Command.Contracts.Commands.IMultiCommandStartSetup`1.StartWith(Sels.Core.Command.Contracts.Commands.ICommand)">
+            <summary>
+            Sets <paramref name="startCommand"/> as the first command to be executed.
+            </summary>
+            <param name="startCommand">Command to execute first</param>
+            <returns>Setup object to continue building the command chain or returns the <see cref="T:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1"/></returns>
+        </member>
+        <member name="T:Sels.Core.Command.Contracts.Commands.IMultiCommandSetup`1">
+            <summary>
+            Used to setup and build a command chain for a command that consists of multiple commands.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Contracts.Commands.IMultiCommandSetup`1.ContinueWith(`0,Sels.Core.Command.Contracts.Commands.ICommand)">
+            <summary>
+            Continues the previous command with <paramref name="command"/>.
+            </summary>
+            <param name="chain">How the previous <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/> should be chained with <paramref name="command"/></param>
+            <param name="command">Command to chain</param>
+            <returns>Object to continue building the chain</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Contracts.Commands.IMultiCommandSetup`1.EndWith(`0,Sels.Core.Command.Contracts.Commands.ICommand)">
+            <summary>
+            Finished the command chain with <paramref name="finalCommand"/> and returns the full command chain.
+            </summary>
+            <param name="finalChain">How the previous <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/> should be chained with <paramref name="finalCommand"/></param>
+            <param name="finalCommand">Final command in the chain that will be executed</param>
+            <returns>The configured command chain</returns>
+        </member>
+        <member name="T:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1">
+            <summary>
+            Represents the order in which command are executed for a command that consists of multiple commands.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1.StartCommand">
+            <summary>
+            First command in the chain that will be executed first.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1.IntermediateCommands">
+            <summary>
+            List of ordered commands that will be executed in order after <see cref="P:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1.StartCommand"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1.FinalChain">
+            <summary>
+            How <see cref="P:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1.StartCommand"/> or the last command in <see cref="P:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1.IntermediateCommands"/> should be linked to <see cref="P:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1.FinalCommand"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Contracts.Commands.IMultiCommandChain`1.FinalCommand">
+            <summary>
+            Final command in the chain that will be executed.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Linux.Exceptions.LinuxCommand.CommandExecutionFailedException">
+            <summary>
+            Indicates that the execution of a command resulted in errors.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Linux.Exceptions.LinuxCommand.CommandExecutionFailedException.ExitCode">
+            <summary>
+            Exit code returned by the command. 
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Linux.Exceptions.LinuxCommand.CommandExecutionFailedException.Error">
+            <summary>
+            Error output of command.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Linux.Exceptions.LinuxCommand.CommandExecutionFailedException.#ctor(System.Int32,System.String)">
+            <summary>
+            Indicates that the execution of a command resulted in errors.
+            </summary>
+            <param name="exitcode">The exit code returned from the command</param>
+            <param name="error">Error output of the command</param>
+        </member>
+        <member name="M:Sels.Core.Linux.Exceptions.LinuxCommand.CommandExecutionFailedException.#ctor(System.Int32,System.String,System.String)">
+            <summary>
+            Indicates that the execution of a command resulted in errors.
+            </summary>
+            <param name="exitcode">The exit code returned from the command</param>
+            <param name="error">Error output of the command</param>
+            <param name="message">The exception message</param>
+        </member>
+        <member name="M:Sels.Core.Linux.Exceptions.LinuxCommand.CommandExecutionFailedException.#ctor(System.Int32,System.String,System.String,System.Exception)">
+            <summary>
+            Indicates that the execution of a command resulted in errors.
+            </summary>
+            <param name="exitcode">The exit code returned from the command</param>
+            <param name="error">Error output of the command</param>
+            <param name="message">The exception message</param>
+            <param name="innerException">The exception that caused this exception</param>
+        </member>
+        <member name="M:Sels.Core.Linux.Exceptions.LinuxCommand.CommandExecutionFailedException.#ctor(System.Int32,System.String,System.Exception)">
+            <summary>
+            Indicates that the execution of a command resulted in errors.
+            </summary>
+            <param name="exitcode">The exit code returned from the command</param>
+            <param name="error">Error output of the command</param>
+            <param name="innerException">The exception that caused this exception</param>
+        </member>
+    </members>
+</doc>

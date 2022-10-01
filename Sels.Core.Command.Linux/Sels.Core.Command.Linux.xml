@@ -1,0 +1,1172 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Command.Linux</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Command.Linux.Attributes.CommandArgument">
+            <summary>
+            Creates argument by calling the <see cref="M:Sels.Core.Command.Contracts.Commands.ICommand.BuildCommand"/> method.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Attributes.CommandArgument.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Defines an argument on a <see cref="T:Sels.Core.Command.Contracts.Commands.ICommand"/> that will use <see cref="M:Sels.Core.Command.Contracts.Commands.ICommand.BuildCommand"/> to build the argument.
+            </summary>
+            <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
+            <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Attributes.FlagArgument">
+            <summary>
+            Creates argument with flag when source property can be converted to bool and returns true
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Attributes.FlagArgument.Flag">
+            <summary>
+            Argument value that is used when the source property value is true
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Attributes.FlagArgument.#ctor(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Defines an argument that will create a flag when the property value can be converted to true.
+            </summary>
+            <param name="flag">String value to generate</param>
+            <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
+            <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Attributes.FlagArgument.CreateArgument(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Attributes.ObjectArgument">
+            <summary>
+            Creates argument by calling a property getter, field or method on the property.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Attributes.ObjectArgument.#ctor(Sels.Core.Command.Linux.Attributes.Selector,System.String,System.Object,System.String,System.String,Sels.Core.Command.Linux.Attributes.TextParsingOptions,System.Int32,System.Boolean)">
+            <summary>
+            Defines an argument whose value will be created by calling a property getter, field or method on the property. 
+            </summary>
+            <param name="selector">What member type to get the argument value from</param>
+            <param name="target">Where to get argument value from</param>
+            <param name="argument">Optional argument for method</param>
+            <param name="prefix">Optional prefix that will be placed along side the property value based on <paramref name="format"/></param>
+            <param name="format">How the <paramref name="prefix"/> and property value should be formatted. Use <see cref="F:Sels.Core.Command.Linux.Attributes.TextArgument.PrefixFormat"/> for the <paramref name="prefix"/> and <see cref="F:Sels.Core.Command.Linux.Attributes.TextArgument.ValueFormat"/> for the property value</param>
+            <param name="parsingOption">Optional parsing for the property value</param>
+            <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
+            <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Attributes.ObjectArgument.CreateArgument(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Attributes.Selector">
+            <summary>
+            Dictates what member type to search for.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Attributes.Selector.Field">
+            <summary>
+            Get value from a public field.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Attributes.Selector.Property">
+            <summary>
+            Get Value from a public property.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Attributes.Selector.Method">
+            <summary>
+            Get value from calling a method.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Attributes.TextArgument">
+            <summary>
+            Creates argument with property value based on optional prefix and format. Each value in a list will be join together using the following format: "{Flag} {ItemValue}, {Flag} {ItemValue}, {Flag} {ItemValue}, ..."
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Attributes.TextArgument.PrefixFormat">
+            <summary>
+            The string that will get replaced by the prefix in the text format.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Attributes.TextArgument.ValueFormat">
+            <summary>
+            The string that will get replaced by the argument value in the text format.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Attributes.TextArgument.DefaultFormat">
+            <summary>
+            The default text format used.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Attributes.TextArgument.Prefix">
+            <summary>
+            Optional prefix that gets added to the argument using the defined Format
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Attributes.TextArgument.Format">
+            <summary>
+            How to join the prefix and property value together if Prefix is defined. Prefix:<see cref="F:Sels.Core.Command.Linux.Attributes.TextArgument.PrefixFormat"/> | Value: <see cref="F:Sels.Core.Command.Linux.Attributes.TextArgument.ValueFormat"/>
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Attributes.TextArgument.ParsingOption">
+            <summary>
+            Optional parsing option for formatting any property values
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Attributes.TextArgument.AllowEmpty">
+            <summary>
+            Allow null values to be parsed. If they aren't allowed no argument value gets generated if property value is null
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Attributes.TextArgument.#ctor(System.String,System.String,Sels.Core.Command.Linux.Attributes.TextParsingOptions,System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Defines an argument for a linux command that will be sourced from the property <see cref="M:System.Object.ToString"/> value. Collection elements will be joined together using a space.
+            </summary>
+            <param name="prefix">Optional prefix that will be placed along side the property value based on <paramref name="format"/></param>
+            <param name="format">How the <paramref name="prefix"/> and property value should be formatted. Use <see cref="F:Sels.Core.Command.Linux.Attributes.TextArgument.PrefixFormat"/> for the <paramref name="prefix"/> and <see cref="F:Sels.Core.Command.Linux.Attributes.TextArgument.ValueFormat"/> for the property value</param>
+            <param name="parsingOption">Optional parsing for the property value</param>
+            <param name="allowEmpty">If an argument should be generated when the property value string is empty. If not allowed and the property value string is <see cref="F:System.String.Empty"/>, null will be returned</param>
+            <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
+            <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Attributes.TextArgument.#ctor(System.String,System.String,Sels.Core.Command.Linux.Attributes.TextParsingOptions,System.Boolean,System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Defines an argument for a linux command that will be sourced from the property <see cref="M:System.Object.ToString"/> value. Collection elements will be joined together using a space.
+            </summary>
+            <param name="prefix">Optional prefix that will be placed along side the property value based on <paramref name="format"/></param>
+            <param name="format">How the <paramref name="prefix"/> and property value should be formatted. Use <see cref="F:Sels.Core.Command.Linux.Attributes.TextArgument.PrefixFormat"/> for the <paramref name="prefix"/> and <see cref="F:Sels.Core.Command.Linux.Attributes.TextArgument.ValueFormat"/> for the property value</param>
+            <param name="parsingOption">Optional parsing for the property value</param>
+            <param name="allowEmpty">If an argument should be generated when the property value string is empty. If not allowed and the property value string is <see cref="F:System.String.Empty"/>, null will be returned</param>
+            <param name="convertToPrimitive">If all non primitive types should be converted to string. If enabled all non primitive types and non primitive elements in collections will be converted to string using <see cref="M:System.Object.ToString"/></param>
+            <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
+            <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Attributes.TextArgument.CreateArgument(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Attributes.TextParsingOptions">
+            <summary>
+            Extra parsing objects for arguments.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Attributes.TextParsingOptions.None">
+            <summary>
+            No options selected.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Attributes.TextParsingOptions.Quotes">
+            <summary>
+            Add single quotes around argument value.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Attributes.TextParsingOptions.DoubleQuotes">
+            <summary>
+            Add double quotes around argument value.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Attributes.TextListArgument">
+            <summary>
+            Joins list values using a single format. So the end result becomes "{Flag} {Value} {Value} {Value} {Value}".
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Attributes.TextListArgument.DefaultJoinValue">
+            <summary>
+            The default value for <see cref="P:Sels.Core.Command.Linux.Attributes.TextListArgument.ElementJoinVlaue"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Attributes.TextListArgument.ElementJoinVlaue">
+            <summary>
+            String value used to join together all the values from the property values if it's a list
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Attributes.TextListArgument.#ctor(System.String,System.String,System.String,Sels.Core.Command.Linux.Attributes.TextParsingOptions,System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Joins list values using a single format. So the end result becomes "{Flag} {Value} {Value} {Value} {Value}".
+            </summary>
+            <param name="prefix">Optional prefix that will be placed along side the property value based on <paramref name="format"/></param>
+            <param name="format">How the <paramref name="prefix"/> and the element values should be formatted. Use <see cref="F:Sels.Core.Command.Linux.Attributes.TextArgument.PrefixFormat"/> for the <paramref name="prefix"/> and <see cref="F:Sels.Core.Command.Linux.Attributes.TextArgument.ValueFormat"/> for the joined element values</param>
+            <param name="elementJoinValue">String that will join together all the elements in the property collection</param>
+            <param name="parsingOption">Optional parsing for the element value</param>
+            <param name="allowEmpty">If the argument should be generated when the property collection is empty</param>
+            <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
+            <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Attributes.TextListArgument.CreateArgument(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Awk.DynamicAwkCommand">
+            <summary>
+            Command for executing a script with awk.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Awk.DynamicAwkCommand.Script">
+            <summary>
+            Script text to execute with awk.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Awk.DynamicAwkCommand.InputFile">
+            <summary>
+            Optional file where awk will get it's input from. If null awk will expect the input from a chained command.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Awk.DynamicAwkCommand.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Awk.DynamicAwkCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Awk.DynamicAwkCommand.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Awk.DynamicAwkCommand"/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Bash.DynamicBashCommand">
+            <summary>
+            Used to execute commands with bash. 
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Bash.DynamicBashCommand.Command">
+            <summary>
+            Command to execute with bash.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Bash.DynamicBashCommand.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Bash.DynamicBashCommand"/>
+            <param name="command">The command to execute</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Bash.DynamicBashCommand.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Bash.DynamicBashCommand"/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.CommandChainer">
+            <summary>
+            How 2 commands should be chained together.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Commands.CommandChainer.Always">
+            <summary>
+            Always chain regardless of exit code of previous command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Commands.CommandChainer.OnSuccess">
+            <summary>
+            Only chain if previous command was executed succesfully.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Commands.CommandChainer.OnFail">
+            <summary>
+            Only chain if previous command failed to execute properly.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Commands.CommandChainer.Pipe">
+            <summary>
+            Pipe output from previous command to current command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Commands.CommandChainer.None">
+            <summary>
+            Links commands with a space
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1">
+            <summary>
+            Command that chains together multiple commands.
+            </summary>
+            <typeparam name="TCommandResult">Result of final command</typeparam>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.StartCommand">
+            <summary>
+            First command in the chain that will be executed first.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.IntermediateCommands">
+            <summary>
+            List of ordered commands that will be executed in order after <see cref="P:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.StartCommand"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.FinalChain">
+            <summary>
+            How <see cref="P:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.StartCommand"/> or the last command in <see cref="P:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.IntermediateCommands"/> should be linked to <see cref="P:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.FinalCommand"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.FinalCommand">
+            <summary>
+            Final command in the chain that will be executed and will parse the result for this command.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand{`0})">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,System.Collections.Generic.IEnumerable{System.ValueTuple{Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand}},Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand{`0})">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand{`0})">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand{`0})">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand{`0})">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand{`0})">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand{`0})">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.BuildArguments(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand`1.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand">
+            <summary>
+            Command that chains together multiple commands.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Linux.Contracts.ILinuxCommand)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,System.Collections.Generic.IEnumerable{System.ValueTuple{Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand}},Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Linux.Contracts.ILinuxCommand)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Linux.Contracts.ILinuxCommand)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Linux.Contracts.ILinuxCommand)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Linux.Contracts.ILinuxCommand)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Linux.Contracts.ILinuxCommand)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.ChainCommand.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Linux.Contracts.ILinuxCommand)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.ChainCommand"/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Core.DynamicCommand">
+            <summary>
+            Execute string commands with shell.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.DynamicCommand.Command">
+            <summary>
+            Command to execute.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.DynamicCommand.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.DynamicCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.DynamicCommand.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.DynamicCommand"/>
+            <param name="command">The command to execute</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.DynamicCommand.#ctor(Sels.Core.Command.Contracts.Commands.ICommand)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.DynamicCommand"/>
+            <param name="command">The command to execute</param>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Core.EchoCommand">
+            <summary>
+            Command that displays text.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.EchoCommand.Message">
+            <summary>
+            Text to display.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.EchoCommand.DoInterpreteBackslash">
+            <summary>
+            Enables the interpretation of backslash escapes in <see cref="P:Sels.Core.Command.Linux.Commands.Core.EchoCommand.Message"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.EchoCommand.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.EchoCommand"/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Core.GrepCommand">
+            <summary>
+            Used to filter results from other commands / files matching the pattern
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.GrepCommand.Pattern">
+            <summary>
+            The pattern used to filter.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.GrepCommand.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.GrepCommand"/>
+            <param name="pattern">The pattern for the grep command</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.GrepCommand.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.GrepCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.GrepCommand.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Core.SudoCommand`1">
+            <summary>
+            Executes other commands as super user.
+            </summary>
+            <typeparam name="TResult">Type of command result</typeparam>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.SudoCommand`1.Command">
+            <summary>
+            Command to run as super user.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.SudoCommand`1.ForceAskForPassword">
+            <summary>
+            Forces sudo to ask for a password.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.SudoCommand`1.ReadPasswordFromInput">
+            <summary>
+            Tells sudo to read password from stdin.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.SudoCommand`1.#ctor">
+            <summary>
+            Executes other commands as super user.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.SudoCommand`1.#ctor(Sels.Core.Command.Contracts.Commands.ICommand{`0})">
+            <summary>
+            Executes other commands as super user.
+            </summary>
+            <param name="command">The command to execute as sudo</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.SudoCommand`1.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Core.SudoCommand">
+            <summary>
+            Executes other commands as super user.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.SudoCommand.#ctor">
+            <summary>
+            Executes other commands as super user.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.SudoCommand.#ctor(System.String)">
+            <summary>
+            Executes other commands as super user.
+            </summary>
+            <param name="command">The command to execute as sudo</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.SudoCommand.#ctor(Sels.Core.Command.Contracts.Commands.ICommand{Sels.Core.Command.Linux.Contracts.ILinuxCommandResult{System.String,System.String}})">
+            <summary>
+            Executes other commands as super user.
+            </summary>
+            <param name="command">The command to execute as sudo</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.SudoCommand.#ctor(Sels.Core.Command.Linux.Contracts.ILinuxCommand)">
+            <summary>
+            Executes other commands as super user.
+            </summary>
+            <param name="command">The command to execute as sudo</param>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Core.TeeCommand">
+            <summary>
+            Captures input and streams it to 1 or more files and the standard output 
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.TeeCommand.Files">
+            <summary>
+            The filenames of files to also pipe the output to.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.TeeCommand.Append">
+            <summary>
+            Append output to end of file instead of overwriting.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Core.TeeCommand.IgnoreInterrupts">
+            <summary>
+            Ignore interrupt signals.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.TeeCommand.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.TeeCommand"/>
+            <param name="file">The file to pipe the output to</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.TeeCommand.#ctor(System.Collections.Generic.IEnumerable{System.String})">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.TeeCommand"/>
+            <param name="files">The files to pipe the output to</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Core.TeeCommand.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Core.TeeCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.FileSystem.DfFileSizeConverter.CanConvertObject(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.FileSystem.DfFileSizeConverter.ConvertObjectTo(System.Object,System.Type,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.FileSystem.DfFreeSpaceCommand`1">
+            <summary>
+            Command that checks how much free disk space a file system member has.
+            </summary>
+            <typeparam name="TFileSize">Type of filesize format to display the free disk space in</typeparam>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.FileSystem.DfFreeSpaceCommand`1.Member">
+            <summary>
+            File system member to get info about.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.FileSystem.DfFreeSpaceCommand`1.#ctor">
+            <summary>
+            Command that checks how much free disk space a file system member has.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.FileSystem.DfFreeSpaceCommand`1.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.FileSystem.DfFreeSpaceCommand`1.BuildCommandChain(Sels.Core.Command.Contracts.Commands.IMultiCommandStartSetup{Sels.Core.Command.Linux.Commands.CommandChainer})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.FileSystem.DfInfoCommand">
+            <summary>
+            Gets info about a file system member. 
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.FileSystem.DfInfoCommand.Member">
+            <summary>
+            File system member to get info about.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.FileSystem.DfInfoCommand.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.Commands.FileSystem.DfInfoCommand._serializer">
+            <summary>
+            The serializer to use to deserialize the command output.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.FileSystem.DfMountPointCommand">
+            <summary>
+            Gets the mount point for a file system member.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.FileSystem.DfMountPointCommand.Member">
+            <summary>
+            File system member to get info about.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.FileSystem.DfMountPointCommand.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.FileSystem.DfMountPointCommand.BuildCommandChain(Sels.Core.Command.Contracts.Commands.IMultiCommandStartSetup{Sels.Core.Command.Linux.Commands.CommandChainer})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.FileSystem.DiskFreeInfo">
+            <summary>
+            Info about a file system member.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.FileSystem.DiskFreeInfo.FileSystem">
+            <summary>
+            Mounted file system.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.FileSystem.DiskFreeInfo.Blocks">
+            <summary>
+            Amount of 1k blocks.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.FileSystem.DiskFreeInfo.UsedSpace">
+            <summary>
+            Total used file size.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.FileSystem.DiskFreeInfo.FreeSpace">
+            <summary>
+            Total amount of free space.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.FileSystem.DiskFreeInfo.TotalSize">
+            <summary>
+            Total file size.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.FileSystem.DiskFreeInfo.MountPoint">
+            <summary>
+            Directory that file system is mounted on.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.PackageManager.DpkgInfoCommand">
+            <summary>
+            Used to list package information on Debian/Ubuntu systems.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.PackageManager.DpkgInfoCommand.PackageName">
+            <summary>
+            The name of the package to get more info about.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.PackageManager.DpkgInfoCommand.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.PackageManager.DpkgInfoCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.PackageManager.DpkgInfoCommand.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.PackageManager.DpkgInfoCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.PackageManager.DpkgInfoCommand.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.PackageManager.PackageInfo">
+            <summary>
+            Contains information about a dpkg package.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Screen.ScreenListCommand">
+            <summary>
+            Used to list running screens.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Screen.ScreenListCommand.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Screen.ScreenListCommand.BuildArguments(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand">
+            <summary>
+            Used to launch a new screen that will execute a command.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand.Command">
+            <summary>
+            Command to run in a screen session.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand.SessionName">
+            <summary>
+            Name of the screen session.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand.Detached">
+            <summary>
+            If the new screen instance should run detached when created.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand.EnforcedCreation">
+            <summary>
+            Always create a new screen even when called from another screen.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand.#ctor(System.String,System.String)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand"/>
+            <param name="command">The command to run</param>
+            <param name="sessionName">Optional name for the screen session</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand.#ctor(Sels.Core.Command.Contracts.Commands.ICommand,System.String)">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand"/>
+            <param name="command">The command to run</param>
+            <param name="sessionName">Optional name for the screen session</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Commands.Screen.ScreenRunCommand.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Contracts.ILinuxCommand">
+            <summary>
+            Used to run linux commands or build linux command strings.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Contracts.ILinuxCommandResult`2">
+            <summary>
+            Simple linux command result containing the result and/or error.
+            </summary>
+            <typeparam name="TResult">Type of result</typeparam>
+            <typeparam name="TError">Type of error</typeparam>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Contracts.ILinuxCommandResult`2.Failed">
+            <summary>
+            Indicates if the command failed.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Contracts.ILinuxCommandResult`2.ExitCode">
+            <summary>
+            Exit code of the executed command.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Contracts.ILinuxCommandResult`2.Output">
+            <summary>
+            Standard output of executed command.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Contracts.ILinuxCommandResult`2.Error">
+            <summary>
+            Error output of executed command.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Contracts.LinuxCommandResultExtensions">
+            <summary>
+            Contains extension methods for <see cref="T:Sels.Core.Command.Linux.Contracts.ILinuxCommandResult`2"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Contracts.LinuxCommandResultExtensions.GetResult``2(Sels.Core.Command.Linux.Contracts.ILinuxCommandResult{``0,``1})">
+            <summary>
+            Returns the result if the command was executed successfully. Throws <see cref="T:Sels.Core.Linux.Exceptions.LinuxCommand.CommandExecutionFailedException"/> if the command failed containing the error object.
+            </summary>
+            <typeparam name="TOutput">Type of the output</typeparam>
+            <typeparam name="TError">Type of the error output</typeparam>
+            <param name="commandResult">The command result to get the output from</param>
+            <returns>The output from <paramref name="commandResult"/> if it didn't fail</returns>
+            <exception cref="T:Sels.Core.Linux.Exceptions.LinuxCommand.CommandExecutionFailedException">Thrown when <paramref name="commandResult"/> is from a failed command execution</exception>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Extensions.LinuxCommandExtensions">
+            <summary>
+            Contains extension methods for executing linux commands.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Extensions.LinuxCommandExtensions.ExecuteAsSuperUser``1(Sels.Core.Command.Contracts.Commands.ICommand{``0},System.Int32@)">
+            <summary>
+            Executes <paramref name="command"/> as super user.
+            </summary>
+            <typeparam name="TResult">Type of command result</typeparam>
+            <param name="command">Command to execute</param>
+            <param name="exitCode">Exit code returned from executing the command</param>
+            <returns>Command result</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Extensions.LinuxCommandExtensions.ExecuteAsSuperUser``1(Sels.Core.Command.Contracts.Commands.ICommand{``0})">
+            <summary>
+            Executes <paramref name="command"/> as super user.
+            </summary>
+            <typeparam name="TResult">Type of command result</typeparam>
+            <param name="command">Command to execute</param>
+            <returns>Command result</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Extensions.LinuxCommandExtensions.ExecuteAsSuperUser``1(Sels.Core.Command.Contracts.Commands.ICommand{``0},System.String,System.Int32@)">
+            <summary>
+            Executes <paramref name="command"/> as super user with <paramref name="password"/>.
+            </summary>
+            <typeparam name="TResult">Type of command result</typeparam>
+            <param name="command">Command to execute</param>
+            <param name="password">Password for sudo</param>
+            <param name="exitCode">Exit code returned from executing the command</param>
+            <returns>Command result</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Extensions.LinuxCommandExtensions.ExecuteAsSuperUser``1(Sels.Core.Command.Contracts.Commands.ICommand{``0},System.String)">
+            <summary>
+            Executes <paramref name="command"/> as super user with <paramref name="password"/>.
+            </summary>
+            <typeparam name="TResult">Type of command result</typeparam>
+            <param name="password">Password for sudo</param>
+            <param name="command">Command to execute</param>
+            <returns>Command result</returns>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.LinuxCommandConstants">
+            <summary>
+            Contains constants for linux command.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.LinuxCommandConstants.Commands">
+            <summary>
+            Contains constants for common linux commands.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.Commands.Sudo">
+            <summary>
+            The name of the sudo command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.Commands.Echo">
+            <summary>
+            The name of the echo command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.Commands.Shell">
+            <summary>
+            The name of the shell command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.Commands.Bash">
+            <summary>
+            The name of the bash command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.Commands.Dpkg">
+            <summary>
+            The name of the dpkg command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.Commands.Grep">
+            <summary>
+            The name of the grep command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.Commands.Tee">
+            <summary>
+            The name of the tee command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.Commands.Screen">
+            <summary>
+            The name of the screen command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.Commands.Df">
+            <summary>
+            The name of the df command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.Commands.Awk">
+            <summary>
+            The name of the awk command.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Command.Linux.LinuxCommandConstants.DefaultLinuxArgumentOrder">
+            <summary>
+            The default order that dictates where linux command arguments are placed in the command string.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.LinuxCommandHelper">
+            <summary>
+            Contains helper methods for running Linux commands.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.LinuxCommandHelper.Command">
+            <summary>
+            Contains static helper methods for working with linux commands.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.LinuxCommandHelper.Command.BuildLinuxArguments(Sels.Core.Command.Contracts.Commands.ICommand,System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Int32}},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Builds an argument string using the LinuxArgument attributes on the properties of the supplied bashCommand 
+            </summary>
+            <param name="command">Bash command to build arguments for</param>
+            <param name="additionalArguments">Optional arguments that should also be added</param>
+            <param name="loggers">Optional loggers for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.LinuxCommandHelper.Command.BuildLinuxCommandString(Sels.Core.Command.Contracts.Commands.ICommand,Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand)">
+            <summary>
+            Builds a command string by chaining all the provided commands together using a <see cref="T:Sels.Core.Command.Linux.Commands.CommandChainer"/>.
+            </summary>
+            <param name="firstCommand">First command in the chain</param>
+            <param name="chain">How to chain together <paramref name="firstCommand"/> and <paramref name="finalCommand"/></param>
+            <param name="finalCommand">Final command to chain</param>
+            <returns>Command string of all chained command</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.LinuxCommandHelper.Command.BuildLinuxCommandString(Sels.Core.Command.Contracts.Commands.ICommand,System.Collections.Generic.IEnumerable{System.ValueTuple{Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand}},Sels.Core.Command.Linux.Commands.CommandChainer,Sels.Core.Command.Contracts.Commands.ICommand)">
+            <summary>
+            Builds a command string by chaining all the provided commands together using a <see cref="T:Sels.Core.Command.Linux.Commands.CommandChainer"/>.
+            </summary>
+            <param name="firstCommand">First command in the chain</param>
+            <param name="intermediateCommands">List of ordered commands that will be chained after <paramref name="firstCommand"/></param>
+            <param name="chain">How to chain together <paramref name="firstCommand"/> and <paramref name="finalCommand"/></param>
+            <param name="finalCommand">Final command to chain</param>
+            <returns>Command string of all chained command</returns>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.LinuxCommandHelper.Program">
+            <summary>
+            Contains static helper methods for running processes on linux.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.LinuxCommandHelper.Program.Run(System.String,System.String,System.String@,System.String@,System.Int32@,System.Int32,System.Threading.CancellationToken,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Runs <paramref name="program"/> with <paramref name="arguments"/>.
+            </summary>
+            <param name="program">Program to run</param>
+            <param name="arguments">Arguments for <paramref name="program"/></param>
+            <param name="output">Stout of command</param>
+            <param name="error">Sterr of command</param>
+            <param name="exitCode">Exit code of command</param>
+            <param name="succesExitCode">Exit code indicating succesful execution</param>
+            <param name="loggers">Optional loggers for tracing</param>
+            <param name="token">Optional token for cancelling the process</param>
+            <returns>Boolean indicating if the command was executed successfully</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.LinuxCommandHelper.Program.Run(System.String,System.String@,System.String@,System.Int32@,System.Int32,System.Threading.CancellationToken,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Runs <paramref name="command"/> with Shell.
+            </summary>
+            <param name="command">Command to run</param>
+            <param name="output">Stout of command</param>
+            <param name="error">Sterr of command</param>
+            <param name="exitCode">Exit code of command</param>
+            <param name="succesExitCode">Exit code indicating succesful execution</param>
+            <param name="loggers">Optional loggers for tracing</param>
+            <param name="token">Optional token for cancelling the process</param>
+            <returns>Boolean indicating if the command was executed successfully</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.LinuxCommandHelper.Program.FormatStringCommand(System.String)">
+            <summary>
+            Format the command so it can be run with Bash/Shell.
+            </summary>
+            <param name="command">Command to format</param>
+            <returns>Formatted command</returns>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.LinuxCommandHelper.Program.Bash">
+            <summary>
+            Contains static helper methods for working with bash.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.LinuxCommandHelper.Program.Bash.Run(System.String,System.String@,System.String@,System.Int32@,System.Int32,System.Threading.CancellationToken,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Runs <paramref name="command"/> with Bash.
+            </summary>
+            <param name="command">Command to run</param>
+            <param name="output">Stout of command</param>
+            <param name="error">Sterr of command</param>
+            <param name="exitCode">Exit code of command</param>
+            <param name="succesExitCode">Exit code indicating succesful execution</param>
+            <param name="loggers">Optional loggers for tracing</param>
+            <param name="token">Optional token for cancelling the process</param>
+            <returns>Boolean indicating if the command was executed successfully</returns>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.Attributes.LinuxArgument">
+            <summary>
+            Template for creating attributes that convert the value from the property it's defined on to an argument for a linux command.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Templates.Attributes.LinuxArgument.Order">
+            <summary>
+            Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Templates.Attributes.LinuxArgument.Required">
+            <summary>
+            Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Attributes.LinuxArgument.#ctor(System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Template for creating attributes that convert the value from the property it's defined on to an argument for a linux command.
+            </summary>
+            <param name="convertToPrimitive">If all non primitive types should be converted to string. If enabled all non primitive types and non primitive elements in collections will be converted to string using <see cref="M:System.Object.ToString"/></param>
+            <param name="order">Used to order argument. Lower means it will get placed in the argument list first. Negative gets placed last in the argument list.</param>
+            <param name="required">Indicates if this property must be set. Throws InvalidOperation when Required is true but property value is null.</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Attributes.LinuxArgument.CreateArgument(System.Object)">
+            <summary>
+            Creates the linux argument from property value <paramref name="value"/>.
+            </summary>
+            <param name="value">The property value</param>
+            <returns>The argument to use for the linux command or null if no argument could be creating for this property</returns>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.Attributes.LinuxArgumentExtensions">
+            <summary>
+            Contains extension methods for <see cref="T:Sels.Core.Command.Linux.Templates.Attributes.LinuxArgument"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Attributes.LinuxArgumentExtensions.GetArgumentValue(System.Object)">
+            <summary>
+            Returns the value from <paramref name="propertyValue"/> that will be used as the argument value.
+            </summary>
+            <param name="propertyValue">Object to get the value from</param>
+            <returns>The argument value</returns>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.BaseLinuxCommand">
+            <summary>
+            Used to run linux commands or build linux command strings.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand.#ctor(System.String)">
+            <summary>
+            Used to run linux commands or build linux command strings.
+            </summary>
+            <param name="name">The name of the command to execute</param>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`1">
+            <summary>
+            Used to run linux commands or build linux command strings.
+            </summary>
+            <typeparam name="TName">Type of object that represents the command name</typeparam>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`1.#ctor(`0)">
+            <summary>
+            Used to run linux commands or build linux command strings.
+            </summary>
+            <param name="name">The name of the command to execute</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`1.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2">
+            <summary>
+            Used to run linux commands or build linux command strings.
+            </summary>
+            <typeparam name="TName">Type of object that represents the command name</typeparam>
+            <typeparam name="TCommandResult">Type of result that the command returns</typeparam>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.Name">
+            <summary>
+            The name of the command to execute.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.LoggerName">
+            <summary>
+            Name that can be used for logging.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.#ctor(`0)">
+            <summary>
+            Used to run linux commands or build linux command strings.
+            </summary>
+            <param name="name">The name of the command to execute</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.RunCommand(System.String@,System.String@,System.Int32@,Sels.Core.Command.Components.Commands.CommandExecutionOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.BuildCommand">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.BuildArguments(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Builds arguments for running the linux command.
+            </summary>
+            <param name="loggers">Optional loggers for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.GetStaticArguments(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Optional method for providing additional arguments who aren't created from properties.
+            </summary>
+            <param name="loggers">Optional loggers for tracing</param>
+            <returns>List of additional properties</returns>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.Execute(Sels.Core.Command.Components.Commands.CommandExecutionOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.Execute(System.Int32@,Sels.Core.Command.Components.Commands.CommandExecutionOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.SuccessExitCode">
+            <summary>
+            Default exit code returned from executing the command that indicates it executed succesfully.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.BaseLinuxCommand`2.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.Commands.Awk.AwkCommand">
+            <summary>
+            Command for manipulating data with the awk scripting language.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Templates.Commands.Awk.AwkCommand.FieldSeparator">
+            <summary>
+            What string awk can use to split a string into multiple values. Default splitter is whitespace.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Commands.Awk.AwkCommand.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Templates.Commands.Awk.AwkCommand"/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.Commands.Bash.BashCommand`1">
+            <summary>
+            Base class for bash.
+            </summary>
+            <typeparam name="TCommandResult">Type of command result</typeparam>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Commands.Bash.BashCommand`1.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Templates.Commands.Bash.BashCommand`1"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Commands.Bash.BashCommand`1.RunCommand(System.String@,System.String@,System.Int32@,Sels.Core.Command.Components.Commands.CommandExecutionOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Commands.Bash.BashCommand`1.BuildCommand">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.Commands.Bash.BashCommand">
+            <summary>
+            Base class for bash.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Commands.Bash.BashCommand.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.Commands.FileSystem.DfCommand`1">
+            <summary>
+            Linux command for getting information about a file system member.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Templates.Commands.FileSystem.DfCommand`1.OnlyLocal">
+            <summary>
+            Only list local file systems.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Command.Linux.Templates.Commands.FileSystem.DfCommand`1.DoSync">
+            <summary>
+            Sync the file systems before getting the info
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Commands.FileSystem.DfCommand`1.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Templates.Commands.FileSystem.DfCommand`1"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Commands.FileSystem.DfCommand`1.GetStaticArguments(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.Commands.PackageManager.DpkgCommand`1">
+            <summary>
+            Base class for the dpkg command.
+            </summary>
+            <typeparam name="TCommandResult">Type of command result</typeparam>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Commands.PackageManager.DpkgCommand`1.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Templates.Commands.PackageManager.DpkgCommand`1"/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.Commands.Screen.ScreenCommand`1">
+            <summary>
+            The screen command a terminal multiplexer used to manage several terminals.
+            </summary>
+            <typeparam name="TCommandResult">Type of result returned by this command</typeparam>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.Commands.Screen.ScreenCommand`1.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Templates.Commands.Screen.ScreenCommand`1"/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.MultiCommand`1">
+            <summary>
+            Template for creating commands that consists of other commands.
+            </summary>
+            <typeparam name="TCommandResult">Result from executing the command</typeparam>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.MultiCommand`1.#ctor">
+            <summary>
+            Template for creating commands that consists of other commands.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.MultiCommand`1.BuildArguments(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.MultiCommand`1.BuildCommandChain(Sels.Core.Command.Contracts.Commands.IMultiCommandStartSetup{Sels.Core.Command.Linux.Commands.CommandChainer})">
+            <summary>
+            Used to build the chain that will be executed by this multi command.
+            </summary>
+            <param name="chainSetup">Object to start building the chain</param>
+            <returns>Chain of command to execute</returns>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.MultiCommand">
+            <summary>
+            Template for creating commands that consists of other commands.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.MultiCommand.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.ShellCommand`1">
+            <summary>
+            Template for executing command using the default cli shell /bin/sh.
+            </summary>
+            <typeparam name="TCommandResult">Type of result that the command returns</typeparam>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.ShellCommand`1.#ctor">
+            <inheritdoc cref="T:Sels.Core.Command.Linux.Templates.ShellCommand`1"/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.ShellCommand`1.RunCommand(System.String@,System.String@,System.Int32@,Sels.Core.Command.Components.Commands.CommandExecutionOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.ShellCommand`1.BuildCommand">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Command.Linux.Templates.ShellCommand">
+            <summary>
+            Template for executing command using the default cli shell /bin/sh.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Command.Linux.Templates.ShellCommand.CreateResult(System.Boolean,System.Int32,System.String,System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>

@@ -15,8 +15,10 @@ namespace Sels.Core.Components.Parameters
     public static class GlobalParameters
     {
         // Constants
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public const string DefaultParameterPrefix = "${{";
         public const string DefaultParameterSuffix = "}}";
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 
         // Fields
         private readonly static object _threadLock = new object();
@@ -35,9 +37,9 @@ namespace Sels.Core.Components.Parameters
                 }
             }
         }
-        public static ThreadSafeProperty<string> Prefix { get; } = new ThreadSafeProperty<string>().AddGetterSetCondition(x => !x.HasValue()).AddGetterSetter(() => DefaultParameterPrefix).AddSetterValidation(x => x.HasValue(), $"{nameof(Prefix)} cannot be null, empty or whitespace");
+        public static ThreadSafeProperty<string> Prefix { get; } = new ThreadSafeProperty<string>().UseGetter(x => x.HasValue() ? x : DefaultParameterPrefix).ValidIf(x => x.HasValue(), x => $"{nameof(Prefix)} cannot be null, empty or whitespace");
 
-        public static ThreadSafeProperty<string> Suffix { get; } = new ThreadSafeProperty<string>().AddGetterSetCondition(x => !x.HasValue()).AddGetterSetter(() => DefaultParameterSuffix).AddSetterValidation(x => x.HasValue(), $"{nameof(Suffix)} cannot be null, empty or whitespace");
+        public static ThreadSafeProperty<string> Suffix { get; } = new ThreadSafeProperty<string>().UseGetter(x => x.HasValue() ? x : DefaultParameterSuffix).ValidIf(x => x.HasValue(), x => $"{nameof(Suffix)} cannot be null, empty or whitespace");
 
         static GlobalParameters()
         {
@@ -50,16 +52,16 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public static void AddParameter(string name, Func<object, string, string> generateValueAction, Func<object> beginScopeAction = null)
         {
-            name.ValidateVariable(nameof(name));
-            generateValueAction.ValidateVariable(nameof(generateValueAction));
+            name.ValidateArgument(nameof(name));
+            generateValueAction.ValidateArgument(nameof(generateValueAction));
 
             AddParameter(new DelegateParameter(name, generateValueAction, beginScopeAction));
         }
 
         public static void AddParameter(string name, Func<string> generateValueAction, Func<object> beginScopeAction = null)
         {
-            name.ValidateVariable(nameof(name));
-            generateValueAction.ValidateVariable(nameof(generateValueAction));
+            name.ValidateArgument(nameof(name));
+            generateValueAction.ValidateArgument(nameof(generateValueAction));
 
             AddParameter(name, (x, y) => generateValueAction(), beginScopeAction);
         }
@@ -69,7 +71,7 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public static void AddParameter(string name, string parameterValue)
         {
-            name.ValidateVariable(nameof(name));
+            name.ValidateArgument(nameof(name));
 
             AddParameter(name, (x, y) => parameterValue);
         }
@@ -79,8 +81,8 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public static void AddParameter(Parameter parameter)
         {
-            parameter.ValidateVariable(nameof(parameter));
-            parameter.Name.ValidateVariable(nameof(parameter.Name));
+            parameter.ValidateArgument(nameof(parameter));
+            parameter.Name.ValidateArgument(nameof(parameter.Name));
 
             lock (_threadLock)
             {
@@ -93,7 +95,7 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public static void AddParameters(params Parameter[] parameters)
         {
-            parameters.ValidateVariable(nameof(parameters));
+            parameters.ValidateArgument(nameof(parameters));
 
             foreach (var parameter in parameters)
             {
@@ -105,7 +107,7 @@ namespace Sels.Core.Components.Parameters
         /// </summary>
         public static void AddParameters(IEnumerable<Parameter> parameters)
         {
-            parameters.ValidateVariable(nameof(parameters));
+            parameters.ValidateArgument(nameof(parameters));
 
             foreach (var parameter in parameters)
             {
@@ -117,7 +119,7 @@ namespace Sels.Core.Components.Parameters
         #region RemoveParameter
         public static void RemoveParameterIfExists(string name)
         {
-            name.ValidateVariable(nameof(name));
+            name.ValidateArgument(nameof(name));
 
             lock (_threadLock)
             {

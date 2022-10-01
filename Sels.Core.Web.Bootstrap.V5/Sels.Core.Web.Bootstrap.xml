@@ -1,0 +1,751 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Web.Bootstrap</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Bootstrap">
+            <summary>
+            Contains constants related to bootstrap.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Bootstrap.Color">
+            <summary>
+            Contains the color names re-used by bootstrap components.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Color.Primary">
+            <summary>
+            The primary color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Color.Secondary">
+            <summary>
+            The secondary color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Color.Success">
+            <summary>
+            The success color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Color.Danger">
+            <summary>
+            The primary color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Color.Warning">
+            <summary>
+            The warning color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Color.Info">
+            <summary>
+            The info color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Color.Light">
+            <summary>
+            The light color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Color.Dark">
+            <summary>
+            The dark color.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Bootstrap.Components">
+            <summary>
+            Contains constants related to bootstrap components.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Components.Button">
+            <summary>
+            The css class for a button.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Components.ButtonOutline">
+            <summary>
+            The css class for a outline button color.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Bootstrap.Components.Spinners">
+            <summary>
+            Contains constants related to bootsrap spinners.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Components.Spinners.Border">
+            <summary>
+            The css class for a border spinner.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Components.Spinners.Grow">
+            <summary>
+            The css class for a grow spinner.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Bootstrap.Helpers">
+            <summary>
+            Contains constants related to bootstrap helpers.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Helpers.Link">
+            <summary>
+            The css class for a link.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities">
+            <summary>
+            Contains constants related to bootstrap utilities.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.Text">
+            <summary>
+            The css class for a text utility.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox">
+            <summary>
+            Contains constants related to bootstrap flexbox utilities.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Flex">
+            <summary>
+            The css class for defining a flexbox container.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.InlineFlex">
+            <summary>
+            The css class for defining a flexbox container.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Directions">
+            <summary>
+            Contains the css directions in a flexbox.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Directions.Row">
+            <summary>
+            The direction css for horizontal direction.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Directions.ReverseRow">
+            <summary>
+            The direction css for horizontal direction that starts on the opposite side.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Directions.Column">
+            <summary>
+            The direction css for vertical direction.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Directions.ReverseColumn">
+            <summary>
+            The direction css for vertical direction that starts on the opposite side.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments">
+            <summary>
+            Contains the css for the alignment of flex items on the main and cross axis.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyStart">
+            <summary>
+            Align all items at the start of the container.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyEnd">
+            <summary>
+            Align all items at the end of the container.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyCenter">
+            <summary>
+            Align all items at the center of the container.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyBetween">
+            <summary>
+            Fill empty space between the flex items.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyAround">
+            <summary>
+            Fill empty space around the flex items.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyEvenly">
+            <summary>
+            Fill empty space evenly between the flex items.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.AlignStart">
+            <summary>
+            Align items at the start of the cross axis of the container.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.AlignEnd">
+            <summary>
+            Align items at the end of the cross axis of the container.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.AlignCenter">
+            <summary>
+            Align items at the center of the cross axis of the container.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.AlignBaseline">
+            <summary>
+            Align flex items along their baseline.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.AlignStretch">
+            <summary>
+            Stretch items along the cross axis of the container.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Color">
+            <summary>
+            Contains the bootstrap colors re-used by other components.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Color.Primary">
+            <summary>
+            The primary color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Color.Secondary">
+            <summary>
+            The secondary color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Color.Success">
+            <summary>
+            The success color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Color.Danger">
+            <summary>
+            The primary color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Color.Warning">
+            <summary>
+            The warning color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Color.Info">
+            <summary>
+            The info color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Color.Light">
+            <summary>
+            The light color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Color.Dark">
+            <summary>
+            The dark color.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.ColorExtensions">
+            <summary>
+            Static extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Color"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.ColorExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Color)">
+            <summary>
+            Gets the css class for <paramref name="color"/>.
+            </summary>
+            <param name="color">Color to get the css class for</param>
+            <returns>The css class for <paramref name="color"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor">
+            <summary>
+            Contains the bootstrap button colors.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.None">
+            <summary>
+            No button color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.Primary">
+            <summary>
+            The primary button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.Secondary">
+            <summary>
+            The secondary button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.Success">
+            <summary>
+            The success button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.Danger">
+            <summary>
+            The danger button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.Warning">
+            <summary>
+            The warning button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.Info">
+            <summary>
+            The info button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.Light">
+            <summary>
+            The light button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.Dark">
+            <summary>
+            The dark button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.Link">
+            <summary>
+            The link button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.PrimaryOutline">
+            <summary>
+            The outline primary button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.SecondaryOutline">
+            <summary>
+            The outline secondary button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.SuccessOutline">
+            <summary>
+            The outline success button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.DangerOutline">
+            <summary>
+            The outline danger button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.WarningOutline">
+            <summary>
+            The outline warning button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.InfoOutline">
+            <summary>
+            The outline info button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.LightOutline">
+            <summary>
+            The outline light button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.DarkOutline">
+            <summary>
+            The outline dark button style.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor.LinkOutline">
+            <summary>
+            The outline link button style.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Components.ButtonTypeExtensions">
+            <summary>
+            Static extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Components.ButtonColor"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Components.ButtonTypeExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Components.ButtonColor)">
+            <summary>
+            Gets the css class for <paramref name="buttonType"/>.
+            </summary>
+            <param name="buttonType">Button color to get the css class for</param>
+            <returns>The css class for <paramref name="buttonType"/></returns>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Components.ButtonTypeExtensions.ToButtonCss(Sels.Core.Web.Bootstrap.V5.Color,System.Boolean)">
+            <summary>
+            Gets the css class for a button color matching <paramref name="color"/>.
+            </summary>
+            <param name="color">The color to translate into a button color</param>
+            <param name="isOutline">If the color needs to be an outline button color</param>
+            <returns>Button color css where the color is equal to <paramref name="color"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Components.ModalSize">
+            <summary>
+            The sizes for a bootstrap modal.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ModalSize.Default">
+            <summary>
+            The default modal size of 500px.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ModalSize.Small">
+            <summary>
+            The small modal size of 300px.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ModalSize.Large">
+            <summary>
+            The large modal size of 800px.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Components.ModalSize.ExtraLarge">
+            <summary>
+            The extra large modal size of 1140px.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Components.ModalSizeExtensions">
+            <summary>
+            Static extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Components.ModalSize"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Components.ModalSizeExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Components.ModalSize)">
+            <summary>
+            Gets the css class for <paramref name="modalSize"/>.
+            </summary>
+            <param name="modalSize">Modal size to get the css class for</param>
+            <returns>The css class for <paramref name="modalSize"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Models.Components.SpinnerType">
+            <summary>
+            Contains the different types of bootsrap spinners.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Models.Components.SpinnerType.Border">
+            <summary>
+            The bootstrap border spinner.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Models.Components.SpinnerType.Grow">
+            <summary>
+            The bootsrap grow spinner.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Models.Components.SpinnerTypeExtensions">
+            <summary>
+            Static extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Models.Components.SpinnerType"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Models.Components.SpinnerTypeExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Models.Components.SpinnerType,System.Boolean)">
+            <summary>
+            Gets the css class for <paramref name="spinnerType"/>.
+            </summary>
+            <param name="spinnerType">Spinner type to get the css class for</param>
+            <param name="isSmall">If css needs to be returned for a small spinner</param>
+            <returns>The css class for <paramref name="spinnerType"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor">
+            <summary>
+            The bootstrap link colors for a elements.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor.Default">
+            <summary>
+            The default link color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor.Primary">
+            <summary>
+            The primary link color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor.Secondary">
+            <summary>
+            The secondary link color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor.Success">
+            <summary>
+            The success link color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor.Danger">
+            <summary>
+            The danger link color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor.Warning">
+            <summary>
+            The warning link color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor.Info">
+            <summary>
+            The info link color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor.Light">
+            <summary>
+            The light link color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor.Dark">
+            <summary>
+            The dark link color.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColorExtensions">
+            <summary>
+            Static extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColorExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Helpers.LinkColor)">
+            <summary>
+            Gets the css class for <paramref name="linkColor"/>.
+            </summary>
+            <param name="linkColor">Link color to get the css class for</param>
+            <returns>The css class for <paramref name="linkColor"/></returns>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Helpers.LinkColorExtensions.ToLinkCss(Sels.Core.Web.Bootstrap.V5.Color)">
+            <summary>
+            Gets the css class for a link color matching <paramref name="color"/>.
+            </summary>
+            <param name="color">The color to translate into a link color</param>
+            <returns>Link color css where the color is equal to <paramref name="color"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexContainerType">
+            <summary>
+            Contains the flex container types.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexContainerType.Default">
+            <summary>
+            The default container that stretches.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexContainerType.Inline">
+            <summary>
+            The container that grows based on the flex items.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexContainerTypeExtensions">
+            <summary>
+            Static extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexContainerType"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexContainerTypeExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexContainerType)">
+            <summary>
+            Gets the css class for <paramref name="flexContainerType"/>.
+            </summary>
+            <param name="flexContainerType">Flex container to get the css class for</param>
+            <returns>The css class for <paramref name="flexContainerType"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignment">
+            <summary>
+            The alignment of flex items along the cross axis of the container.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignment.Default">
+            <summary>
+            The browser default.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignment.Start">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.AlignStart"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignment.End">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.AlignEnd"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignment.Center">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.AlignCenter"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignment.Baseline">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.AlignBaseline"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignment.Stretch">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.AlignStretch"/>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignmentExtensions">
+            <summary>
+            Static extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignment"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignmentExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexCrossAlignment)">
+            <summary>
+            Gets the css class for <paramref name="alignment"/>.
+            </summary>
+            <param name="alignment">Flex alignment to get the css class for</param>
+            <returns>The css class for <paramref name="alignment"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexDirection">
+            <summary>
+            Contains the flexbox directions
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexDirection.Default">
+            <summary>
+            The browser default.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexDirection.Row">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Directions.Row"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexDirection.ReverseRow">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Directions.ReverseRow"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexDirection.Column">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Directions.Column"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexDirection.ReverseColumn">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Directions.ReverseColumn"/>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexDirectionExtensions">
+            <summary>
+            Static extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexDirection"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexDirectionExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexDirection)">
+            <summary>
+            Gets the css class for <paramref name="flexDirection"/>.
+            </summary>
+            <param name="flexDirection">Flex direction to get the css class for</param>
+            <returns>The css class for <paramref name="flexDirection"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignment">
+            <summary>
+            The alignment of flex items along the main axis of the container.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignment.Default">
+            <summary>
+            The browser default.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignment.Start">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyStart"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignment.End">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyEnd"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignment.Center">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyCenter"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignment.Between">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyBetween"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignment.Around">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyAround"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignment.Evenly">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.V5.Bootstrap.Utilities.FlexBox.Alignments.JustifyEvenly"/>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignmentExtensions">
+            <summary>
+            Static extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignment"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignmentExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexMainAlignment)">
+            <summary>
+            Gets the css class for <paramref name="alignment"/>.
+            </summary>
+            <param name="alignment">Flex alignment to get the css class for</param>
+            <returns>The css class for <paramref name="alignment"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor">
+            <summary>
+            The bootstrap text colors.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Default">
+            <summary>
+            The default text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Primary">
+            <summary>
+            The primary text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Secondary">
+            <summary>
+            The secondary text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Success">
+            <summary>
+            The success text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Danger">
+            <summary>
+            The danger text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Warning">
+            <summary>
+            The warning text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Info">
+            <summary>
+            The info text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Light">
+            <summary>
+            The light text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Dark">
+            <summary>
+            The dark text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Body">
+            <summary>
+            The body text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.Muted">
+            <summary>
+            The muted text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.White">
+            <summary>
+            The white text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.HalfBlack">
+            <summary>
+            The half black text color.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor.HalfWhite">
+            <summary>
+            The half white text color.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.TextColorExtensions">
+            <summary>
+            Static extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Utilities.TextColor"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Utilities.TextColorExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Utilities.TextColor)">
+            <summary>
+            Gets the css class for <paramref name="textColor"/>.
+            </summary>
+            <param name="textColor">Text color to get the css class for</param>
+            <returns>The css class for <paramref name="textColor"/></returns>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Utilities.TextColorExtensions.ToTextCss(Sels.Core.Web.Bootstrap.V5.Color)">
+            <summary>
+            Gets the css class for a text color matching <paramref name="color"/>.
+            </summary>
+            <param name="color">The color to translate into a text color</param>
+            <returns>Text color css where the color is equal to <paramref name="color"/></returns>
+        </member>
+    </members>
+</doc>

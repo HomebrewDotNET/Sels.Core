@@ -1,0 +1,694 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.ServiceBuilder</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1">
+            <summary>
+            Interceptor that caches the return values of methods.
+            </summary>
+            <typeparam name="TImpl">The type of the object to cache values on</typeparam>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Sels.Core.Conversion.Converters.ITypeConverter,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1"/>
+            <param name="cache">The cache to use to store method return values</param>
+            <param name="defaultConverter">Optional default converter for serializing and deserializing method return values</param>
+            <param name="loggers">Static loggers to use for tracing</param>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Sels.Core.Conversion.Converters.ITypeConverter,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1"/>
+            <param name="cache">The cache to use to store method return values</param>
+            <param name="defaultConverter">Optional default converter for serializing and deserializing method return values</param>
+            <param name="factory">Logger factory for creating loggers based on the target type</param>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.InterceptAsync``1(Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Func{Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Threading.Tasks.Task{``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.Method(System.Reflection.MethodInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.ConvertUsingDefault(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.GetKeyWithDefault(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.WithDefaultOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.MethodCacher.ConvertUsing(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.MethodCacher.When(System.Predicate{Castle.DynamicProxy.IInvocation})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.MethodCacher.WithOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.CachingInterceptor`1.MethodCacher.WithKey(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor">
+            <summary>
+            Interceptor that traces method duration and/or exceptions.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor.#ctor(System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor"/>
+            <param name="loggers">Static loggers to use for tracing</param>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor.#ctor(Microsoft.Extensions.Logging.ILoggerFactory)">
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor"/>
+            <param name="factory">Logger factory for creating loggers based on the target type</param>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor.Duration">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor.Exceptions">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor.OfAll">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor.Of">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.TracingInterceptor.InterceptAsync(Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Func{Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Threading.Tasks.Task})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1">
+            <summary>
+            Builder for creating an interceptor that caches method return values.
+            </summary>
+            <typeparam name="T">The type of the object to cache values on</typeparam>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.Method(System.Reflection.MethodInfo)">
+            <summary>
+            Cache return values from <paramref name="method"/>.
+            </summary>
+            <param name="method">The method to cache</param>
+            <returns>Builder for configuring the caching of <paramref name="method"/></returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.Method(System.String)">
+            <summary>
+            Cache return values from the first method on <typeparamref name="T"/> with <paramref name="methodName"/>.
+            </summary>
+            <param name="methodName">The name of the method to cache</param>
+            <returns>Builder for configuring the caching of <paramref name="methodName"/></returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.Method(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
+            <summary>
+            Cache return values from the method selected by <paramref name="methodSelector"/>.
+            </summary>
+            <param name="methodSelector">Expression that points to the method to cache</param>
+            <returns>Builder for configuring the caching of method selected by <paramref name="methodSelector"/></returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.GetKeyWithDefault(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
+            <summary>
+            Defines a delegate for converting a method and it's parameters into a caching key. The default uses the method name and the parameters converted to strings.
+            Sets the default that is used unless overwritten for specific methods.
+            </summary>
+            <param name="keyGetter">Delegate that converts the method information into a caching key</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.WithDefaultOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
+            <summary>
+            Defines a delegate that returns the caching options for a method.
+            Sets the default that is used unless overwritten for specific methods.
+            </summary>
+            <param name="optionGetter">Delegate that returns the options for the provided method</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.WithDefaultExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
+            <summary>
+            Sets the default absolute expiry time for all cached entries.
+            Sets the default that is used unless overwritten for specific methods.
+            </summary>
+            <param name="expiryGetter">Delegate that returns the offset when a cached entry expires</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.WithDefaultSlidingExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
+            <summary>
+            Sets the default sliding expiry time for all cached entries.
+            Sets the default that is used unless overwritten for specific methods.
+            </summary>
+            <param name="expiryGetter">Delegate that returns the offset when a cached entry expires if it hasn't been accessed during the offset</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.ConvertUsingDefault(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
+            <summary>
+            Defines custom delegates for serializing and deserializing method returns values so they can be cached as strings. The default uses <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultJsonConverter"/>.
+            Sets the default that is used unless overwritten for specific methods.
+            </summary>
+            <param name="serializeFunc">Func that serializes the method return value to a string for caching</param>
+            <param name="deserializeFunc">Func that deserializes the cached string</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder`1.ConvertUsingDefault(Sels.Core.Conversion.Converters.ITypeConverter)">
+            <summary>
+            Defines custom delegates for serializing and deserializing method returns values so they can be cached as strings. The default uses <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultJsonConverter"/>.
+            Sets the default that is used unless overwritten for specific methods.
+            </summary>
+            <param name="converter">Type converted used to serialize and deserialize the cache values</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1">
+            <summary>
+            Builder for defining how a method is cached.
+            </summary>
+            <typeparam name="T">The type of the object to cache values on</typeparam>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.And">
+            <summary>
+            Returns the parent builder for defining more methods to cache.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.WithKey(System.Func{Castle.DynamicProxy.IInvocation,System.String})">
+            <summary>
+            Defines a delegate for converting a method and it's parameters into a caching key. The default uses the method name and the parameters converted to strings.
+            </summary>
+            <param name="keyGetter">Delegate that converts the method information into a caching key</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.WithOptions(System.Func{Castle.DynamicProxy.IInvocation,Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions})">
+            <summary>
+            Defines a delegate that returns the caching options for a method.
+            </summary>
+            <param name="optionGetter">Delegate that returns the options for the provided method</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.WithExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
+            <summary>
+            Sets the default absolute expiry time for all cached entries.
+            </summary>
+            <param name="expiryGetter">Delegate that returns the offset when a cached entry expires</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.WithSlidingExpiry(System.Func{Castle.DynamicProxy.IInvocation,System.TimeSpan})">
+            <summary>
+            Sets the default sliding expiry time for all cached entries.
+            </summary>
+            <param name="expiryGetter">Delegate that returns the offset when a cached entry expires if it hasn't been accessed during the offset</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.ConvertUsing(System.Func{System.Object,System.String},System.Func{System.String,System.Type,System.Object})">
+            <summary>
+            Defines custom delegates for serializing and deserializing method returns values so they can be cached as strings. The default uses <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultJsonConverter"/>.
+            </summary>
+            <param name="serializeFunc">Func that serializes the method return value to a string for caching</param>
+            <param name="deserializeFunc">Func that deserializes the cached string</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.ConvertUsing(Sels.Core.Conversion.Converters.ITypeConverter)">
+            <summary>
+            Defines custom delegates for serializing and deserializing method returns values so they can be cached as strings. The default uses <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultJsonConverter"/>.
+            </summary>
+            <param name="converter">Type converted used to serialize and deserialize the cache values</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ICachingMethodInterceptorBuilder`1.When(System.Predicate{Castle.DynamicProxy.IInvocation})">
+            <summary>
+            Defines a condition when this method can be cached. If condition is false caching will be skipped.
+            </summary>
+            <param name="condition">Delegate that dictates if the method can be cached or not</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder">
+            <summary>
+            Builder for creating an interceptor that traces method duration and/or exceptions.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder.Duration">
+            <summary>
+            Traces the duration of method execution.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder.Exceptions">
+            <summary>
+            Traces any thrown exceptions.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.IMethodDurationInterceptorBuilder">
+            <summary>
+            Builder for creating an interceptor that traces method duration.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.Interceptors.IMethodDurationInterceptorBuilder.OfAll">
+            <summary>
+            Traces the duration of all methods.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.Interceptors.IMethodDurationInterceptorBuilder.Of">
+            <summary>
+            Traces the duration of specific methods.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.IAllMethodDurationInterceptorBuilder">
+            <summary>
+            Builder for creating an interceptor that traces all method duration.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.IAllMethodDurationInterceptorBuilder.Except(System.Predicate{Castle.DynamicProxy.IInvocation})">
+            <summary>
+            All methods matching <paramref name="condition"/> will not be traced.
+            </summary>
+            <param name="condition">Delegate that dictates if a method should not be traced</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.IAllMethodDurationInterceptorBuilder.ExceptMethod(System.Reflection.MethodInfo)">
+            <summary>
+            <paramref name="method"/> will not be traced.
+            </summary>
+            <param name="method">The method not to trace</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.IAllMethodDurationInterceptorBuilder.ExceptMethod(System.String)">
+            <summary>
+            Methods with <paramref name="methodname"/> will not be traced.
+            </summary>
+            <param name="methodname">The name of the methods not to trace</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.IAllMethodDurationInterceptorBuilder.ExceptMethods(System.String[])">
+            <summary>
+            Methods with <paramref name="methodNames"/> will not be traced.
+            </summary>
+            <param name="methodNames">The names of the methods not to trace</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.ISpecificMethodDurationInterceptorBuilder">
+            <summary>
+            Builder for creating an interceptor that traces the duration of specific methods.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ISpecificMethodDurationInterceptorBuilder.Methods(System.Predicate{Castle.DynamicProxy.IInvocation})">
+            <summary>
+            All methods matching <paramref name="condition"/> will be traced.
+            </summary>
+            <param name="condition">Delegate that dictates if a method should be traced</param>
+            <returns>Current builder for method tracing</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ISpecificMethodDurationInterceptorBuilder.Method(System.Reflection.MethodInfo)">
+            <summary>
+            <paramref name="method"/> will be traced.
+            </summary>
+            <param name="method">The method to trace</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ISpecificMethodDurationInterceptorBuilder.Method(System.String)">
+            <summary>
+            Methods with <paramref name="methodname"/> will be traced.
+            </summary>
+            <param name="methodname">The name of the methods not to trace</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.ISpecificMethodDurationInterceptorBuilder.Methods(System.String[])">
+            <summary>
+            Methods with <paramref name="methodNames"/> will be traced.
+            </summary>
+            <param name="methodNames">The names of the methods to trace</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Interceptors.IExceptionTracingInterceptorBuilder">
+            <summary>
+            Builder for creating an interceptor that traces any exception thrown.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.IExceptionTracingInterceptorBuilder.When(System.Predicate{System.Exception})">
+            <summary>
+            Defines when to trace exception. Default is all exceptions if no condition is set.
+            </summary>
+            <param name="condition">Delegate that dictates when to trace an exception</param>
+            <returns>Current builder for method tracing</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.IExceptionTracingInterceptorBuilder.OfType``1">
+            <summary>
+            Traces exception assignable to <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of the exception to trace</typeparam>
+            <returns>Current builder for method tracing</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.IExceptionTracingInterceptorBuilder.WithLevel(System.Func{System.Exception,System.Nullable{Microsoft.Extensions.Logging.LogLevel}})">
+            <summary>
+            Defines the log level to use for specific exceptions. If no delegates are set the default is <see cref="F:Microsoft.Extensions.Logging.LogLevel.Error"/>.
+            </summary>
+            <param name="selector">Delegate that returns the log level for the provided exception. If null is returned then the default log level is used</param>
+            <returns>Current builder for method tracing</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Interceptors.IExceptionTracingInterceptorBuilder.Using(System.Action{Castle.DynamicProxy.IInvocation,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger},Microsoft.Extensions.Logging.LogLevel,System.Exception})">
+            <summary>
+            Defines a custom delegate for logging the exception.
+            </summary>
+            <param name="logger">Delegate that logs the exceptions using the provided loggers</param>
+            <returns>Current builder for method tracing</returns>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.ServiceBuilder`2">
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.IServiceBuilder`2"/>
+        </member>
+        <member name="F:Sels.Core.ServiceBuilder.ServiceBuilder`2._collection">
+            <summary>
+            The collection to add the built service to
+            </summary>
+        </member>
+        <member name="E:Sels.Core.ServiceBuilder.ServiceBuilder`2.OnRegistering">
+            <summary>
+            Event that gets raised before adding the service to the service collection.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.ServiceBuilder`2.IsAbstractionless">
+            <summary>
+            If the current service registration is not an implementation for a service type but just a registration of the concrete type.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.ServiceBuilder`2.ServiceType">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.ServiceBuilder`2.ImplementationType">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.ServiceBuilder`2.#ctor(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.ServiceBuilder`2"/>
+            <param name="collection"><inheritdoc cref="F:Sels.Core.ServiceBuilder.ServiceBuilder`2._collection"/></param>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.ServiceBuilder`2.WithInstance(`1)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.ServiceBuilder`2.ConstructWith(System.Func{System.IServiceProvider,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.ServiceBuilder`2.WithScope(Sels.Core.Components.IoC.ServiceScope)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.ServiceBuilder`2.UsingInterceptors(System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Castle.DynamicProxy.IInterceptor}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.ServiceBuilder`2.WithBehaviour(Sels.Core.ServiceBuilder.RegisterBehaviour)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.ServiceBuilder`2.Register">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.ServiceBuilder`1">
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.IServiceBuilder`1"/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.ServiceBuilder`1.#ctor(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.ServiceBuilder`1"/>
+            <param name="collection"><inheritdoc cref="F:Sels.Core.ServiceBuilder.ServiceBuilder`2._collection"/></param>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.ServiceBuilder`1.Sels#Core#ServiceBuilder#IServiceBuilder{T}#As``1">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.IServiceBuilder`1">
+            <inheritdoc cref="T:Sels.Core.ServiceBuilder.IServiceBuilder`2"/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`1.As``1">
+            <summary>
+            Sets the implementation type for <typeparamref name="T"/> to <typeparamref name="TImpl"/>.
+            </summary>
+            <typeparam name="TImpl">The type that implements <typeparamref name="T"/></typeparam>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.IServiceBuilder`2">
+            <summary>
+            Builds a service that will be added to a service collection for dependency injection.
+            </summary>
+            <typeparam name="T">The service type that can be resolved as dependency</typeparam>
+            <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.UsingInterceptors(System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Castle.DynamicProxy.IInterceptor}})">
+            <summary>
+            Defines a factory that creates interceptors for intercepting member calls to <typeparamref name="T"/>.
+            This method can be called multiple times for defining multiple factories.
+            </summary>
+            <param name="factory">Delegate that creates the interceptors</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedBy(Castle.DynamicProxy.IInterceptor)">
+            <summary>
+            Adds instance <paramref name="interceptor"/> as an interceptor for <typeparamref name="T"/>.
+            </summary>
+            <param name="interceptor">The interceptor to use</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedBy(System.Func{System.IServiceProvider,Castle.DynamicProxy.IInterceptor})">
+            <summary>
+            Adds the instance created by <paramref name="factory"/> as an interceptor for <typeparamref name="T"/>.
+            </summary>
+            <param name="factory">Delegate that creates the interceptor</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedBy``1">
+            <summary>
+            Adds interceptor of service type <typeparamref name="TInterceptor"/> as an interceptor for <typeparamref name="T"/>.
+            Instance will be resolved using the <see cref="T:System.IServiceProvider"/>.
+            </summary>
+            <typeparam name="TInterceptor">Type of the interceptor to use</typeparam>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegistered">
+            <summary>
+            Adds any interceptor registered as <see cref="T:Castle.DynamicProxy.IInterceptor"/> in the service collection as interceptors for <typeparamref name="T"/>.
+            </summary>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegistered(System.Predicate{Castle.DynamicProxy.IInterceptor})">
+            <summary>
+            Adds any interceptor registered as <see cref="T:Castle.DynamicProxy.IInterceptor"/> in the service collection as interceptors for <typeparamref name="T"/>.
+            </summary>
+            <param name="condition">Predicate that dictates if the interceptor can be added</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegisteredExcept``1">
+            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegisteredExcept``5"/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegisteredExcept``2">
+            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegisteredExcept``5"/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegisteredExcept``3">
+            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegisteredExcept``5"/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegisteredExcept``4">
+            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegisteredExcept``5"/>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegisteredExcept``5">
+            <summary>
+            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.InterceptedByRegistered(System.Predicate{Castle.DynamicProxy.IInterceptor})"/>.
+            Except for interceptors that match the provided generic types.
+            </summary>
+            <typeparam name="T1">Type of interceptor not to use</typeparam>
+            <typeparam name="T2">Type of interceptor not to use</typeparam>
+            <typeparam name="T3">Type of interceptor not to use</typeparam>
+            <typeparam name="T4">Type of interceptor not to use</typeparam>
+            <typeparam name="T5">Type of interceptor not to use</typeparam>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.ConstructWith(System.Func{System.IServiceProvider,`1})">
+            <summary>
+            Defines a delgete for creating the instances of <paramref name="factory"/>.
+            </summary>
+            <param name="factory">Delegate that creates a new instance of <typeparamref name="TImpl"/></param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.WithInstance(`1)">
+            <summary>
+            Sets the instance to inject as dependency.
+            Forces the lifetime to singleton.
+            </summary>
+            <param name="instance">The instance to inject as dependency</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.WithScope(Sels.Core.Components.IoC.ServiceScope)">
+            <summary>
+            Sets the lifetime scope for the instances of <typeparamref name="TImpl"/>.
+            </summary>
+            <param name="scope">The scope to use</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.AsTransient">
+            <summary>
+            A new instance of <typeparamref name="TImpl"/> is created everytime.
+            </summary>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.AsScoped">
+            <summary>
+            The same instance of <typeparamref name="TImpl"/> is returning within the same scope.
+            </summary>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.AsSingleton">
+            <summary>
+            Only one instance of <typeparamref name="TImpl"/> will be created and resolved.
+            </summary>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.WithBehaviour(Sels.Core.ServiceBuilder.RegisterBehaviour)">
+            <summary>
+            Sets the register behaviour for dealing with other registrations.
+            </summary>
+            <param name="behaviour">The behaviour to use</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.ReplaceExisting">
+            <summary>
+            <inheritdoc cref="F:Sels.Core.ServiceBuilder.RegisterBehaviour.Replace"/>
+            </summary>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.AddIfMissing">
+            <summary>
+            <inheritdoc cref="F:Sels.Core.ServiceBuilder.RegisterBehaviour.TryAdd"/>
+            </summary>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.ForceRegister">
+            <summary>
+            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder.Register"/>
+            Sets the register behaviour to <see cref="F:Sels.Core.ServiceBuilder.RegisterBehaviour.Replace"/>.
+            </summary>
+            <returns>The service collection that the service built using this builder was added to</returns>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.TryRegister">
+            <summary>
+            <inheritdoc cref="M:Sels.Core.ServiceBuilder.IServiceBuilder.Register"/>
+            Sets the register behaviour to <see cref="F:Sels.Core.ServiceBuilder.RegisterBehaviour.TryAdd"/>.
+            </summary>
+            <returns>The service collection that the service built using this builder was added to</returns>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.IServiceBuilder">
+            <summary>
+            Builds a service that will be added to a service collection for dependency injection.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.IServiceBuilder.ServiceType">
+            <summary>
+            The service type that can be resolved as dependency.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.ServiceBuilder.IServiceBuilder.ImplementationType">
+            <summary>
+            The implementation type for <see cref="P:Sels.Core.ServiceBuilder.IServiceBuilder.ServiceType"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder.Register">
+            <summary>
+            Finish building the current service and add it to the service collection.
+            </summary>
+            <returns>The service collection that the service built using this builder was added to</returns>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.RegisterBehaviour">
+            <summary>
+            Defines the behaviour of dealing with other registrations when registering a new service.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.ServiceBuilder.RegisterBehaviour.Default">
+            <summary>
+            Service will be registered regardless of other registrations for the same service type. This is the default behaviour.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.ServiceBuilder.RegisterBehaviour.TryAdd">
+            <summary>
+            Service will be registered if no registrations exist for the service type.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.ServiceBuilder.RegisterBehaviour.Replace">
+            <summary>
+            Any existing registrations for the service type will be removed and replaced with the new service.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Template.Interceptors.BaseInterceptor">
+            <summary>
+            Base class for creating new interceptors.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Template.Interceptors.BaseInterceptor.Intercept(Castle.DynamicProxy.IInvocation)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Template.Interceptors.BaseResultlessInterceptor">
+            <summary>
+            Base class for creating interceptors where the result of the method isn't needed.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Template.Interceptors.BaseResultlessInterceptor.InterceptAsync``1(Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Func{Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Threading.Tasks.Task{``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.ServiceBuilder.Template.Interceptors.BaseResultOnlyInterceptor">
+            <summary>
+            Base class for interceptors that only intercept methods with a result.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.ServiceBuilder.Template.Interceptors.BaseResultOnlyInterceptor.InterceptAsync(Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Func{Castle.DynamicProxy.IInvocation,Castle.DynamicProxy.IInvocationProceedInfo,System.Threading.Tasks.Task})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.InterceptorExtensions">
+            <summary>
+            Contains static extension methods for working with interceptors
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Trace``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder,Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder})">
+            <summary>
+            Addds an interceptor for tracing method duration and / or exceptions.
+            </summary>
+            <typeparam name="T">The service type that can be resolved as dependency</typeparam>
+            <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+            <param name="builder">Builder to add the interceptor to</param>
+            <param name="interceptorBuilder">Builder for creating the interceptor</param>
+            <returns>Current builder for method tracing</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Trace``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder,Sels.Core.ServiceBuilder.Interceptors.ITracingInterceptorBuilder},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Addds an interceptor for tracing method duration and / or exceptions.
+            </summary>
+            <typeparam name="T">The service type that can be resolved as dependency</typeparam>
+            <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+            <param name="builder">Builder to add the interceptor to</param>
+            <param name="interceptorBuilder">Builder for creating the interceptor</param>
+            <param name="loggers">The loggers to use for tracing</param>
+            <returns>Current builder for method tracing</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Cache``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder{``1},System.Object})">
+            <summary>
+            Adds an interceptor for caching method return values.
+            </summary>
+            <typeparam name="T">The service type that can be resolved as dependency</typeparam>
+            <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+            <param name="builder">Builder to add the interceptor to</param>
+            <param name="interceptorBuilder">Builder for creating the interceptor</param>
+            <returns>Current builder for method tracing</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.InterceptorExtensions.Cache``2(Sels.Core.ServiceBuilder.IServiceBuilder{``0,``1},System.Func{Sels.Core.ServiceBuilder.Interceptors.ICachingInterceptorBuilder{``1},System.Object},System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+            <summary>
+            Adds an interceptor for caching method return values.
+            </summary>
+            <typeparam name="T">The service type that can be resolved as dependency</typeparam>
+            <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+            <param name="builder">Builder to add the interceptor to</param>
+            <param name="interceptorBuilder">Builder for creating the interceptor</param>
+            <param name="loggers">The loggers to use for tracing</param>
+            <returns>Current builder for method tracing</returns>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.ServiceBuilderExtensions">
+            <summary>
+            Contains extension methods for building server for dependency injection.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceBuilderExtensions.New``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Returns a builder for creating a new service to inject as dependency.
+            </summary>
+            <typeparam name="T">The service type</typeparam>
+            <param name="collection">Collection to register the built service in</param>
+            <returns>Builder for creating the service</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ServiceBuilderExtensions.New``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Returns a builder for creating a new service to inject as dependency.
+            </summary>
+            <typeparam name="T">The service type</typeparam>
+            <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+            <param name="collection">Collection to register the built service in</param>
+            <returns>Builder for creating the service</returns>
+        </member>
+    </members>
+</doc>

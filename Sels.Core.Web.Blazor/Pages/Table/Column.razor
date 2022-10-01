@@ -1,0 +1,43 @@
+﻿@using Sels.Core.Web.Blazor.Exceptions
+@typeparam TModel
+@attribute [CascadingTypeParameter(nameof(TModel))]
+@implements IDisposable
+
+@code {
+    /// <summary>
+    /// The content that will be displayed in the column for the model.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<TModel> ChildContent { get; set; }
+    /// <summary>
+    /// Cascaded content from parent model table.
+    /// </summary>
+    [CascadingParameter(Name = "TableContext")]
+    public LazyTableContext<TModel> TableContext { get; set; }
+    /// <summary>
+    /// Optional css class for the td tag.
+    /// </summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+    /// <summary>
+    /// Used to determine the order. Lower means rendered first.
+    /// </summary>
+    [Parameter]
+    public int Order { get; set; } = 1;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        MissingCascadingParameterException.ThrowOnNull(this, TableContext);
+        ChildContent.ValidateArgument(nameof(ChildContent));
+
+        await TableContext.AddColumnComponent(ChildContent, Order, CssClass);
+        await base.OnInitializedAsync();
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (ChildContent != null && TableContext != null) TableContext.RemoveColumnComponent(ChildContent);
+    }
+}

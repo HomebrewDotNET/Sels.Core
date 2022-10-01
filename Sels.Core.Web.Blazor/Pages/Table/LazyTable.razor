@@ -1,0 +1,253 @@
+﻿@using Sels.Core.Localization
+@using Sels.Core.Models.Sorting
+@using Sels.Core.Web.Blazor.Models.Localization
+@using Sels.Core.Web.Blazor.Pages.Pagination
+@using Sels.Core.Extensions.Reflection
+@using Sels.Core.Extensions.Conversion
+@using Microsoft.AspNetCore.Components.Web
+@using Sels.Core.Conversion.Extensions;
+@typeparam TModel
+@attribute [CascadingTypeParameter(nameof(TModel))]
+
+@if(Context != null)
+{
+    <CascadingValue Value="Context" Name="TableContext">
+            <div class="container-fluid">
+                <div style="display: none">
+                    @ChildContent
+                </div>
+                <div class="row my-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-inline-flex justify-content-start align-items-center">
+                            @foreach(var template in Context.RowComponents.OrderBy(x => x.Order))
+                            {
+                                <div class="@(template.CssClass)">
+                                    @template.Row
+                                </div>
+                            }
+                        </div>
+                        @if (RenderPagination)
+                        {
+                            <div class="d-inline-flex justify-content-end align-items-center">
+                                <label class="form-label text-nowrap me-2" for="ModelTabel<@typeof(TModel).GetDisplayName(false)>.PageSize">@Localizer.Get("ModelTable.PageSize.Label", LocalizationContext?.Culture?.Name)</label>
+                                <input class="form-control" type="number" id="ModelTabel<@typeof(TModel).GetDisplayName(false)>.PageSize" value="@Context.State.PageSize" @onchange="x => OnPageSizeChanged(x.Value.ConvertToOrDefault<int>())" />                              
+                            </div>                   
+                        } 
+                    </div>
+                
+                 
+                </div>
+    
+                <div class="row my-2">
+                    <div class="col-12">
+                        <div class="table-responsive">
+                            <table class="table @CssClass">
+                                <thead>
+                                    <tr>
+                                        @if (RenderSelection)
+                                        {
+                                            <th><input class="form-check-input" type="checkbox" @onchange="x => OnCheckBoxChanged(x.Value.ConvertToOrDefault<bool>())"/></th>
+                                        }
+                                        @foreach(var template in Context.Headers.OrderBy(x => x.Order))
+                                        {
+                                            if (EnableSorting && template.CanSort)
+                                            {
+                                                <th id="@template.ColumnId" class="@template.CssClass" @onclick="x => OnSortColumnChanged(template.ColumnId)" style="cursor: pointer; ">
+                                                    <div class="d-inline-flex justify-content-start">
+                                                        <div class="pe-3">
+                                                            @template.Header
+                                                        </div>                                                       
+                                                        <div>
+                                                            @if(Context.State.SortColumn.HasValue() && Context.State.SortColumn.Equals(template.ColumnId))
+                                                            {
+                                                            <span class="oi @(Context.State.SortOrder == SortOrder.Ascending ? "oi-caret-top" : "oi-caret-bottom")"></span>
+                                                            }
+                                                            else
+                                                            {
+                                                            <span class="oi oi-elevator"></span>
+                                                        }
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            }
+                                            else
+                                            {
+                                                <th id="@template.ColumnId" class="@template.CssClass">
+                                                    @template.Header
+                                                </th>
+                                            }
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach(var model in Context.State.Models)
+                                    {
+                                        <tr class="@RowCssClassSelector?.Invoke(model)">
+                                            @if (RenderSelection)
+                                            {
+                                                <td><input class="form-check-input" type="checkbox" checked="@Context.State.IsSelected(model)" @onchange="x => OnCheckBoxChanged(x.Value.ConvertToOrDefault<bool>(), model)"/></td>
+                                            }
+                                            @foreach(var template in Context.Columns.OrderBy(x => x.Order))
+                                            {
+                                                <td class="@template.CssClass">
+                                                    @template.Column(model)
+                                                </td>
+                                            }
+                                        </tr>
+                                    }                   
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>           
+                </div>
+                @if (RenderPagination)
+                {
+                    <div class="row my-2 align-items-center justify-content-center">
+                        <div class="col-auto">
+                            <PageNavigator Page="Context.State.Page"  TotalPages="Context.State.TotalPages" PageOffset="PageOffset" OnPageChange="x => Context.State.SetPage(x)" />
+                        </div>               
+                    </div>
+                }
+        </div>
+    </CascadingValue>
+}
+
+
+@code {
+    /// <summary>
+    /// Context object for the model table that gets cascaded to child components.
+    /// </summary>
+    [Parameter]
+    public LazyTableContext<TModel> Context { get; set; }
+    /// <summary>
+    /// Optional localization context cascaded from a parent.
+    /// </summary>
+    [CascadingParameter(Name = "LocalizationContext")]
+    public LocalizationContext LocalizationContext { get; set; }
+    /// <inheritdoc cref="ModelTableOptions" />
+    [Parameter]
+    public ModelTableOptions Options { get; set; }
+    /// <summary>
+    /// Optional delegate that returns the css class for the table row based on the provided model.
+    /// </summary>
+    [Parameter]
+    public Func<TModel, string?>? RowCssClassSelector { get; set; }
+    /// <summary>
+    /// Optional css class for the table.
+    /// </summary>
+    [Parameter]
+    public string? CssClass { get; set; }
+    /// <summary>
+    /// The models to render initially.
+    /// </summary>
+    [Parameter]
+    public IEnumerable<TModel>? Models { get; set; }
+    /// <summary>
+    /// Optional page offset for the pagination component if enabled.
+    /// </summary>
+    [Parameter]
+    public int? PageOffset { get; set; }
+    /// <summary>
+    /// The max page size for the input field.
+    /// </summary>
+    [Parameter]
+    public int MaxPageSize { get; set; } = 1000;
+    /// <summary>
+    /// Contains the headers and column components.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool RenderPagination => !Options.HasFlag(ModelTableOptions.DisablePagination);
+    private bool RenderSelection => !Options.HasFlag(ModelTableOptions.DisableSelection);
+    private bool EnableSorting => !Options.HasFlag(ModelTableOptions.DisableSorting);
+
+    /// <summary>
+    /// Event that gets raised when the table state changes. Does not trigger when selected models change.
+    /// </summary>
+    [Parameter]
+    public EventCallback<LazyTableState<TModel>> OnStateChanged { get; set; }
+    /// <summary>
+    /// Event that gets raised when the selected models change.
+    /// </summary>
+    [Parameter]
+    public EventCallback<LazyTableState<TModel>> OnSelectedChanged { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        Context = Context ?? new LazyTableContext<TModel>();        
+        if(Models != null) await Context.State.SetModels(Models);
+
+        ChildContent.ValidateArgument(nameof(ChildContent));
+
+        // Bind events
+        Context.OnSelectedChanged = async x =>
+        {
+            await OnSelectedChanged.InvokeAsync(x);
+            StateHasChanged();
+        };
+        Context.OnStateChanged = async x =>
+        {
+            await OnStateChanged.InvokeAsync(x);
+            StateHasChanged();
+        };
+        Context.OnRenderRequested = () =>
+        {
+            StateHasChanged();
+            return Task.CompletedTask;
+        };
+
+        await base.OnInitializedAsync();
+    }
+
+    private Task OnPageSizeChanged(int pageSize)
+    {
+        if(pageSize < 1)
+        {
+            pageSize = 1;
+        }
+        else if (pageSize > MaxPageSize)
+        {
+            pageSize = MaxPageSize;
+        }
+
+        return Context.State.SetPageSize(pageSize);
+    }
+
+    private Task OnCheckBoxChanged(bool isChecked)
+    {
+        if (isChecked)
+        {
+            return Context.State.SetSelected(Context.State.Models);
+        }
+        else
+        {
+            return Context.State.SetSelected(null);
+        }
+    }
+
+    private Task OnCheckBoxChanged(bool isChecked, TModel changed)
+    {
+        if (isChecked)
+        {
+            return Context.State.AddSelected(changed);
+        }
+        else
+        {
+            return Context.State.RemoveSelected(changed);
+        }
+    }
+
+    private Task OnSortColumnChanged(string columnId)
+    {
+        if (Context.State.SortColumn.HasValue() && Context.State.SortColumn.Equals(columnId))
+        {
+            return Context.State.SetSortColumn(columnId, Context.State.SortOrder == SortOrder.Ascending ? SortOrder.Descending : SortOrder.Ascending);
+        }
+        else
+        {
+            return Context.State.SetSortColumn(columnId, SortOrder.Ascending);
+        }
+    }
+}

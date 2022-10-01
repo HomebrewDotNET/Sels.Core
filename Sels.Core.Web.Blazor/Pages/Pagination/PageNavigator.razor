@@ -1,0 +1,88 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+
+@if(TotalPages > 0)
+{
+    <nav aria-label="Page navigator">
+      <ul class="pagination">
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="First" @onclick="() => SetPageAsync(1)" @onclick:preventDefault>&lt;&lt;</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous" @onclick="() => SetPageAsync(Page-1)" @onclick:preventDefault>&lt;</a>
+        </li>
+            @for(int i = 1; i <= TotalPages; i++)
+            {
+                if (!PageOffset.HasValue || ((i == Page) || (i < Page && i >= Page-PageOffset.Value) || (i > Page && i <= Page+PageOffset.Value)))
+                {
+                    if(i == Page)
+                    {
+                        <li class="page-item active" aria-current="page"><span class="page-link">@i</span></li>
+                    }
+                    else
+                    {
+                        var page = i;
+                        <li class="page-item"><a class="page-link" href="#" @onclick="() => SetPageAsync(page)" @onclick:preventDefault>@i</a></li>
+                    }
+                }
+            }    
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next" @onclick="() => SetPageAsync(Page+1)" @onclick:preventDefault>&gt;</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Last" @onclick="() => SetPageAsync(TotalPages)" @onclick:preventDefault>&gt;&gt;</a>
+        </li>
+      </ul>
+    </nav>
+}
+
+@code {
+    /// <summary>
+    /// The current selected page.
+    /// </summary>
+    [Parameter]
+    public int Page { get; set; } = 1;
+    /// <summary>
+    /// How many total pages there are.
+    /// </summary>
+    [Parameter]
+    public int TotalPages { get; set; }
+    /// <summary>
+    /// How many page buttons to render before and after the selected page button. When set to null all page buttons will be rendered.
+    /// </summary>
+    [Parameter]
+    public int? PageOffset { get; set; }
+
+    // Events
+    /// <summary>
+    /// Event that gets raised when the selected page changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> OnPageChange { get; set; }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        Page.ValidateArgumentLargerOrEqual(nameof(Page), 1);
+        if(PageOffset.HasValue)  PageOffset.Value.ValidateArgumentLargerOrEqual(nameof(PageOffset), 1);
+    }
+
+    private async Task SetPageAsync(int page)
+    {
+        if (page <= 1)
+        {
+            Page = 1;
+        }
+        else if (page >= TotalPages)
+        {
+            Page = TotalPages;
+        }
+        else
+        {
+            Page = page;
+        }
+        await OnPageChange.InvokeAsync(Page);
+        StateHasChanged();
+    }
+}

@@ -1,5 +1,7 @@
 ﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,11 +10,29 @@ using System.Text;
 
 namespace Sels.Core.Extensions
 {
+    /// <summary>
+    /// Contains extension methods for working with the various .NET collections.
+    /// </summary>
     public static class CollectionExtensions
     {
         private static Random _random = new Random();
 
         #region IEnumerable
+        /// <summary>
+        /// Yield return any object in <paramref name="source"/>.
+        /// </summary>
+        /// <param name="source">Collection to get items from</param>
+        /// <returns>Objects in <paramref name="source"/></returns>
+        public static IEnumerable<object> Enumerate(this IEnumerable source)
+        {
+            source.ValidateArgument(nameof(source));
+
+            foreach (var item in source)
+            {
+                yield return item;
+            }
+        }
+
         /// <summary>
         /// Creates a new list from the elements in <paramref name="collection"/>.
         /// </summary>
@@ -21,9 +41,35 @@ namespace Sels.Core.Extensions
         /// <returns>List containing all elements in <paramref name="collection"/></returns>
         public static List<T> Copy<T>(this IEnumerable<T> collection)
         {
+            collection.ValidateArgument(nameof(collection));
+
             return new List<T>(collection);
         }
+        /// <summary>
+        /// Gets the element at index <paramref name="index"/> in <paramref name="collection"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements in <paramref name="collection"/></typeparam>
+        /// <param name="collection">The collection to get the element from</param>
+        /// <param name="index">The index of the element to get</param>
+        /// <returns>The element at index <paramref name="index"/> in <paramref name="collection"/></returns>
+        public static T GetAtIndex<T>(this IEnumerable<T> collection, int index)
+        {
+            collection.ValidateArgument(nameof(collection));
+            index.ValidateArgumentLargerOrEqual(nameof(index), 0);
 
+            var currentIndex = 0;
+            foreach (var item in collection)
+            {
+                if (currentIndex == index)
+                {
+                    return item;
+                }
+
+                currentIndex++;
+            }
+
+            throw new IndexOutOfRangeException($"No element at index {index}");
+        }
         /// <summary>
         /// Checks if all elements are unique in <paramref name="collection"/> by comparing with <see cref="object.Equals(object)"/>.
         /// </summary>
@@ -32,23 +78,22 @@ namespace Sels.Core.Extensions
         /// <returns>Boolean indicating if all elements in <paramref name="collection"/> are unique</returns>
         public static bool AreAllUnique<T>(this IEnumerable<T> collection)
         {
-            if (collection.HasValue())
-            {
-                foreach(var item in collection)
-                {
-                    var occuranceAmount = 0;
-                    foreach(var itemToCompare in collection)
-                    {
-                        if (item.Equals(itemToCompare))
-                        {
-                            occuranceAmount++;
-                        }
+            collection.ValidateArgument(nameof(collection));
 
-                        // Has to be 2 because an item counts itself at least once
-                        if(occuranceAmount > 1)
-                        {
-                            return false;
-                        }
+            foreach (var item in collection)
+            {
+                var occuranceAmount = 0;
+                foreach (var itemToCompare in collection)
+                {
+                    if (item.Equals(itemToCompare))
+                    {
+                        occuranceAmount++;
+                    }
+
+                    // Has to be 2 because an item counts itself at least once
+                    if (occuranceAmount > 1)
+                    {
+                        return false;
                     }
                 }
             }
@@ -65,29 +110,27 @@ namespace Sels.Core.Extensions
         /// <returns>Boolean indicating if all elements in <paramref name="collection"/> are unique</returns>
         public static bool AreAllUnique<T>(this IEnumerable<T> collection, Func<T, object> valueSelector)
         {
+            collection.ValidateArgument(nameof(collection));
             valueSelector.ValidateArgument(nameof(valueSelector));
 
-            if (collection.HasValue())
+            foreach (var item in collection)
             {
-                foreach (var item in collection)
+                var itemValue = valueSelector(item);
+
+                var occuranceAmount = 0;
+                foreach (var itemToCompare in collection)
                 {
-                    var itemValue = valueSelector(item);
+                    var itemToCompareValue = valueSelector(itemToCompare);
 
-                    var occuranceAmount = 0;
-                    foreach (var itemToCompare in collection)
+                    if (itemValue.Equals(itemToCompareValue))
                     {
-                        var itemToCompareValue = valueSelector(itemToCompare);
+                        occuranceAmount++;
+                    }
 
-                        if (itemValue.Equals(itemToCompareValue))
-                        {
-                            occuranceAmount++;
-                        }
-
-                        // Has to be 2 because an item counts itself at least once
-                        if (occuranceAmount > 1)
-                        {
-                            return false;
-                        }
+                    // Has to be 2 because an item counts itself at least once
+                    if (occuranceAmount > 1)
+                    {
+                        return false;
                     }
                 }
             }
@@ -95,40 +138,48 @@ namespace Sels.Core.Extensions
             return true;
         }
         #region Random
-        public static int GetRandomIndex<T>(this IEnumerable<T> value)
+        /// <summary>
+        /// Gets the index of a random element in <paramref name="collection"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements in <paramref name="collection"/></typeparam>
+        /// <param name="collection">The collection to get the random element index from</param>
+        /// <returns>The index of a random element in <paramref name="collection"/> or -1 when <paramref name="collection"/> is empty</returns>
+        public static int GetRandomIndex<T>(this IEnumerable<T> collection)
         {
-            return _random.Next(0, value.Count());
+            collection.ValidateArgument(nameof(collection));
+
+            var count = collection.GetCount();
+            return count > 0 ? _random.Next(0, count) : -1;
         }
-
-        public static T GetAtIndex<T>(this IEnumerable<T> value, int index)
+        /// <summary>
+        /// Gets a random element in <paramref name="collection"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements in <paramref name="collection"/></typeparam>
+        /// <param name="collection">The collection to get the random element from</param>
+        /// <returns>A random element in <paramref name="collection"/></returns>
+        public static T GetRandomItem<T>(this IEnumerable<T> collection)
         {
-            var currentIndex = 0;
-            foreach (var item in value)
-            {
-                if (currentIndex == index)
-                {
-                    return item;
-                }
+            collection.ValidateArgument(nameof(collection));
 
-                currentIndex++;
-            }
-
-            return default;
-        }
-
-        public static T GetRandomItem<T>(this IEnumerable<T> value)
-        {
-            var randomIndex = value.GetRandomIndex();
-            return value.GetAtIndex(randomIndex);
+            var randomIndex = collection.GetRandomIndex();
+            if(randomIndex < 0) throw new IndexOutOfRangeException("Collection was empty");
+            return collection.GetAtIndex(randomIndex);
         }
         #endregion
         #endregion
 
         #region Dictionary
-        public static void Merge<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, Dictionary<TKey, List<TItem>> dictionaryToMerge)
+        /// <summary>
+        /// Adds all values in <paramref name="dictionaryToMerge"/> to <paramref name="dictionary"/>.
+        /// </summary>
+        /// <typeparam name="TKey">Type of the key in <paramref name="dictionary"/></typeparam>
+        /// <typeparam name="TItem">Type of the elements in <paramref name="dictionary"/></typeparam>
+        /// <param name="dictionary">The dictionary to add the values to</param>
+        /// <param name="dictionaryToMerge">The dictionary with the values to add</param>
+        public static void Merge<TKey, TItem>(this IDictionary<TKey, List<TItem>> dictionary, IDictionary<TKey, List<TItem>> dictionaryToMerge)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            dictionaryToMerge.ValidateVariable(nameof(dictionaryToMerge));
+            dictionary.ValidateArgument(nameof(dictionary));
+            dictionaryToMerge.ValidateArgument(nameof(dictionaryToMerge));
 
             foreach(var pair in dictionaryToMerge)
             {
@@ -137,10 +188,18 @@ namespace Sels.Core.Extensions
         }
 
         #region AddValue
-        public static void AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        /// <summary>
+        /// Adds <paramref name="value"/> to <paramref name="dictionary"/> if no entry with <paramref name="key"/> exists, otherwise the value is added using <paramref name="key"/>.
+        /// </summary>
+        /// <typeparam name="TKey">Type of the key in <paramref name="dictionary"/></typeparam>
+        /// <typeparam name="TValue">Type of the value in <paramref name="dictionary"/></typeparam>
+        /// <param name="dictionary">The dictionary to add the value to</param>
+        /// <param name="key">The key to add to</param>
+        /// <param name="value">The value to add</param>
+        public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
 
             if (dictionary.ContainsKey(key))
             {
@@ -152,26 +211,6 @@ namespace Sels.Core.Extensions
             }
         }
 
-        [Obsolete]
-        public static void AddValueToCollection<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
-        {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-
-            if (dictionary.ContainsKey(key))
-            {
-                var newList = new List<TItem>(dictionary[key]);
-                newList.Add(item);
-                dictionary[key] = newList;
-            }
-            else
-            {
-                var newList = new List<TItem>();
-                newList.Add(item);
-                dictionary.Add(key, newList);
-            }
-        }
-
         /// <summary>
         /// Adds <paramref name="item"/> to the list of <paramref name="key"/> if <paramref name="key"/> exists in <paramref name="dictionary"/>, otherwise create new list and add <paramref name="item"/> to it.
         /// </summary>
@@ -180,10 +219,10 @@ namespace Sels.Core.Extensions
         /// <param name="dictionary">Dictionary to add item to</param>
         /// <param name="key">Key for list</param>
         /// <param name="item">Item to add</param>
-        public static void AddValueToList<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
+        public static void AddValueToList<TKey, TItem>(this IDictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
 
             if (dictionary.ContainsKey(key))
             {
@@ -197,25 +236,6 @@ namespace Sels.Core.Extensions
             }
         }
 
-        [Obsolete]
-        public static void AddValues<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, IEnumerable<TItem> items)
-        {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-            items.ValidateVariable(nameof(items));
-
-            if (dictionary.ContainsKey(key))
-            {
-                var newList = new List<TItem>(dictionary[key]);
-                newList.AddRange(items);
-                dictionary[key] = newList;
-            }
-            else
-            {
-                dictionary.Add(key, items);
-            }
-        }
-
         /// <summary>
         /// Adds <paramref name="items"/> to the list of <paramref name="key"/> if <paramref name="key"/> exists in <paramref name="dictionary"/>, otherwise create new list and add <paramref name="items"/> to it.
         /// </summary>
@@ -224,11 +244,11 @@ namespace Sels.Core.Extensions
         /// <param name="dictionary">Dictionary to add item to</param>
         /// <param name="key">Key for list</param>
         /// <param name="items">Items to add</param>
-        public static void AddValues<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, IEnumerable<TItem> items)
+        public static void AddValues<TKey, TItem>(this IDictionary<TKey, List<TItem>> dictionary, TKey key, IEnumerable<TItem> items)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-            items.ValidateVariable(nameof(items));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            items.ValidateArgument(nameof(items));
 
             if (dictionary.ContainsKey(key))
             {
@@ -242,18 +262,36 @@ namespace Sels.Core.Extensions
         #endregion
 
         #region TryGetOrSet
-        public static TValue TryGetOrSet<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        /// <summary>
+        /// Gets the value with key <paramref name="key"/> from <paramref name="dictionary"/> if it exists, otherwise <paramref name="value"/> is added and returned.
+        /// </summary>
+        /// <typeparam name="TKey">Type of the key in <paramref name="dictionary"/></typeparam>
+        /// <typeparam name="TValue">Type of the value in <paramref name="dictionary"/></typeparam>
+        /// <param name="dictionary">The dictionary to get the value from</param>
+        /// <param name="key">The key of the value to get</param>
+        /// <param name="value">The value to add if no value is stored under key <paramref name="key"/></param>
+        /// <returns>The value under key <paramref name="key"/>, otherwise <paramref name="value"/></returns>
+        public static TValue TryGetOrSet<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
 
             return dictionary.TryGetOrSet(key, () => value);
         }
-
-        public static TValue TryGetOrSet<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TValue> valueFunc)
+        /// <summary>
+        /// Gets the value with key <paramref name="key"/> from <paramref name="dictionary"/> if it exists, otherwise the value created using <paramref name="valueFunc"/> is added and returned.
+        /// </summary>
+        /// <typeparam name="TKey">Type of the key in <paramref name="dictionary"/></typeparam>
+        /// <typeparam name="TValue">Type of the value in <paramref name="dictionary"/></typeparam>
+        /// <param name="dictionary">The dictionary to get the value from</param>
+        /// <param name="key">The key of the value to get</param>
+        /// <param name="valueFunc">The function that creates the value to add if no value is stored under key <paramref name="key"/></param>
+        /// <returns>The value under key <paramref name="key"/>, otherwise the value created from <paramref name="valueFunc"/></returns>
+        public static TValue TryGetOrSet<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> valueFunc)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            valueFunc.ValidateArgument(nameof(valueFunc));
 
             if (dictionary.ContainsKey(key))
             {
@@ -266,154 +304,76 @@ namespace Sels.Core.Extensions
                 return value;
             }
         }
-
-        public static TValue TryGetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key)
-        {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-
-            return dictionary.TryGetOrSet(key, default(TValue));
-        }
-
         #endregion
 
         #region ContainsItem
-        public static bool ContainsItem<TKey, TItem>(this Dictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
+        /// <summary>
+        /// Checks if the enumerator at key <paramref name="key"/> in <paramref name="dictionary"/> contains <paramref name="item"/>.
+        /// </summary>
+        /// <typeparam name="TKey">Dictionary key type</typeparam>
+        /// <typeparam name="TItem">Type of enumerator element</typeparam>
+        /// <param name="dictionary">The dictionary to check</param>
+        /// <param name="key">The key to check</param>
+        /// <param name="item">The item to check for</param>
+        /// <returns>True if the enumerator at key <paramref name="key"/> in <paramref name="dictionary"/> contains <paramref name="item"/>, otherwise false</returns>
+        public static bool ContainsItem<TKey, TItem>(this IDictionary<TKey, IEnumerable<TItem>> dictionary, TKey key, TItem item)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-            item.ValidateVariable(nameof(item));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            item.ValidateArgument(nameof(item));
 
             if (dictionary.ContainsKey(key))
             {
-                return dictionary[key].Contains(item);
+                return dictionary[key]?.Contains(item) ?? false;
             }
 
             return false;
         }
-
-        public static bool ContainsItem<TKey, TItem>(this Dictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
+        /// <summary>
+        /// Checks if the list at key <paramref name="key"/> in <paramref name="dictionary"/> contains <paramref name="item"/>.
+        /// </summary>
+        /// <typeparam name="TKey">Dictionary key type</typeparam>
+        /// <typeparam name="TItem">Type of list element</typeparam>
+        /// <param name="dictionary">The dictionary to check</param>
+        /// <param name="key">The key to check</param>
+        /// <param name="item">The item to check for</param>
+        /// <returns>True if the list at key <paramref name="key"/> in <paramref name="dictionary"/> contains <paramref name="item"/>, otherwise false</returns>
+        public static bool ContainsItem<TKey, TItem>(this IDictionary<TKey, List<TItem>> dictionary, TKey key, TItem item)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-            item.ValidateVariable(nameof(item));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            item.ValidateArgument(nameof(item));
 
             if (dictionary.ContainsKey(key))
             {
-                return dictionary[key].Contains(item);
+                return dictionary[key]?.Contains(item) ?? false;
             }
 
             return false;
         }
-
+        /// <summary>
+        /// Checks if the collection at key <paramref name="key"/> in <paramref name="dictionary"/> contains <paramref name="item"/>.
+        /// </summary>
+        /// <typeparam name="TKey">Dictionary key type</typeparam>
+        /// <typeparam name="TItem">Type of list element</typeparam>
+        /// <param name="dictionary">The dictionary to check</param>
+        /// <param name="key">The key to check</param>
+        /// <param name="item">The item to check for</param>
+        /// <returns>True if the collection at key <paramref name="key"/> in <paramref name="dictionary"/> contains <paramref name="item"/>, otherwise false</returns>
         public static bool ContainsItem<TKey, TItem>(this Dictionary<TKey, Collection<TItem>> dictionary, TKey key, TItem item)
         {
-            dictionary.ValidateVariable(nameof(dictionary));
-            key.ValidateVariable(nameof(key));
-            item.ValidateVariable(nameof(item));
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            item.ValidateArgument(nameof(item));
 
             if (dictionary.ContainsKey(key))
             {
-                return dictionary[key].Contains(item);
+                return dictionary[key]?.Contains(item) ?? false;
             }
 
             return false;
         }
         #endregion
-        #endregion
-
-        #region Grid
-        public static int GetColumnLength<T>(this IEnumerable<IEnumerable<T>> table)
-        {
-            var biggestLength = 0;
-            foreach (var row in table)
-            {
-                var rowCount = row.Count();
-
-                if (rowCount > biggestLength)
-                {
-                    biggestLength = rowCount;
-                }
-            }
-
-            return biggestLength;
-        }
-
-        public static int GetColumnLength<T>(this List<List<T>> table)
-        {
-            var biggestLength = 0;
-            foreach (var row in table)
-            {
-                var rowCount = row.Count;
-
-                if (rowCount > biggestLength)
-                {
-                    biggestLength = rowCount;
-                }
-            }
-
-            return biggestLength;
-        }        
-        #endregion
-
-        #region Manipulation
-        public static IList<T> UpdateFirst<T>(this IList<T> source, Func<T, T> valueUpdater)
-        {
-            valueUpdater.ValidateVariable(nameof(valueUpdater));
-
-            var oldValue = source.FirstOrDefault();
-
-            if (oldValue != null)
-            {
-                var newValue = valueUpdater(oldValue);
-
-                source.Remove(oldValue);
-                source.Insert(0, newValue);
-            }
-
-            return source;
-        }
-
-        public static ICollection<T> UpdateLast<T>(this ICollection<T> source, Func<T, T> valueUpdater)
-        {
-            valueUpdater.ValidateVariable(nameof(valueUpdater));
-
-            var oldValue = source.LastOrDefault();
-
-            if (oldValue != null)
-            {
-                var newValue = valueUpdater(oldValue);
-
-                source.Remove(oldValue);
-                source.Add(newValue);
-            }
-
-            return source;
-        }
-
-        public static ICollection<T> RemoveLast<T>(this ICollection<T> source)
-        {
-            var oldValue = source.LastOrDefault();
-
-            if (oldValue != null)
-            {
-                source.Remove(oldValue);
-            }
-
-            return source;
-        }
-
-        public static ICollection<T> RemoveFirst<T>(this ICollection<T> source)
-        {
-            var oldValue = source.FirstOrDefault();
-
-            if (oldValue != null)
-            {
-                source.Remove(oldValue);
-            }
-
-            return source;
-        }
         #endregion
     }
 }

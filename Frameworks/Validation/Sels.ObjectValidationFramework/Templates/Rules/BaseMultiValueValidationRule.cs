@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using static Sels.Core.Delegates.Async;
 
 namespace Sels.ObjectValidationFramework.Templates.Rules
 {
@@ -30,12 +32,12 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
         /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        internal BaseMultiValueValidationRule(EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
+        internal BaseMultiValueValidationRule(EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<AsyncPredicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
         }
 
         /// <inheritdoc/>
-        internal override TError[] Validate(TEntity objectToValidate, object context, int? elementIndex = null, Parent[] parents = null)
+        internal override async Task<TError[]> Validate(TEntity objectToValidate, object context, int? elementIndex = null, Parent[] parents = null)
         {
             using (_loggers.TraceMethod(this))
             {
@@ -63,7 +65,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
                     ModifyInfo(validationContext.Info, value, i);
 
                     _loggers.Debug($"Starting validation for value {i+1} <{value}> on <{objectToValidate}>");
-                    var validators = GetEnabledValidatorsFor(validationContext);
+                    var validators = await GetEnabledValidatorsFor(validationContext);
 
                     if (validators.HasValue())
                     {
@@ -75,12 +77,12 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
 
                             try
                             {
-                                if (!validator.Validator(validationContext))
+                                if (!(await validator.Validator(validationContext)))
                                 {
                                     _loggers.Debug($"Value {i + 1} <{value}> on <{objectToValidate}> is not valid according to validator {j + 1}. Generating error");
                                     try
                                     {
-                                        var error = validator.ErrorContructor(validationContext);
+                                        var error = await validator.ErrorContructor(validationContext);
 
                                         if (error == null)
                                         {
@@ -93,6 +95,7 @@ namespace Sels.ObjectValidationFramework.Templates.Rules
                                     catch(Exception ex)
                                     {
                                         _loggers.LogException(LogLevel.Warning, $"Error occured while executing error contructor delegate {j + 1} for value {i + 1} <{value}> on <{objectToValidate}>", ex);
+                                        throw;
                                     }
                                 }
                                 else

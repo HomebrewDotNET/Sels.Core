@@ -24,7 +24,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         /// <param name="configurator">Configurator to configure validation</param>
         /// <param name="errorConstructor">Delegate that creates a validation error when <see cref="IValidationRuleContext{TEntity, TInfo, TContext, TValue}.Value"/> is not a valid value</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> MustExists<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor) where TValue : FileSystemInfo
+        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> MustExist<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor) where TValue : FileSystemInfo
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -42,7 +42,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         /// <param name="configurator">Configurator to configure validation</param>
         /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> MustExists<TEntity, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> configurator, bool includeParents = true) where TValue : FileSystemInfo
+        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> MustExist<TEntity, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> configurator, bool includeParents = true) where TValue : FileSystemInfo
         {
             configurator.ValidateArgument(nameof(configurator));
 

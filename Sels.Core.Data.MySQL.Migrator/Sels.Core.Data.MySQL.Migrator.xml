@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Data.MySQL.Migrator</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Data.MySQL.Migrator.MigrationTool">
+            <summary>
+            Cli for running database migration using Fluent Migrator
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Migrator.MigrationTool.RunAsync(System.String[],System.String,System.Reflection.Assembly,System.Reflection.Assembly[])">
+            <summary>
+            Runs all migration located in <paramref name="migrationAssembly"/> and optionally <paramref name="migrationAssemblies"/>.
+            </summary>
+            <param name="args">The command line arguments. Will be parsed to <see cref="T:Sels.Core.Data.MySQL.Migrator.MigratorArguments"/></param>
+            <param name="lockerName">The name that will be used to lock the database. Use unique names when running multiple instances</param>
+            <param name="migrationAssembly">Assembly containing the migrations</param>
+            <param name="migrationAssemblies">Optional additional assemblies containing migrations</param>
+            <returns>The status code of the cli</returns>
+        </member>
+        <member name="M:Sels.Core.Data.MySQL.Migrator.MigrationTool.RunAsync``1(System.String[],System.String,System.Action{``0},System.Reflection.Assembly,System.Reflection.Assembly[])">
+            <summary>
+            Runs all migration located in <paramref name="migrationAssembly"/> and optionally <paramref name="migrationAssemblies"/>.
+            </summary>
+            <typeparam name="TArg">The type to parse <paramref name="args"/> to</typeparam>
+            <param name="args">The command line arguments. Will be parsed to <typeparamref name="TArg"/></param>
+            <param name="lockerName">The name that will be used to lock the database. Use unique names when running multiple instances</param>
+            <param name="onParsed">Optional delegate that is triggered after <paramref name="args"/> was parsed to an instance of <typeparamref name="TArg"/></param>
+            <param name="migrationAssembly">Assembly containing the migrations</param>
+            <param name="migrationAssemblies">Optional additional assemblies containing migrations</param>
+            <returns>The status code of the cli</returns>
+        </member>
+        <member name="T:Sels.Core.Data.MySQL.Migrator.MigratorArguments">
+            <summary>
+            Command line arguments that can be provided to the MySql migration runner tool.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Migrator.MigratorArguments.ConnectionString">
+            <summary>
+            The connection string to use for deploying the changes.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Migrator.MigratorArguments.Verbose">
+            <summary>
+            Log more about what the runner is doing.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Data.MySQL.Migrator.MigratorArguments.Debug">
+            <summary>
+            Logs more for debugging.
+            </summary>
+        </member>
+    </members>
+</doc>

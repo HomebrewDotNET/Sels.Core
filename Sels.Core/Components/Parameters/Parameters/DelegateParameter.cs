@@ -13,7 +13,7 @@ namespace Sels.Core.Components.Parameters.Parameters
 
         public DelegateParameter(string name, Func<object, string, string> generateValueAction, Func<object> beginScopeAction = null) : base(name)
         {
-            _generateValueAction = generateValueAction.ValidateVariable(nameof(generateValueAction));
+            _generateValueAction = generateValueAction.ValidateArgument(nameof(generateValueAction));
             _beginScopeAction = beginScopeAction;
         }
 

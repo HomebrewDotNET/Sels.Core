@@ -1,5 +1,4 @@
 ﻿using Sels.Core.Extensions;
-using Sels.Core.Extensions.Execution;
 using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections.Generic;
@@ -7,23 +6,15 @@ using System.Text;
 
 namespace System.IO
 {
+    /// <summary>
+    /// Contains extension methods for working with <see cref="DirectoryInfo"/>.
+    /// </summary>
     public static class DirectoryInfoExtensions
     {
-        public static bool CreateIfNotExistAndValidate(this DirectoryInfo directory, string parameterName)
-        {
-            directory.ValidateArgument(nameof(directory));
-            parameterName.ValidateArgumentNotNullOrWhitespace(nameof(parameterName));
-
-            if (directory != null && !directory.Exists)
-            {
-                directory.Create();
-
-                return true;
-            }
-
-            return false;
-        }
-
+        /// <summary>
+        /// Creates <paramref name="directory"/> if it does not exist.
+        /// </summary>
+        /// <param name="directory">The directory to create</param>
         public static void CreateIfNotExist(this DirectoryInfo directory)
         {
             directory.ValidateArgument(nameof(directory));
@@ -34,6 +25,11 @@ namespace System.IO
             }
         }
 
+        /// <summary>
+        /// Checks if <paramref name="directory"/> does not contain any sub directories and files.
+        /// </summary>
+        /// <param name="directory">The directory to check</param>
+        /// <returns>True if <paramref name="directory"/> is empty, otherwise false</returns>
         public static bool IsEmpty(this DirectoryInfo directory)
         {
             directory.ValidateArgument(nameof(directory));
@@ -41,21 +37,8 @@ namespace System.IO
             return directory.GetDirectories().Length == 0 && directory.GetFiles().Length == 0;
         }
 
-        public static bool DeleteIfEmpty(this DirectoryInfo directory)
-        {
-            directory.ValidateArgument(nameof(directory));
-
-            if (directory.IsEmpty())
-            {
-                directory.Delete();
-                return true;
-            }
-
-            return false;
-        }
-
         /// <summary>
-        /// Deletes all files and sub directories.
+        /// Deletes all files and sub directories in <paramref name="directory"/>.
         /// </summary>
         /// <param name="directory">Directory to clear</param>
         public static void Clear(this DirectoryInfo directory)
@@ -67,16 +50,33 @@ namespace System.IO
         }
 
         #region Copying 
+        /// <summary>
+        /// Copies <paramref name="directory"/> to <paramref name="destinationDirectory"/>.
+        /// </summary>
+        /// <param name="directory">The directory to copy</param>
+        /// <param name="destinationDirectory">The directory to copy to</param>
+        /// <param name="overwrite">If destination files can be overwritten if they already exists</param>
+        /// <returns>The copied directory</returns>
         public static DirectoryInfo CopyTo(this DirectoryInfo directory, string destinationDirectory, bool overwrite = false)
         {
+            directory.ValidateArgumentExists(nameof(directory));
+            destinationDirectory.ValidateArgumentNotNullOrWhitespace(nameof(destinationDirectory));
+
             var destination = new DirectoryInfo(destinationDirectory);
             return directory.CopyTo(destination, overwrite);
         }
-
+        /// <summary>
+        /// Copies <paramref name="directory"/> to <paramref name="destinationDirectory"/>.
+        /// </summary>
+        /// <param name="directory">The directory to copy</param>
+        /// <param name="destinationDirectory">The directory to copy to</param>
+        /// <param name="overwrite">If destination files can be overwritten if they already exists</param>
+        /// <returns>The copied directory</returns>
         public static DirectoryInfo CopyTo(this DirectoryInfo directory, DirectoryInfo destinationDirectory, bool overwrite = false)
         {
             directory.ValidateArgumentExists(nameof(directory));
-            destinationDirectory.CreateIfNotExistAndValidate(nameof(destinationDirectory));
+            destinationDirectory.ValidateArgument(nameof(destinationDirectory));
+            destinationDirectory.CreateIfNotExist();
 
             var newDirectory = destinationDirectory.CreateSubdirectory(directory.Name);
 
@@ -85,11 +85,32 @@ namespace System.IO
 
             return newDirectory;
         }
-
+        /// <summary>
+        /// Copies all sub directories and files from <paramref name="directory"/> to <paramref name="destinationDirectory"/>.
+        /// </summary>
+        /// <param name="directory">The directory to copy the content from</param>
+        /// <param name="destinationDirectory">The directory to copy to</param>
+        /// <param name="overwrite">If destination files can be overwritten if they already exists</param>
+        /// <returns>The copied directory</returns>
+        public static DirectoryInfo CopyContentTo(this DirectoryInfo directory, string destinationDirectory, bool overwrite = false)
+        {
+            directory.ValidateArgumentExists(nameof(directory));
+            destinationDirectory.ValidateArgumentNotNullOrWhitespace(nameof(destinationDirectory));
+            
+            return directory.CopyContentTo(new DirectoryInfo(destinationDirectory), overwrite);
+        }
+        /// <summary>
+        /// Copies all sub directories and files from <paramref name="directory"/> to <paramref name="destinationDirectory"/>.
+        /// </summary>
+        /// <param name="directory">The directory to copy the content from</param>
+        /// <param name="destinationDirectory">The directory to copy to</param>
+        /// <param name="overwrite">If destination files can be overwritten if they already exists</param>
+        /// <returns>The copied directory</returns>
         public static DirectoryInfo CopyContentTo(this DirectoryInfo directory, DirectoryInfo destinationDirectory, bool overwrite = false)
         {
             directory.ValidateArgumentExists(nameof(directory));
-            destinationDirectory.CreateIfNotExistAndValidate(nameof(destinationDirectory));
+            destinationDirectory.ValidateArgument(nameof(destinationDirectory));
+            destinationDirectory.CreateIfNotExist();
 
             directory.GetDirectories().Execute(x => x.CopyTo(destinationDirectory, overwrite));
             directory.GetFiles().Execute(x => x.CopyTo(destinationDirectory, overwrite));

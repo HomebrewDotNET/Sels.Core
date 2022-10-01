@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using Sels.Core.Components.Display.ObjectLabel;
 using Sels.ObjectValidationFramework.Templates.Profile;
 
 namespace Sels.ObjectValidationFramework.TestTool.ValidationProfiles
@@ -13,7 +12,7 @@ namespace Sels.ObjectValidationFramework.TestTool.ValidationProfiles
     {
         public PersonValidationProfile() : base()
         {
-            IgnorePropertyForFallthrough<Person>(x => x.Parent);
+            IgnorePropertyFor<Person>(x => x.Parent);
 
             CreateValidationFor<Person>()
                 .ForProperty(x => x.FirstName).ValidIf(x => x.Value.HasValue(), x => $"{x.GetFullDisplayName()} cannot be null or whitespace. Was <{x.Value}>")

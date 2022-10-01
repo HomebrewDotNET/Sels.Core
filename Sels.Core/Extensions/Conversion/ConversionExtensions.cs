@@ -1,6 +1,4 @@
-﻿
-using Sels.Core.Components.Conversion;
-using Sels.Core.Extensions.Calculation;
+﻿using Sels.Core.Extensions.Calculation;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections;
@@ -10,31 +8,18 @@ using System.Text;
 
 namespace Sels.Core.Extensions.Conversion
 {
+    /// <summary>
+    /// Contains extension methods for converting objects to other types.
+    /// </summary>
     public static class ConversionExtensions
     {
-        /// <summary>
-        /// Attempts to convert <paramref name="value"/> to <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">Type to convert to</typeparam>
-        /// <param name="value">Object to convert</param>
-        /// <returns>Converted object</returns>
-        public static T ConvertTo<T>(this object value)
-        {
-            if (value.HasValue())
-            {
-                return GenericConverter.DefaultConverter.ConvertTo(value.GetType(), typeof(T), value).AsOrDefault<T>();
-            }
-
-            return default;
-        }
-
         /// <summary>
         /// Casts <paramref name="source"/> to type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">Type to cast to</typeparam>
         /// <param name="source">Object to cast</param>
         /// <returns>Casted object</returns>
-        public static T As<T>(this object source)
+        public static T Cast<T>(this object source)
         {
             return (T)source;
         }
@@ -45,7 +30,7 @@ namespace Sels.Core.Extensions.Conversion
         /// <typeparam name="T">Type to cast to</typeparam>
         /// <param name="source">Object to cast</param>
         /// <returns>Casted object</returns>
-        public static T AsOrDefault<T>(this object source)
+        public static T CastOrDefault<T>(this object source)
         {
             if (source != null && source is T casted)
             {
@@ -55,56 +40,33 @@ namespace Sels.Core.Extensions.Conversion
             return default;
         }
 
-        #region AlphaNumeric
-        public static string ToAlphaNumericString(this int value, int width, int offset = 0)
+        #region ChangeType
+        /// <summary>
+        /// Attempts to convert <paramref name="source"/> to an instance of type <typeparamref name="TNew"/>.
+        /// </summary>
+        /// <typeparam name="TNew">The type to convert to</typeparam>
+        /// <param name="source">The object to convert</param>
+        /// <returns>The converted value</returns>
+        public static TNew ChangeType<TNew>(this object source)
         {
-            return value.ToAlphaNumericString(width, offset);
-        }
-        public static string ToAlphaNumericString(this uint value, int width, int offset = 0)
-        {
-            var builder = new StringBuilder();
-            var convertedWidth = width.ToUInt32();
+            source.ValidateArgument(nameof(source));
 
-            while (value > 0)
-            {
-                char referenceChar;
-                if (value <= width)
-                {
-                    referenceChar = (char)('A' + value - offset);
-
-                    value = 0;
-                }
-                else
-                {
-                    referenceChar = (char)('A' + (value % width) - offset);
-
-                    value /= convertedWidth;
-                }
-
-                builder.Insert(0, referenceChar);
-            }
-
-            return builder.ToString();
+            return source.ChangeType(typeof(TNew)).Cast<TNew>();
         }
 
-        public static uint ToStringFromAlphaNumeric(this string value, int width, int offset = 0)
+        /// <summary>
+        /// Attempts to convert <paramref name="source"/> to an instance of type <paramref name="newType"/>.
+        /// </summary>
+        /// <param name="source">The object to convert</param>
+        /// <param name="newType">The type to convert to</param>
+        /// <returns>The converted value</returns>
+        public static object ChangeType(this object source, Type newType)
         {
-            var chars = Enumerable.ToArray(value.ToCharArray().Where(x => char.IsLetter(x)));
-            int cellIndex = 0;
+            source.ValidateArgument(nameof(source));
+            newType.ValidateArgument(nameof(newType));
 
-            for (int i = chars.Length; i > 0; i--)
-            {
-                // Add offset because 1 = A
-                var actualCharValue = chars[i - 1] - 'A' + offset;
-
-                var multiplier = chars.Length - i;
-
-                cellIndex += actualCharValue.CalculateSquared(width, multiplier);
-            }
-
-            return cellIndex.ToUInt32();
+            return Convert.ChangeType(source, Nullable.GetUnderlyingType(newType) ?? newType);
         }
-
         #endregion
 
         #region ToArray
@@ -134,7 +96,7 @@ namespace Sels.Core.Extensions.Conversion
         /// <returns>Array containing <paramref name="value"/></returns>
         public static T[] AsArray<T>(this T value)
         {
-            value.ValidateVariable(nameof(value));
+            value.ValidateArgument(nameof(value));
 
             return new T[] { value };
         }
@@ -165,7 +127,7 @@ namespace Sels.Core.Extensions.Conversion
         /// <returns>List containing <paramref name="value"/></returns>
         public static List<T> AsList<T>(this T value)
         {
-            value.ValidateVariable(nameof(value));
+            value.ValidateArgument(nameof(value));
 
             return new List<T>() { value };
         }
@@ -187,30 +149,36 @@ namespace Sels.Core.Extensions.Conversion
         }
         #endregion
 
-        #region ToGrid
-        public static T[,] ToGrid<T>(this List<List<T>> table)
+        #region AsEnumerable
+        /// <summary>
+        /// Creates an enumerator returning <paramref name="value"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of <paramref name="value"/></typeparam>
+        /// <param name="value">Value to return</param>
+        /// <returns>Enumerator that returns <paramref name="value"/></returns>
+        public static IEnumerable<T> AsEnumerable<T>(this T value)
         {
-            var columnLength = table.GetColumnLength();
-            var grid = new T[table.Count(), columnLength];
+            value.ValidateArgument(nameof(value));
 
-            for (int i = 0; i < table.Count(); i++)
-            {
-                for (int j = 0; j < columnLength; j++)
-                {
-                    grid[i, j] = table[i][j];
-                }
-            }
-
-            return grid;
+            yield return value;
         }
         #endregion
 
         #region Numeric
+        /// <summary>
+        /// Converts <paramref name="number"/> to <see cref="uint"/>.
+        /// </summary>
+        /// <param name="number">The number to convert</param>
+        /// <returns><paramref name="number"/> as <see cref="uint"/></returns>
         public static uint ToUInt32(this int number)
         {
             return Convert.ToUInt32(number);
         }
-
+        /// <summary>
+        /// Converts <paramref name="number"/> to <see cref="int"/>.
+        /// </summary>
+        /// <param name="number">The number to convert</param>
+        /// <returns><paramref name="number"/> as <see cref="int"/></returns>
         public static int ToInt(this uint number)
         {
             return Convert.ToInt32(number);

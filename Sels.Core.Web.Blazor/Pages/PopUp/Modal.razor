@@ -1,0 +1,160 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using Sels.Core.Web.Bootstrap.V5.Components
+
+@if(_context != null)
+{
+    <div class="modal @(_show ? "show" : "") @(IsScrollable ? "modal-dialog-scrollable" : string.Empty) @(IsVerticallyCentered ? "modal-dialog-centered" : string.Empty)" tabindex="-1" style="display:@(_display ? "block" : "none")" data-bs-backdrop="@(IsStatic ? "static" : "none")">
+      <div class="modal-dialog @Size.ToCss()">
+        <div class="modal-content">
+          <div class="modal-header">
+            @if(Header != null && _render){
+                @Header(_context)
+            }
+            @if (WithCloseButton)
+            {
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="CloseAsync"/>     
+            }
+        </div>        
+        @if(Body != null && _render){
+            <div class="modal-body">
+            @Body(_context)
+            </div> 
+        }        
+        @if(Footer != null && _render){
+            <div class="modal-footer">
+                @Footer(_context)
+            </div>
+        }          
+        </div>
+      </div>
+    </div>
+
+    @if (WithBackdrop)
+    {
+        <div class="modal-backdrop fade @(_show ? "show" : "")" style="display:@(_display ? "block" : "none")" tabindex="-1" @onclick="x => IsStatic ? Task.CompletedTask : CloseAsync()"></div>
+    }
+}
+
+@code {
+    // Fields
+    private bool _show;
+    private bool _display;
+    private bool _render = true;
+    private ModalContext _context;
+
+    // Settings
+    /// <summary>
+    /// The size of the modal.
+    /// </summary>
+    [Parameter]
+    public ModalSize Size { get; set; } = ModalSize.Default;
+    /// <summary>
+    /// If the modal needs to be showed when rendered.
+    /// </summary>
+    [Parameter]
+    public bool ShowOnRender { get; set; } = false;
+    /// <summary>
+    /// If the modal can show the black background.
+    /// </summary>
+    [Parameter]
+    public bool WithBackdrop { get; set; } = true;
+    /// <summary>
+    /// If the modal can be closed by clicking the backdrop. When set to true it can't be closed by clicking the backdrop.
+    /// </summary>
+    [Parameter]
+    public bool IsStatic { get; set; } = false;
+    /// <summary>
+    /// If the close button in the top right must be rendered.
+    /// </summary>
+    [Parameter]
+    public bool WithCloseButton { get; set; } = true;
+    /// <summary>
+    /// If the modal itself is scrollable when the content becomes too long.
+    /// </summary>
+    [Parameter]
+    public bool IsScrollable { get; set; } = false;
+    /// <summary>
+    /// If the modal must be vertically centered.
+    /// </summary>
+    [Parameter]
+    public bool IsVerticallyCentered { get; set; } = false;
+    /// <summary>
+    /// Forces child components to rerender when the modal opens. Default is true.
+    /// </summary>
+    [Parameter]
+    public bool ForceRender { get; set; } = true;
+
+    // Content
+    /// <summary>
+    /// Content for the modal header.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ModalContext>? Header { get; set; }
+    /// <summary>
+    /// Content for the modal body.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ModalContext>? Body { get; set; }
+    /// <summary>
+    /// Content for the modal footer.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<ModalContext>? Footer { get; set; }
+
+    // Events
+    /// <summary>
+    /// Event that gets raised when opening the modal.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnOpen { get; set; }
+    /// <summary>
+    /// Event that gets raised when closing the modal.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _context = new ModalContext(this);
+    }
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if(firstRender && ShowOnRender)
+        {
+            await OpenAsync();
+        }
+    }
+
+    /// <summary>
+    /// Displays the modal.
+    /// </summary>
+    public async Task OpenAsync()
+    {
+        _render = true;
+        _display = true;
+        StateHasChanged();
+        await Task.Delay(100);
+        _show = true;
+        StateHasChanged();
+        await OnOpen.InvokeAsync();
+    }
+    /// <summary>
+    /// Closes the modal.
+    /// </summary>
+    public async Task CloseAsync()
+    {
+        _show = false;
+        StateHasChanged();
+        await Task.Delay(100);
+        _display = false;
+        StateHasChanged();
+        await OnClose.InvokeAsync();
+        if (ForceRender) _render = false;
+    }
+}

@@ -9,6 +9,7 @@ using Sels.ObjectValidationFramework.Templates.Rules;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Sels.Core.Delegates.Async;
 
 namespace Sels.ObjectValidationFramework.Components.Rules
 {
@@ -32,7 +33,7 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        public SourceValidationRule(Func<TEntity, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
+        public SourceValidationRule(Func<TEntity, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<AsyncPredicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
             _valueSelector = valueSelector.ValidateArgument(nameof(valueSelector));
         }
@@ -83,7 +84,7 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        public SourceValidationRule(Func<TEntity, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
+        public SourceValidationRule(Func<TEntity, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<AsyncPredicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
             _valueSelector = valueSelector.ValidateArgument(nameof(valueSelector));
         }

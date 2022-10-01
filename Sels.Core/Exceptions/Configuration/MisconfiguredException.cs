@@ -5,11 +5,14 @@ using System.Text;
 
 namespace Sels.Core.Exceptions.Configuration
 {
+    /// <summary>
+    /// Indicates a value in config that is invalid.
+    /// </summary>
     public class MisconfiguredException : Exception
     {
         // Constants
-        private const string MessageFormat = "Configuration with key {0} in configuration file {1} is misconfigured: {2}";
-        private const string MessageSectionFormat = "Configuration section {0} in configuration file {1} is misconfigured: {2}";
+        private const string MessageFormat = "Configuration with key <{0}> in configuration file <{1}> is misconfigured: <{2}>";
+        private const string MessageSectionFormat = "Configuration section <{0}> in configuration file <{1}> is misconfigured: <{2}>";
 
         // Properties
         /// <summary>
@@ -17,7 +20,7 @@ namespace Sels.Core.Exceptions.Configuration
         /// </summary>
         public string ConfigKey { get; }
         /// <summary>
-        /// Configuration file that is missing the needed config key
+        /// Configuration file that contains the invalid file.
         /// </summary>
         public string ConfigFile { get; }
         /// <summary>
@@ -25,19 +28,26 @@ namespace Sels.Core.Exceptions.Configuration
         /// </summary>
         public string Reason { get; set; }
 
-
-        public MisconfiguredException(string configKey, string section, string configFile, string reason) : base(MessageFormat.FormatString($"{section}.{configKey}", configFile, reason))
+        /// <inheritdoc cref="MisconfiguredException"/>
+        /// <param name="key">The config key or section that is invalid</param>
+        /// <param name="configFile">The file containing the invalid value</param>
+        /// <param name="reason"></param>
+        /// <param name="isForSection"></param>
+        /// <param name="sections"></param>
+        public MisconfiguredException(string key, string configFile, string reason, bool isForSection, params string[] sections) : base(BuildMessage(key, configFile, reason, isForSection, sections))
         {
-            ConfigFile = configFile.ValidateArgumentNotNullOrWhitespace(nameof(configFile));
-            ConfigKey = $"{section.ValidateArgumentNotNullOrWhitespace(nameof(section))}.{configKey.ValidateArgumentNotNullOrWhitespace(nameof(configKey))}";
-            Reason = reason.ValidateArgumentNotNullOrWhitespace(nameof(reason));
+            ConfigFile = configFile;
+            ConfigKey = Helper.Configuration.BuildPathString(key, sections);
+            Reason = reason;
         }
 
-        public MisconfiguredException(string section, string configFile, string reason) : base(MessageSectionFormat.FormatString(section, configFile, reason))
+        private static string BuildMessage(string key, string configFile, string reason, bool isForSection, params string[] sections)
         {
-            ConfigFile = configFile.ValidateArgumentNotNullOrWhitespace(nameof(configFile));
-            ConfigKey = section.ValidateArgumentNotNullOrWhitespace(nameof(section));
-            Reason = reason.ValidateArgumentNotNullOrWhitespace(nameof(reason));
-        }
+            key.ValidateArgumentNotNullOrWhitespace(nameof(key));
+            configFile.ValidateArgumentNotNullOrWhitespace(nameof(configFile));
+            reason.ValidateArgumentNotNullOrWhitespace(nameof(reason));
+
+            return (isForSection ? MessageSectionFormat : MessageFormat).FormatString(Helper.Configuration.BuildPathString(key, sections), configFile, reason);
+        }       
     }
 }

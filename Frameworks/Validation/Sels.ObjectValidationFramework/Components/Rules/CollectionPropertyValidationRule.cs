@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using static Sels.Core.Delegates.Async;
 
 namespace Sels.ObjectValidationFramework.Components.Rules
 {
@@ -38,7 +39,7 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        public CollectionPropertyValidationRule(PropertyInfo property, Func<TElement, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
+        public CollectionPropertyValidationRule(PropertyInfo property, Func<TElement, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<AsyncPredicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
             _valueSelector = valueSelector.ValidateArgument(nameof(valueSelector));
             _property = property.ValidateArgument(nameof(property));
@@ -69,7 +70,7 @@ namespace Sels.ObjectValidationFramework.Components.Rules
 
                 if(objectToValidate != null)
                 {
-                    var elements = _property.GetValue(objectToValidate).AsOrDefault<IEnumerable<TElement>>();
+                    var elements = _property.GetValue(objectToValidate).CastOrDefault<IEnumerable<TElement>>();
 
                     if(elements != null)
                     {
@@ -105,7 +106,7 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         /// <param name="settings">Extra settings for the rule</param>
         /// <param name="globalConditions">Global conditions that all need to pass before any validation rules are allowed to run</param>
         /// <param name="loggers">Option loggers for logging</param>
-        public CollectionPropertyValidationRule(PropertyInfo property, Func<TElement, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<Predicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
+        public CollectionPropertyValidationRule(PropertyInfo property, Func<TElement, TValue> valueSelector, EntityValidator<TEntity, TError> validator, RuleSettings settings, IEnumerable<AsyncPredicate<IValidationRuleContext<TEntity, object>>> globalConditions = null, IEnumerable<ILogger> loggers = null) : base(validator, settings, globalConditions, loggers)
         {
             _valueSelector = valueSelector.ValidateArgument(nameof(valueSelector));
             _property = property.ValidateArgument(nameof(property));

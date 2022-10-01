@@ -7,7 +7,7 @@ using static Sels.Core.Delegates;
 namespace System.Collections.Generic
 {
     /// <summary>
-    /// Contains extensions for System.Collections.Generic.List
+    /// Contains extensions for S<see cref="List{T}"/>.
     /// </summary>
     public static class ListExtensions
     {
@@ -90,7 +90,7 @@ namespace System.Collections.Generic
         }
 
         #region Privates
-        public static bool UpdateItemInEnumerable<T>(this List<T> list, Comparator<T> comparator, T value, bool onlyFirst = false)
+        private static bool UpdateItemInEnumerable<T>(this List<T> list, Comparator<T> comparator, T value, bool onlyFirst = false)
         {
             var isUpdated = false;
 
@@ -117,7 +117,7 @@ namespace System.Collections.Generic
             return isUpdated;
         }
 
-        public static bool DeleteItemInEnumerable<T>(this List<T> list, Comparator<T> comparator, T value, bool onlyFirst = false)
+        private static bool DeleteItemInEnumerable<T>(this List<T> list, Comparator<T> comparator, T value, bool onlyFirst = false)
         {
             var hasDeleted = false;
 

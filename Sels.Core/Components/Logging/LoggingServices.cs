@@ -1,9 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Components.Serialization;
-using Sels.Core.Components.Serialization.Providers;
-using Sels.Core.Contracts.Serialization;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Execution;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Logging.Advanced;
@@ -15,6 +11,9 @@ using System.Text;
 
 namespace Sels.Core.Components.Logging
 {
+    /// <summary>
+    /// Static class that makes it easier to log in projects. Only required to be setup during startup.
+    /// </summary>
     public static class LoggingServices
     {
         // Fields
@@ -28,6 +27,10 @@ namespace Sels.Core.Components.Logging
         public static IReadOnlyCollection<ILogger> Loggers => new ReadOnlyCollection<ILogger>(_loggers);
 
         #region Setup
+        /// <summary>
+        /// Registers the loggers to be used.
+        /// </summary>
+        /// <param name="loggers">The loggers to use</param>
         public static void RegisterLoggers(IEnumerable<ILogger> loggers)
         {
             loggers.ValidateArgumentNotNullOrEmpty(nameof(loggers));
@@ -37,8 +40,11 @@ namespace Sels.Core.Components.Logging
                 _loggers.AddRange(loggers);
             }
         }
-
-        public static void RegisterLoggers(ILogger logger)
+        /// <summary>
+        /// Registers a logger to be used.
+        /// </summary>
+        /// <param name="logger">The logger to use</param>
+        public static void RegisterLogger(ILogger logger)
         {
             logger.ValidateArgument(nameof(logger));
 
@@ -47,18 +53,31 @@ namespace Sels.Core.Components.Logging
                 _loggers.Add(logger);
             }
         }
-
-        public static void RegisterLoggers(ILoggerFactory factory, string category)
+        /// <summary>
+        /// Adds a console logger that can be used during startup
+        /// </summary>
+        /// <param name="name">The name of the logger</param>
+        /// <param name="logLevel">The log level to use for the console logger</param>
+        public static void AddConsole(string name, LogLevel logLevel = LogLevel.Information)
         {
-            factory.ValidateArgument(nameof(factory));
-            category.ValidateArgumentNotNullOrWhitespace(nameof(category));
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
 
             lock (_threadLock)
             {
-                _loggers.Add(factory.CreateLogger(category));
+                var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger(name);
+                RegisterLogger(logger);
             }
         }
-
+        /// <summary>
+        /// Removes any registered logger.
+        /// </summary>
+        public static void Clear()
+        {
+            lock (_threadLock)
+            {
+                _loggers.Clear();
+            }
+        }
         #endregion
 
         #region Logging
@@ -87,7 +106,11 @@ namespace Sels.Core.Components.Logging
         {
             if (_loggers.HasValue() && logAction.HasValue())
             {
-                logAction.ForceExecute(_loggers);
+                try
+                {
+                    logAction(_loggers);
+                }
+                catch { }
             }
         }
         /// <summary>
@@ -140,57 +163,29 @@ namespace Sels.Core.Components.Logging
         /// <param name="args">Optional logging parameters</param>
         public static void Trace(string message, params object[] args) => Log(LogLevel.Trace, message, args);
         /// <summary>
-        /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider with severity <see cref="LogLevel.Trace"/>.
+        /// Traces an object to the logs serialized to json with severity <see cref="LogLevel.Trace"/>.
         /// </summary>
         /// <param name="objectToTrace">Object to serialize and log</param>
         public static void TraceObject(object objectToTrace) => _loggers.TraceObject(objectToTrace);
         /// <summary>
-        /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider.
+        /// Traces an object to the logs serialized to json.
         /// </summary>
         /// <param name="level">Severity level for log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject(LogLevel level, object objectToTrace) => _loggers.TraceObject(level, objectToTrace);
+        public static void TraceObject(LogLevel level, object objectToTrace) => _loggers.LogObject(level, objectToTrace);
         /// <summary>
-        /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider with an extra message with severity <see cref="LogLevel.Trace"/>.
+        /// Traces an object to the logs serialized to json with an extra message with severity <see cref="LogLevel.Trace"/>.
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
         public static void TraceObject(string message, object objectToTrace) => _loggers.TraceObject(message, objectToTrace);
         /// <summary>
-        /// Traces an object to the logs using the <see cref="JsonProvider"/> serialization provider with an extra message.
+        /// Traces an object to the logs serialized to json with an extra message.
         /// </summary>
         /// <param name="level">Severity level for log</param>
         /// <param name="message">Message to log</param>
         /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject(LogLevel level, string message, object objectToTrace) => _loggers.TraceObject(level, message, objectToTrace);
-        /// <summary>
-        /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with severity <see cref="LogLevel.Trace"/>.
-        /// </summary>
-        /// <typeparam name="TProvider">Type of serialization provider</typeparam>
-        /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(objectToTrace);
-        /// <summary>
-        /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider.
-        /// </summary>
-        /// <typeparam name="TProvider">Type of serialization provider</typeparam>
-        /// <param name="level">Severity level for log</param>
-        /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(LogLevel level, object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(level, objectToTrace);
-        /// <summary>
-        /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with an extra message with severity <see cref="LogLevel.Trace"/>.
-        /// </summary>
-        /// <typeparam name="TProvider">Type of serialization provider</typeparam>
-        /// <param name="message">Message to log</param>
-        /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(string message, object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(message, objectToTrace);
-        /// <summary>
-        /// Traces an object to the logs using the <typeparamref name="TProvider"/> serialization provider with an extra message.
-        /// </summary>
-        /// <typeparam name="TProvider">Type of serialization provider</typeparam>
-        /// <param name="level">Severity level for log</param>
-        /// <param name="message">Message to log</param>
-        /// <param name="objectToTrace">Object to serialize and log</param>
-        public static void TraceObject<TProvider>(LogLevel level, string message, object objectToTrace) where TProvider : ISerializationProvider, new() => _loggers.TraceObject<TProvider>(level, message, objectToTrace);
+        public static void TraceObject(LogLevel level, string message, object objectToTrace) => _loggers.LogObject(level, message, objectToTrace);
         /// <summary>
         /// Traces how long an action took to execute with severity <see cref="LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
@@ -200,7 +195,6 @@ namespace Sels.Core.Components.Logging
         /// <summary>
         /// Traces how long an action took to execute with severity <see cref="LogLevel.Information"/>. Timer starts when calling method and stops when return value is disposed.
         /// </summary>
-        /// <param name="level">Severity level for log</param>
         /// <param name="actionStartMessage">Log message when action starts</param>
         /// <param name="actionFinishedMessage">Log message when action is finished</param>
         /// <returns>Timing scope</returns>
@@ -256,7 +250,7 @@ namespace Sels.Core.Components.Logging
         /// <summary>
         /// Creates a logger that logs a message when created and a message when disposed using the elapsed time between creating and disposing the logger.
         /// </summary>
-        /// <param name="level">Severity level for log</param>
+        /// <param name="logLevel">Severity level for log</param>
         /// <param name="beginMessageFunc">Func that creates the start message</param>
         /// <param name="endMessageFunc">Func that creates the stop message</param>
         /// <returns>Logger that keeps start of elapsed time since it was created</returns>

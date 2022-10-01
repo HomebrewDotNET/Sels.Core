@@ -1,0 +1,59 @@
+﻿@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Components.Forms
+@using Sels.Core.Extensions.Reflection
+@using Sels.Core.Localization
+@using Sels.Core.Web.Blazor.Models.Localization
+
+<ValidationMessage For="For" />
+<label class="@Class" for="@_target">@_label</label>
+
+@code {
+    private string _label;
+    private string _target;
+
+    /// <summary>
+    /// Optional css class for the label.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Expression that points to the property to create the label for.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<object>> For { get; set; }
+    /// <summary>
+    /// Optional target id for the label. Default is ReflectedType.Name + Property.Name
+    /// </summary>
+    [Parameter]
+    public string? Target { get; set; }
+    /// <summary>
+    /// Optional culture to localize the property in.
+    /// </summary>
+    [Parameter]
+    public string? Culture { get; set; }
+    /// <summary>
+    /// Optional localization context cascaded from a parent.
+    /// </summary>
+    [CascadingParameter(Name = "LocalizationContext")]
+    public LocalizationContext LocalizationContext { get; set; }
+    /// <summary>
+    /// If a validation message for the property needs to be included as well.
+    /// </summary>
+    [Parameter]
+    public bool IncludeValidationMessage { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        For.ValidateArgument(nameof(For));
+
+        var property = For.ExtractProperty(nameof(For));
+
+        var actualCulture = Culture ?? LocalizationContext?.Culture?.ToString();
+
+        _label = Localizer.Object.Get(property, actualCulture, options: x => x.MissingKeySettings = MissingLocalizationSettings.Default) ?? property.Name;
+        _target = Target ?? $"{property.ReflectedType.Name}.{property.Name}";
+    }
+}

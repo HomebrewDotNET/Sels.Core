@@ -71,12 +71,13 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         /// Returns a display name for the current value that being validated.
         /// </summary>
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+        /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
         /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="ruleContext">Validation rule context for the currently being validated value</param>
         /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
         /// <returns>Display name representing the current value that being's validated</returns>
-        public static string GetFullDisplayName<TEntity, TContext, TValue>(this IValidationRuleContext<TEntity, NullValidationInfo, TContext, TValue> ruleContext, bool includeParents = true)
+        public static string GetFullDisplayName<TEntity, TInfo, TContext, TValue>(this IValidationRuleContext<TEntity, TInfo, TContext, TValue> ruleContext, bool includeParents = true)
         {
             ruleContext.ValidateArgument(nameof(ruleContext));
 
@@ -98,7 +99,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
 
             var builder = new StringBuilder();
 
-            builder.Append(ruleContext.GetDisplayName(includeParents) + ".");
+            builder.Append(ruleContext.GetDisplayName(includeParents)).Append('.');
 
             // Include property name
             builder.Append(ruleContext.Info.Property.Name);
@@ -143,7 +144,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
         {
             ruleContext.ValidateArgument(nameof(ruleContext));
 
-            return ruleContext.As<dynamic>().GetFullDisplayName(includeParents);
+            return GetFullDisplayName(ruleContext.Cast<dynamic>(), includeParents);
         }
     }
 }

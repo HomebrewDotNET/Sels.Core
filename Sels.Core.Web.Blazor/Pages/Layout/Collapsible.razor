@@ -1,0 +1,50 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+
+@if(Content != null)
+{
+    <div class="container-fluid">
+        <div class="row justify-content-start mb-2" @onclick="Toggle" style="cursor: pointer">
+            <div class="col-auto">
+                <span class="oi @(IsCollapsed ? "oi-chevron-right" : "oi-chevron-bottom")"></span>
+            </div>
+            @if(Label != null)
+            {
+                <div class="col-auto">
+                    @Label
+                </div>  
+            }        
+        </div>
+        <div class="row @(IsCollapsed ? "collapse" : string.Empty)">
+            @Content
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Content next to the icon.
+    /// </summary>
+    [Parameter]
+    public RenderFragment Label { get; set; }
+    /// <summary>
+    /// The content that is collapsible.
+    /// </summary>
+    [Parameter]
+    public RenderFragment Content { get; set; }
+    /// <summary>
+    /// If the content is currently collapsed.
+    /// </summary>
+    [Parameter]
+    public bool IsCollapsed { get; set; }
+    /// <summary>
+    /// Event that gets raised when <see cref="IsCollapsed" /> changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> IsCollapsedChanged { get; set; }
+
+    private async Task Toggle()
+    {
+        IsCollapsed = !IsCollapsed;
+        await IsCollapsedChanged.InvokeAsync(IsCollapsed);
+    }
+}

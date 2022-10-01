@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <Nullable>enable</Nullable>
+	  <ImplicitUsings>enable</ImplicitUsings>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+	  <Authors>Jens Sels</Authors>
+	  <Company>Homebrew IT</Company>
+	  <Product>Bootstrap Library</Product>
+	  <Description>
+		  Library containing strongly typed models matching bootstrap V5 components.
+		  Used by projects maintained here: https://github.com/Jenssels1998
+	  </Description>
+	  <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
+	  <Copyright>Jens Sels</Copyright>
+	  <PackageTags>Sels</PackageTags>
+	  <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
+	  <!--For NuGet package-->
+	  <VersionPrefix>1.0.2</VersionPrefix>
+	  <BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
+	  <BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
+	  <VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
+	  <DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
+	  <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>	  
+  </PropertyGroup>
+  
+  <!--Exclude pdb files from release build-->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+	  <DebugType>None</DebugType>
+	  <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <!--Include non-NuGet package projects in NuGet package-->
+  <Target Name="PrePackage" BeforeTargets="BuildPackage">
+	  <PropertyGroup>
+		  <BuildCommand>$(BuildCommand) -IncludeReferencedProjects</BuildCommand>
+	  </PropertyGroup>
+  </Target>
+
+  <!--Clear local versions if already added and add NuGet package to local repository-->
+  <Target Name="NuGetPushToLocal" AfterTargets="Pack" Condition="'$(OS)' == 'Windows_NT' And Exists('C:\NuGet\nuget.exe')">
+	  <Exec Command="if exist %USERPROFILE%\.nuget\packages\$(PackageId) rmdir /s /q %USERPROFILE%\.nuget\packages\$(PackageId)" />
+	  <Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
+	  <Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
+  </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
+  </ItemGroup>
+
+</Project>

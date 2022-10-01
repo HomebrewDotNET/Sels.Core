@@ -1,0 +1,48 @@
+﻿@using Sels.Core.Web.Blazor.Exceptions
+@using Sels.Core.Web.Bootstrap.V5.Helpers
+@implements IDisposable
+
+@code {
+    /// <summary>
+    /// The header for the tab.
+    /// </summary>
+    [Parameter]
+    public string Header { get; set; }
+    /// <summary>
+    /// Optional css class for the a tag.
+    /// </summary>
+    [Parameter]
+    public string CssClass { get; set; }
+    /// <summary>
+    /// Optional color for the link text when not active.
+    /// </summary>
+    [Parameter]
+    public LinkColor Color { get; set; }
+    /// <summary>
+    /// The content of the tab.
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    /// <summary>
+    /// The parent tab container.
+    /// </summary>
+    [CascadingParameter(Name = "TabContainer")]
+    public TabContainer Container { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        MissingCascadingParameterException.ThrowOnNull(this, Container);
+        Header.ValidateArgumentNotNullOrWhitespace(nameof(Header));
+        ChildContent.ValidateArgument(nameof(ChildContent));
+
+        Container.AddTab(this);
+    }
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Container.RemoveTab(this);
+    }
+}
