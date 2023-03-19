@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sels.Core.FileSystem.Templates.FileSizes.Bit
+﻿namespace Sels.Core.FileSystem.Templates.FileSizes.Bit
 {
     /// <summary>
     /// Displays size in bit format.

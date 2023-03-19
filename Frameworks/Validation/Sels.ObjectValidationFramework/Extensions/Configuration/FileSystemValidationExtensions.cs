@@ -1,12 +1,10 @@
 ﻿using Sels.Core.Extensions;
-using Sels.ObjectValidationFramework.Contracts.Rules;
+using Sels.ObjectValidationFramework.Rules;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 // Adjusted so extensions are available when using the ValidationProfile
-namespace Sels.ObjectValidationFramework.Templates.Profile
+namespace Sels.ObjectValidationFramework.Profile
 {
     /// <summary>
     /// Contains generic configuration extensions for file system types.

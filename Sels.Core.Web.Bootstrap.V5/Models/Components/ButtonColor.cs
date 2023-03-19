@@ -1,9 +1,4 @@
 ﻿using Sels.Core.Attributes.Enumeration.Value;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Web.Bootstrap.V5.Components
 {
@@ -131,6 +126,7 @@ namespace Sels.Core.Web.Bootstrap.V5.Components
         /// <returns>Button color css where the color is equal to <paramref name="color"/></returns>
         public static string ToButtonCss(this Color color, bool isOutline = false)
         {
+            if (color == Color.None) return string.Empty;
             return $"{(isOutline ? Bootstrap.Components.ButtonOutline : Bootstrap.Components.Button)}-{color.ToCss()}";
         }
     }

@@ -1,9 +1,6 @@
-﻿using Sels.ObjectValidationFramework.Components.Validators;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Sels.ObjectValidationFramework.Validators;
 
-namespace Sels.ObjectValidationFramework.Contracts.Rules
+namespace Sels.ObjectValidationFramework.Rules
 {
     /// <summary>
     /// Provides validation rules with the information it needs to validate a value.

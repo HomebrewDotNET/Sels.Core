@@ -1,13 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Extensions.Conversion;
 using Sels.Core.Command.Linux.Commands.Awk;
 using Sels.Core.Command.Linux.Contracts;
 using Sels.Core.Command.Linux.Templates;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Sels.Core.Command.Contracts.Commands;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.FileSystem.Templates.FileSizes;

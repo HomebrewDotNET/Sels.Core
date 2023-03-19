@@ -1,9 +1,4 @@
-﻿using Sels.Core.Command.Linux.Templates;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sels.Core.Command.Linux.Templates.Commands.Screen
+﻿namespace Sels.Core.Command.Linux.Templates.Commands.Screen
 {
     /// <summary>
     /// The screen command a terminal multiplexer used to manage several terminals.

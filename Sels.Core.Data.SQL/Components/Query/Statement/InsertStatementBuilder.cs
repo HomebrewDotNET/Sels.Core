@@ -2,12 +2,7 @@
 using Sels.Core.Data.SQL.Query.Expressions;
 using Sels.Core.Data.SQL.Query.Expressions.Condition;
 using Sels.Core.Data.SQL.Query.Expressions.Join;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Data.SQL.Query.Statement
 {
@@ -93,5 +88,14 @@ namespace Sels.Core.Data.SQL.Query.Statement
             return builder.Parameters(GetColumnPropertiesFrom<T>(excludedProperties).Select(x => suffix.HasValue ? $"{x.Name}{suffix}" : x.Name));
         }
         #endregion
+
+        /// <inheritdoc/>
+        public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        {
+            // Add implicit expressions
+            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(InsertExpressionPositions.Into) || !Expressions[InsertExpressionPositions.Into].HasValue())) this.Cast<IInsertStatementBuilder<TEntity>>().Into();
+
+            return base.Build(builder, options);
+        }
     }
 }

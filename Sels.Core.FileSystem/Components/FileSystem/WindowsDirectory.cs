@@ -1,10 +1,5 @@
 ﻿using Sels.Core.FileSystem.Extensions.FileSizes;
-using Sels.Core.FileSystem.Templates.FileSizes;
 using Sels.Core.FileSystem.Templates.FileSystem;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace Sels.Core.Components.FileSystem
 {

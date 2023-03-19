@@ -16,13 +16,15 @@
             <param name="services">The service collection to add the services to</param>
             <returns><paramref name="services"/> for method chaining</returns>
         </member>
-        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddSubscriber``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddSubscriber``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean,Microsoft.Extensions.DependencyInjection.ServiceLifetime)">
             <summary>
             Adds service <typeparamref name="TSubscriber"/> as global subscriber that can received messages of type <typeparamref name="TMessage"/> sent from other services.
             </summary>
             <typeparam name="TMessage">The type of message to subscribe to</typeparam>
             <typeparam name="TSubscriber">The type of the service to receive the messages with</typeparam>
             <param name="services">The service collection to add the services to</param>
+            <param name="asForwardedService">If the instance needs to be resolved from the DI container instead. Set to true of <typeparamref name="TSubscriber"/> is already registered in the DI container</param>
+            <param name="serviceScope">The scope for the registered service</param>
             <returns><paramref name="services"/> for method chaining</returns>
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddSubscriber``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Delegates.Async.AsyncAction{``1,System.Object,``0,System.Threading.CancellationToken})">
@@ -147,6 +149,19 @@
         <member name="M:Sels.Core.Mediator.Messaging.Messenger`1.SendAsync(System.Object,`0,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
+        <member name="T:Sels.Core.Mediator.Messaging.Messenger">
+            <summary>
+            Messanger that relies on DI to get the subscribers to send to.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.Messenger.#ctor(System.IServiceProvider,Microsoft.Extensions.Logging.ILogger{Sels.Core.Mediator.Messaging.Messenger})">
+            <inheritdoc cref="T:Sels.Core.Mediator.Messaging.Messenger`1"/>
+            <param name="provider">Service provider to resolve the messanger to send message with.</param>
+            <param name="logger">Logger used for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.Messenger.SendAsync``1(System.Object,``0,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
         <member name="T:Sels.Core.Mediator.Messaging.SubscriptionManager">
             <summary>
             Thread safe singleton message subscriber that keeps a list of subscribers.
@@ -268,6 +283,21 @@
             <summary>
             Sends <paramref name="message"/> to any subscribers.
             </summary>
+            <param name="sender">The object sending the message</param>
+            <param name="message">The message to send</param>
+            <param name="token">Optional token for cancelling a long running task</param>
+            <returns>How many subscribers received the message</returns>
+        </member>
+        <member name="T:Sels.Core.Mediator.Messaging.IMessanger">
+            <summary>
+            Allows objects to send messages to other objects who are subscibed to that message.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Messaging.IMessanger.SendAsync``1(System.Object,``0,System.Threading.CancellationToken)">
+            <summary>
+            Sends <paramref name="message"/> to any subscribers.
+            </summary>
+            <typeparam name="T">Type of the message to send</typeparam>
             <param name="sender">The object sending the message</param>
             <param name="message">The message to send</param>
             <param name="token">Optional token for cancelling a long running task</param>

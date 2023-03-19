@@ -5,16 +5,7 @@ using Sels.Core.Command.Linux.Commands;
 using Sels.Core.Command.Linux.Contracts;
 using Sels.Core.Command.Linux.Templates.Attributes;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Reflection;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 
 namespace Sels.Core.Command.Linux.Templates
 {

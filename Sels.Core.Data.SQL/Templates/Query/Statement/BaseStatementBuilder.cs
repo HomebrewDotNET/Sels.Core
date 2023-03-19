@@ -2,12 +2,8 @@
 using Sels.Core.Data.SQL.Query.Expressions;
 using Sels.Core.Data.SQL.Query.Expressions.Condition;
 using Sels.Core.Data.SQL.Query.Expressions.Join;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Data.SQL.Query.Statement
 {
@@ -152,7 +148,7 @@ namespace Sels.Core.Data.SQL.Query.Statement
             return builder.ToString();
         }
         /// <inheritdoc/>
-        public StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public virtual StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
 

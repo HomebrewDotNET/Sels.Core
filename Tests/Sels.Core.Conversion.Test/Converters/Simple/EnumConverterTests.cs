@@ -1,12 +1,8 @@
-﻿using Sels.Core.Conversion;
-using Sels.Core.Conversion.Converters;
+﻿using Sels.Core.Conversion.Converters;
 using Sels.Core.Conversion.Converters.Simple;
 using Sels.Core.Conversion.Test.TestTemplates.Converter;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Conversion.Test.Converters.Simple
 {

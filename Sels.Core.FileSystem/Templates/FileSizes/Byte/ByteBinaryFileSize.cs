@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sels.Core.FileSystem.Templates.FileSizes.Byte
+﻿namespace Sels.Core.FileSystem.Templates.FileSizes.Byte
 {
     /// <summary>
     /// Displays size in byte format.

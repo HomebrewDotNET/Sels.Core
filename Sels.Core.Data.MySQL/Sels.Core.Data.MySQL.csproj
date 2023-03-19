@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -19,7 +19,7 @@
 	  <PackageTags>Sels</PackageTags>
 	  <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 	  <!--For NuGet package-->
-	  <VersionPrefix>1.0.2</VersionPrefix>
+	  <VersionPrefix>2.0.0</VersionPrefix>
 	  <BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
 	  <BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
 	  <VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
@@ -52,12 +52,13 @@
 	</ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySqlConnector" Version="2.1.8" />
+    <PackageReference Include="MySqlConnector" Version="2.1.13" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
     <ProjectReference Include="..\Sels.Core.Data.SQL\Sels.Core.Data.SQL.csproj" />
+    <ProjectReference Include="..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
   </ItemGroup>
 
 </Project>

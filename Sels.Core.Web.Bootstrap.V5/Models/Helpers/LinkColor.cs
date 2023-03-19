@@ -1,9 +1,4 @@
 ﻿using Sels.Core.Attributes.Enumeration.Value;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Web.Bootstrap.V5.Helpers
 {
@@ -81,6 +76,7 @@ namespace Sels.Core.Web.Bootstrap.V5.Helpers
         /// <returns>Link color css where the color is equal to <paramref name="color"/></returns>
         public static string ToLinkCss(this Color color)
         {
+            if (color == Color.None) return string.Empty;
             return $"{Bootstrap.Helpers.Link}-{color.ToCss()}";
         }
     }

@@ -1,9 +1,4 @@
 ﻿using Sels.Core.Attributes.Enumeration.Value;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Web.Bootstrap.V5.Components
 {
@@ -16,22 +11,22 @@ namespace Sels.Core.Web.Bootstrap.V5.Components
         /// The default modal size of 500px.
         /// </summary>
         [StringEnumValue("")]
-        Default = 0,
+        Default,
         /// <summary>
         /// The small modal size of 300px.
         /// </summary>
         [StringEnumValue("modal-sm")]
-        Small = 1,
+        Small,
         /// <summary>
         /// The large modal size of 800px.
         /// </summary>
         [StringEnumValue("modal-lg")]
-        Large = 2,
+        Large,
         /// <summary>
         /// The extra large modal size of 1140px.
         /// </summary>
         [StringEnumValue("modal-xl")]
-        ExtraLarge = 3
+        ExtraLarge
     }
 
     /// <summary>

@@ -1,7 +1,4 @@
 ﻿using Sels.Core.Attributes.Enumeration.Value;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sels.Core.Command.Linux.Commands
 {

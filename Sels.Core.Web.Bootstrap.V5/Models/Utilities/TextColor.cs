@@ -1,9 +1,4 @@
 ﻿using Sels.Core.Attributes.Enumeration.Value;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Web.Bootstrap.V5.Utilities
 {
@@ -106,6 +101,7 @@ namespace Sels.Core.Web.Bootstrap.V5.Utilities
         /// <returns>Text color css where the color is equal to <paramref name="color"/></returns>
         public static string ToTextCss(this Color color)
         {
+            if (color == Color.None) return string.Empty;
             return $"{Bootstrap.Utilities.Text}-{color.ToCss()}";
         }
     }

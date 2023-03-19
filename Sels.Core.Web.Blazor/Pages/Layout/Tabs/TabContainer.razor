@@ -1,5 +1,6 @@
 ﻿@using Sels.Core.Web.Bootstrap.V5.Helpers
 @using Microsoft.AspNetCore.Components.Web
+@using Sels.Core.Web.Bootstrap.V5.Utilities
 
 <CascadingValue Value="this" Name="TabContainer">
 @if(ChildContent != null)
@@ -10,19 +11,16 @@
 }
 @if (Tabs.HasValue())
 {
-
     <div class="container-fluid">
-        <div class="row">
-            <ul class="nav nav-tabs">             
+        <ul class="nav nav-tabs">             
             @foreach(var tab in Tabs)
             {
                 <li class="nav-item" style="cursor: pointer">
-                    <a class="nav-link @(tab.Equals(SelectedTab) ? "active " + ActiveColor.ToCss() : tab.Color.ToCss()) @tab.CssClass" @onclick="x => SetActiveTab(tab)" @onclick:preventDefault>@tab.Header</a>
+                    <a class="nav-link @(tab.Equals(SelectedTab) ? $"active {ActiveColor.ToCss()} {ActiveTabCss}"  : $"{tab.Color.ToCss()} {TabCss}") @tab.CssClass" @onclick="x => SetActiveTab(tab)" @onclick:preventDefault>@tab.Header</a>
                 </li>
             }
-            </ul>
-        </div>
-         <div class="row border border-top-0">
+        </ul>
+        <div class="border border-top-0">
             @if(SelectedTab != null)
             {
                 @SelectedTab.ChildContent
@@ -48,7 +46,17 @@
     /// Optional color for the link text of the active tab.
     /// </summary>
     [Parameter]
-    public LinkColor ActiveColor { get; set; }
+    public TextColor ActiveColor { get; set; }
+    /// <summary>
+    /// Optional css class for the active tab.
+    /// </summary>
+    [Parameter]
+    public string? ActiveTabCss { get; set; }
+    /// <summary>
+    /// Optional css class for the non-active tab.
+    /// </summary>
+    [Parameter]
+    public string? TabCss { get; set; }
     /// <summary>
     /// The content to render.
     /// </summary>

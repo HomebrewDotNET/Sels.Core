@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Sels.Core.Components.FileSizes.Byte;
-using Sels.Core.Extensions;
-using Sels.Core.FileSystem.Templates.FileSizes;
+﻿using Sels.Core.Extensions;
 
 namespace Sels.Core.FileSystem.Templates.FileSystem
 {

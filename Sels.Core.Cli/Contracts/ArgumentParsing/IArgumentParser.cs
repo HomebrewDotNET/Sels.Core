@@ -1,12 +1,6 @@
 ﻿using Sels.Core.Cli.Contracts.ArgumentParsing;
-using Sels.Core.Conversion.Converters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using static Sels.Core.Delegates;
 
 namespace Sels.Core.Cli.ArgumentParsing

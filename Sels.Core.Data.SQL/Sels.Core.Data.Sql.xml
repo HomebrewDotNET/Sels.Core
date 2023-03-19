@@ -949,6 +949,9 @@
         <member name="M:Sels.Core.Data.SQL.Query.Statement.DeleteStatementBuilder`1.GetPositionForJoinExpression(Sels.Core.Data.SQL.Query.Expressions.Join.JoinExpression{`0,Sels.Core.Data.SQL.Query.Statement.IDeleteStatementBuilder{`0}})">
             <inheritdoc/>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.DeleteStatementBuilder`1.Build(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+            <inheritdoc/>
+        </member>
         <member name="T:Sels.Core.Data.SQL.Query.Statement.InsertStatementBuilder`1">
             <summary>
             Builds an insert query.
@@ -991,6 +994,9 @@
         <member name="M:Sels.Core.Data.SQL.Query.Statement.InsertStatementBuilder`1.ParametersFrom``1(System.Nullable{System.Int32},System.String[])">
             <inheritdoc/>
         </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.InsertStatementBuilder`1.Build(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+            <inheritdoc/>
+        </member>
         <member name="T:Sels.Core.Data.SQL.Query.Statement.SelectStatementBuilder`1">
             <summary>
             Builds a select query.
@@ -1022,6 +1028,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.Statement.SelectStatementBuilder`1.Clone(Sels.Core.Data.SQL.Query.Compilation.IQueryCompiler{Sels.Core.Data.SQL.Query.Statement.SelectExpressionPositions},System.Collections.Generic.Dictionary{Sels.Core.Data.SQL.Query.Statement.SelectExpressionPositions,System.Collections.Generic.List{Sels.Core.Data.SQL.Query.Expressions.IExpression}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.SelectStatementBuilder`1.Build(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1">
@@ -1058,6 +1067,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1.SetUsing``1(``0,System.Object,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.Query.Statement.UpdateStatementBuilder`1.Build(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.SQL.Query.Statement.ICteStatementBuilder">
@@ -3171,6 +3183,11 @@
             Appends a ; after each statement.
             </summary>
         </member>
+        <member name="F:Sels.Core.Data.SQL.Query.ExpressionCompileOptions.NoImplitExpressions">
+            <summary>
+            Disables any implicit expressions that get added by the builders themselves.
+            </summary>
+        </member>
         <member name="T:Sels.Core.Data.SQL.Query.Joins">
             <summary>
             Contains the different types of sql joins.
@@ -3221,6 +3238,167 @@
             <summary>
             Order by largest first.
             </summary>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverter`2"/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.#ctor(System.Action{Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder{`0,`1}},Microsoft.Extensions.Logging.ILogger)">
+            <inheritdoc cref="T:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2"/>
+            <param name="configurator">Optional delegate for configuring the current instance</param>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.Build(Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{`0},`1,Dapper.DynamicParameters)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.Excluding(System.String,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.With``1(System.Linq.Expressions.Expression{System.Func{`1,``0}},System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.WithDefaultAlias(System.Func{System.Reflection.PropertyInfo,System.Object})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.WithDefaultColumnName(System.Func{System.Reflection.PropertyInfo,System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.WithDefaultOperator(System.Func{System.Reflection.PropertyInfo,Sels.Core.Data.SQL.Query.Statement.IStatementConditionOperatorExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IStatementConditionRightExpressionBuilder{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.WithDefaultValue(System.Func{System.Reflection.PropertyInfo,System.Object,Dapper.DynamicParameters,Sels.Core.Data.SQL.Query.Statement.IStatementConditionRightExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IChainedBuilder{`0,Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{`0}}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.ExplicitConverter.Excluding(System.String,System.String[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.ExplicitConverter.With``1(System.Linq.Expressions.Expression{System.Func{`1,``0}},System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.ExplicitConverter.WithDefaultAlias(System.Func{System.Reflection.PropertyInfo,System.Object})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.ExplicitConverter.WithDefaultColumnName(System.Func{System.Reflection.PropertyInfo,System.String})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.ExplicitConverter.WithDefaultOperator(System.Func{System.Reflection.PropertyInfo,Sels.Core.Data.SQL.Query.Statement.IStatementConditionOperatorExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IStatementConditionRightExpressionBuilder{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.ExplicitConverter.WithDefaultValue(System.Func{System.Reflection.PropertyInfo,System.Object,Dapper.DynamicParameters,Sels.Core.Data.SQL.Query.Statement.IStatementConditionRightExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IChainedBuilder{`0,Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{`0}}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.ExplicitConverter`1.As(System.Func{System.Reflection.PropertyInfo,Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IStatementConditionOperatorExpressionBuilder{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.ExplicitConverter`1.CompareUsing(System.Func{System.Reflection.PropertyInfo,Sels.Core.Data.SQL.Query.Statement.IStatementConditionOperatorExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IStatementConditionRightExpressionBuilder{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.SearchCriteriaConverter`2.ExplicitConverter`1.ValueAs(System.Func{System.Reflection.PropertyInfo,`2,Dapper.DynamicParameters,Sels.Core.Data.SQL.Query.Statement.IStatementConditionRightExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IChainedBuilder{`0,Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{`0}}})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverter`2">
+            <summary>
+            Converts an object of type <typeparamref name="TSearchCriteria"/> to a SQL where clause.
+            </summary>
+            <typeparam name="T">The main entity to create the query for</typeparam>
+            <typeparam name="TSearchCriteria">Type of the search criteria</typeparam>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverter`2.Build(Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{`0},`1,Dapper.DynamicParameters)">
+            <summary>
+            Creates a SQL where clause using <paramref name="searchCriteria"/> and <paramref name="builder"/>.
+            </summary>
+            <param name="builder">The builder that will be used to create the conditions</param>
+            <param name="searchCriteria">The search criteria that will be converted</param>
+            <param name="parameters">Optional parameter bag that can be provided. Implicit conditions that use parameters will automatically add the values to the bag</param>
+            <returns>The final builder after the creating the conditions or null if no conditions were created</returns>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder`2">
+            <summary>
+            Builder for configuring how search criteria of type <typeparamref name="T"/> is converted to a SQL where clause.
+            </summary>
+            <typeparam name="T">The main entity to create the query for</typeparam>
+            <typeparam name="TSearchCriteria">Type of the search criteria</typeparam>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder`2.With``1(System.Linq.Expressions.Expression{System.Func{`1,``0}},System.Boolean)">
+            <summary>
+            Returns a builder on how to convert the property selected by <paramref name="property"/> to a SQL condition.
+            </summary>
+            <typeparam name="TValue">Value of the property</typeparam>
+            <param name="property">Expression pointing to the property to use</param>
+            <param name="allowNull">If the builder will also be used if the property value is null, nulls are ignored by default</param>
+            <returns>A builder for configuring how to convert the property selected by <paramref name="property"/> to a SQL condition</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder`2.Excluding(System.String,System.String[])">
+            <summary>
+            Defines the names of the properties not to create search criteria for.
+            </summary>
+            <param name="name">The name of the property to exclude</param>
+            <param name="additionalNames">Optional additional names of properties to exclude</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder`2.Excluding(System.Linq.Expressions.Expression{System.Func{`1,System.Object}},System.Linq.Expressions.Expression{System.Func{`1,System.Object}}[])">
+            <summary>
+            Defines the properties not to create search criteria for.
+            </summary>
+            <param name="property">Expression pointing to the property to exclude</param>
+            <param name="additionalProperties">Optional additional properties to exclude</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder`2.WithDefaultColumnName(System.Func{System.Reflection.PropertyInfo,System.String})">
+            <summary>
+            Defines a delegate for converting a property to a column name used for implicit conversions.
+            </summary>
+            <param name="nameSelector">Delegate that returns the column name for the supplied property, if null is returned the default logic will be used</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder`2.WithDefaultAlias(System.Func{System.Reflection.PropertyInfo,System.Object})">
+            <summary>
+            Defines a delegate for selecting the data set alias for the column mapped to the supplied property.
+            </summary>
+            <param name="aliasSelector">Delegate that returns the data set alias for the supplied property, if null is returned the default logic will be used</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder`2.WithDefaultOperator(System.Func{System.Reflection.PropertyInfo,Sels.Core.Data.SQL.Query.Statement.IStatementConditionOperatorExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IStatementConditionRightExpressionBuilder{`0}})">
+            <summary>
+            Defines a delegate for selecting the operator that will be used to compare the column to the property value.
+            </summary>
+            <param name="operatorSelector">Delegate that returns the logical operator for the supplied property, if null is returned the default logic will be used</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder`2.WithDefaultValue(System.Func{System.Reflection.PropertyInfo,System.Object,Dapper.DynamicParameters,Sels.Core.Data.SQL.Query.Statement.IStatementConditionRightExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IChainedBuilder{`0,Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{`0}}})">
+            <summary>
+            Defines a delegate for converting the property value to SQL.
+            </summary>
+            <param name="valueSelector">Delegate that converts the property value to SQL for the supplied property, if null is returned the default logic will be used</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterPropertyBuilder`3">
+            <summary>
+            Builder for configuring how a property must be converted to a SQL condition.
+            </summary>
+            <typeparam name="T">Type of the search criteria</typeparam>
+            <typeparam name="TSearchCriteria">Type of the search criteria</typeparam>
+            <typeparam name="TValue">Type of the property value</typeparam>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterPropertyBuilder`3.As(System.Func{System.Reflection.PropertyInfo,Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IStatementConditionOperatorExpressionBuilder{`0}})">
+            <summary>
+            Defines the sql object that the current property is search criteria for. The default is the column with the property name where the alias is the same as the one defined for type <typeparamref name="T"/>.
+            </summary>
+            <param name="objectSelector">Delegate that selects the sql object. First parameter is the property info, the second is the builder to use</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterPropertyBuilder`3.CompareUsing(System.Func{System.Reflection.PropertyInfo,Sels.Core.Data.SQL.Query.Statement.IStatementConditionOperatorExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IStatementConditionRightExpressionBuilder{`0}})">
+            <summary>
+            Defines the sql operator to use to compare the sql object to the property value. The default is LIKE for <see cref="T:System.String"/>, IN for <see cref="T:System.Collections.Generic.IEnumerable`1"/> and &lt;= for the rest.
+            </summary>
+            <param name="operatorSelector">Delegate that selects the sql operator, First parameter is the property info, the second is the builder to use</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterPropertyBuilder`3.ValueAs(System.Func{System.Reflection.PropertyInfo,`2,Dapper.DynamicParameters,Sels.Core.Data.SQL.Query.Statement.IStatementConditionRightExpressionBuilder{`0},Sels.Core.Data.SQL.Query.Statement.IChainedBuilder{`0,Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{`0}}})">
+            <summary>
+            Defines how the property value is converted to SQL. The default is a parameter list where the property name is taken as the prefix (e.g. @Category0, @Category1, @Category2) for types deriving from <see cref="T:System.Collections.Generic.IEnumerable`1"/> (except <see cref="T:System.String"/>) and a parameter where the property name is taken as the parameter name (e.g. @Name) for all the rest
+            </summary>
+            <param name="valueSelector">Delegate that selects the sql operator, First parameter is the property info, second parameter is the property value and the third is the builder to use</param>
+            <returns></returns>
         </member>
         <member name="T:Sels.Core.Data.SQL.Extensions.Dapper.DapperExtensions">
             <summary>
@@ -3295,6 +3473,33 @@
             <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
             <typeparam name="TEntity">The main entity to select</typeparam>
             <param name="builder">The builder to add the expression to</param>
+            <returns>Current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SqlQueryBuilderExtensions.FromSearchCriteria``2(Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{``0},``1,System.Action{Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder{``0,``1}},Dapper.DynamicParameters,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Converts <paramref name="searchCriteria"/> to SQL conditions.
+            </summary>
+            <typeparam name="TEntity">The main entity to create the query for</typeparam>
+            <typeparam name="TSearchCriteria">Type of the search criteria</typeparam>
+            <param name="builder">The builder to create the conditions with</param>
+            <param name="searchCriteria">THe object to convert to SQL conditions</param>
+            <param name="configurator">Optional delegate for configuring how to convert <paramref name="searchCriteria"/></param>
+            <param name="parameters">Optional parameter bag that can be provided. Implicit conditions that use parameters will automatically add the values to the bag</param>
+            <param name="logger">Optional logger for debugging</param>
+            <returns>The final builder after the creating the conditions or null if no conditions were created</returns>
+        </member>
+        <member name="M:Sels.Core.Data.SQL.SqlQueryBuilderExtensions.FromSearchCriteria``3(Sels.Core.Data.SQL.Query.Statement.IStatementConditionBuilder{``0,``1},``2,System.Action{Sels.Core.Data.SQL.SearchCriteria.ISearchCriteriaConverterBuilder{``0,``2}},Dapper.DynamicParameters,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Converts <paramref name="searchCriteria"/> to SQL conditions.
+            </summary>
+            <typeparam name="TEntity">The main entity to create the query for</typeparam>
+            <typeparam name="TDerived">The type of the builder to create the conditions for</typeparam>
+            <typeparam name="TSearchCriteria">Type of the search criteria</typeparam>
+            <param name="builder">The builder to create the conditions with</param>
+            <param name="searchCriteria">THe object to convert to SQL conditions</param>
+            <param name="configurator">Optional delegate for configuring how to convert <paramref name="searchCriteria"/></param>
+            <param name="parameters">Optional parameter bag that can be provided. Implicit conditions that use parameters will automatically add the values to the bag</param>
+            <param name="logger">Optional logger for debugging</param>
             <returns>Current builder for method chaining</returns>
         </member>
         <member name="T:Sels.Core.Data.SQL.Sql">

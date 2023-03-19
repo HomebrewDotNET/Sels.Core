@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections;
 using Sels.Core.Attributes.Enumeration.Value;
 using Sels.Core.Extensions.Reflection;
-using Sels.Core.Linux;
 
 namespace Sels.Core.Command.Linux.Templates.Attributes
 {

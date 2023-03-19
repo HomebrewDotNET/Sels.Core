@@ -1,8 +1,4 @@
-﻿using Sels.Core.Extensions;
-using Sels.Core.Command.Linux.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Sels.Core.Command.Linux.Contracts;
 
 namespace Sels.Core.Command.Linux.Commands
 {

@@ -1,13 +1,10 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
-using Sels.ObjectValidationFramework.Components.Rules;
-using Sels.ObjectValidationFramework.Contracts.Rules;
-using System;
-using System.Collections.Generic;
+using Sels.ObjectValidationFramework.Rules;
 using System.Text;
 
 // Adjusted so extensions are available when using the ValidationProfile
-namespace Sels.ObjectValidationFramework.Templates.Profile
+namespace Sels.ObjectValidationFramework.Profile
 {
     /// <summary>
     /// Extra extension methods for working the with validation rule context

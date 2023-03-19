@@ -5,16 +5,11 @@ using Sels.Core.Data.MySQL.MariaDb;
 using Sels.Core.Data.MySQL.Models.Repository;
 using Sels.Core.Data.SQL.Extensions.Dapper;
 using Sels.Core.Data.SQL.Query;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Sels.Core.Extensions.Fluent;
-using System.Linq.Expressions;
 using LinqExpression = System.Linq.Expressions.Expression;
 using System.Data;
+using Sels.Core.ServiceBuilder.Injection;
 
 namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
 {
@@ -27,7 +22,11 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
     public abstract class BaseMariaDbDataRepository<TEntity, TId> : IDataRepository<TEntity, TId>
     {
         // Fields
-        private readonly IEnumerable<ILogger>? _loggers;
+        /// <summary>
+        /// Optional loggers used for tracing.
+        /// </summary>
+        [Inject]
+        protected readonly ILogger? _logger;
         private readonly string _connectionString;
         private readonly string _name;
 
@@ -44,14 +43,14 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
 
         /// <inheritdoc cref="BaseMariaDbDataRepository{TEntity, TId}"/>
         /// <param name="connectionString">The connection string to use to open connections</param>
-        /// <param name="loggers">Optional loggers for tracing</param>
-        public BaseMariaDbDataRepository(string connectionString, IEnumerable<ILogger>? loggers = null)
+        /// <param name="logger">Optional loggers for tracing</param>
+        protected BaseMariaDbDataRepository(string connectionString, ILogger? logger = null)
         {
             _connectionString = connectionString.ValidateArgumentNotNullOrWhitespace(nameof(connectionString));
-            _loggers = loggers;
+            _logger = logger;
 
             // Initialize
-            _name = GetType().Name;
+            _name = GetType().GetDisplayName(false);
             IdProperty = new Lazy<PropertyInfo>(() => GetIdProperty() ?? throw new InvalidOperationException($"{nameof(GetIdProperty)} returned null"), true);
             ExcludedProperties = new Lazy<string[]>(() => Helper.Collection.Enumerate(IdProperty.Value.Name, GetExcludedProperties().ToArrayOrDefault()).ToArrayOrDefault(), true);
             IdGetter = new Lazy<Func<TEntity, TId>>(() =>
@@ -68,9 +67,9 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
         /// <inheritdoc/>
         public async Task<IDataRepositoryConnection> OpenNewConnectionAsync(bool startTransaction = true, IsolationLevel isolationLevel = default, CancellationToken token = default)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
-                _loggers.Debug($"Opening new connection from <{_name}>");
+                _logger.Debug($"Opening new connection from <{_name}> with isolation level <{isolationLevel}>{(startTransaction ? " and a new transaction" :  string.Empty)}");
                 var connection = new MySqlDataRepositoryConnection(_connectionString, startTransaction, isolationLevel);
                 await connection.OpenAsync(token);
                 return connection;
@@ -82,19 +81,19 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
         /// <inheritdoc/>
         public virtual async Task<TEntity> CreateAsync(IDataRepositoryConnection connection, TEntity entity, CancellationToken token = default)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 connection.ValidateArgument(nameof(connection));
                 entity.ValidateArgument(nameof(entity));
                 var excludedProperties = ExcludedProperties.Value;
-                _loggers.Debug($"Creating new entity of type <{typeof(TEntity)}>");
+                _logger.Log($"Creating new entity of type <{typeof(TEntity)}>");
 
                 // Create query
                 var query = MySql.Insert<TEntity>().Into().ColumnsOf(excludedProperties)
                                     .ParametersFrom(excludedProperties: excludedProperties)
                                     .Return(x => x.All())
                                     .Build(ExpressionCompileOptions.Format);
-                _loggers.Trace($"Inserting <{typeof(TEntity)}> using query: {query}");
+                _logger.Trace($"Inserting <{typeof(TEntity)}> using query: {query}");
 
                 // Create parameters
                 var parameters = entity.AsParameters(excludedProperties);
@@ -102,20 +101,20 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
                 // Execute query
                 entity = await connection.Connection.QuerySingleAsync<TEntity>(new CommandDefinition(query, parameters, connection.Transaction, cancellationToken: token));
                 var id = IdGetter.Value(entity);
-                _loggers.Debug($"Inserted <{typeof(TEntity)}> with id <{id}>");
+                _logger.Log($"Inserted <{typeof(TEntity)}> with id <{id}>");
                 return entity;
             }
         }
         /// <inheritdoc/>
         public virtual async Task<TEntity[]> CreateAsync(IDataRepositoryConnection connection, IEnumerable<TEntity> entities, CancellationToken token = default)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 connection.ValidateArgument(nameof(connection));
                 entities.ValidateArgumentNotNullOrEmpty(nameof(entities));
                 var excludedProperties = ExcludedProperties.Value;
                 var entityCount = entities.GetCount();
-                _loggers.Debug($"Creating {entityCount} new entities of type <{typeof(TEntity)}>");
+                _logger.Log($"Creating {entityCount} new entities of type <{typeof(TEntity)}>");
 
                 // Create query and parameters
                 var parameters = new DynamicParameters();
@@ -126,7 +125,7 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
                                     })
                                     .Return(x => x.All())
                                     .Build(ExpressionCompileOptions.Format);
-                _loggers.Trace($"Inserting <{typeof(TEntity)}> using query: {query}");
+                _logger.Trace($"Inserting <{typeof(TEntity)}> using query: {query}");
 
                 // Execute query
                 var inserted = (await connection.Connection.QueryAsync<TEntity>(new CommandDefinition(query, parameters, connection.Transaction, cancellationToken: token))).ToArray();
@@ -135,7 +134,7 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
                 {
                     ids.Add(IdGetter.Value(insertedItem));
                 }
-                _loggers.Debug($"Inserted {inserted.Length} <{typeof(TEntity)}> with ids <{ids.JoinString(',')}>");
+                _logger.Log($"Inserted {inserted.Length} <{typeof(TEntity)}> with ids <{ids.JoinString(',')}>");
                 return inserted;
             }
         }
@@ -145,11 +144,11 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
         /// <inheritdoc/>
         public virtual async Task<bool> ExistsAsync(IDataRepositoryConnection connection, TId id, CancellationToken token = default)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 connection.ValidateArgument(nameof(connection));
                 id.ValidateArgument(nameof(id));
-                _loggers.Debug($"Checking if an entity of type <{typeof(TEntity)}> exists with id <{id}>");
+                _logger.Log($"Checking if an entity of type <{typeof(TEntity)}> exists with id <{id}>");
                 var property = IdProperty.Value;
 
                 // Create query and parameters
@@ -157,59 +156,59 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
                 var query = MySql.Select<TEntity>().Value(1).From()
                                     .Where(x => x.Column(typeof(TEntity), property.Name).EqualTo.Parameter(property.Name))
                                     .Build(ExpressionCompileOptions.Format);
-                _loggers.Trace($"Checking existance of <{typeof(TEntity)}> with id <{id}> using query: {query}");
+                _logger.Trace($"Checking existance of <{typeof(TEntity)}> with id <{id}> using query: {query}");
 
                 // Execute query
                 var exists = (await connection.Connection.QuerySingleAsync<int>(new CommandDefinition(query, parameters, connection.Transaction, cancellationToken: token))) == 1;
-                _loggers.Debug($"Entity <{typeof(TEntity)}> with id <{id}> {(exists ? "exists" : "does not exist")}");
+                _logger.Log($"Entity <{typeof(TEntity)}> with id <{id}> {(exists ? "exists" : "does not exist")}");
                 return exists;
             }
         }
         /// <inheritdoc/>
         public virtual async Task<TEntity[]> GetAllAsync(IDataRepositoryConnection connection, CancellationToken token = default)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 connection.ValidateArgument(nameof(connection));
-                _loggers.Debug($"Fetching all entities of type <{typeof(TEntity)}>");
+                _logger.Log($"Fetching all entities of type <{typeof(TEntity)}>");
 
                 // Create query
                 var query = MySql.Select<TEntity>().All().From()
                                     .Build(ExpressionCompileOptions.Format);
-                _loggers.Trace($"Fetching all entities of type <{typeof(TEntity)}> using query: {query}");
+                _logger.Trace($"Fetching all entities of type <{typeof(TEntity)}> using query: {query}");
 
                 // Execute query
                 var entities = (await connection.Connection.QueryAsync<TEntity>(new CommandDefinition(query, transaction: connection.Transaction, cancellationToken: token))).ToArray();
-                _loggers.Debug($"Fetched <{entities.Length}> entities of type <{typeof(TEntity)}>");
+                _logger.Log($"Fetched <{entities.Length}> entities of type <{typeof(TEntity)}>");
                 return entities;
             }
         }
         /// <inheritdoc/>
         public virtual async Task<TEntity> GetAsync(IDataRepositoryConnection connection, TId id, CancellationToken token = default)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 connection.ValidateArgument(nameof(connection));
                 id.ValidateArgument(nameof(id));
                 var property = IdProperty.Value;
-                _loggers.Debug($"Fetching entity of type <{typeof(TEntity)}> with id <{id}>");
+                _logger.Log($"Fetching entity of type <{typeof(TEntity)}> with id <{id}>");
 
                 // Create query and parameters
                 var parameters = new DynamicParameters().AddParameter(property.Name, id);
                 var query = MySql.Select<TEntity>().All().From()
                                     .Where(x => x.Column(typeof(TEntity), property.Name).EqualTo.Parameter(property.Name))
                                     .Build(ExpressionCompileOptions.Format);
-                _loggers.Trace($"Fetching entity of type <{typeof(TEntity)}> with id <{id}> using query: {query}");
+                _logger.Trace($"Fetching entity of type <{typeof(TEntity)}> with id <{id}> using query: {query}");
 
                 // Execute query
                 var entity = await connection.Connection.QuerySingleAsync<TEntity>(new CommandDefinition(query, parameters, connection.Transaction, cancellationToken: token));
                 if(entity != null)
                 {
-                    _loggers.Debug($"Fetched entity of type <{typeof(TEntity)}> with id <{id}>");
+                    _logger.Log($"Fetched entity of type <{typeof(TEntity)}> with id <{id}>");
                 }
                 else
                 {
-                    _loggers.Warning($"Could not fetch entity of type <{typeof(TEntity)}> with id <{id}> because it does not exist");
+                    _logger.Warning($"Could not fetch entity of type <{typeof(TEntity)}> with id <{id}> because it does not exist");
                 }
                 
                 return entity;
@@ -221,46 +220,46 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
         /// <inheritdoc/>
         public virtual async Task<TEntity> UpdateAsync(IDataRepositoryConnection connection, TEntity entity, CancellationToken token = default)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 connection.ValidateArgument(nameof(connection));
                 entity.ValidateArgument(nameof(entity));
                 var excludedProperties = ExcludedProperties.Value;
                 var id = IdGetter.Value(entity);
                 var idName = IdProperty.Value.Name;
-                _loggers.Debug($"Updating entity of type <{typeof(TEntity)}> with id <{id}>");
+                _logger.Log($"Updating entity of type <{typeof(TEntity)}> with id <{id}>");
 
                 // Create query
                 var query = MySql.Update<TEntity>().Table()
                                     .SetFrom(excludedProperties: excludedProperties)
                                     .Where(w => w.Column(typeof(TEntity), idName).EqualTo.Parameter(idName))
                                     .Build(ExpressionCompileOptions.Format);
-                _loggers.Trace($"Updating <{typeof(TEntity)}> with id <{id}> using query: {query}");
+                _logger.Trace($"Updating <{typeof(TEntity)}> with id <{id}> using query: {query}");
 
                 // Create parameters
                 var parameters = entity.AsParameters(excludedProperties.Where(x => !x.Equals(idName, StringComparison.OrdinalIgnoreCase)).ToArrayOrDefault());
 
                 // Execute query
                 await connection.Connection.ExecuteAsync(new CommandDefinition(query, parameters, connection.Transaction, cancellationToken: token));
-                _loggers.Debug($"Updated entity of type <{typeof(TEntity)}> with id <{id}>");
+                _logger.Log($"Updated entity of type <{typeof(TEntity)}> with id <{id}>");
                 return await GetAsync(connection, id, token);
             }
         }
         /// <inheritdoc/>
         public virtual async Task<TEntity[]> UpdateAsync(IDataRepositoryConnection connection, IEnumerable<TEntity> entities, CancellationToken token = default)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 connection.ValidateArgument(nameof(connection));
                 entities.ValidateArgument(nameof(entities));
                 var entityCount = entities.GetCount();
                 var idGetter = IdGetter.Value;
-                _loggers.Debug($"Updating <{entityCount}> entity of type <{typeof(TEntity)}>");
+                _logger.Log($"Updating <{entityCount}> entity of type <{typeof(TEntity)}>");
 
                 // Trigger tasks in parallel and get result                
                 var updatedEntities = await Task.WhenAll(entities.Select(x => UpdateAsync(connection, x, token)));
 
-                _loggers.Debug($"Updated <{typeof(TEntity)}> with ids <{updatedEntities.Select(x => idGetter(x)).JoinString(',')}>");
+                _logger.Log($"Updated <{typeof(TEntity)}> with ids <{updatedEntities.Select(x => idGetter(x)).JoinString(',')}>");
                 return entities.ToArray();
             }
         }
@@ -270,46 +269,46 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
         /// <inheritdoc/>
         public virtual async Task<TEntity> DeleteAsync(IDataRepositoryConnection connection, TId id, CancellationToken token = default)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 connection.ValidateArgument(nameof(connection));
                 var idName = IdProperty.Value.Name;
-                _loggers.Debug($"Deleting entity of type <{typeof(TEntity)}> with id <{id}>");
+                _logger.Log($"Deleting entity of type <{typeof(TEntity)}> with id <{id}>");
 
                 // Create query
                 var query = MySql.Delete<TEntity>().From()
                                     .Where(w => w.Column(typeof(TEntity), idName).EqualTo.Parameter(idName))
                                     .Return(x => x.All())
                                     .AliasFor<TEntity>(string.Empty).Build(ExpressionCompileOptions.Format);
-                _loggers.Trace($"Deleting <{typeof(TEntity)}> with id <{id}> using query: {query}");
+                _logger.Trace($"Deleting <{typeof(TEntity)}> with id <{id}> using query: {query}");
 
                 // Create parameters
                 var parameters = new DynamicParameters().AddParameter(IdProperty.Value.Name, id);
 
                 // Execute query
                 var deleted = await connection.Connection.QuerySingleAsync<TEntity>(new CommandDefinition(query, parameters, connection.Transaction, cancellationToken: token));
-                _loggers.Debug($"Deleted <{typeof(TEntity)}> with id <{id}>");
+                _logger.Log($"Deleted <{typeof(TEntity)}> with id <{id}>");
                 return deleted;
             }
         }
         /// <inheritdoc/>
         public virtual async Task<TEntity[]> DeleteAsync(IDataRepositoryConnection connection, IEnumerable<TId> ids, CancellationToken token = default)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 connection.ValidateArgument(nameof(connection));
                 ids.ValidateArgument(nameof(ids));
                 var idGetter = IdGetter.Value;
                 var idName = IdProperty.Value.Name;
                 var idCount = ids.GetCount();
-                _loggers.Debug($"Deleting <{idCount}> entity of type <{typeof(TEntity)}>");
+                _logger.Log($"Deleting <{idCount}> entity of type <{typeof(TEntity)}>");
 
                 // Create query
                 var query = MySql.Delete<TEntity>().From()
                                     .Where(w => w.Column(typeof(TEntity), idName).In.Values(ids.Select<TId, object>((x, i) => $"{idName}{i}".AsParameterExpression())))
                                     .Return(x => x.All())
                                     .Build(ExpressionCompileOptions.Format);
-                _loggers.Trace($"Deleting <{idCount}> <{typeof(TEntity)}> using query: {query}");
+                _logger.Trace($"Deleting <{idCount}> <{typeof(TEntity)}> using query: {query}");
 
                 // Create parameters
                 var parameters = new DynamicParameters();
@@ -317,7 +316,7 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
 
                 // Execute query
                 var deleted = (await connection.Connection.QueryAsync<TEntity>(new CommandDefinition(query, parameters, connection.Transaction, cancellationToken: token))).ToArray();
-                _loggers.Debug($"Deleted <{typeof(TEntity)}> with ids <{deleted.Select(x => idGetter(x)).JoinString(',')}>");
+                _logger.Log($"Deleted <{typeof(TEntity)}> with ids <{deleted.Select(x => idGetter(x)).JoinString(',')}>");
                 return deleted;
             }
         }

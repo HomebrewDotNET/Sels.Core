@@ -1,5 +1,6 @@
 ﻿@using Sels.Core.Web.Blazor.Exceptions
 @using Sels.Core.Web.Bootstrap.V5.Helpers
+@using Sels.Core.Web.Bootstrap.V5.Utilities
 @implements IDisposable
 
 @code {
@@ -17,7 +18,7 @@
     /// Optional color for the link text when not active.
     /// </summary>
     [Parameter]
-    public LinkColor Color { get; set; }
+    public TextColor Color { get; set; }
     /// <summary>
     /// The content of the tab.
     /// </summary>

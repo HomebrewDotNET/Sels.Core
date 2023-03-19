@@ -1,13 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Sels.Core.Components.IoC;
+﻿using Microsoft.Extensions.Logging;
+
 using Sels.Core.Contracts.Validation;
 using Sels.Core.Extensions;
-using Sels.ObjectValidationFramework.Components.Validators;
-using Sels.ObjectValidationFramework.Templates.Profile;
+using Sels.ObjectValidationFramework.Validators;
+using Sels.ObjectValidationFramework.Profile;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -25,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">Service collection to add service to</param>
         /// <param name="scope">Which scope to use for the service</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterProfile<TProfile, TError>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped) where TProfile : ValidationProfile<TError>
+        public static IServiceCollection RegisterProfile<TProfile, TError>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped) where TProfile : ValidationProfile<TError>
         {
             services.ValidateArgument(nameof(services));
 
@@ -44,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="profileFactory">Factory that creates instances of <typeparamref name="TProfile"/></param>
         /// <param name="scope">Which scope to use for the service</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterProfile<TProfile, TError>(this IServiceCollection services, Func<IServiceProvider, TProfile> profileFactory, ServiceScope scope = ServiceScope.Scoped) where TProfile : ValidationProfile<TError>
+        public static IServiceCollection RegisterProfile<TProfile, TError>(this IServiceCollection services, Func<IServiceProvider, TProfile> profileFactory, ServiceLifetime scope = ServiceLifetime.Scoped) where TProfile : ValidationProfile<TError>
         {
             services.ValidateArgument(nameof(services));
 
@@ -69,7 +67,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterValidatorWithContext<TEntity, TError, TContext, TProfile>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null) where TProfile : ValidationProfile<TError>
+        public static IServiceCollection RegisterValidatorWithContext<TEntity, TError, TContext, TProfile>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null) where TProfile : ValidationProfile<TError>
         {
             services.ValidateArgument(nameof(services));
 
@@ -104,7 +102,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null) 
+        public static IServiceCollection RegisterValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null) 
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
         {
@@ -148,7 +146,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -196,7 +194,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree, TProfileFour>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree, TProfileFour>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -248,7 +246,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree, TProfileFour, TProfileFive>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree, TProfileFour, TProfileFive>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -300,7 +298,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterValidator<TEntity, TError, TProfile>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null) where TProfile : ValidationProfile<TError>
+        public static IServiceCollection RegisterValidator<TEntity, TError, TProfile>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null) where TProfile : ValidationProfile<TError>
         {
             services.ValidateArgument(nameof(services));
 
@@ -320,7 +318,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterValidator<TEntity, TError, TProfileOne, TProfileTwo>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterValidator<TEntity, TError, TProfileOne, TProfileTwo>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
         {
@@ -343,7 +341,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -368,7 +366,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree, TProfileFour>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree, TProfileFour>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -395,7 +393,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree, TProfileFour, TProfileFive>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree, TProfileFour, TProfileFive>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -423,7 +421,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterAsyncValidatorWithContext<TEntity, TError, TContext, TProfile>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null) where TProfile : ValidationProfile<TError>
+        public static IServiceCollection RegisterAsyncValidatorWithContext<TEntity, TError, TContext, TProfile>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null) where TProfile : ValidationProfile<TError>
         {
             services.ValidateArgument(nameof(services));
 
@@ -458,7 +456,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterAsyncValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterAsyncValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
         {
@@ -502,7 +500,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterAsyncValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterAsyncValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -550,7 +548,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterAsyncValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree, TProfileFour>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterAsyncValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree, TProfileFour>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -602,7 +600,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterAsyncValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree, TProfileFour, TProfileFive>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterAsyncValidatorWithContext<TEntity, TError, TContext, TProfileOne, TProfileTwo, TProfileThree, TProfileFour, TProfileFive>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -654,7 +652,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterAsyncValidator<TEntity, TError, TProfile>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null) where TProfile : ValidationProfile<TError>
+        public static IServiceCollection RegisterAsyncValidator<TEntity, TError, TProfile>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null) where TProfile : ValidationProfile<TError>
         {
             services.ValidateArgument(nameof(services));
 
@@ -674,7 +672,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterAsyncValidator<TEntity, TError, TProfileOne, TProfileTwo>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterAsyncValidator<TEntity, TError, TProfileOne, TProfileTwo>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
         {
@@ -697,7 +695,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterAsyncValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterAsyncValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -722,7 +720,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterAsyncValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree, TProfileFour>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterAsyncValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree, TProfileFour>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>
@@ -749,7 +747,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="registerProfile">If this method should register the profiles. Set to false if already registered in <paramref name="services"/></param>
         /// <param name="loggerFactory">Optional logger factory that created the loggers for the validator</param>
         /// <returns>Self</returns>
-        public static IServiceCollection RegisterAsyncValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree, TProfileFour, TProfileFive>(this IServiceCollection services, ServiceScope scope = ServiceScope.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
+        public static IServiceCollection RegisterAsyncValidator<TEntity, TError, TProfileOne, TProfileTwo, TProfileThree, TProfileFour, TProfileFive>(this IServiceCollection services, ServiceLifetime scope = ServiceLifetime.Scoped, bool contextIsRequired = false, bool registerProfile = true, Func<IServiceProvider, IEnumerable<ILogger>> loggerFactory = null)
             where TProfileOne : ValidationProfile<TError>
             where TProfileTwo : ValidationProfile<TError>
             where TProfileThree : ValidationProfile<TError>

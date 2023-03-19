@@ -1,10 +1,8 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Processing.Contracts.ScheduledAction;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using SystemTimer =  System.Timers.Timer;
+using SystemTimer = System.Timers.Timer;
 
 namespace Sels.Core.Processing.Components.ScheduledAction
 {

@@ -1,15 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Conversion;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.Conversion.Serialization.Filters;
 using Sels.Core.Conversion.Serializers;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging.Advanced;
-using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Sels.Core.Conversion.Templates
 {

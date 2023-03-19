@@ -1,14 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Command.Linux.Templates.Commands.FileSystem;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Sels.Core.Command.Linux.Attributes;
 using Sels.Core.Command.Linux.Contracts;
 using Sels.Core.Conversion.Converters;
-using Sels.Core.Conversion;
 using Sels.Core.Conversion.Serializers.Table;
 
 namespace Sels.Core.Command.Linux.Commands.FileSystem

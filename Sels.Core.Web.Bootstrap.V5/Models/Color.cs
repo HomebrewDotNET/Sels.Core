@@ -1,9 +1,4 @@
 ﻿using Sels.Core.Attributes.Enumeration.Value;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Web.Bootstrap
 {
@@ -12,6 +7,11 @@ namespace Sels.Core.Web.Bootstrap
     /// </summary>
     public enum Color
     {
+        /// <summary>
+        /// No color selected.
+        /// </summary>
+        [StringEnumValue("")]
+        None,
         /// <summary>
         /// The primary color.
         /// </summary>

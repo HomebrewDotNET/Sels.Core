@@ -1,10 +1,7 @@
 ﻿using Sels.Core.Extensions;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
-namespace Sels.ObjectValidationFramework.Components.Validators
+namespace Sels.ObjectValidationFramework.Validators
 {
     /// <summary>
     /// Represents an object in the current hierarchical object structure if property fallthrough is enabled. When fallthrough is executed on a property the object that the property is from will be used as the last parent in the hierachy .

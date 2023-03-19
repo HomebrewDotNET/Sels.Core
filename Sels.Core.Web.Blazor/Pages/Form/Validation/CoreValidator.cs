@@ -1,9 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Sels.Core.Contracts.Validation;
 using Microsoft.AspNetCore.Components.Forms;
 using Sels.Core.Extensions.Conversion;

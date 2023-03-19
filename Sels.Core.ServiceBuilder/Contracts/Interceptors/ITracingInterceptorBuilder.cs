@@ -1,10 +1,5 @@
 ﻿using Castle.DynamicProxy;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Sels.Core.Extensions.Reflection;
 using Microsoft.Extensions.Logging;
 
@@ -42,8 +37,13 @@ namespace Sels.Core.ServiceBuilder.Interceptors
     /// <summary>
     /// Builder for creating an interceptor that traces all method duration.
     /// </summary>
-    public interface IAllMethodDurationInterceptorBuilder : ITracingInterceptorBuilder
+    public interface IAllMethodDurationInterceptorBuilder
     {
+        /// <summary>
+        /// Returns the parent builder for defining more tracing configuration.
+        /// </summary>
+        ITracingInterceptorBuilder And { get; }
+
         /// <summary>
         /// All methods matching <paramref name="condition"/> will not be traced.
         /// </summary>
@@ -72,13 +72,18 @@ namespace Sels.Core.ServiceBuilder.Interceptors
     /// <summary>
     /// Builder for creating an interceptor that traces the duration of specific methods.
     /// </summary>
-    public interface ISpecificMethodDurationInterceptorBuilder : ITracingInterceptorBuilder
+    public interface ISpecificMethodDurationInterceptorBuilder
     {
+        /// <summary>
+        /// Returns the parent builder for defining more tracing configuration.
+        /// </summary>
+        ITracingInterceptorBuilder And { get; }
+
         /// <summary>
         /// All methods matching <paramref name="condition"/> will be traced.
         /// </summary>
         /// <param name="condition">Delegate that dictates if a method should be traced</param>
-        /// <returns>Current builder for method tracing</returns>
+        /// <returns>Current builder for method chaining</returns>
         ISpecificMethodDurationInterceptorBuilder Methods(Predicate<IInvocation> condition);
         /// <summary>
         /// <paramref name="method"/> will be traced.
@@ -103,31 +108,36 @@ namespace Sels.Core.ServiceBuilder.Interceptors
     /// <summary>
     /// Builder for creating an interceptor that traces any exception thrown.
     /// </summary>
-    public interface IExceptionTracingInterceptorBuilder : ITracingInterceptorBuilder
+    public interface IExceptionTracingInterceptorBuilder
     {
+        /// <summary>
+        /// Returns the parent builder for defining more tracing configuration.
+        /// </summary>
+        ITracingInterceptorBuilder And { get; }
+
         /// <summary>
         /// Defines when to trace exception. Default is all exceptions if no condition is set.
         /// </summary>
         /// <param name="condition">Delegate that dictates when to trace an exception</param>
-        /// <returns>Current builder for method tracing</returns>
+        /// <returns>Current builder for method chaining</returns>
         IExceptionTracingInterceptorBuilder When(Predicate<Exception> condition);
         /// <summary>
         /// Traces exception assignable to <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">Type of the exception to trace</typeparam>
-        /// <returns>Current builder for method tracing</returns>
+        /// <returns>Current builder for method chaining</returns>
         IExceptionTracingInterceptorBuilder OfType<T>() where T : Exception => When(x => x.IsAssignableTo<T>());
         /// <summary>
         /// Defines the log level to use for specific exceptions. If no delegates are set the default is <see cref="LogLevel.Error"/>.
         /// </summary>
         /// <param name="selector">Delegate that returns the log level for the provided exception. If null is returned then the default log level is used</param>
-        /// <returns>Current builder for method tracing</returns>
+        /// <returns>Current builder for method chaining</returns>
         IExceptionTracingInterceptorBuilder WithLevel(Func<Exception, LogLevel?> selector);
         /// <summary>
         /// Defines a custom delegate for logging the exception.
         /// </summary>
         /// <param name="logger">Delegate that logs the exceptions using the provided loggers</param>
-        /// <returns>Current builder for method tracing</returns>
+        /// <returns>Current builder for method chaining</returns>
         IExceptionTracingInterceptorBuilder Using(Action<IInvocation, IEnumerable<ILogger>, LogLevel, Exception> logger);
     }
 }

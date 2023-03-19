@@ -1,13 +1,9 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Sels.Core.Components.IoC;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Sels.Core.Extensions.Linq;
+using Sels.Core.ServiceBuilder.Events;
 
 namespace Sels.Core.ServiceBuilder
 {
@@ -24,11 +20,15 @@ namespace Sels.Core.ServiceBuilder
         /// <summary>
         /// Event that gets raised before adding the service to the service collection.
         /// </summary>
-        public event Action<IServiceBuilder<T, TImpl>> OnRegistering;
+        public event Action<IServiceBuilder<T, TImpl>> OnRegisteringEvent;
+        /// <summary>
+        /// Event that gets raised each time an instance of <typeparamref name="TImpl"/> is created using the current builder.
+        /// </summary>
+        public event Action<IServiceProvider, TImpl> OnCreatedEvent;
 
         // State
         private Func<IServiceProvider, TImpl> _factory;
-        private ServiceScope _scope = ServiceScope.Scoped;
+        private ServiceLifetime _scope = ServiceLifetime.Scoped;
         private readonly List<Func<IServiceProvider, IEnumerable<IInterceptor>>> _interceptorFactories = new List<Func<IServiceProvider, IEnumerable<IInterceptor>>>();
         private RegisterBehaviour _behaviour = RegisterBehaviour.Default;
 
@@ -41,12 +41,24 @@ namespace Sels.Core.ServiceBuilder
         public Type ServiceType => typeof(T);
         /// <inheritdoc/>
         public Type ImplementationType => typeof(TImpl);
+        /// <inheritdoc/>
+        public IServiceCollection Collection => _collection;
 
         /// <inheritdoc cref="ServiceBuilder{T, TImpl}"/>
         /// <param name="collection"><inheritdoc cref="_collection"/></param>
         public ServiceBuilder(IServiceCollection collection)
         {
             _collection = collection.ValidateArgument(nameof(collection));
+
+            // Add handler for globally defined handlers
+            OnCreated((p, i) =>
+            {
+                // Typed handlers
+                p.GetServices<IOnCreatedHandler<TImpl>>().Execute(x => x.Handle(p, i));
+
+                // Untyped handlers
+                p.GetServices<IOnCreatedHandler>().Execute(x => x.Handle(p, i));
+            });
         }
 
         #region Building
@@ -57,8 +69,8 @@ namespace Sels.Core.ServiceBuilder
 
             ConstructWith(x => instance);
 
-            // Force scope to singleton since factory returns instance.
-            OnRegistering += SetToSingleton;
+            // Force scope to singleton since factory returns the same instance each time.
+            OnRegisteringEvent += SetToSingleton;
 
             return this;
         }
@@ -70,12 +82,12 @@ namespace Sels.Core.ServiceBuilder
             _factory = factory;
 
             // Remove singleton handler if set
-            OnRegistering -= SetToSingleton;
+            OnRegisteringEvent -= SetToSingleton;
             return this;
         }
 
         /// <inheritdoc/>
-        public IServiceBuilder<T, TImpl> WithScope(ServiceScope scope)
+        public IServiceBuilder<T, TImpl> WithLifetime(ServiceLifetime scope)
         {
             _scope = scope;
             return this;
@@ -105,42 +117,35 @@ namespace Sels.Core.ServiceBuilder
         public IServiceCollection Register()
         {
             // Trigger events
-            OnRegistering?.Invoke(this);
+            OnRegisteringEvent?.Invoke(this);
 
             // Create proxy if we have interceptors set
             if (_interceptorFactories.HasValue())
             {
                 // Add singleton proxy generator
                 _collection.TryAddSingleton<ProxyGenerator>();
-                               
-                if(_factory == null)
-                {
-                    // Registering type without service type (just the concrete type) but we have no factory
-                    if (IsAbstractionless)
-                    {
-                        throw new NotSupportedException($"Interceptors are set but implementation <{typeof(TImpl)}> doesn't have a factory defined so we can't create the instance for the proxy class");
-                    }
-
-                    // Add registration for actual implementation
-                    _collection.Register<TImpl>(_scope);
-                }
-
+                              
                 // Add registration
                 RegisterServiceWithFactory(p =>
                 {
                     // Factory for the actual implementation
-                    var instanceFactory = _factory;
+                    var instanceFactory = _factory ?? new Func<IServiceProvider, TImpl>(prov => prov.GetService<TImpl>() ?? prov.CreateInstance<TImpl>());
+                    var instance = instanceFactory(p);
+
                     // Create using defined factories
                     var interceptors = _interceptorFactories.Select(x => x(p)).Where(x => x != null).SelectMany(x => x).Where(x => x != null);
                     var generator = p.GetRequiredService<ProxyGenerator>();
 
                     if (ServiceType.IsInterface)
                     {
-                        return generator.CreateInterfaceProxyWithTargetInterface<T>(instanceFactory != null ? instanceFactory(p) : p.GetRequiredService<TImpl>(), interceptors.ToArray());
+                        // Trigger created because proxy is not an instance of TImpl
+                        OnCreatedEvent?.Invoke(p, instance);
+
+                        return generator.CreateInterfaceProxyWithTargetInterface<T>(instance, interceptors.ToArray());
                     }
                     else
                     {
-                        return generator.CreateClassProxyWithTarget(instanceFactory != null ? instanceFactory(p) : p.GetRequiredService<TImpl>(), interceptors.ToArray());
+                        return generator.CreateClassProxyWithTarget(instance, interceptors.ToArray());
                     }                    
                 });               
             }
@@ -153,7 +158,7 @@ namespace Sels.Core.ServiceBuilder
                 }
                 else
                 {
-                    RegisterService();
+                    RegisterServiceWithFactory(p => p.CreateInstance<TImpl>());
                 }
             }
 
@@ -169,71 +174,55 @@ namespace Sels.Core.ServiceBuilder
                 existing.Execute(x => _collection.Remove(x));
             }
 
-            switch((_scope, _behaviour))
+            var actualFactory = new Func<IServiceProvider, T>(p =>
             {
-                case (ServiceScope.Transient, RegisterBehaviour.Replace):
-                case (ServiceScope.Transient, RegisterBehaviour.Default):
-                    _collection.AddTransient(factory);
-                    break;
-                case (ServiceScope.Transient, RegisterBehaviour.TryAdd):
-                    _collection.TryAddTransient(factory);
-                    break;
-                case (ServiceScope.Scoped, RegisterBehaviour.Replace):
-                case (ServiceScope.Scoped, RegisterBehaviour.Default):
-                    _collection.AddScoped(factory);
-                    break;
-                case (ServiceScope.Scoped, RegisterBehaviour.TryAdd):
-                    _collection.TryAddScoped(factory);
-                    break;
-                case (ServiceScope.Singleton, RegisterBehaviour.Replace):
-                case (ServiceScope.Singleton, RegisterBehaviour.Default):
-                    _collection.AddSingleton(factory);
-                    break;
-                case (ServiceScope.Singleton, RegisterBehaviour.TryAdd):
-                    _collection.TryAddSingleton(factory);
-                    break;
-                default:
-                    throw new NotSupportedException($"Scope <{_scope}> and behaviour {_behaviour} are not supported");
-            }
-        }
+                // Call registered factory
+                var instance = factory(p);
 
-        private void RegisterService()
-        {
-            if (_behaviour == RegisterBehaviour.Replace)
-            {
-                // Remove existing implementations
-                var existing = _collection.Where(x => x.ServiceType == typeof(T));
-                existing.Execute(x => _collection.Remove(x));
-            }
+                // Trigger on created event
+                if(instance is TImpl implementation) OnCreatedEvent.Invoke(p, implementation);
+
+                return instance;
+            });
 
             switch ((_scope, _behaviour))
             {
-                case (ServiceScope.Transient, RegisterBehaviour.Replace):
-                case (ServiceScope.Transient, RegisterBehaviour.Default):
-                    if (IsAbstractionless) _collection.AddTransient<T>(); else _collection.AddTransient<T, TImpl>();
+                case (ServiceLifetime.Transient, RegisterBehaviour.Replace):
+                case (ServiceLifetime.Transient, RegisterBehaviour.Default):
+                    _collection.AddTransient(actualFactory);
                     break;
-                case (ServiceScope.Transient, RegisterBehaviour.TryAdd):
-                    if (IsAbstractionless) _collection.TryAddTransient<T>(); else _collection.TryAddTransient<T, TImpl>();
+                case (ServiceLifetime.Transient, RegisterBehaviour.TryAdd):
+                    _collection.TryAddTransient(actualFactory);
                     break;
-                case (ServiceScope.Scoped, RegisterBehaviour.Replace):
-                case (ServiceScope.Scoped, RegisterBehaviour.Default):
-                    if (IsAbstractionless) _collection.AddScoped<T>(); else _collection.AddScoped<T, TImpl>();
+                case (ServiceLifetime.Scoped, RegisterBehaviour.Replace):
+                case (ServiceLifetime.Scoped, RegisterBehaviour.Default):
+                    _collection.AddScoped(actualFactory);
                     break;
-                case (ServiceScope.Scoped, RegisterBehaviour.TryAdd):
-                    if(IsAbstractionless) _collection.TryAddScoped<T>(); else _collection.TryAddScoped<T, TImpl>();
+                case (ServiceLifetime.Scoped, RegisterBehaviour.TryAdd):
+                    _collection.TryAddScoped(actualFactory);
                     break;
-                case (ServiceScope.Singleton, RegisterBehaviour.Replace):
-                case (ServiceScope.Singleton, RegisterBehaviour.Default):
-                    if (IsAbstractionless) _collection.AddSingleton<T>(); else _collection.AddSingleton<T, TImpl>();
+                case (ServiceLifetime.Singleton, RegisterBehaviour.Replace):
+                case (ServiceLifetime.Singleton, RegisterBehaviour.Default):
+                    _collection.AddSingleton(actualFactory);
                     break;
-                case (ServiceScope.Singleton, RegisterBehaviour.TryAdd):
-                    if (IsAbstractionless) _collection.TryAddSingleton<T>(); else _collection.TryAddSingleton<T, TImpl>();
+                case (ServiceLifetime.Singleton, RegisterBehaviour.TryAdd):
+                    _collection.TryAddSingleton(actualFactory);
                     break;
                 default:
                     throw new NotSupportedException($"Scope <{_scope}> and behaviour {_behaviour} are not supported");
             }
         }
 
+        #endregion
+
+        #region Events
+        /// <inheritdoc/>
+        public IServiceBuilder<T, TImpl> OnCreated(Action<IServiceProvider, TImpl> action)
+        {
+            Guard.IsNotNull(action);
+            OnCreatedEvent += action;
+            return this;
+        }
         #endregion
 
         private void SetToSingleton(IServiceBuilder<T, TImpl> builder)

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <UserSecretsId>0c7cc336-61e4-448f-a725-33103e084109</UserSecretsId>
     <StartupObject>Sels.Core.TestTool.Program</StartupObject>
   </PropertyGroup>
@@ -34,7 +34,6 @@
     <ProjectReference Include="..\Sels.Core.Deployment\Sels.Core.Deployment.csproj" />
     <ProjectReference Include="..\Sels.Core.Localization\Sels.Core.Localization.csproj" />
     <ProjectReference Include="..\Sels.Core.Mediator\Sels.Core.Mediator.csproj" />
-    <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,12 +49,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Domain.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="BackUp.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

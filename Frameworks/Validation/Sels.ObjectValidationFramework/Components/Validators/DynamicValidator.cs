@@ -1,17 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Contracts.Validation;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging.Advanced;
-using Sels.ObjectValidationFramework.Templates.Profile;
+using Sels.ObjectValidationFramework.Profile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.ObjectValidationFramework.Components.Validators
+namespace Sels.ObjectValidationFramework.Validators
 {
     /// <summary>
     /// Validator that delegates validation to <see cref="ValidationProfile{TError}"/>'s.

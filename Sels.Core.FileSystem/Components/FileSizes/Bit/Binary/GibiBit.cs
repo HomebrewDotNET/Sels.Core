@@ -1,8 +1,4 @@
-﻿using Sels.Core.FileSystem.Templates.FileSizes;
-using Sels.Core.FileSystem.Templates.FileSizes.Bit;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Sels.Core.FileSystem.Templates.FileSizes.Bit;
 
 namespace Sels.Core.Components.FileSizes.Bit.Binary
 {

@@ -1,13 +1,8 @@
 ﻿using Sels.Core.Components.FileSizes.Byte;
 using Sels.Core.Extensions;
-using Sels.Core.FileSystem.Templates.FileSizes;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 

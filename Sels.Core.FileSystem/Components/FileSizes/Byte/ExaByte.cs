@@ -1,7 +1,4 @@
 ﻿using Sels.Core.FileSystem.Templates.FileSizes.Byte;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sels.Core.Components.FileSizes.Byte
 {

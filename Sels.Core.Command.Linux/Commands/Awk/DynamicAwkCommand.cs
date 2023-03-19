@@ -1,8 +1,4 @@
 ﻿using Sels.Core.Command.Linux.Templates.Commands.Awk;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Sels.Core.Command.Linux.Attributes;
 
 namespace Sels.Core.Command.Linux.Commands.Awk

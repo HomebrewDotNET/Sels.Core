@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.Cli
+﻿namespace Sels.Core.Cli
 {
     /// <summary>
     /// Thrown from a cli. Exposes the exit code to use.

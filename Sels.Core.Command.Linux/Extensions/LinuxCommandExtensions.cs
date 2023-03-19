@@ -1,9 +1,4 @@
 ﻿using Sels.Core.Command.Contracts.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Sels.Core.Extensions;
 using Sels.Core.Command.Linux.Commands;
 using Sels.Core.Command.Linux.Commands.Core;

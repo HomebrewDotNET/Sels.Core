@@ -1,13 +1,10 @@
-﻿using Sels.Core.Conversion;
-using Sels.Core.Conversion.Converters;
-using Sels.Core.Conversion.Converters.Simple;
+﻿using Sels.Core.Conversion.Converters.Simple;
 using Sels.Core.Conversion.Templates;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Sels.Core.Conversion.Converters
 {
@@ -198,9 +195,10 @@ namespace Sels.Core.Conversion.Converters
                                                                         .AddConverter<EnumConverter>()
                                                                         .AddConverter<GuidConverter>()
                                                                         .AddConverter<GeneralConverter>()
-                                                                        .AddConverter<StringConverter>()
                                                                         .AddConverter<CollectionConverter>()
-                                                                        .AddConverter<ArrayConverter>();
+                                                                        .AddConverter<ArrayConverter>()
+                                                                        .AddConverter<StringCollectionConverter>()
+                                                                        .AddConverter<StringConverter>();
         /// <summary>
         /// Default <see cref="GenericConverter"/> that can convert between most collection types.
         /// </summary>
@@ -210,12 +208,12 @@ namespace Sels.Core.Conversion.Converters
         /// <summary>
         /// Default <see cref="GenericConverter"/> that contains sub converters that cover most simple base types with support for converting between objects and json strings.
         /// </summary>
-        public static GenericConverter DefaultJsonConverter => DefaultConverter.InsertConverter<JsonConverter>(typeof(StringConverter));
+        public static GenericConverter DefaultJsonConverter => DefaultConverter.InsertConverter<JsonConverter>(typeof(StringCollectionConverter));
 
         /// <summary>
         /// Default <see cref="GenericConverter"/> that contains sub converters that cover most simple base types with support for converting between objects and xml strings.
         /// </summary>
-        public static GenericConverter DefaultXmlConverter => DefaultConverter.InsertConverter<XmlConverter>(typeof(StringConverter));
+        public static GenericConverter DefaultXmlConverter => DefaultConverter.InsertConverter<XmlConverter>(typeof(StringCollectionConverter));
         #endregion
     }
 

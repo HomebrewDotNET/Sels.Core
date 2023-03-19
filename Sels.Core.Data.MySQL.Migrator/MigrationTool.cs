@@ -3,12 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Cli;
 using Sels.Core.Components.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using SelsCommandLine = Sels.Core.Cli.CommandLine;
 
 namespace Sels.Core.Data.MySQL.Migrator

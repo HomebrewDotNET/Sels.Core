@@ -1,11 +1,8 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
-using Sels.Core.Components.IoC;
-using Sels.Core.Extensions.Conversion;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.ServiceBuilder.Events;
 
 namespace Sels.Core.ServiceBuilder
 {
@@ -113,26 +110,26 @@ namespace Sels.Core.ServiceBuilder
 
         #region Lifetime
         /// <summary>
-        /// Sets the lifetime scope for the instances of <typeparamref name="TImpl"/>.
+        /// Sets the lifetime for the instances of <typeparamref name="TImpl"/>.
         /// </summary>
         /// <param name="scope">The scope to use</param>
         /// <returns>Current builder for method chaining</returns>
-        IServiceBuilder<T, TImpl> WithScope(ServiceScope scope);
+        IServiceBuilder<T, TImpl> WithLifetime(ServiceLifetime scope);
         /// <summary>
         /// A new instance of <typeparamref name="TImpl"/> is created everytime.
         /// </summary>
         /// <returns>Current builder for method chaining</returns>
-        IServiceBuilder<T, TImpl> AsTransient() => WithScope(ServiceScope.Transient);
+        IServiceBuilder<T, TImpl> AsTransient() => WithLifetime(ServiceLifetime.Transient);
         /// <summary>
         /// The same instance of <typeparamref name="TImpl"/> is returning within the same scope.
         /// </summary>
         /// <returns>Current builder for method chaining</returns>
-        IServiceBuilder<T, TImpl> AsScoped() => WithScope(ServiceScope.Scoped);
+        IServiceBuilder<T, TImpl> AsScoped() => WithLifetime(ServiceLifetime.Scoped);
         /// <summary>
         /// Only one instance of <typeparamref name="TImpl"/> will be created and resolved.
         /// </summary>
         /// <returns>Current builder for method chaining</returns>
-        IServiceBuilder<T, TImpl> AsSingleton() => WithScope(ServiceScope.Singleton);
+        IServiceBuilder<T, TImpl> AsSingleton() => WithLifetime(ServiceLifetime.Singleton);
         #endregion
 
         #region Behaviour
@@ -168,6 +165,37 @@ namespace Sels.Core.ServiceBuilder
         /// <returns>The service collection that the service built using this builder was added to</returns>
         IServiceCollection TryRegister() => AddIfMissing().Register();
         #endregion
+
+        #region Events
+        /// <summary>
+        /// Registers a delegate that is trigger each time an instance of type <typeparamref name="TImpl"/> is created using the current builder.
+        /// </summary>
+        /// <param name="action">The delegate to execute</param>
+        /// <returns>Current builder for method chaining</returns>
+        IServiceBuilder<T, TImpl> OnCreated(Action<IServiceProvider, TImpl> action);
+        /// <summary>
+        /// Registers a delegate that is trigger each time an instance of type <typeparamref name="TImpl"/> is created using the current builder.
+        /// </summary>
+        /// <param name="action">The delegate to execute</param>
+        /// <returns>Current builder for method chaining</returns>
+        IServiceBuilder<T, TImpl> OnCreated(Action<TImpl> action) => OnCreated((p, i) => Guard.IsNotNull(action)(i));
+        /// <summary>
+        /// Registers a handler that is trigger each time an instance of type <typeparamref name="TImpl"/> is created using the current builder.
+        /// </summary>
+        /// <param name="handler">The handler to register</param>
+        /// <returns>Current builder for method chaining</returns>
+        IServiceBuilder<T, TImpl> OnCreated(IOnCreatedHandler<TImpl> handler) => OnCreated((p, i) => Guard.IsNotNull(handler).Handle(p, i));
+        /// <summary>
+        /// Registers a handler of type <typeparamref name="THandler"/> that is trigger each time an instance of type <typeparamref name="TImpl"/> is created using the current builder.
+        /// </summary>
+        /// <typeparam name="THandler">Type of the handler to register</typeparam>
+        /// <returns>Current builder for method chaining</returns>
+        IServiceBuilder<T, TImpl> OnCreated<THandler>() where THandler : IOnCreatedHandler<TImpl> => OnCreated((p, i) =>
+        {
+            var handler = p.GetRequiredService<THandler>();
+            handler.Handle(p, i);
+        });
+        #endregion
     }
     /// <summary>
     /// Builds a service that will be added to a service collection for dependency injection.
@@ -182,11 +210,15 @@ namespace Sels.Core.ServiceBuilder
         /// The implementation type for <see cref="ServiceType"/>.
         /// </summary>
         Type ImplementationType { get; }
+        /// <summary>
+        /// The collection that the builder with add the service registration to.
+        /// </summary>
+        public IServiceCollection Collection { get; }
 
         /// <summary>
         /// Finish building the current service and add it to the service collection.
         /// </summary>
-        /// <returns>The service collection that the service built using this builder was added to</returns>
+        /// <returns>The service collection that the registered service was added to</returns>
         IServiceCollection Register();
     }
 }

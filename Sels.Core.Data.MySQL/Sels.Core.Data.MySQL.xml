@@ -663,6 +663,11 @@
             <typeparam name="TEntity">The type of the entity the perform crud operations on</typeparam>
             <typeparam name="TId">The type of the primary id of <typeparamref name="TEntity"/></typeparam>
         </member>
+        <member name="F:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2._logger">
+            <summary>
+            Optional loggers used for tracing.
+            </summary>
+        </member>
         <member name="P:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.IdProperty">
             <summary>
             The property of the id column on <typeparamref name="TEntity"/>.
@@ -673,10 +678,10 @@
             The properties that will be excluded as columns from the query.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.#ctor(System.String,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.#ctor(System.String,Microsoft.Extensions.Logging.ILogger)">
             <inheritdoc cref="T:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2"/>
             <param name="connectionString">The connection string to use to open connections</param>
-            <param name="loggers">Optional loggers for tracing</param>
+            <param name="logger">Optional loggers for tracing</param>
         </member>
         <member name="M:Sels.Core.Data.MySQL.Templates.Repository.MariaDb.BaseMariaDbDataRepository`2.OpenNewConnectionAsync(System.Boolean,System.Data.IsolationLevel,System.Threading.CancellationToken)">
             <inheritdoc/>

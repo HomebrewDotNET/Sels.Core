@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Conversion.Attributes.Serialization;
-using Sels.Core.Conversion;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Reflection;
@@ -8,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.Conversion.Serialization.Filters;
 
@@ -92,22 +90,22 @@ namespace Sels.Core.Conversion.Components.Serialization.Profile
                 {
                     if (isWrite)
                     {
-                        _loggers.Debug($"Filtering serialized string <{source}>");
+                        _loggers.Trace($"Filtering serialized string <{source}>");
                         var filtered = Filters.Filter(source, (f, x) => f.ModifyOnWrite(x));
-                        _loggers.Debug($"Filtered serialized string <{source}> to <{filtered}>");
+                        _loggers.Trace($"Filtered serialized string <{source}> to <{filtered}>");
                         return filtered;
                     }
                     else
                     {
-                        _loggers.Debug($"Filtering string <{source}> that will be deserialized");
+                        _loggers.Trace($"Filtering string <{source}> that will be deserialized");
                         var filtered = Filters.Filter(source, (f, x) => f.ModifyOnRead(x));
-                        _loggers.Debug($"Filtered string <{source}> to <{filtered}> that will be deserialized");
+                        _loggers.Trace($"Filtered string <{source}> to <{filtered}> that will be deserialized");
                         return filtered;
                     }
                 }
                 else
                 {
-                    _loggers.Debug($"No filters defined for property <{Property.Name}>. Skipping.");
+                    _loggers.Trace($"No filters defined for property <{Property.Name}>. Skipping.");
                     return source;
                 }               
             }
@@ -138,16 +136,16 @@ namespace Sels.Core.Conversion.Components.Serialization.Profile
 
                         if (isWrite)
                         {
-                            _loggers.Debug($"Filtering serialized element <{element}>({counter})");
+                            _loggers.Trace($"Filtering serialized element <{element}>({counter})");
                             var filtered = Filters.Filter(element, (f, x) => f.ModifyOnWrite(x));
-                            _loggers.Debug($"Filtered serialized element <{element}>({counter}) to <{filtered}>");
+                            _loggers.Trace($"Filtered serialized element <{element}>({counter}) to <{filtered}>");
                             yield return filtered;
                         }
                         else
                         {
-                            _loggers.Debug($"Filtering element <{element}>({counter}) that will be deserialized");
+                            _loggers.Trace($"Filtering element <{element}>({counter}) that will be deserialized");
                             var filtered = Filters.Filter(element, (f, x) => f.ModifyOnRead(x));
-                            _loggers.Debug($"Filtered element <{element}>({counter}) to <{filtered}> that will be deserialized");
+                            _loggers.Trace($"Filtered element <{element}>({counter}) to <{filtered}> that will be deserialized");
                             yield return filtered;
                         }
 
@@ -156,7 +154,7 @@ namespace Sels.Core.Conversion.Components.Serialization.Profile
                 }
                 else
                 {
-                    _loggers.Debug($"No element filters defined for property <{Property.Name}>. Skipping.");
+                    _loggers.Trace($"No element filters defined for property <{Property.Name}>. Skipping.");
                     foreach(var element in source.Where(x => x != null))
                     {
                         yield return element;

@@ -2,11 +2,6 @@
 using Sels.Core.Command.Linux.Commands.Awk;
 using Sels.Core.Command.Linux.Contracts;
 using Sels.Core.Command.Linux.Templates;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Sels.Core.Command.Contracts.Commands;
 
 namespace Sels.Core.Command.Linux.Commands.FileSystem

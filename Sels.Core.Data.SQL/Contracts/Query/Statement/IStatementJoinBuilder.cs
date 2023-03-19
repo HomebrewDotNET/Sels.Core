@@ -1,12 +1,4 @@
-﻿using Sels.Core.Data.SQL.Query.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.Data.SQL.Query.Statement
+﻿namespace Sels.Core.Data.SQL.Query.Statement
 {
     /// <summary>
     /// Builder for creating joins in sql queries.

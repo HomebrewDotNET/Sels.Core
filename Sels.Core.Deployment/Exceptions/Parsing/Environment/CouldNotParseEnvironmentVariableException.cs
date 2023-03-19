@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.Deployment.Parsing.Environment
+﻿namespace Sels.Core.Deployment.Parsing.Environment
 {
     /// <summary>
     /// Thrown when an environment variable has an incorrect format and could not be parsed.

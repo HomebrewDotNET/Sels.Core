@@ -4,10 +4,6 @@ using Sels.Core.Command.Linux.Commands;
 using Sels.Core.Command.Linux.Contracts;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 
 namespace Sels.Core.Command.Linux.Templates
 {

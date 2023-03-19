@@ -2,11 +2,6 @@
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Models.Disposables;
 using Sels.Core.ServiceBuilder.Template.Interceptors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Logging;
 using Microsoft.Extensions.Logging;
@@ -76,7 +71,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         {
             if (_factory != null)
             {
-                return _factory.CreateLogger(invocation.Proxy.GetType()).AsEnumerable();
+                return _factory.CreateLogger(invocation.TargetType).AsEnumerable();
             }
 
             return _loggers;
@@ -89,6 +84,10 @@ namespace Sels.Core.ServiceBuilder.Interceptors
             private List<Predicate<Exception>> _conditions = new();
             private Func<Exception, LogLevel?>? _logLevelSelector;
             private Action<IInvocation, IEnumerable<ILogger>, LogLevel, Exception>? _logger;
+
+            // Properties
+            /// <inheritdoc/>
+            public ITracingInterceptorBuilder And => _builder;
 
             public ExceptionTracer(ITracingInterceptorBuilder builder) : base(builder)
             {
@@ -128,6 +127,9 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         {
             // Fields
             private readonly List<Predicate<IInvocation>> _exceptions = new List<Predicate<IInvocation>>();
+            // Properties
+            /// <inheritdoc/>
+            public ITracingInterceptorBuilder And => _builder;
 
             public AllMethodTracer(ITracingInterceptorBuilder builder) : base(builder)
             {
@@ -150,6 +152,10 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         {
             // Fields
             private readonly List<Predicate<IInvocation>> _selectors = new List<Predicate<IInvocation>>();
+
+            // Properties
+            /// <inheritdoc/>
+            public ITracingInterceptorBuilder And => _builder;
 
             public SpecificMethodTracer(ITracingInterceptorBuilder builder) : base(builder)
             {
@@ -179,7 +185,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         private abstract class Delegator : ITracingInterceptorBuilder
         {
             // Fields
-            private readonly ITracingInterceptorBuilder _builder;
+            protected readonly ITracingInterceptorBuilder _builder;
 
             public Delegator(ITracingInterceptorBuilder builder)
             {

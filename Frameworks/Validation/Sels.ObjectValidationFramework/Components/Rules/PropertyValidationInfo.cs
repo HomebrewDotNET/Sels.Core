@@ -1,10 +1,7 @@
 ﻿using Sels.Core.Extensions;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
-namespace Sels.ObjectValidationFramework.Components.Rules
+namespace Sels.ObjectValidationFramework.Rules
 {
     /// <summary>
     /// Validation info for validation rules created for a property.

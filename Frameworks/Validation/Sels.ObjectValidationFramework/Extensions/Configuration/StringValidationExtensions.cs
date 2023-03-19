@@ -1,13 +1,12 @@
 ﻿using Sels.Core.Extensions;
-using Sels.ObjectValidationFramework.Contracts.Rules;
+using Sels.ObjectValidationFramework.Rules;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 
 // Adjusted so extensions are available when using the ValidationProfile
-namespace Sels.ObjectValidationFramework.Templates.Profile
+namespace Sels.ObjectValidationFramework.Profile
 {
     /// <summary>
     /// Contains generic configuration extensions for strings.
@@ -119,6 +118,44 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             regex.ValidateArgumentNotNullOrWhitespace(nameof(regex));
 
             return configurator.ValidIf(info => info.Value != null && Regex.IsMatch(info.Value, regex), info => $"{info.GetFullDisplayNameDynamically(includeParents)} must match regex <{regex}> Was <{info.Value}>");
+        }
+
+        /// <summary>
+        /// Value is only valid when it matches the regex created by <paramref name="regexContructor"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+        /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
+        /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="configurator">Configurator to configure validation</param>
+        /// <param name="regexContructor">Delegate that returns the regex to use</param>
+        /// <param name="errorConstructor">Delegate that creates a validation error when <see cref="IValidationRuleContext{TEntity, TInfo, TContext, TValue}.Value"/> is not a valid value</param>
+        /// <returns>Current configurator</returns>
+        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> MustMatchRegex<TEntity, TError, TInfo, TContext>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> configurator, Func<IValidationRuleContext<TEntity, TInfo, TContext, string>, string> regexContructor, Func<IValidationRuleContext<TEntity, TInfo, TContext, string>, TError> errorConstructor)
+        {
+            configurator.ValidateArgument(nameof(configurator));
+            errorConstructor.ValidateArgument(nameof(errorConstructor));
+            regexContructor.ValidateArgument(nameof(regexContructor));
+
+            return configurator.ValidIf(info => info.Value != null && Regex.IsMatch(info.Value, regexContructor(info)), errorConstructor);
+        }
+
+        /// <summary>
+        /// Value is only valid when it matches the regex created by <paramref name="regexContructor"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+        /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="configurator">Configurator to configure validation</param>
+        /// <param name="regexContructor">Delegate that returns the regex to use</param>
+        /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
+        /// <returns>Current configurator</returns>
+        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, string> MustMatchRegex<TEntity, TInfo, TContext>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, string> configurator, Func<IValidationRuleContext<TEntity, TInfo, TContext, string>, string> regexContructor, bool includeParents = true)
+        {
+            configurator.ValidateArgument(nameof(configurator));
+            regexContructor.ValidateArgument(nameof(regexContructor));
+
+            return configurator.MustMatchRegex(regexContructor, info => $"{info.GetFullDisplayNameDynamically(includeParents)} must match regex <{regexContructor(info)}> Was <{info.Value}>");
         }
 
         /// <summary>
@@ -254,7 +291,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             errorConstructor.ValidateArgument(nameof(errorConstructor));
             length.ValidateArgumentLargerOrEqual(nameof(length), 0);
 
-            return configurator.ValidIf(info => info.Value.Length <= length, errorConstructor);
+            return configurator.ValidIf(info => info.Value == null || info.Value.Length <= length, errorConstructor);
         }
 
         /// <summary>
@@ -272,7 +309,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             configurator.ValidateArgument(nameof(configurator));
             length.ValidateArgumentLargerOrEqual(nameof(length), 0);
 
-            return configurator.ValidIf(info => info.Value.Length <= length, info => $"{info.GetFullDisplayNameDynamically(includeParents)} length cannot be higher than {length}. Was <{info.Value}>");
+            return configurator.ValidIf(info => info.Value == null || info.Value.Length <= length, info => $"{info.GetFullDisplayNameDynamically(includeParents)} length cannot be higher than {length}. Was <{info.Value}>");
         }
 
         /// <summary>
@@ -292,7 +329,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             errorConstructor.ValidateArgument(nameof(errorConstructor));
             length.ValidateArgumentLargerOrEqual(nameof(length), 0);
 
-            return configurator.ValidIf(info => info.Value.Length >= length, errorConstructor);
+            return configurator.ValidIf(info => info.Value != null && info.Value.Length >= length, errorConstructor);
         }
 
         /// <summary>
@@ -310,7 +347,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             configurator.ValidateArgument(nameof(configurator));
             length.ValidateArgumentLargerOrEqual(nameof(length), 0);
 
-            return configurator.ValidIf(info => info.Value.Length >= length, info => $"{info.GetFullDisplayNameDynamically(includeParents)} length cannot be lower than {length}. Was <{info.Value}>");
+            return configurator.ValidIf(info => info.Value != null && info.Value.Length >= length, info => $"{info.GetFullDisplayNameDynamically(includeParents)} length cannot be lower than {length}. Was <{info.Value}>");
         }
 
         /// <summary>
@@ -332,7 +369,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             minLength.ValidateArgumentLargerOrEqual(nameof(minLength), 0);
             maxLength.ValidateArgumentLarger(nameof(maxLength), minLength);
 
-            return configurator.ValidIf(info => info.Value.Length >= minLength && info.Value.Length <= maxLength, errorConstructor);
+            return configurator.ValidIf(info => info.Value != null && info.Value.Length >= minLength && info.Value.Length <= maxLength, errorConstructor);
         }
 
         /// <summary>
@@ -352,7 +389,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             minLength.ValidateArgumentLargerOrEqual(nameof(minLength), 0);
             maxLength.ValidateArgumentLarger(nameof(maxLength), minLength);
 
-            return configurator.ValidIf(info => info.Value.Length >= minLength && info.Value.Length <= maxLength, info => $"{info.GetFullDisplayNameDynamically(includeParents)} length cannot be lower than {minLength} and higher than {maxLength}. Was <{info.Value}>");
+            return configurator.ValidIf(info => info.Value != null && info.Value.Length >= minLength && info.Value.Length <= maxLength, info => $"{info.GetFullDisplayNameDynamically(includeParents)} length cannot be lower than {minLength} and higher than {maxLength}. Was <{info.Value}>");
         }
 
         /// <summary>
@@ -374,7 +411,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             minLength.ValidateArgumentLargerOrEqual(nameof(minLength), 0);
             maxLength.ValidateArgumentLarger(nameof(maxLength), minLength);
 
-            return configurator.ValidIf(info => info.Value.Length > minLength && info.Value.Length < maxLength, errorConstructor);
+            return configurator.ValidIf(info => info.Value != null && info.Value.Length > minLength && info.Value.Length < maxLength, errorConstructor);
         }
 
         /// <summary>
@@ -394,7 +431,7 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
             minLength.ValidateArgumentLargerOrEqual(nameof(minLength), 0);
             maxLength.ValidateArgumentLarger(nameof(maxLength), minLength);
 
-            return configurator.ValidIf(info => info.Value.Length > minLength && info.Value.Length < maxLength, info => $"{info.GetFullDisplayNameDynamically(includeParents)} length cannot be lower than {minLength} and higher than {maxLength}. Was <{info.Value}>");
+            return configurator.ValidIf(info => info.Value != null && info.Value.Length > minLength && info.Value.Length < maxLength, info => $"{info.GetFullDisplayNameDynamically(includeParents)} length cannot be lower than {minLength} and higher than {maxLength}. Was <{info.Value}>");
         }
         #endregion
 
@@ -576,6 +613,54 @@ namespace Sels.ObjectValidationFramework.Templates.Profile
 
             return configurator.InvalidIf(info => Type.GetType(info.Value, false) == null, info => $"{info.GetFullDisplayNameDynamically(includeParents)} must be a valid type name. Was <{info.Value}>");
         }
-        #endregion              
+        #endregion
+
+        #region Email
+        /// <summary>
+        /// Value is only valid when it is a valid mail address.
+        /// </summary>
+        /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+        /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="configurator">Configurator to configure validation</param>
+        /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
+        /// <returns>Current configurator</returns>
+        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, string> IsValidEmail<TEntity, TInfo, TContext>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, string> configurator, bool includeParents = true)
+        {
+            configurator.ValidateArgument(nameof(configurator));
+
+            return configurator.IsValidEmail(info => $"{info.GetFullDisplayNameDynamically(includeParents)} cannot be null or empty");
+        }
+
+        /// <summary>
+        /// Value is only valid when it is a valid mail address.
+        /// </summary>
+        /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
+        /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
+        /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <param name="configurator">Configurator to configure validation</param>
+        /// <param name="errorConstructor">Delegate that creates a validation error when <see cref="IValidationRuleContext{TEntity, TInfo, TContext, TValue}.Value"/> is not a valid value</param>
+        /// <returns>Current configurator</returns>
+        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> IsValidEmail<TEntity, TError, TInfo, TContext>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> configurator, Func<IValidationRuleContext<TEntity, TInfo, TContext, string>, TError> errorConstructor)
+        {
+            configurator.ValidateArgument(nameof(configurator));
+            errorConstructor.ValidateArgument(nameof(errorConstructor));
+
+            return configurator.InvalidIf(info =>
+            {
+                if (!info.Value.HasValue()) return false;
+                try
+                {
+                    var address = new MailAddress(info.Value).Address;
+                    return address.Equals(info.Value.GetWithoutWhitespace());
+                }
+                catch (FormatException)
+                {
+                    return false;
+                }
+            }, errorConstructor);
+        }
+        #endregion
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sels.Core.Data.SQL.Query.Statement;
+﻿using Sels.Core.Data.SQL.Query.Statement;
 
 namespace Sels.Core.Data.SQL.Query.Expressions.Condition
 {

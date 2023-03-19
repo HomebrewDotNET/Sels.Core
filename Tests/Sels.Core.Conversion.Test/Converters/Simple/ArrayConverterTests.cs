@@ -3,14 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using Sels.Core.Conversion;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.Conversion.Converters.Simple;
 using Sels.Core.Conversion.Test.TestTemplates.Converter;
-using Sels.Core.Extensions.Reflection;
 
 namespace Sels.Core.Conversion.Test.Converters.Simple
 {

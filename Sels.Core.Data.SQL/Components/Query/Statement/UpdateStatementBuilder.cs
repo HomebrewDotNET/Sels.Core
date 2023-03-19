@@ -3,12 +3,7 @@ using Sels.Core.Data.SQL.Query.Expressions;
 using Sels.Core.Data.SQL.Query.Expressions.Condition;
 using Sels.Core.Data.SQL.Query.Expressions.Join;
 using Sels.Core.Data.SQL.Query.Expressions.Update;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Data.SQL.Query.Statement
 {
@@ -87,5 +82,14 @@ namespace Sels.Core.Data.SQL.Query.Statement
             return this;
         }
         #endregion
+
+        /// <inheritdoc/>
+        public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        {
+            // Add implicit expressions
+            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(UpdateExpressionPositions.Table) || !Expressions[UpdateExpressionPositions.Table].HasValue())) this.Cast<IUpdateStatementBuilder<TEntity>>().Table();
+
+            return base.Build(builder, options);
+        }
     }
 }

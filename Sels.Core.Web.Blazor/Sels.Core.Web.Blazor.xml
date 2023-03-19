@@ -401,6 +401,16 @@
             Optional color for the link text of the active tab.
             </summary>
         </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.TabContainer.ActiveTabCss">
+            <summary>
+            Optional css class for the active tab.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.TabContainer.TabCss">
+            <summary>
+            Optional css class for the non-active tab.
+            </summary>
+        </member>
         <member name="P:Sels.Core.Web.Blazor.Pages.Layout.Tabs.TabContainer.ChildContent">
             <summary>
             The content to render.
@@ -851,9 +861,24 @@
             Optional delegate that returns the css class for the table row based on the provided model.
             </summary>
         </member>
-        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.CssClass">
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.TableCssClass">
             <summary>
             Optional css class for the table.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.ContainerRowCssClass">
+            <summary>
+            Optional css class for the rows of the container.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.ContainerCssClass">
+            <summary>
+            Optional css class for the container.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.Container">
+            <summary>
+            The container that wraps the lazely loaded table.
             </summary>
         </member>
         <member name="P:Sels.Core.Web.Blazor.Pages.Table.LazyTable`1.Models">

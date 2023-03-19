@@ -1,18 +1,12 @@
-﻿using Sels.Core.Components.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Unity;
 using Unity.Microsoft.DependencyInjection;
 using Microsoft.Practices.Unity.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Components.Logging;
-using Microsoft.Extensions.Logging;
 using Sels.Core.Contracts.Factory;
-using Sels.Core.Components.IoC;
-using Unity.Lifetime;
 using System.Reflection;
 
 namespace Sels.Core.DependencyInjection.Unity.Components.Containers
@@ -20,6 +14,7 @@ namespace Sels.Core.DependencyInjection.Unity.Components.Containers
     /// <summary>
     /// <see cref="IServiceFactory"/> implementation using Unity.
     /// </summary>
+    [Obsolete("The Unity package is obsolete")]
     public class UnityServiceFactory : IServiceFactory
     {
         // Properties

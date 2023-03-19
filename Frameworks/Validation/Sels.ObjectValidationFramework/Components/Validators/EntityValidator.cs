@@ -3,22 +3,18 @@ using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Reflection;
-using Sels.ObjectValidationFramework.Components.Rules;
-using Sels.ObjectValidationFramework.Contracts.Rules;
+using Sels.ObjectValidationFramework.Rules;
 using Sels.ObjectValidationFramework.Contracts.Validators;
-using Sels.ObjectValidationFramework.Templates.Rules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Sels.Core.Components.Scope;
 using System.Linq.Expressions;
-using Sels.ObjectValidationFramework.Models;
 using Sels.Core.Extensions.Logging;
 using System.Threading.Tasks;
 using static Sels.Core.Delegates.Async;
 
-namespace Sels.ObjectValidationFramework.Components.Validators
+namespace Sels.ObjectValidationFramework.Validators
 {
     /// <inheritdoc cref="IValidationConfigurator{TEntity, TContext, TError}"/>
     internal class EntityValidator<TEntity, TContext, TError> : IValidationConfigurator<TEntity, TContext, TError>

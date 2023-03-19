@@ -1,10 +1,6 @@
 ﻿using Sels.Core.Conversion.Attributes.Serialization;
 using Sels.Core.Conversion.Attributes.Table;
 using Sels.Core.FileSystem.Templates.FileSizes;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace Sels.Core.Command.Linux.Commands.FileSystem
 {

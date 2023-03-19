@@ -2,19 +2,15 @@
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Logging.Advanced;
-using Sels.ObjectValidationFramework.Components.Validators;
-using Sels.ObjectValidationFramework.Contracts.Rules;
+using Sels.ObjectValidationFramework.Validators;
 using Sels.ObjectValidationFramework.Contracts.Validators;
-using Sels.ObjectValidationFramework.Models;
-using Sels.ObjectValidationFramework.Templates.Rules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using static Sels.Core.Delegates.Async;
 
-namespace Sels.ObjectValidationFramework.Components.Rules
+namespace Sels.ObjectValidationFramework.Rules
 {
     /// <summary>
     /// Validation rule for validating the elements from a property on <typeparamref name="TEntity"/>.

@@ -1,13 +1,8 @@
 ﻿using Sels.Core.Conversion.Converters;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Calculation;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Extensions.Reflection;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Sels.Core.Conversion.Extensions
 {
@@ -23,7 +18,7 @@ namespace Sels.Core.Conversion.Extensions
         /// <param name="value">Object to convert</param>
         /// <param name="arguments">Arguments for conversion</param>
         /// <returns>Converted object</returns>
-        public static T ConvertTo<T>(this object value, Dictionary<string, string> arguments)
+        public static T ConvertTo<T>(this object value, IDictionary<string, string> arguments)
         {
             if (value.HasValue())
             {
@@ -51,7 +46,7 @@ namespace Sels.Core.Conversion.Extensions
         /// <param name="value">Object to convert</param>
         /// <param name="arguments">Optional arguments for conversion</param>
         /// <returns>Converted object or default of <typeparamref name="T"/> if the conversion fails</returns>
-        public static T ConvertToOrDefault<T>(this object value, Dictionary<string, string> arguments)
+        public static T ConvertToOrDefault<T>(this object value, IDictionary<string, string> arguments)
         {
             try
             {
@@ -80,6 +75,32 @@ namespace Sels.Core.Conversion.Extensions
             {
                 return default;
             }
+        }
+
+        /// <summary>
+        /// Tries to convert <paramref name="value"/> to <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type to convert to</typeparam>
+        /// <param name="value">The object to convert</param>
+        /// <param name="converted">The converted value</param>
+        /// <param name="arguments">Optional argument for the converters</param>
+        /// <returns>True if <paramref name="value"/> was succesfully converted, otherwise false</returns>
+        public static bool TryConvertTo<T>(this object value, out T converted, IDictionary<string, string> arguments)
+        {
+            return TypeConverterExtensions.TryConvertTo<T>(GenericConverter.DefaultConverter, value, out converted, arguments);
+        }
+
+        /// <summary>
+        /// Tries to convert <paramref name="value"/> to <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type to convert to</typeparam>
+        /// <param name="value">The object to convert</param>
+        /// <param name="converted">The converted value</param>
+        /// <param name="arguments">Optional argument for the converters</param>
+        /// <returns>True if <paramref name="value"/> was succesfully converted, otherwise false</returns>
+        public static bool TryConvertTo<T>(this object value, out T converted, params (string Argument, string Value)[] arguments)
+        {
+            return TryConvertTo<T>(value, out converted, arguments.HasValue() ? arguments.ToDictionary(x => x.Argument, x => x.Value) : null);
         }
     }
 }

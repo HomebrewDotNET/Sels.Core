@@ -1,8 +1,5 @@
 ﻿using Sels.Core.Conversion.Templates.Table;
 using Sels.Core.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sels.Core.Conversion.Attributes.Table
 {

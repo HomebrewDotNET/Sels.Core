@@ -1,10 +1,8 @@
 ﻿using Sels.ObjectValidationFramework.Contracts.Validators;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using static Sels.Core.Delegates.Async;
 
-namespace Sels.ObjectValidationFramework.Contracts.Rules
+namespace Sels.ObjectValidationFramework.Rules
 {
 
     /// <summary>

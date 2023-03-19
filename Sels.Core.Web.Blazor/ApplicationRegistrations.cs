@@ -5,11 +5,7 @@ using Sels.Core.Contracts.Configuration;
 using Sels.Core.Web.Blazor;
 using Sels.Core.Web.Blazor.Authentication;
 using Sels.Core.Web.Blazor.Authentication.Token;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

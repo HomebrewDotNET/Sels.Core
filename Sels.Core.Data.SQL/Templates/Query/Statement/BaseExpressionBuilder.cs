@@ -1,10 +1,6 @@
 ﻿using Sels.Core.Data.SQL.Query.Compilation;
 using Sels.Core.Data.SQL.Query.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Data.SQL.Query.Statement
 {

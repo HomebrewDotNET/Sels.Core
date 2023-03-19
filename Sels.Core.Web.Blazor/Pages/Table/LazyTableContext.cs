@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Sels.Core.Models.Sorting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Sels.Core.Delegates.Async;
 
 namespace Sels.Core.Web.Blazor.Pages.Table

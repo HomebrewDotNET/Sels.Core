@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.Testing.Models
+﻿namespace Sels.Core.Testing.Models
 {
     /// <summary>
     /// Simple model for testing serialization.
@@ -36,7 +30,7 @@ namespace Sels.Core.Testing.Models
         /// </summary>
         public double Score { get; set; }
         /// <summary>
-        /// What professors signed this result.
+        /// Which professors signed this result.
         /// </summary>
         public List<string> Signatures { get; set; }
     }

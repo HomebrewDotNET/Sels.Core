@@ -1,9 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Command.Linux.Templates;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Sels.Core.Command.Linux.Attributes;
 
 namespace Sels.Core.Command.Linux.Templates.Commands.FileSystem

@@ -2,11 +2,7 @@
 using Sels.Core.Data.SQL.Query.Expressions;
 using Sels.Core.Data.SQL.Query.Expressions.Condition;
 using Sels.Core.Data.SQL.Query.Expressions.Join;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Data.SQL.Query.Statement
 {
@@ -47,6 +43,15 @@ namespace Sels.Core.Data.SQL.Query.Statement
         protected override DeleteExpressionPositions GetPositionForJoinExpression(JoinExpression<TEntity, IDeleteStatementBuilder<TEntity>> joinExpression)
         {
             return DeleteExpressionPositions.Join;
+        }
+
+        /// <inheritdoc/>
+        public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        {
+            // Add implicit expressions
+            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(DeleteExpressionPositions.From) || !Expressions[DeleteExpressionPositions.From].HasValue())) this.Cast<IDeleteStatementBuilder<TEntity>>().From();
+
+            return base.Build(builder, options);
         }
     }
 }

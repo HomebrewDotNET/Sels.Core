@@ -1,8 +1,5 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Command.Linux.Templates;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Sels.Core.Command.Linux.Attributes;
 using Sels.Core.Command.Contracts.Commands;
 

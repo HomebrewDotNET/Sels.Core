@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.Cli.ArgumentParsing
+﻿namespace Sels.Core.Cli.ArgumentParsing
 {
     /// <summary>
     /// Contains the result from parsing command line arguments.

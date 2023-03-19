@@ -1,9 +1,5 @@
-﻿using Sels.Core.Contracts.Validation;
-using Sels.Core.Extensions;
-using Sels.ObjectValidationFramework.Templates.Profile;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Sels.Core.Extensions;
+using Sels.ObjectValidationFramework.Profile;
 
 namespace Sels.ObjectValidationFramework.Extensions.Validation
 {

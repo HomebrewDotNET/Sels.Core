@@ -1,21 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
-using Sels.ObjectValidationFramework.Components.Rules;
-using Sels.ObjectValidationFramework.Contracts.Rules;
 using Sels.ObjectValidationFramework.Contracts.Validators;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Sels.Core.Extensions.Logging.Advanced;
-using Sels.ObjectValidationFramework.Components;
-using Sels.ObjectValidationFramework.Components.Validators;
-using System.Linq;
+using Sels.ObjectValidationFramework.Validators;
 using System.Linq.Expressions;
-using Sels.ObjectValidationFramework.Models;
 using static Sels.Core.Delegates.Async;
 using System.Threading.Tasks;
 
-namespace Sels.ObjectValidationFramework.Templates.Rules
+namespace Sels.ObjectValidationFramework.Rules
 {
     /// <summary>
     /// Template that wraps the method calls on <see cref="IValidationConfigurator{TEntity, TError}"/> and adds abstractions for validating objects of type <typeparamref name="TEntity"/>.

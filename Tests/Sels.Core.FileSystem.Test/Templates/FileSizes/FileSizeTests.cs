@@ -6,8 +6,6 @@ using Sels.Core.Components.FileSizes.Byte.Binary;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.FileSystem.Templates.FileSizes;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sels.Core.FileSystem.Test.Templates.FileSizes
 {

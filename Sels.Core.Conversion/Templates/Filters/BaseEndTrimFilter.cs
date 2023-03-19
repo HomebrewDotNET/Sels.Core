@@ -1,9 +1,5 @@
-﻿using Sels.Core.Conversion;
-using Sels.Core.Conversion.Serialization.Filters;
+﻿using Sels.Core.Conversion.Serialization.Filters;
 using Sels.Core.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sels.Core.Conversion.Templates.Filters
 {

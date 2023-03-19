@@ -6,17 +6,18 @@
 @using Sels.Core.Extensions.Conversion
 @using Microsoft.AspNetCore.Components.Web
 @using Sels.Core.Conversion.Extensions;
+@using Sels.Core.Web.Bootstrap.V5.Layout
 @typeparam TModel
 @attribute [CascadingTypeParameter(nameof(TModel))]
 
 @if(Context != null)
 {
     <CascadingValue Value="Context" Name="TableContext">
-            <div class="container-fluid">
+            <div class="@Container.ToCss() @ContainerCssClass">
                 <div style="display: none">
                     @ChildContent
                 </div>
-                <div class="row my-2">
+                <div class="row my-2 @ContainerRowCssClass">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="d-inline-flex justify-content-start align-items-center">
                             @foreach(var template in Context.RowComponents.OrderBy(x => x.Order))
@@ -36,12 +37,11 @@
                     </div>
                 
                  
-                </div>
-    
-                <div class="row my-2">
+                </div> 
+                <div class="row my-2 @ContainerRowCssClass">
                     <div class="col-12">
                         <div class="table-responsive">
-                            <table class="table @CssClass">
+                            <table class="table @TableCssClass">
                                 <thead>
                                     <tr>
                                         @if (RenderSelection)
@@ -102,7 +102,7 @@
                 </div>
                 @if (RenderPagination)
                 {
-                    <div class="row my-2 align-items-center justify-content-center">
+                    <div class="row my-2 align-items-center justify-content-center @ContainerRowCssClass">
                         <div class="col-auto">
                             <PageNavigator Page="Context.State.Page"  TotalPages="Context.State.TotalPages" PageOffset="PageOffset" OnPageChange="x => Context.State.SetPage(x)" />
                         </div>               
@@ -136,7 +136,22 @@
     /// Optional css class for the table.
     /// </summary>
     [Parameter]
-    public string? CssClass { get; set; }
+    public string? TableCssClass { get; set; }
+    /// <summary>
+    /// Optional css class for the rows of the container.
+    /// </summary>
+    [Parameter]
+    public string? ContainerRowCssClass { get; set; }
+    /// <summary>
+    /// Optional css class for the container.
+    /// </summary>
+    [Parameter]
+    public string? ContainerCssClass { get; set; }
+    /// <summary>
+    /// The container that wraps the lazely loaded table.
+    /// </summary>
+    [Parameter]
+    public Container Container { get; set; } = Container.Full;
     /// <summary>
     /// The models to render initially.
     /// </summary>

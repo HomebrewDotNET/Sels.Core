@@ -1,10 +1,5 @@
-﻿using Sels.Core.Data.SQL.Query;
-using Sels.Core.Testing.Models;
+﻿using Sels.Core.Testing.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Data.MySQL.Test
 {

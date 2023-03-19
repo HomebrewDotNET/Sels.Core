@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.Web.Blazor.Pages.Layout.Tabs
+﻿namespace Sels.Core.Web.Blazor.Pages.Layout.Tabs
 {
 
 }

@@ -4,11 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Sels.Core.Cli.ArgumentParsing;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Reflection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Cli
 {
@@ -45,7 +40,7 @@ namespace Sels.Core.Cli
 
             if (_exceptionHandlers.ContainsKey(typeof(TException))) throw new InvalidOperationException($"Exception handler for <{typeof(TException)}> already configured");
 
-            _exceptionHandlers.Add(typeof(TException), x => handler(x.Cast<TException>()));
+            _exceptionHandlers.Add(typeof(TException), x => handler((TException)x));
             return this;
         }
         /// <inheritdoc/>
@@ -55,7 +50,7 @@ namespace Sels.Core.Cli
 
             if (_exceptionHandlers.ContainsKey(typeof(TException))) throw new InvalidOperationException($"Exception handler for <{typeof(TException)}> already configured");
 
-            _exceptionHandlers.Add(typeof(TException), x => handler(x.Cast<TException>()));
+            _exceptionHandlers.Add(typeof(TException), x => handler((TException)x));
             return this;
         }
         /// <inheritdoc/>

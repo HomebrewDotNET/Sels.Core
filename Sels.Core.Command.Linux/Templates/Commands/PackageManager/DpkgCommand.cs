@@ -1,9 +1,4 @@
-﻿using Sels.Core.Command.Linux.Templates;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sels.Core.Command.Linux.Templates.Commands.PackageManager
+﻿namespace Sels.Core.Command.Linux.Templates.Commands.PackageManager
 {
     /// <summary>
     /// Base class for the dpkg command.

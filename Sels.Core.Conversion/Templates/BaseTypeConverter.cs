@@ -1,10 +1,8 @@
-﻿using Sels.Core.Conversion;
-using Sels.Core.Conversion.Converters;
+﻿using Sels.Core.Conversion.Converters;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Sels.Core.Conversion.Templates
 {
@@ -15,7 +13,7 @@ namespace Sels.Core.Conversion.Templates
     {
         #region Conversion
         /// <inheritdoc/>
-        public bool CanConvert(object value, Type convertType, IDictionary<string, string> arguments = null)
+        public virtual bool CanConvert(object value, Type convertType, IDictionary<string, string> arguments = null)
         {
             convertType.ValidateArgument(nameof(convertType));
             if (value == null) return false;
@@ -23,7 +21,7 @@ namespace Sels.Core.Conversion.Templates
             return CanConvertObject(value, convertType, arguments);
         }
         /// <inheritdoc/>
-        public object ConvertTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        public virtual object ConvertTo(object value, Type convertType, IDictionary<string, string> arguments = null)
         {
             value.ValidateArgument(x => CanConvert(x, convertType, arguments), $"Converter <{this}> cannot convert using the provided value. Call <{nameof(CanConvert)}> first");
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.Data.SQL.Query.Expressions
+﻿namespace Sels.Core.Data.SQL.Query.Expressions
 {
     /// <summary>
     /// Expression that represents a condition in a where clause.

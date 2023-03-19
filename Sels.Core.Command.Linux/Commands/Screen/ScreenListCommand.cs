@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Extensions;
 using Sels.Core.Command.Linux.Templates.Commands.Screen;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Sels.Core.Command.Linux.Contracts;
 
 namespace Sels.Core.Command.Linux.Commands.Screen

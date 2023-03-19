@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.Mediator.Messaging
+﻿namespace Sels.Core.Mediator.Messaging
 {
     /// <summary>
     /// Allows an object to receive messages of type <typeparamref name="T"/> from messagers.

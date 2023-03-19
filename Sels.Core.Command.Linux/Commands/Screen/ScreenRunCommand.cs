@@ -1,9 +1,6 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Command.Linux.Commands.Core;
 using Sels.Core.Command.Linux.Templates.Commands.Screen;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Command.Linux.Attributes;
 using Sels.Core.Command.Contracts.Commands;

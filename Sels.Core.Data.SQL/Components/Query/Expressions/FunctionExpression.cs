@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Sels.Core.Attributes.Enumeration.Value;
 
 namespace Sels.Core.Data.SQL.Query.Expressions

@@ -1,9 +1,6 @@
-﻿using Sels.Core.ServiceBuilder;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Sels.Core;
+using Sels.Core.Extensions.Reflection;
+using Sels.Core.ServiceBuilder;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -39,6 +36,23 @@ namespace Microsoft.Extensions.DependencyInjection
             collection.ValidateArgument(nameof(collection));
 
             return new ServiceBuilder<T, TImpl>(collection);
+        }
+
+        /// <summary>
+        /// Instead creating a new instance of <typeparamref name="TImpl"/> specifically, the builder will request an instance of <typeparamref name="TImpl"/> from the DI container instead when resolving <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The service type</typeparam>
+        /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+        /// <param name="builder">The builder to change into a forwarded service</param>
+        /// <returns>Builder for creating the service</returns>
+        public static IServiceBuilder<T, TImpl> AsForwardedService<T, TImpl>(this IServiceBuilder<T, TImpl> builder)
+            where TImpl : class, T
+            where T : class
+        {
+            Guard.IsNotNull(builder);
+
+            var existing = builder.Collection.FirstOrDefault(x => x.ServiceType.Is<TImpl>());
+            return builder.ConstructWith(p => p.GetRequiredService<TImpl>()).WithLifetime(existing?.Lifetime ?? ServiceLifetime.Scoped);
         }
     }
 }

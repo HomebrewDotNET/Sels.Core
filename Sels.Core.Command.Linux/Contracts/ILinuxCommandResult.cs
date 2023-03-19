@@ -1,8 +1,5 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Linux.Exceptions.LinuxCommand;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sels.Core.Command.Linux.Contracts
 {

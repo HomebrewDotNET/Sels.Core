@@ -1,10 +1,5 @@
 ﻿using Sels.Core.Conversion.Attributes.KeyValue;
 using Sels.Core.Conversion.Serializers.KeyValue;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Data.MySQL.Models
 {

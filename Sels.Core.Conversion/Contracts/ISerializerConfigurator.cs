@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.Conversion.Serialization.Filters;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Sels.Core.Conversion.Serializers
 {

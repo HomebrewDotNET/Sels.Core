@@ -10,13 +10,9 @@ using Sels.Core.Data.SQL.Extensions.Dapper;
 using Sels.Core.Data.SQL.Query;
 using Sels.Core.Data.SQL.Query.Expressions;
 using Sels.Core.Data.SQL.Query.Statement;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Data.MySQL
 {
@@ -460,6 +456,7 @@ namespace Sels.Core.Data.MySQL
             /// <param name="dataSet">Optional dataset for the columns in the where condition, when set to null, <see cref="MemberInfo.ReflectedType"/> is taken as the dataset</param>
             /// <param name="excludedProperties">Names of properties on <typeparamref name="T"/> to exclude from the condition</param>
             /// <returns>Builder to chain more conditions or null if no conditions were created</returns>
+            [Obsolete("Use the new " + nameof(SqlQueryBuilderExtensions.FromSearchCriteria) + " extension method")]
             public static IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> BuildConditionsFrom<TEntity, T>(IStatementConditionExpressionBuilder<TEntity> builder, DynamicParameters parameters, T conditions, object? dataSet = null, params string[] excludedProperties)
             {
                 builder.ValidateArgument(nameof(builder));
@@ -493,6 +490,7 @@ namespace Sels.Core.Data.MySQL
             /// <param name="propertyValue">The value contained in <paramref name="property"/></param>
             /// <param name="dataSet">Optional dataset for the columns in the where condition, when set to null, <see cref="MemberInfo.ReflectedType"/> is taken as the dataset</param>
             /// <returns>Builder to chain more conditions or null if no conditions were created</returns>
+            [Obsolete("Use the new " + nameof(SqlQueryBuilderExtensions.FromSearchCriteria) + " extension method")]
             public static IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> BuildConditionFrom<TEntity>(IStatementConditionExpressionBuilder<TEntity> builder, DynamicParameters parameters, PropertyInfo property, object propertyValue, object? dataSet = null)
             {
                 builder.ValidateArgument(nameof(builder));

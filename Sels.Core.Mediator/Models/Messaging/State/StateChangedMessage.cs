@@ -1,9 +1,4 @@
 ﻿using Sels.Core.Extensions.Conversion;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Mediator.Models.Messages.State
 {

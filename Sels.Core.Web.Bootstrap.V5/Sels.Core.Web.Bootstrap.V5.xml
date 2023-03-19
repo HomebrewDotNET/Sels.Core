@@ -54,6 +54,51 @@
             The dark color.
             </summary>
         </member>
+        <member name="T:Sels.Core.Web.Bootstrap.Bootstrap.Layout">
+            <summary>
+            Contains constants related to bootstrap layout components.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Container">
+            <summary>
+            The name for bootstrap containers.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints">
+            <summary>
+            Contains the bootstrap responsive breakpoints.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Small">
+            <summary>
+            The small breakpoint at >= 576px.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Medium">
+            <summary>
+            The medium breakpoint at >= 768px.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Large">
+            <summary>
+            The large breakpoint at >= 992px.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.ExtraLarge">
+            <summary>
+            The extra large breakpoint at >= 1200px.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.ExtraExtraLarge">
+            <summary>
+            The extra extra large breakpoint at >= 1400px.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Full">
+            <summary>
+            The full width size. 
+            </summary>
+        </member>
         <member name="T:Sels.Core.Web.Bootstrap.Bootstrap.Components">
             <summary>
             Contains constants related to bootstrap components.
@@ -207,6 +252,11 @@
         <member name="T:Sels.Core.Web.Bootstrap.Color">
             <summary>
             Contains the bootstrap colors re-used by other components.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.Color.None">
+            <summary>
+            No color selected.
             </summary>
         </member>
         <member name="F:Sels.Core.Web.Bootstrap.Color.Primary">
@@ -514,6 +564,110 @@
             </summary>
             <param name="color">The color to translate into a link color</param>
             <returns>Link color css where the color is equal to <paramref name="color"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint">
+            <summary>
+            Contains the bootstrap breakpoints.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint.None">
+            <summary>
+            No breakpoint selected.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint.Small">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Small"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint.Medium">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Medium"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint.Large">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Large"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint.ExtraLarge">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.ExtraLarge"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint.ExtraExtraLarge">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.ExtraExtraLarge"/>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint.Full">
+            <inheritdoc cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Full"/>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Layout.BreakpointExensions">
+            <summary>
+            Contains extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint"/>
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Layout.BreakpointExensions.ToCss(Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint)">
+            <summary>
+            Converts <paramref name="breakpoint"/> to it's bootstrap css equivalent.
+            </summary>
+            <param name="breakpoint">The enum to convert</param>
+            <returns>The css name for <paramref name="breakpoint"/></returns>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Layout.Container">
+            <summary>
+            Contains the bootstrap container sizes.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Container.None">
+            <summary>
+            No container selected.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Container.Default">
+            <summary>
+            The container using the default breakpoint.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Container.Small">
+            <summary>
+            The container using the <see cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Small"/> breakpoint.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Container.Medium">
+            <summary>
+            The container using the <see cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Medium"/> breakpoint.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Container.Large">
+            <summary>
+            The container using the <see cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Large"/> breakpoint.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Container.ExtraLarge">
+            <summary>
+            The container using the <see cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.ExtraLarge"/> breakpoint.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Container.ExtraExtraLarge">
+            <summary>
+            The container using the <see cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.ExtraExtraLarge"/> breakpoint.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Web.Bootstrap.V5.Layout.Container.Full">
+            <summary>
+            The container using the <see cref="F:Sels.Core.Web.Bootstrap.Bootstrap.Layout.Breakpoints.Full"/> breakpoint.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Web.Bootstrap.V5.Layout.ContainerExtensions">
+            <summary>
+            Contains extension methods for <see cref="T:Sels.Core.Web.Bootstrap.V5.Layout.Container"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Layout.ContainerExtensions.ToCss(Sels.Core.Web.Bootstrap.V5.Layout.Container)">
+            <summary>
+            Converts <paramref name="container"/> to it's css equivalent.
+            </summary>
+            <param name="container">The enum to convert</param>
+            <returns>The css class for <paramref name="container"/></returns>
+        </member>
+        <member name="M:Sels.Core.Web.Bootstrap.V5.Layout.ContainerExtensions.ToContainerCss(Sels.Core.Web.Bootstrap.V5.Layout.Breakpoint)">
+            <summary>
+            Converts <paramref name="breakpoint"/> to a it's css <see cref="T:Sels.Core.Web.Bootstrap.V5.Layout.Container"/> equivalent.
+            </summary>
+            <param name="breakpoint">The size of the container</param>
+            <returns>The css for the container of size <paramref name="breakpoint"/></returns>
         </member>
         <member name="T:Sels.Core.Web.Bootstrap.V5.Utilities.Flex.FlexContainerType">
             <summary>

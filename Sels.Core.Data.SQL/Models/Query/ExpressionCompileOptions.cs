@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.Data.SQL.Query
+﻿namespace Sels.Core.Data.SQL.Query
 {
     /// <summary>
     /// Exposes extra settings when compiling expressions or query builders into sql.
     /// </summary>
+    [Flags]
     public enum ExpressionCompileOptions
     {
         /// <summary>
@@ -26,6 +21,10 @@ namespace Sels.Core.Data.SQL.Query
         /// <summary>
         /// Appends a ; after each statement.
         /// </summary>
-        AppendSeparator = 3
+        AppendSeparator = 4,
+        /// <summary>
+        /// Disables any implicit expressions that get added by the builders themselves.
+        /// </summary>
+        NoImplitExpressions = 8
     }
 }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using Sels.Core.Extensions;
-using Sels.ObjectValidationFramework.Contracts.Rules;
+﻿using System.Reflection;
 
-namespace Sels.ObjectValidationFramework.Components.Rules
+namespace Sels.ObjectValidationFramework.Rules
 {
     /// <summary>
     /// Validation info for validation rules created for a property that is a collection.

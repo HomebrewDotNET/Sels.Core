@@ -1,11 +1,5 @@
-﻿using Sels.Core.Conversion;
-using Sels.Core.Conversion.Templates;
-using Sels.Core.Extensions;
-using Sels.Core.Extensions.Conversion;
+﻿using Sels.Core.Conversion.Templates;
 using Sels.Core.Extensions.Reflection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Sels.Core.Conversion.Extensions;
 using Sels.Core.Components.FileSizes.Byte.Binary;
 using Sels.Core.Components.FileSizes.Byte;

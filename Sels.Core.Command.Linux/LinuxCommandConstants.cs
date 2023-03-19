@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sels.Core.Command.Linux
+﻿namespace Sels.Core.Command.Linux
 {
     /// <summary>
     /// Contains constants for linux command.

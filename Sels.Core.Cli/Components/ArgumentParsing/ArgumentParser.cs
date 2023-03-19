@@ -1,15 +1,9 @@
 ﻿using Sels.Core.Cli.Contracts.ArgumentParsing;
 using Sels.Core.Cli.Templates.ArgumentParsing;
 using Sels.Core.Extensions.Reflection;
-using Sels.Core.Conversion;
 using Sels.Core.Extensions.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Collections;
 using Sels.Core.Cli.ArgumentParsing.Handlers;
 using Microsoft.Extensions.Logging;

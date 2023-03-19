@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
 using Sels.Core.Command.Linux.Templates.Commands.PackageManager;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Sels.Core.Command.Linux.Attributes;
 using Sels.Core.Conversion.Attributes.KeyValue;
 using Sels.Core.Conversion.Serializers.KeyValue;

@@ -1,10 +1,5 @@
 ﻿using Sels.Core.Data.SQL.Query.Expressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using SqlParameterExpression = Sels.Core.Data.SQL.Query.Expressions.ParameterExpression;
 
 namespace Sels.Core.Data.SQL.Query.Statement

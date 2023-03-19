@@ -1,8 +1,5 @@
 ﻿using Sels.Core.Command.Contracts.Commands;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using Sels.Core.Extensions;
 
 namespace Sels.Core.Command.Components.Commands

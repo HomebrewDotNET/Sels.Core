@@ -1,11 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Command.Linux.Templates;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using Sels.Core.Command.Components.Commands;
 using Sels.Core.Command.Linux.Contracts;
 using Sels.Core.Command.Linux.Commands;

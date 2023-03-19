@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sels.ObjectValidationFramework.TestTool.Objects
+﻿namespace Sels.ObjectValidationFramework.TestTool.Objects
 {
     public class Animal
     {

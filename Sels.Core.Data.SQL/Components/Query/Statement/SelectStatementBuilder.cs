@@ -2,12 +2,7 @@
 using Sels.Core.Data.SQL.Query.Expressions;
 using Sels.Core.Data.SQL.Query.Expressions.Condition;
 using Sels.Core.Data.SQL.Query.Expressions.Join;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Data.SQL.Query.Statement
 {
@@ -69,6 +64,17 @@ namespace Sels.Core.Data.SQL.Query.Statement
         protected override ISelectStatementBuilder<TEntity> Clone(IQueryCompiler<SelectExpressionPositions> compiler, Dictionary<SelectExpressionPositions, List<IExpression>> expressions)
         {
             return new SelectStatementBuilder<TEntity>(compiler, expressions);
+        }
+
+        /// <inheritdoc/>
+        public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        {
+            var statementBuilder = this.Cast<ISelectStatementBuilder<TEntity>>();
+            // Add implicit expressions
+            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(SelectExpressionPositions.From) || !Expressions[SelectExpressionPositions.From].HasValue())) statementBuilder.From();
+            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(SelectExpressionPositions.Column) || !Expressions[SelectExpressionPositions.Column].HasValue())) statementBuilder.All();
+
+            return base.Build(builder, options);
         }
     }
 }

@@ -1,10 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Sels.Core.Contracts.Factory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Cli
 {

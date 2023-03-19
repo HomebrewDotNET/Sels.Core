@@ -1,12 +1,7 @@
 ﻿using Sels.Core.Data.SQL.Query;
 using Sels.Core.Data.SQL.Query.Expressions;
 using Sels.Core.Data.SQL.Query.Statement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Data.MySQL.Query.Expressions.MariaDb
 {

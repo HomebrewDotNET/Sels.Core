@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.ServiceBuilder
+﻿namespace Sels.Core.ServiceBuilder
 {
     /// <summary>
     /// Defines the behaviour of dealing with other registrations when registering a new service.

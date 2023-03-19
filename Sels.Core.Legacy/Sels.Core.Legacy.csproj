@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<Authors>Jens Sels</Authors>
+		<Company>Homebrew IT</Company>
+		<Product>Core Library</Product>
+		<Description>Library containing generic code components for creating other libraries/applications.
+Now legacy so it can stay on .net standard 2.0. The new Sels.Core will target the latest .net version so new language features can be used.
+Used by projects maintained here: https://github.com/Jenssels1998
+		</Description>
+		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
+		<Copyright>Jens Sels</Copyright>
+		<PackageTags>Sels</PackageTags>
+		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
+		<!--For NuGet package-->
+		<VersionPrefix>1.0.0</VersionPrefix>
+		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
+		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
+		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
+		<DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
+		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+		<RootNamespace>Sels.Core</RootNamespace>
+	</PropertyGroup>
+
+	<Target Name="GetTargetPath">
+
+	</Target>
+	
+	<!--Exclude pdb files from release build-->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<DebugType>None</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
+
+	<!--Include non-NuGet package projects in NuGet package-->
+	<Target Name="PrePackage" BeforeTargets="BuildPackage">
+		<PropertyGroup>
+			<BuildCommand>$(BuildCommand) -IncludeReferencedProjects</BuildCommand>
+		</PropertyGroup>
+	</Target>
+
+	<!--Clear local versions if already added and add NuGet package to local repository-->
+	<Target Name="NuGetPushToLocal" AfterTargets="Pack" Condition="'$(OS)' == 'Windows_NT' And Exists('C:\NuGet\nuget.exe')">
+    <Exec Command="if exist %USERPROFILE%\.nuget\packages\$(PackageId) rmdir /s /q %USERPROFILE%\.nuget\packages\$(PackageId)" />
+    <Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
+		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
+	</Target>
+
+	<ItemGroup>
+		<Compile Remove="Components\Execution\**" />
+		<Compile Remove="Components\Newtonsoft\**" />
+		<Compile Remove="Contracts\Conversion\**" />
+		<Compile Remove="Templates\**" />
+		<EmbeddedResource Remove="Components\Execution\**" />
+		<EmbeddedResource Remove="Components\Newtonsoft\**" />
+		<EmbeddedResource Remove="Contracts\Conversion\**" />
+		<EmbeddedResource Remove="Templates\**" />
+		<None Remove="Components\Execution\**" />
+		<None Remove="Components\Newtonsoft\**" />
+		<None Remove="Contracts\Conversion\**" />
+		<None Remove="Templates\**" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
+  </ItemGroup>
+
+</Project>

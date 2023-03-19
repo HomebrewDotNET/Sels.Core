@@ -1,13 +1,11 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
-using Sels.ObjectValidationFramework.Contracts.Rules;
+using Sels.ObjectValidationFramework.Rules;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 // Adjusted so extensions are available when using the ValidationProfile
-namespace Sels.ObjectValidationFramework.Templates.Profile
+namespace Sels.ObjectValidationFramework.Profile
 {
     /// <summary>
     /// Contains generic configuration extensions for collection types.

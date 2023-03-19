@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Sels.ObjectValidationFramework.Contracts.Rules;
-
-namespace Sels.ObjectValidationFramework.Components.Rules
+﻿namespace Sels.ObjectValidationFramework.Rules
 {
     /// <summary>
     /// Empty info object for <see cref="IValidationRuleContext{TEntity, TInfo, TContext, TValue}"/> that don't supply any additional information.

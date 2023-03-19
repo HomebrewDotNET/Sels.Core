@@ -1,10 +1,4 @@
-﻿using Sels.Core.Components.FileSystem;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Sels.Core.Components.FileSizes.Byte;
-using Sels.Core.Components.FileSizes.Byte.Binary;
+﻿using Sels.Core.Components.FileSizes.Byte.Binary;
 using Sels.Core.FileSystem.Templates.FileSystem;
 using Sels.Core.FileSystem.Templates.FileSizes;
 using Sels.Core.Command.Linux.Commands.FileSystem;

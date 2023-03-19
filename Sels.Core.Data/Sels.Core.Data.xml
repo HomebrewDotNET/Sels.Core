@@ -4,6 +4,79 @@
         <name>Sels.Core.Data</name>
     </assembly>
     <members>
+        <member name="T:Sels.Core.Data.Linking.ObjectLinker">
+            <inheritdoc cref="T:Sels.Core.Data.Linking.IRelationalLinker"/>
+        </member>
+        <member name="M:Sels.Core.Data.Linking.ObjectLinker.GetAll``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.Linking.ObjectLinker.GetAll(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.Linking.ObjectLinker.Link``1(``0,System.Object,System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Data.Linking.ObjectLinker.With``1(System.Func{``0,System.Object})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Data.Linking.IRelationalLinker">
+            <summary>
+            Links different objects together.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Data.Linking.IRelationalLinker.With``1(System.Func{``0,System.Object})">
+            <summary>
+            Defines an object type that the current instance can link.
+            </summary>
+            <typeparam name="T">Type of the object that can be linked.</typeparam>
+            <param name="idGetter">Delegate that returns the unique id of the object</param>
+            <returns>Builder for configuring how to link <typeparamref name="T"/> to other objects</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Linking.IRelationalLinker.Link``1(``0,System.Object,System.Object[])">
+            <summary>
+            Links together <paramref name="firstObject"/>, <paramref name="secondObject"/> and optionally <paramref name="additionalObjects"/>.
+            </summary>
+            <typeparam name="T">The type of the first object</typeparam>
+            <param name="firstObject">The first object to link</param>
+            <param name="secondObject">The second object to link</param>
+            <param name="additionalObjects">AOptional additonal objects to link</param>
+            <returns><paramref name="firstObject"/></returns>
+        </member>
+        <member name="M:Sels.Core.Data.Linking.IRelationalLinker.GetAll``1">
+            <summary>
+            Gets all objects of type <typeparamref name="T"/> that the current instance has linked.
+            </summary>
+            <typeparam name="T">Type of the objects to fetch</typeparam>
+            <returns>Enumerator returning all the linked objects</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Linking.IRelationalLinker.GetAll(System.Type)">
+            <summary>
+            Gets all objects of <paramref name="type"/> that the current instance has linked.
+            </summary>
+            <returns>Enumerator returning all the linked objects</returns>
+        </member>
+        <member name="T:Sels.Core.Data.Linking.IRelationalLinkBuilder`1">
+            <summary>
+            Builder on how to link object of type <typeparamref name="T"/> to other objects.
+            </summary>
+            <typeparam name="T">Type of the object to create configuration for</typeparam>
+        </member>
+        <member name="M:Sels.Core.Data.Linking.IRelationalLinkBuilder`1.InitializeWith(System.Action{`0})">
+            <summary>
+            Initializes an object of type <typeparamref name="T"/> the first time the linker sees the object.
+            </summary>
+            <param name="initializer">Action that initializes the supplied object</param>
+            <returns>The current builder for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Data.Linking.IRelationalLinkBuilder`1.LinkTo``1(System.Func{`0,``0,System.Boolean},System.Action{`0,``0})">
+            <summary>
+            Defines a link from <typeparamref name="T"/> to <typeparamref name="TLink"/>.
+            </summary>
+            <typeparam name="TLink">The object to link <typeparamref name="T"/> to</typeparam>
+            <param name="condition">The condition that dictates that 2 objects can be linked</param>
+            <param name="linker">The delegate that links together the objects</param>
+            <returns>The current builder for method chaining</returns>
+        </member>
         <member name="T:Sels.Core.Data.Contracts.Repository.IDataRepository`2">
             <summary>
             Repository that allows for crud operations on <typeparamref name="TEntity"/>.

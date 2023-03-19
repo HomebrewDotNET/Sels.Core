@@ -2,12 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Web.Blazor.Authentication.Token;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sels.Core.Web.Blazor.Authentication
 {

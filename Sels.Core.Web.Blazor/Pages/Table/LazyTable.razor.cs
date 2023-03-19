@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sels.Core.Web.Blazor.Pages.Table
+﻿namespace Sels.Core.Web.Blazor.Pages.Table
 {
     /// <summary>
     /// Contains options for a model table of what features to enable/disable.

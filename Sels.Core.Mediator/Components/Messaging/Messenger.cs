@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Sels.Core.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Sels.Core.Extensions.Conversion;
 
 namespace Sels.Core.Mediator.Messaging
@@ -71,11 +65,52 @@ namespace Sels.Core.Mediator.Messaging
                     }
                     catch(Exception ex)
                     {
+                        _logger.Log($"Subscriber <{subscriberTask.Subscriber}> could not handle message <{message}>", ex);
                         exceptions.Add(ex);
                     }
                 }
 
                 return exceptions.HasValue() ? throw new AggregateException(exceptions) : tasks.Count;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Messanger that relies on DI to get the subscribers to send to.
+    /// </summary>
+    internal class Messenger : IMessanger
+    {
+        // Fields
+        private readonly IServiceProvider _provider;
+        private readonly ILogger? _logger;
+
+        /// <inheritdoc cref="Messenger{T}"/>
+        /// <param name="provider">Service provider to resolve the messanger to send message with.</param>
+        /// <param name="logger">Logger used for tracing</param>
+        public Messenger(IServiceProvider provider, ILogger<Messenger>? logger = null)
+        {
+            _provider = provider.ValidateArgument(nameof(provider));
+            _logger = logger;
+        }
+
+        /// <inheritdoc />
+        public Task<int> SendAsync<T>(object sender, T message, CancellationToken token = default)
+        {
+            using var methodLogger = _logger.TraceMethod(this);
+
+            sender.ValidateArgument(nameof(sender));
+            message.ValidateArgument(nameof(message));
+
+            var messanger = _provider.GetService<IMessanger<T>>();
+
+            if(messanger != null)
+            {
+                return messanger.SendAsync(sender, message, token);
+            }
+            else
+            {
+                _logger.Warning($"No messanger registered for messages of type <{typeof(T)}>. Skipping");
+                return Task.FromResult(0);
             }
         }
     }

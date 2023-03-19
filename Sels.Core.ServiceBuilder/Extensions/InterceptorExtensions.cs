@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.ServiceBuilder;
+using Sels.Core.ServiceBuilder.Contracts.Interceptors.Caching;
 using Sels.Core.ServiceBuilder.Interceptors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Sels.Core.ServiceBuilder.Interceptors.Caching;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -24,8 +23,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
-        /// <returns>Current builder for method tracing</returns>
-        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, ITracingInterceptorBuilder> interceptorBuilder)
+        /// <returns>Current builder for method chaining</returns>
+        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, object> interceptorBuilder)
             where TImpl : class, T
             where T : class
         {
@@ -49,8 +48,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
         /// <param name="loggers">The loggers to use for tracing</param>
-        /// <returns>Current builder for method tracing</returns>
-        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, ITracingInterceptorBuilder> interceptorBuilder, IEnumerable<ILogger?>? loggers)
+        /// <returns>Current builder for method chaining</returns>
+        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, object> interceptorBuilder, IEnumerable<ILogger?>? loggers)
             where TImpl : class, T
             where T : class
         {
@@ -68,14 +67,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
         #region Caching
         /// <summary>
-        /// Adds an interceptor for caching method return values.
+        /// Adds an interceptor for caching method return values using <see cref="IMemoryCache"/>.
         /// </summary>
         /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
         /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
-        /// <returns>Current builder for method tracing</returns>
-        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder<TImpl>, object> interceptorBuilder)
+        /// <returns>Current builder for method chaining</returns>
+        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder<TImpl, IMemoryCacheOptions>, object> interceptorBuilder)
             where TImpl : class, T
             where T : class
         {
@@ -84,21 +83,22 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder.InterceptedBy(x =>
             {
-                var interceptor = new CachingInterceptor<TImpl>(x.GetRequiredService<IDistributedCache>(), x.GetService<ITypeConverter>(), x.GetService<ILoggerFactory>());
+                var provider = new MemoryCachingProvider(x.GetRequiredService<IMemoryCache>(), x.GetService<ILogger<MemoryCachingProvider>>());
+                var interceptor = new CachingInterceptor<TImpl, IMemoryCacheOptions>(provider, x.GetService<ITypeConverter>(), x.GetService<ILoggerFactory>(), x.GetService<ILogger<CachingInterceptor<TImpl, IMemoryCacheOptions>>>());
                 interceptorBuilder(interceptor);
                 return interceptor;
             });
         }
         /// <summary>
-        /// Adds an interceptor for caching method return values.
+        /// Adds an interceptor for caching method return values using a <see cref="IDistributedCache"/>.
         /// </summary>
         /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
         /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+        /// <typeparam name="TEncoding">The encoding to use for the serialized strings</typeparam>
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
-        /// <param name="loggers">The loggers to use for tracing</param>
-        /// <returns>Current builder for method tracing</returns>
-        public static IServiceBuilder<T, TImpl> Cache<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder<TImpl>, object> interceptorBuilder, IEnumerable<ILogger?>? loggers)
+        /// <returns>Current builder for method chaining</returns>
+        public static IServiceBuilder<T, TImpl> CacheDistributed<T, TImpl, TEncoding>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder<TImpl, IDistributedCacheOptions>, object> interceptorBuilder) where TEncoding : Encoding, new()
             where TImpl : class, T
             where T : class
         {
@@ -107,10 +107,19 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder.InterceptedBy(x =>
             {
-                var interceptor = new CachingInterceptor<TImpl>(x.GetRequiredService<IDistributedCache>(), x.GetService<ITypeConverter>(), loggers);
+                var provider = new DistributedCachingProvider<TEncoding>(x.GetRequiredService<IDistributedCache>(), x.GetService<ILogger<DistributedCachingProvider<TEncoding>>>());
+                var interceptor = new CachingInterceptor<TImpl, IDistributedCacheOptions>(provider, x.GetService<ITypeConverter>(), x.GetService<ILoggerFactory>(), x.GetService<ILogger<CachingInterceptor<TImpl, IDistributedCacheOptions>>>());
                 interceptorBuilder(interceptor);
                 return interceptor;
             });
+        }
+
+        /// <inheritdoc cref="CacheDistributed{T, TImpl, TEncoding}(IServiceBuilder{T, TImpl}, Func{ICachingInterceptorBuilder{TImpl, IDistributedCacheOptions}, object})"/>
+        public static IServiceBuilder<T, TImpl> CacheDistributed<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ICachingInterceptorBuilder<TImpl, IDistributedCacheOptions>, object> interceptorBuilder)
+            where TImpl : class, T
+            where T : class
+        {
+            return CacheDistributed<T, TImpl, UTF8Encoding>(builder, interceptorBuilder);
         }
         #endregion
     }

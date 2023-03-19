@@ -5,7 +5,7 @@ using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Reflection;
-using Sels.ObjectValidationFramework.Components.Validators;
+using Sels.ObjectValidationFramework.Validators;
 using Sels.ObjectValidationFramework.Contracts.Validators;
 using System;
 using System.Collections;
@@ -13,10 +13,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.ObjectValidationFramework.Templates.Profile
+namespace Sels.ObjectValidationFramework.Profile
 {
     /// <summary>
     /// Profile that can be configured using a fluent syntax to validate object of a certain type.

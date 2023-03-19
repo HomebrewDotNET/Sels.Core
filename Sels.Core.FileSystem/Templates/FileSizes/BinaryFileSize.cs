@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sels.Core.FileSystem.Templates.FileSizes
+﻿namespace Sels.Core.FileSystem.Templates.FileSizes
 {
     /// <summary>
     /// File size that displays in binary. Uses a unit size of <see cref="BinaryUnitSize"/> instead of the default <see cref="FileSize.DefaultUnitSize"/>.

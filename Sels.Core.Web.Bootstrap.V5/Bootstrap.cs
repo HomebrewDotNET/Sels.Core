@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Primitives;
 
 namespace Sels.Core.Web.Bootstrap
 {
@@ -49,6 +45,49 @@ namespace Sels.Core.Web.Bootstrap
             /// </summary>
             public const string Dark = "dark";
         }
+
+        /// <summary>
+        /// Contains constants related to bootstrap layout components.
+        /// </summary>
+        public static class Layout
+        {
+            /// <summary>
+            /// The name for bootstrap containers.
+            /// </summary>
+            public const string Container = "container";
+
+            /// <summary>
+            /// Contains the bootstrap responsive breakpoints.
+            /// </summary>
+            public static class Breakpoints
+            {
+                /// <summary>
+                /// The small breakpoint at >= 576px.
+                /// </summary>
+                public const string Small = "sm";
+                /// <summary>
+                /// The medium breakpoint at >= 768px.
+                /// </summary>
+                public const string Medium = "md";
+                /// <summary>
+                /// The large breakpoint at >= 992px.
+                /// </summary>
+                public const string Large = "lg";
+                /// <summary>
+                /// The extra large breakpoint at >= 1200px.
+                /// </summary>
+                public const string ExtraLarge = "xl";
+                /// <summary>
+                /// The extra extra large breakpoint at >= 1400px.
+                /// </summary>
+                public const string ExtraExtraLarge = "xxl";
+                /// <summary>
+                /// The full width size. 
+                /// </summary>
+                public const string Full = "fluid";
+            }
+        }
+
         /// <summary>
         /// Contains constants related to bootstrap components.
         /// </summary>

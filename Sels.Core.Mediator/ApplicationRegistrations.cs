@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
+using Sels.Core.Extensions.Fluent;
 using Sels.Core.Mediator.Messaging;
 using Sels.Core.ServiceBuilder;
 using static Sels.Core.Delegates;
@@ -26,8 +23,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.ValidateArgument(nameof(services));
 
-            services.New<IMessageSubscriber>().As<SubscriptionManager>().AsSingleton().Trace(x => x.Duration.OfAll).Register();
-            services.AddScoped(typeof(IMessanger<>), typeof(Messenger<>));
+            services.TryAddScoped<IMessanger, Messenger>();
+            services.New<IMessageSubscriber>().As<SubscriptionManager>().AsSingleton().Trace(x => x.Duration.OfAll).TryRegister();
+            services.TryAddScoped(typeof(IMessanger<>), typeof(Messenger<>));
 
             return services;
         }
@@ -38,12 +36,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TMessage">The type of message to subscribe to</typeparam>
         /// <typeparam name="TSubscriber">The type of the service to receive the messages with</typeparam>
         /// <param name="services">The service collection to add the services to</param>
+        /// <param name="asForwardedService">If the instance needs to be resolved from the DI container instead. Set to true of <typeparamref name="TSubscriber"/> is already registered in the DI container</param>
+        /// <param name="serviceScope">The scope for the registered service</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddSubscriber<TMessage, TSubscriber>(this IServiceCollection services) where TSubscriber : class, ISubscriber<TMessage>
+        public static IServiceCollection AddSubscriber<TMessage, TSubscriber>(this IServiceCollection services, bool asForwardedService = false, ServiceLifetime serviceScope = ServiceLifetime.Scoped) where TSubscriber : class, ISubscriber<TMessage>
         {
             services.ValidateArgument(nameof(services));
 
-            services.New<ISubscriber<TMessage>>().As<TSubscriber>().Register();
+            services.New<ISubscriber<TMessage>>().As<TSubscriber>()
+                        .When(asForwardedService, b => b.AsForwardedService())
+                        .WithLifetime(serviceScope)
+                        .Register();
 
             return services;
         }
