@@ -41,7 +41,7 @@
         </member>
         <member name="P:Sels.Core.Testing.Models.ExamResult.Signatures">
             <summary>
-            What professors signed this result.
+            Which professors signed this result.
             </summary>
         </member>
         <member name="T:Sels.Core.Testing.Models.Person">

@@ -368,7 +368,7 @@
         </member>
         <member name="M:Sels.Core.ServiceBuilder.Interceptors.Caching.IInterceptorCachingProvider`1.GetOrSetAsync``1(Castle.DynamicProxy.IInvocation,System.String,`0,Sels.Core.Delegates.Async.AsyncFunc{System.Threading.CancellationToken,``0},System.Threading.CancellationToken)">
             <summary>
-            Retries the object with <paramref name="key"/> if it is already cached, otherwise the object returned by <paramref name="cacheGetter"/> will be cached with the provided options and returned.
+            Retrieves the object with <paramref name="key"/> if it is already cached, otherwise the object returned by <paramref name="cacheGetter"/> will be cached with the provided options and returned.
             </summary>
             <typeparam name="T">The type of the cached object</typeparam>
             <param name="target">The target to cache the value for</param>

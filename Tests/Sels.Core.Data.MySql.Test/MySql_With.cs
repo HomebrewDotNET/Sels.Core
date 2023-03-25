@@ -1,4 +1,5 @@
-﻿using Sels.Core.Testing.Models;
+﻿using Sels.Core.Data.SQL.Query;
+using Sels.Core.Testing.Models;
 using System;
 
 namespace Sels.Core.Data.MySQL.Test
@@ -60,7 +61,7 @@ namespace Sels.Core.Data.MySQL.Test
                                     );
 
             // Act
-            var query = builder.Build();
+            var query = builder.Build(ExpressionCompileOptions.NoImplitExpressions);
 
             // Assert
             Assert.IsNotNull(query);

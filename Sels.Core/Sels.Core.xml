@@ -191,7 +191,7 @@
         </member>
         <member name="T:Sels.Core.Display.StringType">
             <summary>
-            Defines how collection <see cref="M:System.Object.ToString"/> method works.
+            Defines how a collection <see cref="M:System.Object.ToString"/> method works.
             </summary>
         </member>
         <member name="F:Sels.Core.Display.StringType.Default">
