@@ -17,6 +17,8 @@ using Sels.Core.Extensions.Reflection;
 using static Sels.Core.Delegates.Async;
 using Newtonsoft.Json.Linq;
 using Sels.Core.Process;
+using Sels.Core.Extensions.Fluent;
+using Sels.Core.Extensions.Linq;
 
 namespace Sels.Core
 {
@@ -106,9 +108,35 @@ namespace Sels.Core
             /// <returns>The IConfiguration created from the default configuration file</returns>
             public static IConfiguration BuildDefaultConfigurationFile()
             {
-                var currentDirectory = Directory.GetCurrentDirectory();
+                return new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory).AddJsonFile(Constants.Configuration.DefaultAppSettingsFile).Build();
+            }
 
-                return new ConfigurationBuilder().SetBasePath(currentDirectory).AddJsonFile(Constants.Configuration.DefaultAppSettingsFile).Build();
+            /// <summary>
+            /// Creates configuration from all json files in <paramref name="directory"/>.
+            /// </summary>
+            /// <param name="directory">The directory to scan for json files</param>
+            /// <param name="filter">Optional filter for defining which json files to include in the configuration</param>
+            /// <param name="reloadOnChange">Whether the configuration needs to be reloaded when the file changes</param>
+            /// <returns>Configuration created from all json files in <paramref name="directory"/></returns>
+            public static IConfiguration BuildConfigurationFromDirectory(DirectoryInfo directory, Predicate<FileInfo> filter = null, bool reloadOnChange = true)
+            {
+                directory.ValidateArgumentExists(nameof(directory));
+                filter = filter != null ? filter : new Predicate<FileInfo>(x => true);
+
+                var builder = new ConfigurationBuilder();
+                directory.GetFiles().Where(x => x.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) && filter(x)).Execute(x => builder.AddJsonFile(x.FullName, false, reloadOnChange));
+                return builder.Build();
+            }
+
+            /// <summary>
+            /// Creates configuration from all json files in <see cref="AppContext.BaseDirectory"/>.
+            /// </summary>
+            /// <param name="filter">Optional filter for defining which json files to include in the configuration</param>
+            /// <param name="reloadOnChange">Whether the configuration needs to be reloaded when the file changes</param>
+            /// <returns>Configuration created from all json files in <see cref="AppContext.BaseDirectory"/></returns>
+            public static IConfiguration BuildConfigurationFromDirectory(Predicate<FileInfo> filter = null, bool reloadOnChange = true)
+            {
+                return BuildConfigurationFromDirectory(new DirectoryInfo(AppContext.BaseDirectory), filter, reloadOnChange);
             }
         }
         #endregion

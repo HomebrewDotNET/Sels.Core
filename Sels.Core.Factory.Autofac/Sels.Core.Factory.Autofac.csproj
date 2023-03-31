@@ -8,9 +8,9 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
-		<Product>Core Library</Product>
+		<Product>Autofac Factory Library</Product>
 		<Description>
-			Library containing generic code components for creating other libraries/applications made using the latest .net version.
+			Implementation for factory components using Autofac.
 			Used by projects maintained here: https://github.com/Jenssels1998
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
@@ -18,17 +18,13 @@
 		<PackageTags>Sels</PackageTags>
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 		<!--For NuGet package-->
-		<VersionPrefix>5.0.0</VersionPrefix>
+		<VersionPrefix>1.0.0</VersionPrefix>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
 		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
 		<DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
-	</ItemGroup>
 
 	<!--Exclude pdb files from release build-->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -49,5 +45,13 @@
 		<Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
+	<ItemGroup>
+	  <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
+	  <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
+	</ItemGroup>
 
 </Project>

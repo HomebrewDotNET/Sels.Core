@@ -10,6 +10,11 @@ using Sels.Core.Deployment;
 using Sels.Core.Data.MySQL.Models;
 using Sels.Core.Conversion.Templates;
 using Sels.Core.Conversion.Converters.Simple;
+using System.Reflection.Emit;
+using Autofac.Extensions.DependencyInjection;
+using Autofac;
+using Sels.Core.Conversion.Converters;
+using Sels.Core.Contracts.Factory;
 
 namespace Sels.Core.TestTool
 {
@@ -17,8 +22,9 @@ namespace Sels.Core.TestTool
     {
         static void Main(string[] args)
         {
-            Helper.Console.Run(() => {
-                TestInterceptors();
+            Helper.Console.Run(() =>
+            {
+                TestAutofacServiceFactory();
             });
         }
 
@@ -96,6 +102,48 @@ namespace Sels.Core.TestTool
             var connectionString = Deploy.Environment.ParseFrom<ConnectionString>(x => x.UsePrefix("ConnectionString"));
 
             Console.WriteLine($"Parsed <{connectionString}> from environment variables");
+        }
+
+        internal static void TestAutofacServiceFactory()
+        {
+            // Setup container
+            var collection = new ServiceCollection()
+                            .AddAutofacServiceFactory()
+                            .AddConfigurationFromDirectory()
+                            .RegisterConfigurationService()
+                            .AddLogging(l =>
+                            {
+                                l.ClearProviders();
+                                l.AddSimpleConsole(options =>
+                                {
+                                    options.IncludeScopes = true;
+                                    options.SingleLine = true;
+                                    options.TimestampFormat = "hh:mm:ss ";
+                                }).SetMinimumLevel(LogLevel.Trace);
+                            });
+
+            var builder = new ContainerBuilder();
+            builder.RegisterType<JsonConverter>().Named<ITypeConverter>("Json");
+            builder.RegisterType<XmlConverter>().Named<ITypeConverter>("Xml");
+            builder.Populate(collection);
+            var container = builder.Build();
+
+            var factory = container.Resolve<IServiceFactory>();
+            var configurationProvider = factory.Resolve<IConfigurationService>();
+
+            using (var scope = factory.Resolve<IServiceFactoryScope>())
+            {
+                var xmlImplementer = factory.GetImplementerFor<ITypeConverter>("Xml");
+                var xmlConverter = factory.Resolve<ITypeConverter>("Xml");
+            }
+
+            using (var scope = factory.CreateScope())
+            {
+                var jsonImplementer = factory.GetImplementerFor<ITypeConverter>("Json");
+                var jsonConverter = factory.Resolve<ITypeConverter>("Json");
+            }
+
+            var allConverters = factory.ResolveAll<ITypeConverter>();
         }
 
         internal static ILogger CreateLogger(LogLevel level = LogLevel.Trace)
