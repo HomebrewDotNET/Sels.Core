@@ -1,12 +1,16 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Sels.Core;
 using Sels.Core.Components.Configuration;
 using Sels.Core.Contracts.Configuration;
 using Sels.Core.Contracts.Factory;
 using Sels.Core.Extensions;
+using Sels.Core.Factory;
+using Sels.Core.Options;
 using System;
 using System.IO;
+using static System.Net.WebRequestMethods;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -60,6 +64,23 @@ namespace Microsoft.Extensions.DependencyInjection
             serviceCollection.ValidateArgument(nameof(serviceCollection));
 
             serviceCollection.AddSingleton(x => Helper.Configuration.BuildConfigurationFromDirectory(filter, reloadOnChange));
+
+            return serviceCollection;
+        }
+
+        /// <summary>
+        /// Adds an options configurator that attempts to bind <typeparamref name="TOptions"/> from configuration.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of the option to bond from config</typeparam>
+        /// <param name="serviceCollection">Collection to add the services to</param>
+        /// <param name="sectionName">Optional section name to bind from. When not set the type name will be used as the section name</param>
+        /// <returns><paramref name="serviceCollection"/> for method chaining</returns>
+        public static IServiceCollection BindOptionsFromConfig<TOptions>(this IServiceCollection serviceCollection, string sectionName = null) where TOptions : class
+        {
+            serviceCollection.ValidateArgument(nameof(serviceCollection));
+
+            serviceCollection.AddOptions();
+            serviceCollection.AddSingleton<IConfigureOptions<TOptions>>(x => new OptionConfigurationProvider<TOptions>(x.GetRequiredService<IConfiguration>(), sectionName));
 
             return serviceCollection;
         }

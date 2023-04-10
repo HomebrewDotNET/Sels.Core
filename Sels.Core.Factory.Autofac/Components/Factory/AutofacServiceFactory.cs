@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Sels.Core.Extensions.Reflection;
 
-namespace Sels.Core.Factory.Autofac.Factory
+namespace Sels.Core.Factory.Autofac
 {
     /// <summary>
     /// Service factory implemented using Autofac.

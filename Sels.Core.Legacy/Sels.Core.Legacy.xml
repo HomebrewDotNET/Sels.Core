@@ -35,9 +35,18 @@
             <param name="reloadOnChange">Whether the configuration needs to be reloaded when the file changes</param>
             <returns><paramref name="serviceCollection"/> for method chaining</returns>
         </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.BindOptionsFromConfig``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">
+            <summary>
+            Adds an options configurator that attempts to bind <typeparamref name="TOptions"/> from configuration.
+            </summary>
+            <typeparam name="TOptions">The type of the option to bond from config</typeparam>
+            <param name="serviceCollection">Collection to add the services to</param>
+            <param name="sectionName">Optional section name to bind from. When not set the type name will be used as the section name</param>
+            <returns><paramref name="serviceCollection"/> for method chaining</returns>
+        </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddServiceFactoryScope(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            Adds <see cref="T:Sels.Core.Contracts.Factory.IServiceFactoryScope"/> to the service container so services can inject the scope.
+            Adds <see cref="T:Sels.Core.Factory.IServiceFactoryScope"/> to the service container so services can inject the scope.
             </summary>
             <param name="services">Collection to add the services to</param>
             <returns><paramref name="services"/> for method chaining</returns>
@@ -858,6 +867,20 @@
         <member name="M:Sels.Core.Equality.ReferenceComparer.System#Collections#Generic#IEqualityComparer{System#Object}#GetHashCode(System.Object)">
             <inheritdoc/>
         </member>
+        <member name="T:Sels.Core.Options.OptionConfigurationProvider`1">
+            <summary>
+            Custom options configurator that binds instances of <typeparamref name="TOptions"/> from <see cref="T:Microsoft.Extensions.Configuration.IConfiguration"/>.
+            </summary>
+            <typeparam name="TOptions">The type of the option to bind from config</typeparam>
+        </member>
+        <member name="M:Sels.Core.Options.OptionConfigurationProvider`1.#ctor(Microsoft.Extensions.Configuration.IConfiguration,System.String)">
+            <inheritdoc cref="T:Sels.Core.Options.OptionConfigurationProvider`1"/>
+            <param name="configuration">Used to access the application configuration</param>
+            <param name="sectionName">Optional section name to bind from. When not set the type name will be used as the section name</param>
+        </member>
+        <member name="M:Sels.Core.Options.OptionConfigurationProvider`1.Configure(`0)">
+            <inheritdoc/>
+        </member>
         <member name="T:Sels.Core.Process.ProcessRunner">
             <inheritdoc cref="T:Sels.Core.Process.IProcessRunner"/>
         </member>
@@ -1512,169 +1535,6 @@
             <param name="arguments">Optional arguments to create a new instance of <typeparamref name="T"/></param>
             <returns>A new instance of <typeparamref name="T"/></returns>
         </member>
-        <member name="T:Sels.Core.Contracts.Factory.IServiceFactory">
-            <summary>
-            A factory that is able to create named/unnamed servics based on the provided type. This type is NOT intended to be injected. Inject <see cref="T:Sels.Core.Contracts.Factory.IServiceFactoryScope"/> instead so scopes are properly managed.
-            </summary>
-        </member>
-        <member name="T:Sels.Core.Contracts.Factory.IServiceFactoryScope">
-            <summary>
-            A factory that is able to create named/unnamed servics based on the provided type. When injected through a dependency injection framework the framework will dispose of the scope so no need to manually dispose it.
-            </summary>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.Resolve``1">
-            <summary>
-            Resolves service of type <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">Type of service to resolve</typeparam>
-            <returns>Registered service of type <typeparamref name="T"/></returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.Resolve``1(System.String)">
-            <summary>
-            Resolve the registered service of Type <typeparamref name="T"/> with <paramref name="name"/>.
-            </summary>
-            <typeparam name="T">Type of service to resolve</typeparam>
-            <param name="name">Name of the service to resolve</param>
-            <returns>Registered service of type <typeparamref name="T"/></returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.ResolveAll``1">
-            <summary>
-            Resolve all services of type <typeparamref name="T"/>
-            </summary>
-            <typeparam name="T">Type of service to resolve</typeparam>
-            <returns>All registered services of type <typeparamref name="T"/></returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.Resolve(System.Type)">
-            <summary>
-            Resolve the first registered service of Type <paramref name="type"/>.
-            </summary>
-            <param name="type">Type of service to resolve</param>
-            <returns>Registered service of type <paramref name="type"/></returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.Resolve(System.Type,System.String)">
-            <summary>
-            Resolve the registered service of type <paramref name="type"/> with <paramref name="name"/>.
-            </summary>
-            <param name="type">Type of service to resolve</param>
-            <param name="name">Name of the service to resolve</param>
-            <returns>Registered service of type <paramref name="type"/></returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.ResolveAll(System.Type)">
-            <summary>
-            Resolve all services of type <paramref name="type"/>
-            </summary>
-            <param name="type">Type of service to resolve</param>
-            <returns>All registered services of type <paramref name="type"/></returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.IsRegistered(System.Type)">
-            <summary>
-            Checks if this factory can resolve services of type <paramref name="type"/>.
-            </summary>
-            <param name="type">Type of service to check</param>
-            <returns>True if a service of <paramref name="type"/> is registered, otherwise false</returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.IsRegistered``1">
-            <summary>
-            Checks if this factory can resolve services of Type <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">Type of service to check</typeparam>
-            <returns>True if a service of <typeparamref name="T"/> is registered, otherwise false</returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.IsRegistered(System.Type,System.String)">
-            <summary>
-            Checks if this factory can resolve services of type <paramref name="type"/> with <paramref name="name"/>.
-            </summary>
-            <param name="type">Type of service to check</param>
-            <param name="name">Name of the service to resolve</param>
-            <returns>True if a service of <paramref name="type"/> with <paramref name="name"/> is registered, otherwise false</returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.IsRegistered``1(System.String)">
-            <summary>
-            Checks if this factory can resolve services of Type <typeparamref name="T"/> with Name <paramref name="name"/>.
-            </summary>
-            <typeparam name="T">Type of service to check</typeparam>
-            <param name="name">Name of the service to resolve</param>
-            <returns>True if a service of <typeparamref name="T"/> with <paramref name="name"/> is registered, otherwise false</returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.GetImplementerFor(System.Type)">
-            <summary>
-            Returns the implementation type for servive of type <paramref name="type"/>.
-            </summary>
-            <param name="type">The service type to get the implementation type for</param>
-            <returns>The implementation type for service type <paramref name="type"/> or null if no services are registered for service type <paramref name="type"/></returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.GetImplementerFor``1">
-            <summary>
-            Returns the implementation type for servive of type <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">The service type to get the implementation type for</typeparam>
-            <returns>The implementation type for service type <typeparamref name="T"/> or null if no services are registered for service type <typeparamref name="T"/></returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.GetImplementerFor(System.Type,System.String)">
-            <summary>
-            Returns the implementation type for servive of type <paramref name="type"/> with <paramref name="name"/>.
-            </summary>
-            <param name="type">The service type to get the implementation type for</param>
-            <param name="name">The name of the service</param>
-            <returns>The implementation type for service type <paramref name="type"/> with <paramref name="name"/> or null if no services are registered for service type <paramref name="type"/> with <paramref name="name"/></returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.GetImplementerFor``1(System.String)">
-            <summary>
-            Returns the implementation type for servive of type <typeparamref name="T"/> with <paramref name="name"/>.
-            </summary>
-            <typeparam name="T">The service type to get the implementation type for</typeparam>
-            <param name="name">The name of the service</param>
-            <returns>The implementation type for service type <typeparamref name="T"/> with <paramref name="name"/> or null if no services are registered for service type <typeparamref name="T"/> with <paramref name="name"/></returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScope.CreateScope">
-            <summary>
-            Creates a scope that can be used to resolve services. When the scope is disposed it will also dispose any services created by the scope.
-            </summary>
-            <returns>A new scope created from the current factory</returns>
-        </member>
-        <member name="T:Sels.Core.Contracts.Factory.IServiceFactoryScopeExceptions">
-            <summary>
-            Contains static extension methods for <see cref="T:Sels.Core.Contracts.Factory.IServiceFactoryScope"/>.
-            </summary>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScopeExceptions.TryResolve(Sels.Core.Contracts.Factory.IServiceFactoryScope,System.Type,System.Object@)">
-            <summary>
-            Tries to resolve service of type <paramref name="type"/>.
-            </summary>
-            <param name="scope">The scope to resolve the service with</param>
-            <param name="type">The service type to resolve</param>
-            <param name="service">The resolved service</param>
-            <returns>True if the factory contains a service registration for <paramref name="type"/>, otherwise false</returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScopeExceptions.TryResolve(Sels.Core.Contracts.Factory.IServiceFactoryScope,System.Type,System.String,System.Object@)">
-            <summary>
-            Tries to resolve service of type <paramref name="type"/> with <paramref name="name"/>.
-            </summary>
-            <param name="scope">The scope to resolve the service with</param>
-            <param name="type">The service type to resolve</param>
-            <param name="name">The name of the service to resolve</param>
-            <param name="service">The resolved service</param>
-            <returns>True if the factory contains a service registration for <paramref name="type"/> with <paramref name="name"/>, otherwise false</returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScopeExceptions.TryResolve``1(Sels.Core.Contracts.Factory.IServiceFactoryScope,``0@)">
-            <summary>
-            Tries to resolve service of type <typeparamref name="T"/>.
-            </summary>
-            <typeparam name="T">The service type to resolve</typeparam>
-            <param name="scope">The scope to resolve the service with</param>
-            <param name="service">The resolved service</param>
-            <returns>True if the factory contains a service registration for <typeparamref name="T"/>, otherwise false</returns>
-        </member>
-        <member name="M:Sels.Core.Contracts.Factory.IServiceFactoryScopeExceptions.TryResolve``1(Sels.Core.Contracts.Factory.IServiceFactoryScope,System.String,``0@)">
-            <summary>
-            Tries to resolve service of type <typeparamref name="T"/> with <paramref name="name"/>.
-            </summary>
-            <typeparam name="T">The service type to resolve</typeparam>
-            <param name="scope">The scope to resolve the service with</param>
-            <param name="name">The name of the service to resolve</param>
-            <param name="service">The resolved service</param>
-            <returns>True if the factory contains a service registration for <typeparamref name="T"/> with <paramref name="name"/>, otherwise false</returns>
-        </member>
         <member name="T:Sels.Core.Contracts.Mapping.IMapper">
             <summary>
             Generic mapper that can map objects to objects of another type.
@@ -1791,6 +1651,169 @@
             <param name="entities">Entities to validate</param>
             <param name="context">Optional context to modify the behaviour of the validator</param>
             <returns>All validation errors for <paramref name="entities"/></returns>
+        </member>
+        <member name="T:Sels.Core.Factory.IServiceFactory">
+            <summary>
+            A factory that is able to create named/unnamed servics based on the provided type. This type is NOT intended to be injected. Inject <see cref="T:Sels.Core.Factory.IServiceFactoryScope"/> instead so scopes are properly managed.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Factory.IServiceFactoryScope">
+            <summary>
+            A factory that is able to create named/unnamed servics based on the provided type. When injected through a dependency injection framework the framework will dispose of the scope so no need to manually dispose it.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.Resolve``1">
+            <summary>
+            Resolves service of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of service to resolve</typeparam>
+            <returns>Registered service of type <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.Resolve``1(System.String)">
+            <summary>
+            Resolve the registered service of Type <typeparamref name="T"/> with <paramref name="name"/>.
+            </summary>
+            <typeparam name="T">Type of service to resolve</typeparam>
+            <param name="name">Name of the service to resolve</param>
+            <returns>Registered service of type <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.ResolveAll``1">
+            <summary>
+            Resolve all services of type <typeparamref name="T"/>
+            </summary>
+            <typeparam name="T">Type of service to resolve</typeparam>
+            <returns>All registered services of type <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.Resolve(System.Type)">
+            <summary>
+            Resolve the first registered service of Type <paramref name="type"/>.
+            </summary>
+            <param name="type">Type of service to resolve</param>
+            <returns>Registered service of type <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.Resolve(System.Type,System.String)">
+            <summary>
+            Resolve the registered service of type <paramref name="type"/> with <paramref name="name"/>.
+            </summary>
+            <param name="type">Type of service to resolve</param>
+            <param name="name">Name of the service to resolve</param>
+            <returns>Registered service of type <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.ResolveAll(System.Type)">
+            <summary>
+            Resolve all services of type <paramref name="type"/>
+            </summary>
+            <param name="type">Type of service to resolve</param>
+            <returns>All registered services of type <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.IsRegistered(System.Type)">
+            <summary>
+            Checks if this factory can resolve services of type <paramref name="type"/>.
+            </summary>
+            <param name="type">Type of service to check</param>
+            <returns>True if a service of <paramref name="type"/> is registered, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.IsRegistered``1">
+            <summary>
+            Checks if this factory can resolve services of Type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of service to check</typeparam>
+            <returns>True if a service of <typeparamref name="T"/> is registered, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.IsRegistered(System.Type,System.String)">
+            <summary>
+            Checks if this factory can resolve services of type <paramref name="type"/> with <paramref name="name"/>.
+            </summary>
+            <param name="type">Type of service to check</param>
+            <param name="name">Name of the service to resolve</param>
+            <returns>True if a service of <paramref name="type"/> with <paramref name="name"/> is registered, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.IsRegistered``1(System.String)">
+            <summary>
+            Checks if this factory can resolve services of Type <typeparamref name="T"/> with Name <paramref name="name"/>.
+            </summary>
+            <typeparam name="T">Type of service to check</typeparam>
+            <param name="name">Name of the service to resolve</param>
+            <returns>True if a service of <typeparamref name="T"/> with <paramref name="name"/> is registered, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.GetImplementerFor(System.Type)">
+            <summary>
+            Returns the implementation type for servive of type <paramref name="type"/>.
+            </summary>
+            <param name="type">The service type to get the implementation type for</param>
+            <returns>The implementation type for service type <paramref name="type"/> or null if no services are registered for service type <paramref name="type"/></returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.GetImplementerFor``1">
+            <summary>
+            Returns the implementation type for servive of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The service type to get the implementation type for</typeparam>
+            <returns>The implementation type for service type <typeparamref name="T"/> or null if no services are registered for service type <typeparamref name="T"/></returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.GetImplementerFor(System.Type,System.String)">
+            <summary>
+            Returns the implementation type for servive of type <paramref name="type"/> with <paramref name="name"/>.
+            </summary>
+            <param name="type">The service type to get the implementation type for</param>
+            <param name="name">The name of the service</param>
+            <returns>The implementation type for service type <paramref name="type"/> with <paramref name="name"/> or null if no services are registered for service type <paramref name="type"/> with <paramref name="name"/></returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.GetImplementerFor``1(System.String)">
+            <summary>
+            Returns the implementation type for servive of type <typeparamref name="T"/> with <paramref name="name"/>.
+            </summary>
+            <typeparam name="T">The service type to get the implementation type for</typeparam>
+            <param name="name">The name of the service</param>
+            <returns>The implementation type for service type <typeparamref name="T"/> with <paramref name="name"/> or null if no services are registered for service type <typeparamref name="T"/> with <paramref name="name"/></returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScope.CreateScope">
+            <summary>
+            Creates a scope that can be used to resolve services. When the scope is disposed it will also dispose any services created by the scope.
+            </summary>
+            <returns>A new scope created from the current factory</returns>
+        </member>
+        <member name="T:Sels.Core.Factory.IServiceFactoryScopeExceptions">
+            <summary>
+            Contains static extension methods for <see cref="T:Sels.Core.Factory.IServiceFactoryScope"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScopeExceptions.TryResolve(Sels.Core.Factory.IServiceFactoryScope,System.Type,System.Object@)">
+            <summary>
+            Tries to resolve service of type <paramref name="type"/>.
+            </summary>
+            <param name="scope">The scope to resolve the service with</param>
+            <param name="type">The service type to resolve</param>
+            <param name="service">The resolved service</param>
+            <returns>True if the factory contains a service registration for <paramref name="type"/>, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScopeExceptions.TryResolve(Sels.Core.Factory.IServiceFactoryScope,System.Type,System.String,System.Object@)">
+            <summary>
+            Tries to resolve service of type <paramref name="type"/> with <paramref name="name"/>.
+            </summary>
+            <param name="scope">The scope to resolve the service with</param>
+            <param name="type">The service type to resolve</param>
+            <param name="name">The name of the service to resolve</param>
+            <param name="service">The resolved service</param>
+            <returns>True if the factory contains a service registration for <paramref name="type"/> with <paramref name="name"/>, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScopeExceptions.TryResolve``1(Sels.Core.Factory.IServiceFactoryScope,``0@)">
+            <summary>
+            Tries to resolve service of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The service type to resolve</typeparam>
+            <param name="scope">The scope to resolve the service with</param>
+            <param name="service">The resolved service</param>
+            <returns>True if the factory contains a service registration for <typeparamref name="T"/>, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Factory.IServiceFactoryScopeExceptions.TryResolve``1(Sels.Core.Factory.IServiceFactoryScope,System.String,``0@)">
+            <summary>
+            Tries to resolve service of type <typeparamref name="T"/> with <paramref name="name"/>.
+            </summary>
+            <typeparam name="T">The service type to resolve</typeparam>
+            <param name="scope">The scope to resolve the service with</param>
+            <param name="name">The name of the service to resolve</param>
+            <param name="service">The resolved service</param>
+            <returns>True if the factory contains a service registration for <typeparamref name="T"/> with <paramref name="name"/>, otherwise false</returns>
         </member>
         <member name="T:Sels.Core.Delegates">
             <summary>
@@ -3311,6 +3334,17 @@
             <param name="timeSpan">The timespan to get the formatted string from</param>
             <returns>The formatted string with the total milliseconds of <paramref name="timeSpan"/> </returns>
         </member>
+        <member name="T:Sels.Core.Extensions.Object.ExceptionExtensions">
+            <summary>
+            Contains exception methods for <see cref="T:System.Exception"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Extensions.Object.ExceptionExtensions.Rethrow(System.Exception)">
+            <summary>
+            Rethrows <paramref name="exception"/> while preserving the original stack trace.
+            </summary>
+            <param name="exception">The exception to rethrow</param>
+        </member>
         <member name="T:Sels.Core.Extensions.Reflection.ActivationExtensions">
             <summary>
             Generic extension methods for creating instances of types through reflection.
@@ -4516,10 +4550,23 @@
         </member>
         <member name="M:Sels.Core.Helper.Async.Sleep(System.Int32,System.Threading.CancellationToken)">
             <summary>
-            Sleeps for <paramref name="waitTime"/> milliseconds asynchronously.
+            Sleeps for <paramref name="waitTime"/> milliseconds asynchronously. When <paramref name="token"/> is cancelled no <see cref="T:System.Threading.Tasks.TaskCanceledException"/> will be thrown.
             </summary>
             <param name="waitTime">How many milliseconds to sleep for</param>
             <param name="token">Optional token to cancel the sleeping</param>
+        </member>
+        <member name="T:Sels.Core.Helper.Lock">
+            <summary>
+            Contains static helper methods for working with thread locks.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Helper.Lock.TryLockAndExecute(System.Object,System.Action)">
+            <summary>
+            Tries to get a lock on <paramref name="lockObject"/> to execute <paramref name="action"/>.
+            </summary>
+            <param name="lockObject">The object to lock</param>
+            <param name="action">The delegate to execute when <paramref name="lockObject"/> could be locked.</param>
+            <returns>True if a lock could be placed on <paramref name="lockObject"/>, otherwise false</returns>
         </member>
         <member name="T:Sels.Core.Models.Disposables.NullDisposer">
             <summary>

@@ -1,0 +1,267 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Locking.Memory</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations">
+            <summary>
+            Contains extension methods for registering services.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddMemoryLockingProvider(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Sels.Core.Locking.Memory.MemoryLockingProviderOptions})">
+            <summary>
+            Adds a <see cref="T:Sels.Core.Locking.Provider.ILockingProvider"/> that uses an in-memory store to keep lock state. Provides distributed locking within the same application.
+            </summary>
+            <param name="services">Collection to add the service registration to</param>
+            <param name="configurator">Optional delegate for configuring the options</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Locking.Memory.MemoryLockingProvider">
+            <summary>
+            Provides application wide distributed locks by storing the locks in memory and making use of thread locks to handle concurrency.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.Options">
+            <summary>
+            Contains configuration for the currnt instance.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.IsRunningCleanup">
+            <summary>
+            Indicates that the current instance is currently running cleanup on inactive locks.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.#ctor(Microsoft.Extensions.Options.IOptions{Sels.Core.Locking.Memory.MemoryLockingProviderOptions},Microsoft.Extensions.Logging.ILogger{Sels.Core.Locking.Memory.MemoryLockingProvider})">
+            <inheritdoc cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider"/>
+            <param name="options"><inheritdoc cref="P:Sels.Core.Locking.Memory.MemoryLockingProvider.Options"/></param>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.TryLockAsync(System.String,System.String,Sels.Core.Locking.Provider.ILock@,System.Nullable{System.TimeSpan},System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.LockAsync(System.String,System.String,System.Nullable{System.TimeSpan},System.Boolean,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.GetAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.GetPendingRequestsAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.QueryAsync(System.String,System.Int32,System.Int32,System.Linq.Expressions.Expression{System.Func{Sels.Core.Locking.Provider.ILockInfo,System.Object}},System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.HasLock(System.String,System.String)">
+            <summary>
+            Checks if lock <paramref name="resource"/> is still held by <paramref name="requester"/>.
+            </summary>
+            <param name="resource">The lock to check</param>
+            <param name="requester">Who is supposed to have the lock</param>
+            <returns>True if lock <paramref name="resource"/> is still held by <paramref name="requester"/></returns>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.TryExtend(System.String,System.String,System.TimeSpan,Sels.Core.Locking.Provider.ILockInfo@)">
+            <summary>
+            Extend expiry date on lock <paramref name="resource"/> by <paramref name="extendTime"/>.
+            </summary>
+            <param name="resource">The lock to extend</param>
+            <param name="requester">Who is requesting the lock to be extended</param>
+            <param name="extendTime">How much time to extend the expiry date with</param>
+            <param name="lockInfo">The current state of the lock</param>
+            <returns>True if the expiry date was extended, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.Unlock(System.String,System.String)">
+            <summary>
+            Tries to unlock resource <paramref name="resource"/> held by <paramref name="requester"/>.
+            </summary>
+            <param name="resource">The lock to release</param>
+            <param name="requester">Who is supposed to hold the lock</param>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.TryAssignPendingRequest(System.String)">
+            <summary>
+            Tries to assign the next pending lock request on <paramref name="resource"/>.
+            </summary>
+            <param name="resource">The resource to check the pending requests for</param>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.OnLockExpired(System.String)">
+            <summary>
+            Event handler called when lock <paramref name="resource"/> expires.
+            </summary>
+            <param name="resource">The resource that expired</param>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLock">
+            <summary>
+            Represents a lock placed on a resource in memory.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLock.#ctor(Sels.Core.Locking.Memory.MemoryLockingProvider,Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo,System.Boolean,System.TimeSpan,Microsoft.Extensions.Logging.ILogger)">
+            <inheritdoc cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLock"/>
+            <param name="provider">The provider creating the lock</param>
+            <param name="memoryLock">Information about the lock being placed</param>
+            <param name="keepAlive">If the lock needs to be kept alive when an expiry date is set</param>
+            <param name="extendTime">By how much time to extend the expiry date when <paramref name="keepAlive"/> is enabled</param>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLock.HasLockAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLock.ExtendAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLock.UnlockAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLock.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo">
+            <summary>
+            Represents information about a lock in memory.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo"/>
+            <param name="resource">The resource the current lock info is being created for</param>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo.#ctor(Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo)">
+            <inheritdoc cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo"/>
+            <param name="copy">The instance to copy state from</param>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo.Resource">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo.LockedBy">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo.LockedAt">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo.LastLockDate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo.ExpiryDate">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo.Requests">
+            <summary>
+            Pending locking requests for the current lock.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo.PendingRequests">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest">
+            <summary>
+            Represents an in-memory request on a lock.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.#ctor(System.String,Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockInfo,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <inheritdoc cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest"/>
+            <param name="requester">Who created the request</param>
+            <param name="memoryLock">The lock the request is placed on</param>
+            <param name="cancellationToken">The cancellation token provided by the caller of the request</param>
+            <param name="timeout">When the current request times out. When set to null the request never times out</param>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.Resource">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.Requester">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.ExpiryTime">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.KeepAlive">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.Timeout">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.CreatedAt">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.CallbackTask">
+            <summary>
+            The task returned to caller when they request a lock. 
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.AssignLock(Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLock)">
+            <summary>
+            Assigns the lock to the caller of the request.
+            </summary>
+            <param name="memoryLock">The lock to assign</param>
+            <returns>True if the lock was assigned or false if the request was modified while calling this method</returns>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.AbortRequest(System.Exception)">
+            <summary>
+            Aborts the current request.
+            </summary>
+            <param name="exception">Exception containing the reason why the request was cancelled</param>
+            <returns>True if the lock was assigned or false if the request was modified while calling this method</returns>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.MemoryLockRequest.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Locking.Memory.MemoryLockingProviderOptions">
+            <summary>
+            Exposes configuration options for <see cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.CleanupInterval">
+            <summary>
+            The interval that will be used by <see cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider"/> to perform cleanup of the in-memeory locks to free up memory. When set to null no locks will be cleaned up.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.CleanupMethod">
+            <inheritdoc cref="T:Sels.Core.Locking.Memory.MemoryLockCleanupMethod"/>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.CleanupAmount">
+            <summary>
+            The value to configure <see cref="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.CleanupMethod"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.ThrowOnStaleLock">
+            <summary>
+            Dictates how stale locks are handled. If set to true a <see cref="T:Sels.Core.Locking.StaleLockException"/> or <see cref="T:Sels.Core.Locking.ResourceAlreadyLockedException"/> will be thrown when actions are performed on a stale lock. When set to false the action will fail silently.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.ExpiryOffset">
+            <summary>
+            How many milliseconds before a lock expires to extend the expiry date. Is also used as offset when to notify that a lock expired.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.Validate">
+            <summary>
+            Validates the current instance and throws a <see cref="T:Sels.Core.Validation.ValidationException`2"/> if there are any errors.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Locking.Memory.MemoryLockCleanupMethod">
+            <summary>
+            Defines what memory locks are eligible to be removed when cleanup is performed. 
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Locking.Memory.MemoryLockCleanupMethod.Time">
+            <summary>
+            Inactive locks older than the configured amount (in milliseconds) will be removed.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Locking.Memory.MemoryLockCleanupMethod.Amount">
+            <summary>
+            When the total amount of active locks exceeds the configured amount, the oldest inactive locks will be removed until the total amount of locks is below or equal to the configured amount.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Locking.Memory.MemoryLockCleanupMethod.Always">
+            <summary>
+            All inactive locks will be removed.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Locking.Memory.MemoryLockCleanupMethod.ProcessMemory">
+            <summary>
+            All inactive locks will be removed when the memory usage of the current process exceeds the configured amount (in bytes)
+            </summary>
+        </member>
+    </members>
+</doc>

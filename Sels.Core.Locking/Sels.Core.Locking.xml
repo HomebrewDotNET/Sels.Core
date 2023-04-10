@@ -1,0 +1,243 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sels.Core.Locking</name>
+    </assembly>
+    <members>
+        <member name="T:Sels.Core.Locking.Provider.ILockingProvider">
+            <summary>
+            Service for placing distributed locks on resources.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.Provider.ILockingProvider.TryLockAsync(System.String,System.String,Sels.Core.Locking.Provider.ILock@,System.Nullable{System.TimeSpan},System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Tries to place a lock on <paramref name="resource"/>.
+            </summary>
+            <param name="resource">The name of the resource to lock</param>
+            <param name="requester">Who is requesting the lock</param>
+            <param name="expiryTime">Optional time when the lock will expire. If set to null the lock will not expire on it's own</param>
+            <param name="keepAlive">To keep the lock alive when <paramref name="expiryTime"/> is set. Will extend the expiry date by <paramref name="expiryTime"/> right before it expires</param>
+            <param name="lockObject">The lock if it could be placed</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>True if <paramref name="requester"/> locked <paramref name="resource"/>, otherwise false if someone else has locked <paramref name="resource"/></returns>
+        </member>
+        <member name="M:Sels.Core.Locking.Provider.ILockingProvider.LockAsync(System.String,System.String,System.Nullable{System.TimeSpan},System.Boolean,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Tries to place a lock on <paramref name="resource"/>. If the lock is currently held the method call will block until <paramref name="requester"/> manages to place the lock.
+            </summary>
+            <param name="resource">The name of the resource to lock</param>
+            <param name="requester">Who is requesting the lock</param>
+            <param name="expiryTime">Optional time when the lock will expire. If set to null the lock will not expire on it's own</param>
+            <param name="keepAlive">To keep the lock alive when <paramref name="expiryTime"/> is set. Will extend the expiry date by <paramref name="expiryTime"/> right before it expires</param>
+            <param name="timeout">Optional timeout that can be set. If a lock could not be placed within <paramref name="timeout"/> a <see cref="T:Sels.Core.Locking.LockTimeoutException"/> will be thrown</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>The lock on <paramref name="resource"/> currently held by <paramref name="requester"/></returns>
+        </member>
+        <member name="M:Sels.Core.Locking.Provider.ILockingProvider.GetAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Fetches the current locking state on <paramref name="resource"/>.
+            </summary>
+            <param name="resource">The resource to get the locking state for</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>The current locking state for <paramref name="resource"/></returns>
+        </member>
+        <member name="M:Sels.Core.Locking.Provider.ILockingProvider.GetPendingRequestsAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Fetches all the current pending lock requests for <paramref name="resource"/>.
+            </summary>
+            <param name="resource">The resource to get the pending requests for</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>All currently pending requests or an empty array when there are no pending requests</returns>
+        </member>
+        <member name="M:Sels.Core.Locking.Provider.ILockingProvider.QueryAsync(System.String,System.Int32,System.Int32,System.Linq.Expressions.Expression{System.Func{Sels.Core.Locking.Provider.ILockInfo,System.Object}},System.Boolean)">
+            <summary>
+            Queries all currently known locks.
+            </summary>
+            <param name="filter">Optional string to filter on <see cref="P:Sels.Core.Locking.Provider.ILockInfo.Resource"/>. Locks will be returned if they contain <paramref name="filter"/>. Null will returns all locks</param>
+            <param name="page">Used to specify what page to return when pagination is preferred when getting the locks. Setting the page to lower than 0 means no pagination will be applied</param>
+            <param name="pageSize">How many items per page to return when <paramref name="page"/> is set to a value higher than 0</param>
+            <param name="sortBy">Optional expression that points to the property on <see cref="T:Sels.Core.Locking.Provider.ILockInfo"/> to sort by</param>
+            <param name="sortDescending">True to sort <paramref name="sortBy"/> descending, otherwise false for ascending</param>
+            <returns>All currently known locks</returns>
+        </member>
+        <member name="T:Sels.Core.Locking.Provider.ILock">
+            <summary>
+            Represents a currently held lock on <see cref="P:Sels.Core.Locking.Provider.ILockInfo.Resource"/>. Disposing the object will release the lock.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.Provider.ILock.HasLockAsync(System.Threading.CancellationToken)">
+            <summary>
+            Checks if the current lock is still held by the requester.
+            </summary>
+            <param name="token">Optional loken to cancel the request</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sels.Core.Locking.Provider.ILock.ExtendAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Extends the current expiry date by <paramref name="extendTime"/>. If no expiry date is set a new one will be set.
+            </summary>
+            <param name="extendTime">By how many time to extend the expiry date for</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>Task containing the execution state</returns>
+        </member>
+        <member name="M:Sels.Core.Locking.Provider.ILock.UnlockAsync(System.Threading.CancellationToken)">
+            <summary>
+            Unlocks the current lock. Also called when disposing the lock.
+            </summary>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>Task containing the execution state</returns>
+        </member>
+        <member name="T:Sels.Core.Locking.Provider.ILockInfo">
+            <summary>
+            Contains information about a lock placed on a resource.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockInfo.Resource">
+            <summary>
+            The resource the lock is held on.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockInfo.LockedBy">
+            <summary>
+            Who locked the resource.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockInfo.LockedAt">
+            <summary>
+            When the current lock was locked by <see cref="P:Sels.Core.Locking.Provider.ILockInfo.LockedBy"/>. Will be null when the lock is free.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockInfo.LastLockDate">
+            <summary>
+            The last time when the lock was held by someone.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockInfo.ExpiryDate">
+            <summary>
+            When the lock is set to expire. When a lock expires others will be able lock it instead. When set to null the lock never expires.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockInfo.PendingRequests">
+            <summary>
+            How many pending requests there are for the current lock.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Locking.Provider.ILockRequest">
+            <summary>
+            Represent a request on a lock that will be placed once the mentioned lock is unlocked.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockRequest.Resource">
+            <summary>
+            The resource that the request is placed on.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockRequest.Requester">
+            <summary>
+            Who requested the lock.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockRequest.ExpiryTime">
+            <summary>
+            How long the lock will be held after placing it. When set to null the lock will not expire.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockRequest.KeepAlive">
+            <summary>
+            If the lock will be kept alive after it's placed.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockRequest.Timeout">
+            <summary>
+            When the current request expires. When set to null the request will never expire.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.Provider.ILockRequest.CreatedAt">
+            <summary>
+            When the request was created.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Locking.Provider.ILockExtensions">
+            <summary>
+            Contains extension methods for <see cref="T:Sels.Core.Locking.Provider.ILock"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.Provider.ILockExtensions.ThrowIfStaleAsync(Sels.Core.Locking.Provider.ILock,System.Threading.CancellationToken)">
+            <summary>
+            Checks that <paramref name="lock"/> is still active. If it's not a <see cref="T:Sels.Core.Locking.StaleLockException"/> will be thrown.
+            </summary>
+            <param name="lock">The lock to check</param>
+            <param name="token">Optional token to cancel the request</param>
+            <returns>Task containing the execution state</returns>
+            <exception cref="T:Sels.Core.Locking.StaleLockException"></exception>
+        </member>
+        <member name="T:Sels.Core.Locking.LockTimeoutException">
+            <summary>
+            Thrown when a lock could not be placed within the requested timeout.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.LockTimeoutException.Lock">
+            <summary>
+            The lock that could not be placed.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.LockTimeoutException.Timeout">
+            <summary>
+            The requested timeout.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.LockTimeoutException.Requester">
+            <summary>
+            Who requested the lock.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.LockTimeoutException.#ctor(System.String,Sels.Core.Locking.Provider.ILockInfo,System.TimeSpan)">
+            <inheritdoc cref="T:Sels.Core.Locking.LockTimeoutException"/>
+            <param name="requester"><inheritdoc cref="P:Sels.Core.Locking.LockTimeoutException.Requester"/></param>
+            <param name="lockInfo"><inheritdoc cref="P:Sels.Core.Locking.LockTimeoutException.Lock"/></param>
+            <param name="timeout"><inheritdoc cref="P:Sels.Core.Locking.LockTimeoutException.Timeout"/></param>
+        </member>
+        <member name="T:Sels.Core.Locking.ResourceAlreadyLockedException">
+            <summary>
+            Thrown when an action was requested to be performed on a lock but was not held by the requester.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.ResourceAlreadyLockedException.Lock">
+            <summary>
+            The lock the action was requested on.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.ResourceAlreadyLockedException.Requester">
+            <summary>
+            The requester who performed the action.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.ResourceAlreadyLockedException.#ctor(System.String,Sels.Core.Locking.Provider.ILockInfo)">
+            <inheritdoc cref="T:Sels.Core.Locking.LockTimeoutException"/>
+            <param name="requester"><inheritdoc cref="P:Sels.Core.Locking.ResourceAlreadyLockedException.Requester"/></param>
+            <param name="lockInfo"><inheritdoc cref="P:Sels.Core.Locking.ResourceAlreadyLockedException.Lock"/></param>
+        </member>
+        <member name="T:Sels.Core.Locking.StaleLockException">
+            <summary>
+            Thrown when a lock is currently not being held anymore by the requester. This can happen when requesters are shared or when locks expire.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.StaleLockException.Requester">
+            <summary>
+            The owner of the stale lock.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Locking.StaleLockException.Lock">
+            <summary>
+            The stale lock.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.StaleLockException.#ctor(System.String,Sels.Core.Locking.Provider.ILockInfo)">
+            <inheritdoc cref="T:Sels.Core.Locking.StaleLockException"/>
+            <param name="requester"><inheritdoc cref="P:Sels.Core.Locking.StaleLockException.Requester"/></param>
+            <param name="staleLock"><inheritdoc cref="P:Sels.Core.Locking.StaleLockException.Lock"/></param>
+            <exception cref="T:System.ArgumentException"></exception>
+            <exception cref="T:System.ArgumentNullException"></exception>
+        </member>
+    </members>
+</doc>

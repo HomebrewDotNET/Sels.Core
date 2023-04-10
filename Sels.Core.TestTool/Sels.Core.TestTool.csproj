@@ -34,6 +34,7 @@
     <ProjectReference Include="..\Sels.Core.Deployment\Sels.Core.Deployment.csproj" />
     <ProjectReference Include="..\Sels.Core.Factory.Autofac\Sels.Core.Factory.Autofac.csproj" />
     <ProjectReference Include="..\Sels.Core.Localization\Sels.Core.Localization.csproj" />
+    <ProjectReference Include="..\Sels.Core.Locking.Memory\Sels.Core.Locking.Memory.csproj" />
     <ProjectReference Include="..\Sels.Core.Mediator\Sels.Core.Mediator.csproj" />
   </ItemGroup>
 

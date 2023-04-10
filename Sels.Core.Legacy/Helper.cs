@@ -827,7 +827,7 @@ namespace Sels.Core
         public static class Async
         {
             /// <summary>
-            /// Sleeps for <paramref name="waitTime"/> milliseconds asynchronously.
+            /// Sleeps for <paramref name="waitTime"/> milliseconds asynchronously. When <paramref name="token"/> is cancelled no <see cref="TaskCanceledException"/> will be thrown.
             /// </summary>
             /// <param name="waitTime">How many milliseconds to sleep for</param>
             /// <param name="token">Optional token to cancel the sleeping</param>
@@ -840,6 +840,40 @@ namespace Sels.Core
                     await Task.Delay(waitTime, token);
                 }
                 catch (TaskCanceledException) { }
+            }
+        }
+        #endregion
+
+        #region Lock
+        /// <summary>
+        /// Contains static helper methods for working with thread locks.
+        /// </summary>
+        public static class Lock
+        {
+            /// <summary>
+            /// Tries to get a lock on <paramref name="lockObject"/> to execute <paramref name="action"/>.
+            /// </summary>
+            /// <param name="lockObject">The object to lock</param>
+            /// <param name="action">The delegate to execute when <paramref name="lockObject"/> could be locked.</param>
+            /// <returns>True if a lock could be placed on <paramref name="lockObject"/>, otherwise false</returns>
+            public static bool TryLockAndExecute(object lockObject, Action action)
+            {
+                lockObject.ValidateArgument(nameof(lockObject));
+                action.ValidateArgument(nameof(action));
+
+                if (Monitor.TryEnter(lockObject))
+                {
+                    try
+                    {
+                        action();
+                        return true;
+                    }
+                    finally
+                    {
+                        Monitor.Exit(lockObject);
+                    }
+                }
+                return false;
             }
         }
         #endregion

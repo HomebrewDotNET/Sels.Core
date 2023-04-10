@@ -11,7 +11,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddAutofacServiceFactory(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            Adds <see cref="T:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory"/> as <see cref="T:Sels.Core.Contracts.Factory.IServiceFactory"/>.
+            Adds <see cref="T:Sels.Core.Factory.Autofac.AutofacServiceFactory"/> as <see cref="T:Sels.Core.Factory.IServiceFactory"/>.
             </summary>
             <param name="services">Collection to add the service registration to</param>
             <returns><paramref name="services"/> for method chaining</returns>
@@ -23,67 +23,67 @@
         </member>
         <member name="M:Microsoft.Extensions.Hosting.HostBuilderRegistrations.UseAutofacWithServiceFactory(Microsoft.Extensions.Hosting.IHostBuilder,System.Action{Microsoft.Extensions.Hosting.HostBuilderContext,Autofac.ContainerBuilder})">
             <summary>
-            Configures autofac as the IoC container provider and registers a <see cref="T:Sels.Core.Contracts.Factory.IServiceFactory"/> using Autofac.
+            Configures autofac as the IoC container provider and registers a <see cref="!:IServiceFactory"/> using Autofac.
             </summary>
             <param name="hostBuilder">The builder to configure</param>
             <param name="containerBuilder">Optional delegate for configuring the autofac container</param>
             <returns><paramref name="hostBuilder"/> for method chaining</returns>
         </member>
-        <member name="T:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory">
+        <member name="T:Sels.Core.Factory.Autofac.AutofacServiceFactory">
             <summary>
             Service factory implemented using Autofac.
             </summary>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.#ctor(Autofac.ILifetimeScope)">
-            <inheritdoc cref="T:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory"/>
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.#ctor(Autofac.ILifetimeScope)">
+            <inheritdoc cref="T:Sels.Core.Factory.Autofac.AutofacServiceFactory"/>
             <param name="scope">The scope used to resolve services</param>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.Resolve``1">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.Resolve``1">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.Resolve``1(System.String)">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.Resolve``1(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.Resolve(System.Type)">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.Resolve(System.Type)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.Resolve(System.Type,System.String)">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.Resolve(System.Type,System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.ResolveAll``1">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.ResolveAll``1">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.ResolveAll(System.Type)">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.ResolveAll(System.Type)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.IsRegistered(System.Type)">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.IsRegistered(System.Type)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.IsRegistered``1">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.IsRegistered``1">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.IsRegistered(System.Type,System.String)">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.IsRegistered(System.Type,System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.IsRegistered``1(System.String)">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.IsRegistered``1(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.GetImplementerFor(System.Type)">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.GetImplementerFor(System.Type)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.GetImplementerFor``1">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.GetImplementerFor``1">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.GetImplementerFor(System.Type,System.String)">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.GetImplementerFor(System.Type,System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.GetImplementerFor``1(System.String)">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.GetImplementerFor``1(System.String)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.CreateScope">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.CreateScope">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Factory.Autofac.Factory.AutofacServiceFactory.Dispose">
+        <member name="M:Sels.Core.Factory.Autofac.AutofacServiceFactory.Dispose">
             <summary>
             Disposed of the current factory scope which in turn will dispose any resolved services (Taking into account the service lifetimes)
             </summary>

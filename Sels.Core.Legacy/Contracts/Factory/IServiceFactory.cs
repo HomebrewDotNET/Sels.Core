@@ -3,7 +3,7 @@ using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 
-namespace Sels.Core.Contracts.Factory
+namespace Sels.Core.Factory
 {
     /// <summary>
     /// A factory that is able to create named/unnamed servics based on the provided type. This type is NOT intended to be injected. Inject <see cref="IServiceFactoryScope"/> instead so scopes are properly managed.

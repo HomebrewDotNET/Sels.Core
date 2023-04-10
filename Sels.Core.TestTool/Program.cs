@@ -15,6 +15,11 @@ using Autofac.Extensions.DependencyInjection;
 using Autofac;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.Contracts.Factory;
+using Sels.Core.Factory;
+using Sels.Core.Locking.Provider;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Locking.Memory;
+using Sels.Core.Conversion.Extensions;
 
 namespace Sels.Core.TestTool
 {
@@ -24,7 +29,7 @@ namespace Sels.Core.TestTool
         {
             Helper.Console.Run(() =>
             {
-                TestAutofacServiceFactory();
+                TestMemoryLockingProviderOptions();
             });
         }
 
@@ -144,6 +149,29 @@ namespace Sels.Core.TestTool
             }
 
             var allConverters = factory.ResolveAll<ITypeConverter>();
+        }
+
+        internal static void TestMemoryLockingProviderOptions()
+        {
+            // Setup container
+            var provider = new ServiceCollection()
+                            .AddMemoryLockingProvider(x => x.ExpiryOffset = 1000)
+                            .AddConfigurationFromDirectory()
+                            .RegisterConfigurationService()
+                            .AddLogging(l =>
+                            {
+                                l.ClearProviders();
+                                l.AddSimpleConsole(options =>
+                                {
+                                    options.IncludeScopes = true;
+                                    options.SingleLine = true;
+                                    options.TimestampFormat = "hh:mm:ss ";
+                                }).SetMinimumLevel(LogLevel.Trace);
+                            })
+                            .BuildServiceProvider();
+            var memoryLockingProvider = provider.GetRequiredService<ILockingProvider>().Cast<MemoryLockingProvider>();
+            var options = memoryLockingProvider.Options;
+            Console.WriteLine(options.SerializeAsJson());
         }
 
         internal static ILogger CreateLogger(LogLevel level = LogLevel.Trace)
