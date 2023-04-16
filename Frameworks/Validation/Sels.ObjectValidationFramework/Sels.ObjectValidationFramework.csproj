@@ -1,27 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Jens Sels</Authors>
-    <Company>Homebrew IT</Company>
-    <Product>Object Validation Framework</Product>
-    <Description>
-      Framework that allows for creating validation profiles for objects using a fluent syntax.
-Used by projects maintained here: https://github.com/Jenssels1998
-    </Description>
-    <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
-    <Copyright>Jens Sels</Copyright>
-    <PackageTags>Sels</PackageTags>
-	  <!--For NuGet package-->
-	  <VersionPrefix>6.0.0</VersionPrefix>
-	  <BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
-	  <BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
-	  <VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
-	  <DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
-	  <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Authors>Jens Sels</Authors>
+		<Company>Homebrew IT</Company>
+		<Product>Object Validation Framework</Product>
+		<Description>
+			Framework for creating typed validation profiles using a fluent syntax.
+			Features:
+			- Typed validation profiles like AutoMapper
+			- Fluent syntax for creating validation rules
+			- Profiles can return a custom error message type
+			- Automatically traverses the hierarchy of an object to validate everything when validation exist for the type (Custom typed properties and collections are detected)
+			- Support for typed context objects that can be passed onto the validation profiles to provide the rules with more information (For example the lifecycle of the object, the old state in case of updates, ...)
+			- Custom info objects for validation delegates that contain extra information about the value currently being validated (Like it's source, if the value is part of a collection, the parent hierarchy, ...)
+			- Async support
+			- Extension methods for common validation rules 
+			- Default error messages for extension methods when using String as error message type
+			- Dependency injection through IValidator interface
+			- Extension methods for validating IOptions instances
+			
+			Start by inheriting from Sels.ObjectValidationFramework.Profile.ValidationProfile&lt;TError&gt;
+		</Description>
+		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
+		<Copyright>Jens Sels</Copyright>
+		<PackageTags>Sels;Fluent;Validation;ValidationProfile;OptionsValidation</PackageTags>
+		<!--For NuGet package-->
+		<VersionPrefix>6.0.0</VersionPrefix>
+		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
+		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
+		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
+		<DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
+		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+	</PropertyGroup>
 
 	<!--Exclude pdb files from release build-->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -38,24 +51,29 @@ Used by projects maintained here: https://github.com/Jenssels1998
 
 	<!--Clear local versions if already added and add NuGet package to local repository-->
 	<Target Name="NuGetPushToLocal" AfterTargets="Pack" Condition="'$(OS)' == 'Windows_NT' And Exists('C:\NuGet\nuget.exe')">
-    <Exec Command="if exist %USERPROFILE%\.nuget\packages\$(PackageId) rmdir /s /q %USERPROFILE%\.nuget\packages\$(PackageId)" />
-    <Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
-	<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
+		<Exec Command="if exist %USERPROFILE%\.nuget\packages\$(PackageId) rmdir /s /q %USERPROFILE%\.nuget\packages\$(PackageId)" />
+		<Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
+		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
-  
+
 	<ItemGroup>
-	  <Compile Remove="Exceptions\**" />
-	  <EmbeddedResource Remove="Exceptions\**" />
-	  <None Remove="Exceptions\**" />
+		<Compile Remove="Exceptions\**" />
+		<EmbeddedResource Remove="Exceptions\**" />
+		<None Remove="Exceptions\**" />
 	</ItemGroup>
-  
+
 	<ItemGroup>
-	  <None Remove="Extensions\Configuration\ComparableValidationExtensions.cs~RF1794ed.TMP" />
-	  <None Remove="Extensions\Configuration\FileSystemValidationExtensions.cs~RF418512.TMP" />
+		<None Remove="Extensions\Configuration\ComparableValidationExtensions.cs~RF1794ed.TMP" />
+		<None Remove="Extensions\Configuration\FileSystemValidationExtensions.cs~RF418512.TMP" />
 	</ItemGroup>
-  
+
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+		<ProjectReference Include="..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Models\Rules\" />
+		<Folder Include="Templates\Rule\" />
 	</ItemGroup>
 
 </Project>

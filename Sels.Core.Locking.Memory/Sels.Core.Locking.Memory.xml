@@ -22,7 +22,7 @@
             Provides application wide distributed locks by storing the locks in memory and making use of thread locks to handle concurrency.
             </summary>
         </member>
-        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.Options">
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProvider.OptionsMonitor">
             <summary>
             Contains configuration for the currnt instance.
             </summary>
@@ -32,9 +32,9 @@
             Indicates that the current instance is currently running cleanup on inactive locks.
             </summary>
         </member>
-        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.#ctor(Microsoft.Extensions.Options.IOptions{Sels.Core.Locking.Memory.MemoryLockingProviderOptions},Microsoft.Extensions.Logging.ILogger{Sels.Core.Locking.Memory.MemoryLockingProvider})">
+        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.#ctor(Microsoft.Extensions.Options.IOptionsMonitor{Sels.Core.Locking.Memory.MemoryLockingProviderOptions},Microsoft.Extensions.Logging.ILogger{Sels.Core.Locking.Memory.MemoryLockingProvider})">
             <inheritdoc cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider"/>
-            <param name="options"><inheritdoc cref="P:Sels.Core.Locking.Memory.MemoryLockingProvider.Options"/></param>
+            <param name="options"><inheritdoc cref="N:Sels.Core.Options"/></param>
             <param name="logger">Optional logger for tracing</param>
         </member>
         <member name="M:Sels.Core.Locking.Memory.MemoryLockingProvider.TryLockAsync(System.String,System.String,Sels.Core.Locking.Provider.ILock@,System.Nullable{System.TimeSpan},System.Boolean,System.Threading.CancellationToken)">
@@ -215,6 +215,11 @@
             The interval that will be used by <see cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider"/> to perform cleanup of the in-memeory locks to free up memory. When set to null no locks will be cleaned up.
             </summary>
         </member>
+        <member name="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.IsCleanupEnabled">
+            <summary>
+            If cleanup of locks is enabled.
+            </summary>
+        </member>
         <member name="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.CleanupMethod">
             <inheritdoc cref="T:Sels.Core.Locking.Memory.MemoryLockCleanupMethod"/>
         </member>
@@ -231,11 +236,6 @@
         <member name="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.ExpiryOffset">
             <summary>
             How many milliseconds before a lock expires to extend the expiry date. Is also used as offset when to notify that a lock expired.
-            </summary>
-        </member>
-        <member name="M:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.Validate">
-            <summary>
-            Validates the current instance and throws a <see cref="T:Sels.Core.Validation.ValidationException`2"/> if there are any errors.
             </summary>
         </member>
         <member name="T:Sels.Core.Locking.Memory.MemoryLockCleanupMethod">
@@ -262,6 +262,15 @@
             <summary>
             All inactive locks will be removed when the memory usage of the current process exceeds the configured amount (in bytes)
             </summary>
+        </member>
+        <member name="T:Sels.Core.Locking.Memory.ProviderOptionsValidationProfile">
+            <summary>
+            Validation profile for validating <see cref="T:Sels.Core.Locking.Memory.MemoryLockingProviderOptions"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Locking.Memory.ProviderOptionsValidationProfile.#ctor(Microsoft.Extensions.Logging.ILogger{Sels.Core.Locking.Memory.ProviderOptionsValidationProfile})">
+            <inheritdoc cref="T:Sels.Core.Locking.Memory.ProviderOptionsValidationProfile"/>
+            <param name="logger">Optional logger for tracing</param>
         </member>
     </members>
 </doc>

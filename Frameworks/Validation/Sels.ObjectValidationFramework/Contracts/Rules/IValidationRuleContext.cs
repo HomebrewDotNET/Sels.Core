@@ -6,7 +6,8 @@ namespace Sels.ObjectValidationFramework.Rules
     /// Provides validation rules with the information it needs to validate a value.
     /// </summary>
     /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
-    public interface IValidationRuleContext<out TEntity>
+    /// <typeparam name="TContext">Tyope of the optional context that can be supplied to a validation profile</typeparam>
+    public interface IValidationRuleContext<out TEntity, out TContext>
     {
         /// <summary>
         /// The entity that is being validated.
@@ -27,37 +28,28 @@ namespace Sels.ObjectValidationFramework.Rules
         /// <summary>
         /// Optional context that can be supplied to a validation rule.
         /// </summary>
-        object Context { get; }
-    }
-
-    /// <summary>
-    /// Provides validation rules with the information it needs to validate a value.
-    /// </summary>
-    /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
-    /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
-    public interface IValidationRuleContext<out TEntity, out TContext> : IValidationRuleContext<TEntity>
-    {
-        /// <summary>
-        /// Optional context that can be supplied to a validation rule. Is the default value for type <typeparamref name="TContext"/> if no context was supplied.
-        /// </summary>
-        new TContext Context { get; }
+        TContext Context { get; }
         /// <summary>
         /// If a context of type <typeparamref name="TContext"/> was supplied to the validation rule. If true then <see cref="Context"/> will be set, otherwise <see cref="Context"/> will the default value of <typeparamref name="TContext"/>.
         /// </summary>
-        bool WasContextSupplied { get; }
+        bool HasContext { get; }
+        /// <summary>
+        /// Property that can be used to pass data from the validator delegate to the error constructor delegate.
+        /// </summary>
+        object ValidatorResult { get; set; }
     }
 
     /// <summary>
     /// Provides validation rules with the information it needs to validate a value.
     /// </summary>
     /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
-    /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
+    /// <typeparam name="TInfo">Type of object that contains additional info that the validation target can use depending on what is being validated</typeparam>
     /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
-    /// <typeparam name="TValue">Type of value that is being validated</typeparam>
+    /// <typeparam name="TValue">Type of the value that is being validated</typeparam>
     public interface IValidationRuleContext<out TEntity, out TInfo, out TContext, out TValue> : IValidationRuleContext<TEntity, TContext>
     {
         /// <summary>
-        /// Contains additional information about the current validation rule.
+        /// Contains additional information about the current validation target.
         /// </summary>
         TInfo Info { get; }
 

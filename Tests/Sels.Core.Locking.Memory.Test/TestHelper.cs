@@ -12,15 +12,15 @@ namespace Sels.Core.Locking.Memory.Test
 {
     internal static class TestHelper
     {
-        public static IOptions<MemoryLockingProviderOptions> GetProviderOptionsMock(Action<MemoryLockingProviderOptions>? setter = null)
+        public static IOptionsMonitor<MemoryLockingProviderOptions> GetProviderOptionsMock(Action<MemoryLockingProviderOptions>? setter = null)
         {
-            var mock = new Mock<IOptions<MemoryLockingProviderOptions>>();
+            var mock = new Mock<IOptionsMonitor<MemoryLockingProviderOptions>>();
             var instance = new MemoryLockingProviderOptions()
             {
-                CleanupInterval = null
+                CleanupInterval = TimeSpan.Zero
             };
             setter?.Invoke(instance);
-            mock.Setup(x => x.Value).Returns(instance);
+            mock.Setup(x => x.CurrentValue).Returns(instance);
             return mock.Object;
         }
 

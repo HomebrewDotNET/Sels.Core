@@ -31,7 +31,7 @@ namespace Sels.Core.Options
         {
             var section = _configuration.GetSection(_sectionName);
             if (!section.Exists()) return;
-            section.Bind(options);
+            section.Bind(options, x => x.ErrorOnUnknownConfiguration = true);
         }
     }
 }

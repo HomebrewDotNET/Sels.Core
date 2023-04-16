@@ -4,7 +4,6 @@ using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Reflection;
 using Sels.ObjectValidationFramework.Rules;
-using Sels.ObjectValidationFramework.Contracts.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,146 +12,57 @@ using System.Linq.Expressions;
 using Sels.Core.Extensions.Logging;
 using System.Threading.Tasks;
 using static Sels.Core.Delegates.Async;
+using Sels.ObjectValidationFramework.Configurators;
+using Sels.ObjectValidationFramework.Target;
+using Sels.ObjectValidationFramework.Profile;
+using Sels.ObjectValidationFramework.Validators.Builder;
 
 namespace Sels.ObjectValidationFramework.Validators
 {
-    /// <inheritdoc cref="IValidationConfigurator{TEntity, TContext, TError}"/>
-    internal class EntityValidator<TEntity, TContext, TError> : IValidationConfigurator<TEntity, TContext, TError>
-    {
-        // Fields
-        private readonly bool _contextRequired;
-        private readonly IValidationConfigurator<TEntity, TError> _parent;
-
-        /// <inheritdoc cref="EntityValidator{TEntity, TContext, TError}"/>
-        /// <param name="contextRequired">If the context is required by the created rules</param>
-        /// <param name="parent">The parent validator to delegate calls to</param>
-        public EntityValidator(bool contextRequired, IValidationConfigurator<TEntity, TError> parent)
-        {
-            _contextRequired = contextRequired;
-            _parent = parent.ValidateArgument(nameof(parent));
-        }
-
-        /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
-        {
-            _parent.ValidateWhen(condition, configurator);
-            return this;
-        }
-        /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(Predicate<IValidationRuleContext<TEntity, TNewContext>> condition, Action<IValidationConfigurator<TEntity, TNewContext, TError>> configurator) where TNewContext : TContext
-        {
-            _parent.ValidateWhen(condition, configurator);
-            return this;
-        }
-        /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, TContext>> condition)
-        {
-            _parent.ValidateWhen(condition);
-            return this;
-        }
-        /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(Predicate<IValidationRuleContext<TEntity, TNewContext>> condition) where TNewContext : TContext
-        {
-            _parent.ValidateWhen(condition);
-            return this;
-        }
-
-        /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
-        {
-            _parent.ValidateWhen(condition, configurator);
-            return this;
-        }
-        /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(AsyncPredicate<IValidationRuleContext<TEntity, TNewContext>> condition, Action<IValidationConfigurator<TEntity, TNewContext, TError>> configurator) where TNewContext : TContext
-        {
-            _parent.ValidateWhen(condition, configurator);
-            return this;
-        }
-        /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition)
-        {
-            _parent.ValidateWhen(condition);
-            return this;
-        }
-        /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(AsyncPredicate<IValidationRuleContext<TEntity, TNewContext>> condition) where TNewContext : TContext
-        {
-            _parent.ValidateWhen(condition);
-            return this;
-        }
-
-        /// <inheritdoc/>
-        IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TContext, TElement> IValidationConfigurator<TEntity, TContext, TError>.ForElements<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, RuleSettings settings)
-        {
-            return _parent.ForElements(property, settings).WithContext<TContext>(_contextRequired);
-        }
-        /// <inheritdoc/>
-        IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TContext, TValue> IValidationConfigurator<TEntity, TContext, TError>.ForElements<TElement, TValue>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Func<TElement, TValue> valueSelector, RuleSettings settings)
-        {
-            return _parent.ForElements(property, valueSelector, settings).WithContext<TContext>(_contextRequired);
-        }
-        /// <inheritdoc/>
-        IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TContext, TPropertyValue> IValidationConfigurator<TEntity, TContext, TError>.ForProperty<TPropertyValue>(Expression<Func<TEntity, TPropertyValue>> property, RuleSettings settings)
-        {
-            return _parent.ForProperty(property, settings).WithContext<TContext>(_contextRequired);
-        }
-        /// <inheritdoc/>
-        IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TContext, TValue> IValidationConfigurator<TEntity, TContext, TError>.ForProperty<TPropertyValue, TValue>(Expression<Func<TEntity, TPropertyValue>> property, Func<TPropertyValue, TValue> valueSelector, RuleSettings settings)
-        {
-            return _parent.ForProperty(property, valueSelector, settings).WithContext<TContext>(_contextRequired);
-        }
-        /// <inheritdoc/>
-        IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TContext, TEntity> IValidationConfigurator<TEntity, TContext, TError>.ForSource(RuleSettings settings)
-        {
-            return _parent.ForSource(settings).WithContext<TContext>(_contextRequired);
-        }
-        /// <inheritdoc/>
-        IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TContext, TValue> IValidationConfigurator<TEntity, TContext, TError>.ForSource<TValue>(Func<TEntity, TValue> valueSelector, RuleSettings settings)
-        {
-            return _parent.ForSource(valueSelector, settings).WithContext<TContext>(_contextRequired);
-        }
-    }
-
     /// <summary>
     /// Validator that allows for the creation of validation rules for type <typeparamref name="TEntity"/> and using the rules to validate instances of type <typeparamref name="TEntity"/>.
     /// </summary>
     /// <typeparam name="TEntity">Type of object to validate</typeparam>
+    /// <typeparam name="TContext">The base context used for all validation rules created using the current instance</typeparam>
     /// <typeparam name="TError">Type of validation error that the validator returns</typeparam>
-    internal class EntityValidator<TEntity, TError> : EntityValidator<TError>, IValidationConfigurator<TEntity, TError>
+    internal class EntityValidator<TEntity, TContext, TError> : EntityValidator<TError>, IValidationConfigurator<TEntity, TContext, TError>
     {
         // Fields
-        private readonly List<BaseValidationRule<TEntity, TError>> _rules = new List<BaseValidationRule<TEntity, TError>>();
-        private readonly List<AsyncPredicate<IValidationRuleContext<TEntity, object>>> _currentConditions = new List<AsyncPredicate<IValidationRuleContext<TEntity, object>>>();
+        private readonly TargetExecutionOptions _defaultSettings;
+        private readonly List<BaseValidationTarget<TEntity, TContext, TError>> _targets = new List<BaseValidationTarget<TEntity, TContext, TError>>();
+        private readonly List<AsyncPredicate<IValidationRuleContext<TEntity, TContext>>> _currentConditions = new List<AsyncPredicate<IValidationRuleContext<TEntity, TContext>>>();
+        private readonly Action<EntityValidator<TError>> _onValidatorCreatedHandler;
 
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="loggers">Loggers for tracing</param>
-        internal EntityValidator(IEnumerable<ILogger> loggers = null) : base(loggers)
+        /// <inheritdoc cref="EntityValidator{TEntity, TContext, TError}"/>
+        /// <param name="onValidatorCreatedHandler">Delegate called when the current validator creates another (sub) validator</param>
+        /// <param name="defaultSettings">The default settings to use for all created validation targets</param>
+        /// <param name="logger"><inheritdoc cref="EntityValidator{TError}._logger"/></param>
+        internal EntityValidator(Action<EntityValidator<TError>> onValidatorCreatedHandler, TargetExecutionOptions defaultSettings, ILogger logger = null) : base(logger)
         {
-
+            _defaultSettings = defaultSettings;
+            _onValidatorCreatedHandler = onValidatorCreatedHandler.ValidateArgument(nameof(onValidatorCreatedHandler));
         }
        
         /// <summary>
-        /// Adds a new rule that this validator can use to validate objects of type <typeparamref name="TEntity"/>.
+        /// Adds a new validation target to the current validator containing validation rules.
         /// </summary>
-        /// <param name="rule">Rule to add</param>
-        internal void AddNewRule(BaseValidationRule<TEntity, TError> rule)
+        /// <param name="target">The validation target to add</param>
+        internal void AddTargetRule(BaseValidationTarget<TEntity, TContext, TError> target)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
-                rule.ValidateArgument(nameof(rule));
+                target.ValidateArgument(nameof(target));
 
-                _rules.Add(rule);
+                _targets.Add(target);
             }
         }
 
         #region Configuration
+        #region Target
         /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TElement> ForElements<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, RuleSettings settings = RuleSettings.None)
+        public IValidationTargetRootConfigurator<TEntity, TError, TContext, CollectionPropertyValidationInfo, TElement> ForElements<TElement>(Expression<Func<TEntity, IEnumerable<TElement>>> property, TargetExecutionOptions settings = TargetExecutionOptions.None)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 property.ValidateArgument(nameof(property));
 
@@ -160,38 +70,9 @@ namespace Sels.ObjectValidationFramework.Validators
             }
         }
         /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, CollectionPropertyValidationInfo, TValue> ForElements<TElement, TValue>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Func<TElement, TValue> valueSelector, RuleSettings settings = RuleSettings.None)
+        public IValidationTargetRootConfigurator<TEntity, TError, TContext, CollectionPropertyValidationInfo, TValue> ForElements<TElement, TValue>(Expression<Func<TEntity, IEnumerable<TElement>>> property, Func<TElement, TValue> valueSelector, TargetExecutionOptions settings = TargetExecutionOptions.None)
         {
-            using (_loggers.TraceMethod(this))
-            {
-                property.ValidateArgument(nameof(property));
-                valueSelector.ValidateArgument(nameof(valueSelector));              
-                if(!property.TryExtractProperty(out var propertyInfo) || !propertyInfo.ReflectedType.IsAssignableTo<TEntity>())
-                {
-                    throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
-                }
-
-                return new CollectionPropertyValidationRule<TEntity, TError, TElement, TValue>(propertyInfo, valueSelector, this, settings, _currentConditions, _loggers);
-            }
-        }
-        /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TPropertyValue> ForProperty<TPropertyValue>(Expression<Func<TEntity, TPropertyValue>> property, RuleSettings settings = RuleSettings.None)
-        {
-            using (_loggers.TraceMethod(this))
-            {
-                property.ValidateArgument(nameof(property));
-                if (!property.TryExtractProperty(out var propertyInfo) || !typeof(TEntity).IsAssignableTo(propertyInfo.ReflectedType))
-                {
-                    throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
-                }
-
-                return new PropertyValidationRule<TEntity, TError, TPropertyValue, TPropertyValue>(propertyInfo, false, x => x, this, settings, _currentConditions, _loggers);
-            }
-        }
-        /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, PropertyValidationInfo, TValue> ForProperty<TPropertyValue, TValue>(Expression<Func<TEntity, TPropertyValue>> property, Func<TPropertyValue, TValue> valueSelector, RuleSettings settings = RuleSettings.None)
-        {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 property.ValidateArgument(nameof(property));
                 valueSelector.ValidateArgument(nameof(valueSelector));
@@ -200,31 +81,63 @@ namespace Sels.ObjectValidationFramework.Validators
                     throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
                 }
 
-                return new PropertyValidationRule<TEntity, TError, TPropertyValue, TValue>(propertyInfo, true, valueSelector, this, settings, _currentConditions, _loggers);
+                return new CollectionPropertyValidationTarget<TEntity, TError, TContext, TElement, TValue>(propertyInfo, property.Compile(), valueSelector, this, _defaultSettings | settings, _currentConditions, _logger);
             }
         }
         /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TEntity> ForSource(RuleSettings settings = RuleSettings.None)
+        public IValidationTargetRootConfigurator<TEntity, TError, TContext, PropertyValidationInfo, TPropertyValue> ForProperty<TPropertyValue>(Expression<Func<TEntity, TPropertyValue>> property, TargetExecutionOptions settings = TargetExecutionOptions.None)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
+            {
+                property.ValidateArgument(nameof(property));
+                if (!property.TryExtractProperty(out var propertyInfo) || !typeof(TEntity).IsAssignableTo(propertyInfo.ReflectedType))
+                {
+                    throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
+                }
+
+                return new PropertyValidationTarget<TEntity, TError, TContext, TPropertyValue, TPropertyValue>(propertyInfo, false, property.Compile(), x => x, this, _defaultSettings | settings, _currentConditions, _logger);
+            }
+        }
+        /// <inheritdoc/>
+        public IValidationTargetRootConfigurator<TEntity, TError, TContext, PropertyValidationInfo, TValue> ForProperty<TPropertyValue, TValue>(Expression<Func<TEntity, TPropertyValue>> property, Func<TPropertyValue, TValue> valueSelector, TargetExecutionOptions settings = TargetExecutionOptions.None)
+        {
+            using (_logger.TraceMethod(this))
+            {
+                property.ValidateArgument(nameof(property));
+                valueSelector.ValidateArgument(nameof(valueSelector));
+                if (!property.TryExtractProperty(out var propertyInfo) || !propertyInfo.ReflectedType.IsAssignableTo<TEntity>())
+                {
+                    throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
+                }
+
+                return new PropertyValidationTarget<TEntity, TError, TContext, TPropertyValue, TValue>(propertyInfo, true, property.Compile(), valueSelector, this, _defaultSettings | settings, _currentConditions, _logger);
+            }
+        }
+        /// <inheritdoc/>
+        public IValidationTargetRootConfigurator<TEntity, TError, TContext, NullValidationInfo, TEntity> ForSource(TargetExecutionOptions settings = TargetExecutionOptions.None)
+        {
+            using (_logger.TraceMethod(this))
             {
                 return ForSource(x => x, settings);
             }
         }
         /// <inheritdoc/>
-        public IValidationRuleConfigurator<TEntity, TError, NullValidationInfo, TValue> ForSource<TValue>(Func<TEntity, TValue> valueSelector, RuleSettings settings = RuleSettings.None)
+        public IValidationTargetRootConfigurator<TEntity, TError, TContext, NullValidationInfo, TValue> ForSource<TValue>(Func<TEntity, TValue> valueSelector, TargetExecutionOptions settings = TargetExecutionOptions.None)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 valueSelector.ValidateArgument(nameof(valueSelector));
-                
-                return new SourceValidationRule<TEntity, TError, TValue>(valueSelector, this, settings, _currentConditions, _loggers);
+
+                return new SourceValidationTarget<TEntity, TError, TContext, TValue>(valueSelector, this, _defaultSettings | settings, _currentConditions, _logger);
             }
         }
+        #endregion
+
+        #region Condition
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, object>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator)
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 condition.ValidateArgument(nameof(condition));
                 configurator.ValidateArgument(nameof(configurator));
@@ -238,55 +151,37 @@ namespace Sels.ObjectValidationFramework.Validators
             }
         }
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(AsyncPredicate<IValidationRuleContext<TEntity, TNewContext>> condition, Action<IValidationConfigurator<TEntity, TNewContext, TError>> configurator, bool contextRequired = true) where TNewContext : TContext
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 condition.ValidateArgument(nameof(condition));
                 configurator.ValidateArgument(nameof(configurator));
 
-                AsyncPredicate<IValidationRuleContext<TEntity, object>> contextCondition = x => {
-                    var context = new ValidationRuleContext<TEntity, TContext>(x.Source, x.Context, x.ElementIndex, x.Parents);
+                AsyncPredicate<IValidationRuleContext<TEntity, TContext>> contextCondition = x => {
+                    var context = new ValidationRuleContext<TEntity, TNewContext>(x.Source, x.Context.CastOrDefault<TNewContext>(), x.ElementIndex, x.Parents);
+                    if (contextRequired && !context.HasContext) return Task.FromResult(false);
                     return condition(context);
                 };
 
-                using (new ScopedAction(() => _currentConditions.Add(contextCondition), () => _currentConditions.Remove(contextCondition)))
+                var validator = new EntityValidator<TEntity, TNewContext, TError>(_onValidatorCreatedHandler, _defaultSettings, _logger);
+                validator.ValidateWhen(x =>
                 {
-                    configurator(new EntityValidator<TEntity, TContext, TError>(false, this));
-                }
+                    if (contextRequired && !x.HasContext) return Task.FromResult(false);
+                    return condition(x);
+                }, configurator);
 
-                return this;
-            }
-        }
-        /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen(AsyncPredicate<IValidationRuleContext<TEntity, object>> condition)
-        {
-            using (_loggers.TraceMethod(this))
-            {
-                condition.ValidateArgument(nameof(condition));
 
-                _currentConditions.Add(condition);
-
-                return this;
-            }
-        }
-        /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition)
-        {
-            using (_loggers.TraceMethod(this))
-            {
-                condition.ValidateArgument(nameof(condition));
-
-                _currentConditions.Add(x => condition(new ValidationRuleContext<TEntity, TContext>(x.Source, x.Context, x.ElementIndex, x.Parents)));
+                _onValidatorCreatedHandler(validator);
 
                 return this;
             }
         }
 
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, object>> condition, Action<IValidationConfigurator<TEntity, TError>> configurator)
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 condition.ValidateArgument(nameof(condition));
                 configurator.ValidateArgument(nameof(configurator));
@@ -295,66 +190,120 @@ namespace Sels.ObjectValidationFramework.Validators
             }
         }
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition, Action<IValidationConfigurator<TEntity, TContext, TError>> configurator)
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateWhen<TNewContext>(Predicate<IValidationRuleContext<TEntity, TNewContext>> condition, Action<IValidationConfigurator<TEntity, TNewContext, TError>> configurator, bool contextRequired = true) where TNewContext : TContext
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 condition.ValidateArgument(nameof(condition));
                 configurator.ValidateArgument(nameof(configurator));
 
-                return ValidateWhen<TContext>(x => Task.FromResult(condition(x)), configurator);
+                return ValidateWhen<TNewContext>(x => Task.FromResult(condition(x)), configurator, contextRequired);
             }
+        }
+        
+        /// <inheritdoc/>
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateNextWhen(AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition)
+        {
+            condition.ValidateArgument(nameof(condition));
+            _currentConditions.Add(condition);
+            return this;
         }
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen(Predicate<IValidationRuleContext<TEntity, object>> condition)
+        public IValidationConfigurator<TEntity, TContext, TError> ValidateNextWhen(Predicate<IValidationRuleContext<TEntity, TContext>> condition)
         {
-            using (_loggers.TraceMethod(this))
-            {
-                condition.ValidateArgument(nameof(condition));
+            condition.ValidateArgument(nameof(condition));
+            return ValidateNextWhen(x => Task.FromResult(condition(x)));
+        }
+        
+        /// <inheritdoc/>
+        public ISwitchRootConditionConfigurator<TEntity, TError, TContext, TContext, TValue> Switch<TValue>(Func<TEntity, TValue> valueSelector, Predicate<IValidationRuleContext<TEntity, TContext>> condition = null)
+        {
+            valueSelector.ValidateArgument(nameof(valueSelector));
 
-                return ValidateWhen(x => Task.FromResult(condition(x)));
-            }
+            return Switch(valueSelector, condition != null ? x => Task.FromResult(condition(x)) : (AsyncPredicate<IValidationRuleContext<TEntity, TContext>>)null);
         }
         /// <inheritdoc/>
-        public IValidationConfigurator<TEntity, TError> ValidateWhen<TContext>(Predicate<IValidationRuleContext<TEntity, TContext>> condition)
+        public ISwitchRootConditionConfigurator<TEntity, TError, TContext, TContext, TValue> Switch<TValue>(Func<TEntity, TValue> valueSelector, AsyncPredicate<IValidationRuleContext<TEntity, TContext>> condition = null)
         {
-            using (_loggers.TraceMethod(this))
-            {
-                condition.ValidateArgument(nameof(condition));
+            valueSelector.ValidateArgument(nameof(valueSelector));
 
-                return ValidateWhen<TContext>(x => Task.FromResult(condition(x)));
+            // Set on exit action to handle the condition for the current builder
+            Action onExitAction;
+            if (condition != null)
+            {
+                _currentConditions.Add(condition);
+                onExitAction = () => _currentConditions.Remove(condition);
             }
+            else
+            {
+                onExitAction = () => { };
+            }
+
+            return new ValidatorSwitchConditionBuilder<TEntity, TError, TContext, TContext, TValue>(this, this, valueSelector, onExitAction);
         }
+
+        /// <inheritdoc/>
+        public ISwitchRootConditionConfigurator<TEntity, TError, TContext, TNewContext, TValue> Switch<TNewContext, TValue>(Func<TEntity, TValue> valueSelector, Predicate<IValidationRuleContext<TEntity, TNewContext>> condition = null, bool contextRequired = true)
+        where TNewContext : TContext
+        {
+            valueSelector.ValidateArgument(nameof(valueSelector));
+
+            return Switch(valueSelector, condition != null ? x => Task.FromResult(condition(x)) : (AsyncPredicate<IValidationRuleContext<TEntity, TNewContext>>)null, contextRequired);
+        }
+        /// <inheritdoc/>
+        public ISwitchRootConditionConfigurator<TEntity, TError, TContext, TNewContext, TValue> Switch<TNewContext, TValue>(Func<TEntity, TValue> valueSelector, AsyncPredicate<IValidationRuleContext<TEntity, TNewContext>> condition = null, bool contextRequired = true)
+        where TNewContext : TContext
+        {
+            valueSelector.ValidateArgument(nameof(valueSelector));
+
+            // Create validator that targets new context and add condition if needed
+            var targetBuilder = new EntityValidator<TEntity, TNewContext, TError>(_onValidatorCreatedHandler, _defaultSettings, _logger);
+            targetBuilder.ValidateNextWhen(x =>
+            {
+                if (contextRequired && !x.HasContext) return Task.FromResult(false);
+                return condition != null ? condition(x) : Task.FromResult(true);
+            });
+            
+            // Add the validator when the switch builder exists
+            Action onExitAction = () => _onValidatorCreatedHandler(targetBuilder);
+            
+
+            return new ValidatorSwitchConditionBuilder<TEntity, TError, TContext, TNewContext, TValue>(this, targetBuilder, valueSelector, onExitAction);
+        }
+        #endregion
         #endregion
 
         #region Validation
         /// <inheritdoc/>
         internal override bool CanValidate(object objectToValidate, object context, int? elementIndex = null, Parent[] parents = null)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 return objectToValidate != null && objectToValidate.IsAssignableTo<TEntity>();
             }
         }
 
         /// <inheritdoc/>
-        internal override async Task<TError[]> Validate(object objectToValidate, object context, int? elementIndex = null, Parent[] parents = null)
+        internal override async Task<ValidationError<TError>[]> Validate(object objectToValidate, object context, int? elementIndex = null, Parent[] parents = null)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 objectToValidate.ValidateArgument(x => CanValidate(objectToValidate, context, elementIndex, parents), x => new NotSupportedException($"Current validator cannot validate <{(objectToValidate == null ? "null references" : objectToValidate.GetType().ToString())}>"));
 
                 var typedObjectToValidate = objectToValidate.Cast<TEntity>();
-                var validationRuleContext = new ValidationRuleContext<TEntity, object>(typedObjectToValidate, context, elementIndex, parents);
-                var errors = new List<TError>();
+                var castedContext = context.CastOrDefault<TContext>();
+                var validationRuleContext = new ValidationRuleContext<TEntity, TContext>(typedObjectToValidate, castedContext, elementIndex, parents);
+                var errors = new List<ValidationError<TError>>();
 
-                foreach(var rule in _rules)
+                _logger.Log($"Executing all validation rules defined for object of type <{typeof(TEntity)}>");
+
+                foreach(var target in _targets)
                 {
-                    if(await rule.CanValidate(validationRuleContext))
+                    if(await target.CanValidate(validationRuleContext).ConfigureAwait(false))
                     {
                         try
                         {
-                            var validationErrors = await rule.Validate(typedObjectToValidate, context, elementIndex, parents);
+                            var validationErrors = await target.ValidateObject(typedObjectToValidate, castedContext, elementIndex, parents).ConfigureAwait(false);
 
                             if (validationErrors.HasValue())
                             {
@@ -363,14 +312,8 @@ namespace Sels.ObjectValidationFramework.Validators
                         }
                         catch(Exception ex)
                         {
-                            if (rule.IgnoreExceptions)
-                            {
-                                _loggers.LogException(LogLevel.Warning, $"Rule has ignore exception enabled. Ignoring", ex);
-                            }
-                            else
-                            {
-                                throw;
-                            }
+                            _logger.Log($"Validation target <{target.Identifier}> for object of type <{typeof(TEntity)}> threw an exception while executing it's validation rules", ex);
+                            throw;
                         }
                         
                     }
@@ -389,11 +332,16 @@ namespace Sels.ObjectValidationFramework.Validators
     internal abstract class EntityValidator<TError>
     {
         // Fields
-        protected readonly IEnumerable<ILogger> _loggers;
+        /// <summary>
+        /// Optional logger for tracing.
+        /// </summary>
+        protected readonly ILogger _logger;
 
-        public EntityValidator(IEnumerable<ILogger> loggers = null)
+        /// <inheritdoc cref="EntityValidator{TError}"/>
+        /// <param name="logger"><inheritdoc cref="_logger"/></param>
+        public EntityValidator(ILogger logger = null)
         {
-            _loggers = loggers;
+            _logger = logger;
         }
 
         #region Validation
@@ -414,7 +362,7 @@ namespace Sels.ObjectValidationFramework.Validators
         /// <param name="elementIndex">Index of <paramref name="objectToValidate"/> if it was part of a collection. Will be null if it wasn't part of a collection.</param>
         /// <param name="parents">Hierarchy of object if property fallthrough is enabled. The previous element is always the parent of the next element.</param>
         /// <returns>All the validation errors for <paramref name="objectToValidate"/></returns>
-        internal abstract Task<TError[]> Validate(object objectToValidate, object context, int? elementIndex = null, Parent[] parents = null);
+        internal abstract Task<ValidationError<TError>[]> Validate(object objectToValidate, object context, int? elementIndex = null, Parent[] parents = null);
         #endregion
     }
 }
