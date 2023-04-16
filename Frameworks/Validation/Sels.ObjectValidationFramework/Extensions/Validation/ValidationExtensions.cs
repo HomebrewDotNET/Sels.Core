@@ -12,11 +12,12 @@ namespace Sels.ObjectValidationFramework.Extensions.Validation
         /// Validates <paramref name="objectToValidate"/> using a profile of type <typeparamref name="TProfile"/>.
         /// </summary>
         /// <typeparam name="TProfile">Type of profile to use for validation</typeparam>
+        /// <typeparam name="TEntity">The type of the entity yo validate</typeparam>
         /// <typeparam name="TError">Type of validation error to return</typeparam>
         /// <param name="objectToValidate">Object to validate</param>
-        /// <param name="context">Type of optional context to moddify the behaviour of this validator</param>
-        /// <returns>All validation errors for <paramref name="objectToValidate"/></returns>
-        public static TError[] Validate<TProfile, TError>(this object objectToValidate, object context = null) where TProfile : ValidationProfile<TError>, new()
+        /// <param name="context">Optional object containing additional information for the validators</param>
+        /// <returns>The validation result for <paramref name="objectToValidate"/></returns>
+        public static ValidationResult<TEntity, TError> ValidateAgainstProfile<TProfile, TEntity, TError>(this TEntity objectToValidate, object context = null) where TProfile : ValidationProfile<TError>, new()
         {
             objectToValidate.ValidateArgument(nameof(objectToValidate));
 

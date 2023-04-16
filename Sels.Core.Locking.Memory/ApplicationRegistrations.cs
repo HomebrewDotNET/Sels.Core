@@ -3,6 +3,7 @@ using Sels.Core.Locking.Memory;
 using Sels.Core.Locking.Provider;
 using System;
 using System.Collections.Generic;
+using System.IO.Pipes;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
@@ -27,6 +28,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Add configuration handler
             services.BindOptionsFromConfig<MemoryLockingProviderOptions>();
+
+            // Add option validator
+            services.AddValidationProfile<ProviderOptionsValidationProfile, string>(ServiceLifetime.Singleton);
+            services.AddOptionProfileValidator<MemoryLockingProviderOptions, ProviderOptionsValidationProfile>();
 
             // Add custom delegate
             if(configurator != null) services.Configure<MemoryLockingProviderOptions>(configurator);

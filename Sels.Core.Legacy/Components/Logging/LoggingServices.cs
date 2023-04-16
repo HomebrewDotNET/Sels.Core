@@ -62,7 +62,11 @@ namespace Sels.Core.Components.Logging
 
             lock (_threadLock)
             {
-                var logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger(name);
+                var logger = LoggerFactory.Create(builder =>
+                {
+                    builder.SetMinimumLevel(logLevel);
+                    builder.AddConsole();
+                }).CreateLogger(name);
                 RegisterLogger(logger);
             }
         }

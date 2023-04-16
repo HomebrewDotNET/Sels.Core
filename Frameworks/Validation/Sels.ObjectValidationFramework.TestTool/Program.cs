@@ -1,9 +1,13 @@
 ﻿using Sels.Core;
+using Sels.Core.Components.Logging;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Linq;
 using Sels.ObjectValidationFramework.TestTool.Objects;
 using Sels.ObjectValidationFramework.TestTool.ValidationProfiles;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Sels.ObjectValidationFramework.TestTool
 {
@@ -14,6 +18,7 @@ namespace Sels.ObjectValidationFramework.TestTool
             Helper.Console.Run(() =>
             {
                 Console.WriteLine("Testing person validation");
+                LoggingServices.AddConsole("Program", Microsoft.Extensions.Logging.LogLevel.Error);
 
                 var profile = new PersonValidationProfile();
 
@@ -59,16 +64,27 @@ namespace Sels.ObjectValidationFramework.TestTool
                             FirstName = "Some name",
                             LastName = "Same last name",
                             Age = 36,
-                            Gender = Gender.Male                        
+                            Gender = Gender.Other                        
+                        },
+                        new Person()
+                        {
+                            Id = -1,
+                            FirstName = "Some name",
+                            LastName = "Same last name",
+                            NickName = "Some nickname",
+                            Age = 55,
+                            Gender = Gender.Female
                         }
                     }
-                };
+                }.AsEnumerable();
 
-                var validErrors = profile.Validate(validPerson);
+                var validResult = profile.Validate(validPerson).ChangeMessageTo(x => $"{x.FullDisplayName}: {x.Message}");
+                var validErrors = validResult.Errors.Select(x => x.Message);
 
                 Console.WriteLine($"Errors on valid person: {Environment.NewLine}{(validErrors.HasValue() ? validErrors.JoinStringNewLine() : "None")}");
 
-                var inValidErrors = profile.Validate(inValidPerson);
+                var inValidResult = profile.Validate(inValidPerson).ChangeMessageTo(x => $"{x.FullDisplayName}: {x.Message}");
+                var inValidErrors = inValidResult.Errors.Select(x => x.Message);
 
                 Console.WriteLine($"Errors on invalid person: {Environment.NewLine}{(inValidErrors.HasValue() ? inValidErrors.JoinStringNewLine() : "None")}");
 

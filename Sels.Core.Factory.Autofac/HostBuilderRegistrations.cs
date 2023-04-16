@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
+using Sels.Core.Factory;
 
 namespace Microsoft.Extensions.Hosting
 {

@@ -2015,6 +2015,27 @@
             <param name="errors"><inheritdoc cref="P:Sels.Core.Validation.ValidationException`2.Errors"/></param>
             <param name="entityName">Optional display name for <paramref name="entity"/></param>
         </member>
+        <member name="T:Sels.Core.Validation.ValidationException">
+            <summary>
+            Thrown when an entity contained validation errors.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Validation.ValidationException.Entity">
+            <summary>
+            The entity that failed the validation.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Validation.ValidationException.Errors">
+            <summary>
+            The validation errors for <see cref="P:Sels.Core.Validation.ValidationException.Entity"/>
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Validation.ValidationException.#ctor(System.Object,System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <inheritdoc cref="T:Sels.Core.Validation.ValidationException`2"/>
+            <param name="entity"><inheritdoc cref="P:Sels.Core.Validation.ValidationException.Entity"/></param>
+            <param name="errors"><inheritdoc cref="P:Sels.Core.Validation.ValidationException.Errors"/></param>
+            <param name="entityName">Optional display name for <paramref name="entity"/></param>
+        </member>
         <member name="T:Sels.Core.Extensions.Calculation.CalculationExtensions">
             <summary>
             Contains extension for doing math related actions.

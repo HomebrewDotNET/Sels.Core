@@ -29,14 +29,15 @@ namespace Sels.Core.Locking.Memory
         // Fields
         private readonly Dictionary<string, MemoryLockInfo> _locks = new Dictionary<string, MemoryLockInfo>(StringComparer.OrdinalIgnoreCase);
         private readonly ILogger<MemoryLockingProvider> _logger;
-        private readonly CancellationTokenSource _cancellationTokenSource;
-        private readonly Task _cleanupTask;
+        private CancellationTokenSource _cancellationTokenSource;
+        private Task _cleanupTask;
 
         // Properties
         /// <summary>
         /// Contains configuration for the currnt instance.
         /// </summary>
-        public MemoryLockingProviderOptions Options { get; }
+        public IOptionsMonitor<MemoryLockingProviderOptions> OptionsMonitor { get; }
+
         /// <summary>
         /// Indicates that the current instance is currently running cleanup on inactive locks.
         /// </summary>
@@ -45,15 +46,35 @@ namespace Sels.Core.Locking.Memory
         /// <inheritdoc cref="MemoryLockingProvider"/>
         /// <param name="options"><inheritdoc cref="Options"/></param>
         /// <param name="logger">Optional logger for tracing</param>
-        public MemoryLockingProvider(IOptions<MemoryLockingProviderOptions> options, ILogger<MemoryLockingProvider> logger = null)
+        public MemoryLockingProvider(IOptionsMonitor<MemoryLockingProviderOptions> options, ILogger<MemoryLockingProvider> logger = null)
         {
-            Options = options.ValidateArgument(nameof(options)).Value;
-            Options.Validate();
+            OptionsMonitor = options.ValidateArgument(nameof(options));
             _logger = logger;
 
             // Start cleanup task
             _cancellationTokenSource = new CancellationTokenSource();
-            if(Options.CleanupInterval.HasValue) _cleanupTask = RunCleanupDuringLifetime(_cancellationTokenSource.Token);
+            if(OptionsMonitor.CurrentValue.IsCleanupEnabled) _cleanupTask = RunCleanupDuringLifetime(_cancellationTokenSource.Token);
+
+            // Monitor options for changes
+            options.OnChange((o, n) =>
+            {
+                // Start if not running
+                if((_cleanupTask == null || _cleanupTask.IsCompleted) && o.IsCleanupEnabled)
+                {
+                    _cleanupTask = RunCleanupDuringLifetime(_cancellationTokenSource.Token);
+                    return;
+                }
+
+                // Stop if running
+                if(_cleanupTask != null && !o.IsCleanupEnabled)
+                {
+                    _cancellationTokenSource.Cancel();
+                    _cleanupTask.ConfigureAwait(false).GetAwaiter().GetResult();
+                    _cancellationTokenSource.Dispose();
+                    _cancellationTokenSource = new CancellationTokenSource();
+                    return;
+                }
+            });
         }
 
         /// <inheritdoc/>
@@ -419,7 +440,7 @@ namespace Sels.Core.Locking.Memory
             lock (memoryLock)
             {
                 var hasLock = HasLock(memoryLock.Resource, requester);
-                if (!hasLock && Options.ThrowOnStaleLock)
+                if (!hasLock && OptionsMonitor.CurrentValue.ThrowOnStaleLock)
                 {
                     if (memoryLock.LockedBy.HasValue()) throw new ResourceAlreadyLockedException(requester, memoryLock);
                     throw new StaleLockException(requester, memoryLock);
@@ -432,46 +453,54 @@ namespace Sels.Core.Locking.Memory
         {
             using (_logger.TraceMethod(this))
             {
+                var sleepTime = 1000;
                 while (!token.IsCancellationRequested)
                 {
                     try
                     {
-                        if (!Options.CleanupInterval.HasValue)
+                        var options = OptionsMonitor.CurrentValue;
+                        sleepTime = options.CleanupInterval.TotalMilliseconds.ChangeType<int>();
+                        if (!options.IsCleanupEnabled)
                         {
-                            _logger.Warning($"Cleanup task was started but no interval was set. Stopping");
+                            _logger.Warning($"Cleanup task was started but cleanup is disabled. Stopping");
                             return;
                         }
-                        _logger.Debug($"Running cleanup in <{Options.CleanupInterval.Value}>");
-                        await Helper.Async.Sleep(Options.CleanupInterval.Value.TotalMilliseconds.ChangeType<int>(), token).ConfigureAwait(false);
-                        if (token.IsCancellationRequested) return;
-                        Options.Validate();
+                        _logger.Debug($"Running cleanup in <{options.CleanupInterval}>");
+                        await Helper.Async.Sleep(sleepTime, token).ConfigureAwait(false);
+                        if (token.IsCancellationRequested)
+                        {
+                            _logger.Debug($"Cleanup task cancelled");
+                            return;
+                        }
+                        // Refresh options
+                        options = OptionsMonitor.CurrentValue;
 
-                        using(new InProcessAction(x => IsRunningCleanup = x))
+                        using (new InProcessAction(x => IsRunningCleanup = x))
                         {
                             // Run cleanup
                             lock (_locks)
                             {
-                                _logger.Log($"Running cleanup using method <{Options.CleanupMethod}> using the configured amount of <{Options.CleanupAmount}>. There are currently <{_locks.Count}> known locks with <{_locks.Select(x => x.Value).Sum(x => x.PendingRequests)}> pending locking requests");
+                                _logger.Log($"Running cleanup using method <{options.CleanupMethod}> using the configured amount of <{options.CleanupAmount}>. There are currently <{_locks.Count}> known locks with <{_locks.Select(x => x.Value).Sum(x => x.PendingRequests)}> pending locking requests");
                             }
 
                             using (_logger.TraceAction(LogLevel.Debug, $"Lock cleanup"))
                             {
                                 // Check if cleanup needed
                                 bool cleanupNeeded = true;
-                                switch (Options.CleanupMethod)
+                                switch (options.CleanupMethod)
                                 {
                                     case MemoryLockCleanupMethod.Amount:
                                         lock (_locks)
                                         {
-                                            cleanupNeeded = _locks.Count > Options.CleanupAmount.Value;
-                                            if (cleanupNeeded) _logger.Log($"Lock amount is higher than the configured amount of <{Options.CleanupAmount}>. Current lock count is <{_locks.Count}>");
+                                            cleanupNeeded = _locks.Count > options.CleanupAmount.Value;
+                                            if (cleanupNeeded) _logger.Log($"Lock amount is higher than the configured amount of <{options.CleanupAmount}>. Current lock count is <{_locks.Count}>. Triggering cleanup");
                                         }
                                         break;
                                     case MemoryLockCleanupMethod.ProcessMemory:
                                         using (var process = System.Diagnostics.Process.GetCurrentProcess())
                                         {
-                                            cleanupNeeded = process.WorkingSet64 > Options.CleanupAmount.Value;
-                                            if (cleanupNeeded) _logger.Log($"Current process memory is higher than the configured amount of <{Options.CleanupAmount}>. Current process memory is <{process.WorkingSet64} bytes>");
+                                            cleanupNeeded = process.WorkingSet64 > options.CleanupAmount.Value;
+                                            if (cleanupNeeded) _logger.Log($"Current process memory is higher than the configured amount of <{options.CleanupAmount}>. Current process memory is <{process.WorkingSet64} bytes>. Triggering cleanup");
                                         }
                                         break;
                                 }
@@ -484,13 +513,19 @@ namespace Sels.Core.Locking.Memory
 
                                 // Get delegates based on method if a lock can be cleaned up
                                 Func<MemoryLockInfo, bool> canCleanupPredicate = null;
-                                switch (Options.CleanupMethod)
+                                switch (options.CleanupMethod)
                                 {
                                     case MemoryLockCleanupMethod.Time:
-                                        canCleanupPredicate = new Func<MemoryLockInfo, bool>(x => !x.LastLockDate.HasValue || (DateTime.Now - x.LastLockDate.Value).TotalMilliseconds >= Options.CleanupAmount);
+                                        canCleanupPredicate = new Func<MemoryLockInfo, bool>(x => !x.LastLockDate.HasValue || (DateTime.Now - x.LastLockDate.Value).TotalMilliseconds >= options.CleanupAmount);
                                         break;
                                 }
                                 canCleanupPredicate = canCleanupPredicate != null ? canCleanupPredicate : new Func<MemoryLockInfo, bool>(x => true);
+
+                                if (token.IsCancellationRequested)
+                                {
+                                    _logger.Debug($"Cleanup task cancelled");
+                                    return;
+                                }
 
                                 // Get all locks to cleanup and remove them if applicable
                                 lock (_locks)
@@ -499,6 +534,12 @@ namespace Sels.Core.Locking.Memory
 
                                     foreach (var @lock in locks)
                                     {
+                                        if (token.IsCancellationRequested)
+                                        {
+                                            _logger.Debug($"Cleanup task cancelled");
+                                            return;
+                                        }
+
                                         var couldLock = Helper.Lock.TryLockAndExecute(@lock, () =>
                                         {
                                             // Check if lock itself can be removed
@@ -529,8 +570,11 @@ namespace Sels.Core.Locking.Memory
                     catch(Exception ex)
                     {
                         _logger.Log($"Error occured while running cleanup on memory locks", ex);
+                        await Helper.Async.Sleep(sleepTime, token).ConfigureAwait(false);
                     }
                 }
+
+                _logger.Debug($"Cleanup task cancelled");
             }
         }
 
@@ -749,7 +793,7 @@ namespace Sels.Core.Locking.Memory
                             }
 
                             // Sleep until we can extend the lock
-                            var sleepTime = (ExpiryDate.Value - LockedAt.Value).TotalMilliseconds.ChangeType<int>() - _provider.Options.ExpiryOffset;
+                            var sleepTime = (ExpiryDate.Value - LockedAt.Value).TotalMilliseconds.ChangeType<int>() - _provider.OptionsMonitor.CurrentValue.ExpiryOffset;
                             _logger.Debug($"Extending expiry date for lock <{Resource}> held by <{LockedBy}> in <{sleepTime}ms> before it expires at <{ExpiryDate.Value}>");
                             await Helper.Async.Sleep(sleepTime, token).ConfigureAwait(false);
                             if (token.IsCancellationRequested) return;
@@ -780,7 +824,7 @@ namespace Sels.Core.Locking.Memory
             {
                 using (_logger.TraceMethod(this))
                 {
-                    var sleepTime = (ExpiryDate.Value - DateTime.Now.AddMilliseconds(_provider.Options.ExpiryOffset));
+                    var sleepTime = (ExpiryDate.Value - DateTime.Now.AddMilliseconds(_provider.OptionsMonitor.CurrentValue.ExpiryOffset));
                     _logger.Debug($"Notifying provider in <{sleepTime.TotalMilliseconds}ms> that lock <{Resource}> held by <{LockedBy}> expired");
                     await Helper.Async.Sleep(sleepTime.TotalMilliseconds.ChangeType<int>(), token).ConfigureAwait(false);
                     if(token.IsCancellationRequested) return;

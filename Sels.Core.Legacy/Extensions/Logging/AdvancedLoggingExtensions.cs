@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -352,7 +353,7 @@ namespace Sels.Core.Extensions.Logging.Advanced
         /// <returns>Timing scope</returns>
         public static IDisposable TraceMethod(this ILogger logger, LogLevel level, Type caller, [CallerMemberName] string method = null)
         {
-            var fullMethodName = $"{(caller.HasValue() ? caller.FullName : "Null")}.{method}";
+            var fullMethodName = $"{(caller.HasValue() ? caller.GetDisplayName() : "Null")}.{method}";
 
             return logger.CreateTimedLogger(level, () => $"Calling method <{fullMethodName}>", x => $"Called method <{fullMethodName}> in {x.PrintTotalMs()}");
         }

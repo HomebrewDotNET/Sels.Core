@@ -166,11 +166,11 @@ namespace Sels.Core.TestTool
                                     options.IncludeScopes = true;
                                     options.SingleLine = true;
                                     options.TimestampFormat = "hh:mm:ss ";
-                                }).SetMinimumLevel(LogLevel.Trace);
+                                }).SetMinimumLevel(LogLevel.Debug);
                             })
                             .BuildServiceProvider();
             var memoryLockingProvider = provider.GetRequiredService<ILockingProvider>().Cast<MemoryLockingProvider>();
-            var options = memoryLockingProvider.Options;
+            var options = memoryLockingProvider.OptionsMonitor.CurrentValue;
             Console.WriteLine(options.SerializeAsJson());
         }
 

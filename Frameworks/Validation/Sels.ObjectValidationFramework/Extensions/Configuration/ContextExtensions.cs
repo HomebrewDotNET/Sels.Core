@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Reflection;
 using Sels.ObjectValidationFramework.Rules;
 using System.Text;
 
@@ -36,7 +37,7 @@ namespace Sels.ObjectValidationFramework.Profile
                     // First parent so we use type name as root
                     if(i == 0)
                     {
-                        builder.Append(parent.Instance.GetType().Name);
+                        builder.Append(parent.Instance.GetType().GetDisplayName(false));
                     }
 
                     // Append array like display when parent was part of collection
@@ -52,11 +53,11 @@ namespace Sels.ObjectValidationFramework.Profile
             // No parents so we use entity name as root
             else
             {
-                builder.Append(typeof(TEntity).Name);
+                builder.Append(ruleContext.Source.GetType().GetDisplayName(false));
             }
 
             // Append array like display when current value was part of collection
-            if (ruleContext.ElementIndex.HasValue)
+            if (includeParents && ruleContext.ElementIndex.HasValue)
             {
                 builder.Append($"[{ruleContext.ElementIndex.Value}]");
             }

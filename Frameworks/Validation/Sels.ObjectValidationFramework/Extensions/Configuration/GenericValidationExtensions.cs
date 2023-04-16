@@ -3,6 +3,7 @@ using Sels.ObjectValidationFramework.Rules;
 using System;
 using Sels.Core.Extensions.Reflection;
 using System.Linq;
+using Sels.ObjectValidationFramework.Configurators;
 
 // Adjusted so extensions are available when using the ValidationProfile
 namespace Sels.ObjectValidationFramework.Profile
@@ -18,12 +19,14 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <param name="errorConstructor">Delegate that creates a validation error when <see cref="IValidationRuleContext{TEntity, TInfo, TContext, TValue}.Value"/> is not a valid value</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> CannotBeNull<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor)
+        public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> CannotBeNull<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -36,16 +39,18 @@ namespace Sels.ObjectValidationFramework.Profile
         /// </summary>
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
-        /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
+
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> CannotBeNull<TEntity, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> configurator, bool includeParents = true)
+        public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> CannotBeNull<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            return configurator.InvalidIf(info => info.Value == null, info => $"{info.GetFullDisplayNameDynamically(includeParents)} cannot be null");
+            return configurator.InvalidIf(info => info.Value == null, info => $"Cannot be null");
         }
 
         /// <summary>
@@ -54,12 +59,14 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <param name="errorConstructor">Delegate that creates a validation error when <see cref="IValidationRuleContext{TEntity, TInfo, TContext, TValue}.Value"/> is not a valid value</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> CannotBeDefault<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor)
+        public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> CannotBeDefault<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -72,16 +79,18 @@ namespace Sels.ObjectValidationFramework.Profile
         /// </summary>
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
-        /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
+
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> CannotBeDefault<TEntity, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> configurator, bool includeParents = true)
+        public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> CannotBeDefault<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            return configurator.InvalidIf(info => info.Value.IsDefault(), info => $"{info.GetFullDisplayNameDynamically(includeParents)} cannot be the default value. Was <{info.Value}>");
+            return configurator.InvalidIf(info => info.Value.IsDefault(), info => $"Cannot be the default value. Was <{info.Value}>");
         }
 
         /// <summary>
@@ -90,12 +99,14 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <param name="errorConstructor">Delegate that creates a validation error when <see cref="IValidationRuleContext{TEntity, TInfo, TContext, TValue}.Value"/> is not a valid value</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> MustBeNull<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor)
+        public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> MustBeNull<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -108,16 +119,18 @@ namespace Sels.ObjectValidationFramework.Profile
         /// </summary>
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
-        /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
+
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> MustBeNull<TEntity, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> configurator, bool includeParents = true)
+        public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> MustBeNull<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            return configurator.ValidIf(info => info.Value == null, info => $"{info.GetFullDisplayNameDynamically(includeParents)} must be null");
+            return configurator.ValidIf(info => info.Value == null, info => $"Must be null");
         }
 
         /// <summary>
@@ -126,12 +139,14 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <param name="errorConstructor">Delegate that creates a validation error when <see cref="IValidationRuleContext{TEntity, TInfo, TContext, TValue}.Value"/> is not a valid value</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> MustBeDefault<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor)
+        public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> MustBeDefault<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -144,16 +159,18 @@ namespace Sels.ObjectValidationFramework.Profile
         /// </summary>
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
-        /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
+
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> MustBeDefault<TEntity, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> configurator, bool includeParents = true)
+        public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> MustBeDefault<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            return configurator.ValidIf(info => info.Value.IsDefault(), info => $"{info.GetFullDisplayNameDynamically(includeParents)} must be the default value. Was <{info.Value}>");
+            return configurator.ValidIf(info => info.Value.IsDefault(), info => $"Must be the default value. Was <{info.Value}>");
         }
 
         /// <summary>
@@ -162,13 +179,15 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <param name="validValues">Array of valid values</param>
         /// <param name="errorConstructor">Delegate that creates a validation error when <see cref="IValidationRuleContext{TEntity, TInfo, TContext, TValue}.Value"/> is not a valid value</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> MustBeIn<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator, TValue[] validValues, Func<IValidationRuleContext<TEntity, TInfo, TContext, TValue>, TError> errorConstructor)
+        public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> MustBeIn<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, TValue[] validValues, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -182,19 +201,21 @@ namespace Sels.ObjectValidationFramework.Profile
         /// </summary>
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <param name="validValues">Array of valid values</param>
-        /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
+
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> MustBeIn<TEntity, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, string, TInfo, TContext, TValue> configurator, TValue[] validValues, bool includeParents = true)
+        public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> MustBeIn<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator, TValue[] validValues)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
             validValues.ValidateArgument(nameof(validValues));
 
             var validValuesString = validValues.JoinString(", ");
-            return configurator.ValidIf(info => validValues.Contains(info.Value), info => $"{info.GetFullDisplayNameDynamically(includeParents)} is not in the list of valid values. Was <{info.Value}>. Must be in <{validValuesString}>");
+            return configurator.ValidIf(info => validValues.Contains(info.Value), info => $"Value not in the list of valid values. Was <{info.Value}>. Must be in <{validValuesString}>");
         }
 
         #region Conditions
@@ -204,15 +225,17 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
         /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> WhenNotNull<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator)
+        public static IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> NextWhenNotNull<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            return configurator.ValidateWhen(info => info.Value != null);
+            return configurator.NextWhen(info => info.Value != null);
         }
 
         /// <summary>
@@ -221,15 +244,17 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
         /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <typeparam name="TValue">Type of value that is being validated</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> WhenNotDefault<TEntity, TError, TInfo, TContext, TValue>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, TValue> configurator)
+        public static IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> NextWhenNotDefault<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            return configurator.ValidateWhen(info => !info.Value.IsDefault());
+            return configurator.NextWhen(info => !info.Value.IsDefault());
         }
 
         /// <summary>
@@ -238,14 +263,16 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
         /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> WhenNotNullOrWhitespace<TEntity, TError, TInfo, TContext>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> configurator)
+        public static IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, string> NextWhenNotNullOrWhitespace<TEntity, TError, TBaseContext, TInfo, TTargetContext>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, string> configurator)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            return configurator.ValidateWhen(info => !string.IsNullOrWhiteSpace(info.Value));
+            return configurator.NextWhen(info => !string.IsNullOrWhiteSpace(info.Value));
         }
 
         /// <summary>
@@ -254,14 +281,16 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
         /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
         /// <typeparam name="TError">Type of validation error that this rule returns</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
+        /// <typeparam name="TBaseContext">Type of the validation context used by the current validator</typeparam>
+        /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <returns>Current configurator</returns>
-        public static IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> WhenNotNullOrEmpty<TEntity, TError, TInfo, TContext>(this IValidationRuleConfigurator<TEntity, TError, TInfo, TContext, string> configurator)
+        public static IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, string> WhenNotNullOrEmpty<TEntity, TError, TBaseContext, TInfo, TTargetContext>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, string> configurator)
+        where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            return configurator.ValidateWhen(info => !string.IsNullOrEmpty(info.Value));
+            return configurator.NextWhen(info => !string.IsNullOrEmpty(info.Value));
         }
         #endregion
     }

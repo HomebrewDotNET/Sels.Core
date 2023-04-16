@@ -23,7 +23,7 @@
         </member>
         <member name="M:Microsoft.Extensions.Hosting.HostBuilderRegistrations.UseAutofacWithServiceFactory(Microsoft.Extensions.Hosting.IHostBuilder,System.Action{Microsoft.Extensions.Hosting.HostBuilderContext,Autofac.ContainerBuilder})">
             <summary>
-            Configures autofac as the IoC container provider and registers a <see cref="!:IServiceFactory"/> using Autofac.
+            Configures autofac as the IoC container provider and registers a <see cref="T:Sels.Core.Factory.IServiceFactory"/> using Autofac.
             </summary>
             <param name="hostBuilder">The builder to configure</param>
             <param name="containerBuilder">Optional delegate for configuring the autofac container</param>

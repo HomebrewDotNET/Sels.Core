@@ -81,6 +81,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             serviceCollection.AddOptions();
             serviceCollection.AddSingleton<IConfigureOptions<TOptions>>(x => new OptionConfigurationProvider<TOptions>(x.GetRequiredService<IConfiguration>(), sectionName));
+            serviceCollection.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
 
             return serviceCollection;
         }

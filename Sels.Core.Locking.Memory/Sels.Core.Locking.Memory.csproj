@@ -25,6 +25,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Frameworks\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
 		<ProjectReference Include="..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
 		<ProjectReference Include="..\Sels.Core.Locking\Sels.Core.Locking.csproj" />
 	</ItemGroup>
