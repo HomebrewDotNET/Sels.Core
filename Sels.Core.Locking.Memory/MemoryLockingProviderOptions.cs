@@ -18,7 +18,7 @@ namespace Sels.Core.Locking.Memory
 
         // Properties
         /// <summary>
-        /// The interval that will be used by <see cref="MemoryLockingProvider"/> to perform cleanup of the in-memeory locks to free up memory. When set to null no locks will be cleaned up.
+        /// The interval that will be used by <see cref="MemoryLockingProvider"/> to perform cleanup of the in-memeory locks to free up memory. When set to <see cref="TimeSpan.Zero"/> no locks will be cleaned up.
         /// </summary>
         public TimeSpan CleanupInterval { get; set; } = new TimeSpan(0, 1, 0);
         /// <summary>
