@@ -52,7 +52,7 @@ namespace Sels.Core.Data.SQL.Query.Statement
         {
             columns.ValidateArgumentNotNullOrEmpty(nameof(columns));
 
-            var builder = this.Cast<IInsertStatementBuilder<TEntity>>();
+            var builder = this.CastTo<IInsertStatementBuilder<TEntity>>();
 
             foreach (var column in columns)
             {
@@ -83,7 +83,7 @@ namespace Sels.Core.Data.SQL.Query.Statement
         /// <inheritdoc/>
         public IInsertStatementBuilder<TEntity> ParametersFrom<T>(int? suffix = null, params string[] excludedProperties)
         {
-            var builder = this.Cast<IInsertStatementBuilder<TEntity>>();
+            var builder = this.CastTo<IInsertStatementBuilder<TEntity>>();
 
             return builder.Parameters(GetColumnPropertiesFrom<T>(excludedProperties).Select(x => suffix.HasValue ? $"{x.Name}{suffix}" : x.Name));
         }
@@ -93,7 +93,7 @@ namespace Sels.Core.Data.SQL.Query.Statement
         public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             // Add implicit expressions
-            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(InsertExpressionPositions.Into) || !Expressions[InsertExpressionPositions.Into].HasValue())) this.Cast<IInsertStatementBuilder<TEntity>>().Into();
+            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(InsertExpressionPositions.Into) || !Expressions[InsertExpressionPositions.Into].HasValue())) this.CastTo<IInsertStatementBuilder<TEntity>>().Into();
 
             return base.Build(builder, options);
         }

@@ -55,8 +55,8 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             };
 
             // Act
-            var xml = converter.ConvertTo(source, typeof(string)).Cast<string>();
-            var result = converter.ConvertTo(xml, typeof(ExamResult)).Cast<ExamResult>();
+            var xml = converter.ConvertTo(source, typeof(string)).CastTo<string>();
+            var result = converter.ConvertTo(xml, typeof(ExamResult)).CastTo<ExamResult>();
 
             // Assert
             Assert.IsNotNull(result);

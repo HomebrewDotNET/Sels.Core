@@ -336,7 +336,7 @@ namespace Sels.Core.Data.MySQL.Query.Compiling
                         if(expressions.Any(x => x is IObjectExpression || x is TableExpression))
                         {
                             var aliases = expressions.Where(x => x is IObjectExpression || x is TableExpression)
-                                                        .Select(x => ConvertDataSet(x is TableExpression tableExpression ? tableExpression.DataSet?.DataSet : x.Cast<IObjectExpression>().DataSet, datasetConverterer))
+                                                        .Select(x => ConvertDataSet(x is TableExpression tableExpression ? tableExpression.DataSet?.DataSet : x.CastTo<IObjectExpression>().DataSet, datasetConverterer))
                                                         .Where(x => x != null).ToArray();
 
                             if (aliases.HasValue())

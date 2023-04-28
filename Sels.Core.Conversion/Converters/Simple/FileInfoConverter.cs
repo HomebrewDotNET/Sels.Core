@@ -26,7 +26,7 @@ namespace Sels.Core.Conversion.Converters.Simple
 
             if (convertableType.Is<FileInfo>())
             {
-                return value.Cast<FileInfo>().FullName;
+                return value.CastTo<FileInfo>().FullName;
             }
             else
             {

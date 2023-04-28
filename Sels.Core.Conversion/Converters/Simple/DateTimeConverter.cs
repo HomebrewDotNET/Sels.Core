@@ -41,7 +41,7 @@ namespace Sels.Core.Conversion.Converters.Simple
             // Convert date to string
             else
             {
-                var date = value.Cast<DateTime>();
+                var date = value.CastTo<DateTime>();
                 return format.HasValue() ? date.ToString(format) : date.ToString();
             }
         }

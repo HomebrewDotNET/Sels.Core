@@ -34,7 +34,7 @@ namespace Sels.Core.Conversion.Templates.Table
         {
             member.ValidateArgument(nameof(member));
 
-            return member.GetCustomAttributes().FirstOrDefault(x => x.IsAssignableTo<BaseColumnAttribute>()).CastOrDefault<BaseColumnAttribute>();
+            return member.GetCustomAttributes().FirstOrDefault(x => x.IsAssignableTo<BaseColumnAttribute>()).CastToOrDefault<BaseColumnAttribute>();
         }
     }
 }

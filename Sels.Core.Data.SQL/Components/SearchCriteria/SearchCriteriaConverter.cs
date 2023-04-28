@@ -121,7 +121,7 @@ namespace Sels.Core.Data.SQL.SearchCriteria
             {
                 if (value == null) return builder.Values(Array.Empty<object>());
 
-                return builder.Parameters(value.Cast<IEnumerable>().Enumerate().Select((int i, object x) => {
+                return builder.Parameters(value.CastTo<IEnumerable>().Enumerate().Select((int i, object x) => {
                     var name = $"{property.Name}[{i}]";
                     parameters?.Add(name, x);
                     return name;
@@ -280,7 +280,7 @@ namespace Sels.Core.Data.SQL.SearchCriteria
             {
                 Guard.IsNotNull(valueSelector);
 
-                _valueSelector = (p, v, param, b) => valueSelector?.Invoke(p, v.CastOrDefault<TValue>(), param, b);
+                _valueSelector = (p, v, param, b) => valueSelector?.Invoke(p, v.CastToOrDefault<TValue>(), param, b);
                 return this;
             }
         }

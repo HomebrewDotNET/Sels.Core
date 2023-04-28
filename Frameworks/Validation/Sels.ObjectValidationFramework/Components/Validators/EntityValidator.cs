@@ -159,7 +159,7 @@ namespace Sels.ObjectValidationFramework.Validators
                 configurator.ValidateArgument(nameof(configurator));
 
                 AsyncPredicate<IValidationRuleContext<TEntity, TContext>> contextCondition = x => {
-                    var context = new ValidationRuleContext<TEntity, TNewContext>(x.Source, x.Context.CastOrDefault<TNewContext>(), x.ElementIndex, x.Parents);
+                    var context = new ValidationRuleContext<TEntity, TNewContext>(x.Source, x.Context.CastToOrDefault<TNewContext>(), x.ElementIndex, x.Parents);
                     if (contextRequired && !context.HasContext) return Task.FromResult(false);
                     return condition(context);
                 };
@@ -290,8 +290,8 @@ namespace Sels.ObjectValidationFramework.Validators
             {
                 objectToValidate.ValidateArgument(x => CanValidate(objectToValidate, context, elementIndex, parents), x => new NotSupportedException($"Current validator cannot validate <{(objectToValidate == null ? "null references" : objectToValidate.GetType().ToString())}>"));
 
-                var typedObjectToValidate = objectToValidate.Cast<TEntity>();
-                var castedContext = context.CastOrDefault<TContext>();
+                var typedObjectToValidate = objectToValidate.CastTo<TEntity>();
+                var castedContext = context.CastToOrDefault<TContext>();
                 var validationRuleContext = new ValidationRuleContext<TEntity, TContext>(typedObjectToValidate, castedContext, elementIndex, parents);
                 var errors = new List<ValidationError<TError>>();
 

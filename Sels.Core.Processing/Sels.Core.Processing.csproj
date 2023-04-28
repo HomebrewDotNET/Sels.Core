@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	  <Authors>Jens Sels</Authors>
 	  <Company>Homebrew IT</Company>
 	  <Product>Processing Library</Product>
 	  <Description>
-		  Contains code for processing data. (Scheduled processing, multi-threading, ...)
+		  Contains abtractions for setting up background processing.
 		  Used by projects maintained here: https://github.com/Jenssels1998
 	  </Description>
 	  <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
@@ -44,7 +44,8 @@
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
 	<ItemGroup>
-	  <ProjectReference Include="..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+	  <ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
+	  <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
 	</ItemGroup>
 
 </Project>

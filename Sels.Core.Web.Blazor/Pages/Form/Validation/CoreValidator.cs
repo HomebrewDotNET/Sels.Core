@@ -50,7 +50,7 @@ namespace Sels.Core.Web.Blazor.Pages.Form.Validation
             args.ValidateArgument(nameof(args));
             MessageStore.Clear();
 
-            var model = Context.Model.Cast<TEntity>();
+            var model = Context.Model.CastTo<TEntity>();
             var errors = Validator.Validate(model, GetValidationContext != null ? GetValidationContext(model) : default);
 
             if (errors != null)

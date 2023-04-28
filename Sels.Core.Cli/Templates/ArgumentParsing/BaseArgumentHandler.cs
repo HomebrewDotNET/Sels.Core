@@ -89,7 +89,7 @@ namespace Sels.Core.Cli.Templates.ArgumentParsing
         {
             if (_validators.IsValueCreated)
             {
-                var arg = parsed.Cast<TArg>();
+                var arg = parsed.CastTo<TArg>();
                 foreach (var validator in _validators.Value.Where(x => x.Validate(currentResult, arg)))
                 {
                     yield return validator.CreateError(currentResult, arg);
@@ -186,7 +186,7 @@ namespace Sels.Core.Cli.Templates.ArgumentParsing
             {
                 if (convertable == null) return default;
 
-                return (_converter != null ? _converter(convertable) : _parser.Config.Converter.ConvertTo(convertable, _targetType)).Cast<TArg>();
+                return (_converter != null ? _converter(convertable) : _parser.Config.Converter.ConvertTo(convertable, _targetType)).CastTo<TArg>();
             }
         }
         /// <summary>

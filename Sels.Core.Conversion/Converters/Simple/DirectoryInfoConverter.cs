@@ -24,7 +24,7 @@ namespace Sels.Core.Conversion.Converters.Simple
         {
             if (value.GetType().Is<DirectoryInfo>())
             {
-                return value.Cast<DirectoryInfo>().FullName;
+                return value.CastTo<DirectoryInfo>().FullName;
             }
             else
             {

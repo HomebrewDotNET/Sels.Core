@@ -4,6 +4,826 @@
         <name>Sels.Core.Processing</name>
     </assembly>
     <members>
+        <member name="T:Sels.Core.Processing.BackgroundJob.DelayJobResult">
+            <summary>
+            Signals the worker node that it should delay the execution of the current background job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.DelayJobResult.Delay">
+            <summary>
+            How much to delay the execution for.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.DelayJobResult.#ctor(System.TimeSpan,System.String,System.Nullable{System.Int32})">
+            <inheritdoc cref="T:Sels.Core.Processing.BackgroundJob.DelayJobResult"/>
+            <param name="delay"><inheritdoc cref="P:Sels.Core.Processing.BackgroundJob.DelayJobResult.Delay"/></param>
+            <param name="queue"><inheritdoc cref="P:Sels.Core.Processing.BackgroundJob.RequeueJobResult.Queue"/></param>
+            <param name="priority"><inheritdoc cref="P:Sels.Core.Processing.BackgroundJob.RequeueJobResult.Priority"/></param>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.DeleteJobResult">
+            <summary>
+            Signals the worker node that it can delete the job this result was returned from.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.DeleteJobResult.ActualResult">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.DeleteJobResult.Reason">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.FailJobResult">
+            <summary>
+            Signals the worker node that it should fail the current job without retrying it automatically.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.FailJobResult.ActualResult">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.FailJobResult.Reason">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.RequeueJobResult">
+            <summary>
+             Signals the worker node that it should place the current job in a different queue.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.RequeueJobResult.Queue">
+            <summary>
+            The new queue for the current job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.RequeueJobResult.Priority">
+            <summary>
+            The new priority for the current job in <see cref="P:Sels.Core.Processing.BackgroundJob.RequeueJobResult.Queue"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.RequeueJobResult.ActualResult">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.RequeueJobResult.Reason">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.RequeueJobResult.#ctor(System.String,System.Nullable{System.Int32})">
+            <inheritdoc cref="T:Sels.Core.Processing.BackgroundJob.RequeueJobResult"/>
+            <param name="queue"><inheritdoc cref="P:Sels.Core.Processing.BackgroundJob.RequeueJobResult.Queue"/></param>
+            <param name="priority"><inheritdoc cref="P:Sels.Core.Processing.BackgroundJob.RequeueJobResult.Priority"/></param>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.IBackgroundJob">
+            <summary>
+            A stateful background job that can be scheduled on a queue to process something.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJob.Context">
+            <summary>
+            Allows a job to gain information about itself when executing.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJob.State">
+            <inheritdoc cref="T:Sels.Core.Processing.BackgroundJob.IBackgroundJobState"/>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJob.Logger">
+            <summary>
+            Auto injected logger for the current background job. Can be null if logging isn't configured.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Executes the current background job.
+            </summary>
+            <param name="input">Optional serialized input for the background job</param>
+            <param name="token">Cancellation token that will be cancelled if the job is requested to stop processing</param>
+            <returns>Optional result from executing the background job.</returns>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext">
+            <summary>
+            Contains information about a <see cref="T:Sels.Core.Processing.BackgroundJob.IBackgroundJob"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.Id">
+            <summary>
+            The unique id of background job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.RecurringJobId">
+            <summary>
+            The id of the recurring job that created the current instance. Will be null if the job was manually queued.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.Queue">
+            <summary>
+            The queue that the job was placed in.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.Priority">
+            <summary>
+            The current priority of the job in <see cref="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.Queue"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.WorkerId">
+            <summary>
+            The unique id (when on the same node) of the last worker that executed the background job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.NodeId">
+            <summary>
+            Can either be the node the job was queued on if the job is still pending on a local queue or the last node that processed the job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.CreationDate">
+            <summary>
+            The date the current job was created.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.CurrentRetryCount">
+            <summary>
+            The current retry count that indicates how many times the job failed before. Will be 0 when executing for the first time.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.MaxRetryCount">
+            <summary>
+            The configured max retry count for jobs.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobContext.IsOnLastRetry">
+            <summary>
+            True if the current job is on it's last retry meaning if it fails gain it won't be automatically requeued, otherwise false.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo">
+            <summary>
+            Contains information about a background job with it's current state.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo.JobType">
+            <summary>
+            The type of the background job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo.Status">
+            <summary>
+            The current status of the job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo.EnqueueDate">
+            <summary>
+            The date the current job will be able to be executed. Only set when <see cref="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo.Status"/> is set to <see cref="F:Sels.Core.Processing.BackgroundJob.BackgroundJobStatus.Scheduled"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo.IsCompleted">
+            <summary>
+            True if the job either succesfully executed or failed with no retries left.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo.IsPending">
+            <summary>
+            True if the job is currently idle and waiting to be executed.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo.Requeue">
+            <summary>
+            Requeues the current job so it can be executed again.
+            </summary>
+            <returns>Transaction to commit the background job.</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo.RefreshAsync">
+            <summary>
+            Fetches the current state of the job and updates the current object.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo.CancelAsync">
+            <summary>
+            Will cancel the job if it's running and will go in a failed status.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobInfo.DeleteAsync">
+            <summary>
+            Deletes the current job.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.IBackgroundJobResult">
+            <summary>
+            Allows jobs to return specially typed results that allows the worker node to change the state of the background job after execution. Some examples for what it can be used for: Delaying the current job, failing the current job to avoid retries, deleting the job because it didn't process anything, ...
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobResult.ActualResult">
+            <summary>
+            The actual result of the background job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobResult.Reason">
+            <summary>
+            The reason for the result.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.IBackgroundJobService">
+            <summary>
+            Service for scheduling background jobs and fetching state.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobService.EnqueueAsync``1(System.Object)">
+            <summary>
+            Creates a transaction to queue a new background job of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type of the background job to queue</typeparam>
+            <param name="input">Optional input for the background job. Should be serializable to json</param>
+            <returns>A transaction for the job with an option to customize where and how a job is scheduled</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobService.EnqueueAsync(System.Type,System.Object)">
+            <summary>
+            Creates a transaction to queue a new background job of type <paramref name="backgroundJobType"/>.
+            </summary>
+            <param name="backgroundJobType">The type of the background job to queue</param>
+            <param name="input">Optional input for the background job. Should be serializable to json</param>
+            <returns>A transaction for the job with an option to customize where and how a job is scheduled</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobService.GetJobInfoAsync(System.String)">
+            <summary>
+            Fetches the information and state of background job with <paramref name="id"/>.
+            </summary>
+            <param name="id">The id of the background job</param>
+            <returns>The information and current state of the background job</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobService.GetRecurringJobInfoAsync(System.String)">
+            <summary>
+            Fetches the information and state of recurring background job with <paramref name="id"/>.
+            </summary>
+            <param name="id">The id of the recurring background job</param>
+            <returns>The information and current state of the recurring background job</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobService.AddOrUpdateRecurringJobAsync``1(System.String,System.Object,System.String,System.Nullable{System.Int32})">
+            <summary>
+            Creates or updates a recurring job with id <paramref name="id"/>.
+            </summary>
+            <typeparam name="T">The type of the background job created by the recurring job</typeparam>
+            <param name="id">The id of the recurring job</param>
+            <param name="input">Optional input for the created background jobs</param>
+            <param name="queue">The queue for jobs created by the recurring job</param>
+            <param name="priority">Optional priority of jobs created by the recurring job</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobService.AddOrUpdateRecurringJobAsync(System.Type,System.String,System.Object,System.String,System.Nullable{System.Int32})">
+            <summary>
+            Creates or updates a recurring job with id <paramref name="id"/>.
+            </summary>
+            <param name="backgroundJobType">The type of the background job created by the recurring job</param>
+            <param name="id">The id of the recurring job</param>
+            <param name="input">Optional input for the created background jobs</param>
+            <param name="queue">The queue for jobs created by the recurring job</param>
+            <param name="priority">Optional priority of jobs created by the recurring job</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobService.DeployRecurringJobsOnCurrentAsync(System.Collections.Generic.IEnumerable{Sels.Core.Processing.BackgroundJob.RecurringJobDeploymentInfo})">
+            <summary>
+            Deploys all recurring jobs in <paramref name="deploymentInfo"/> on the current node. 
+            Recurring jobs on the current node not included in <paramref name="deploymentInfo"/> will be deleted, otherwise they will be created or updated.
+            Recurring jobs will have a type of <see cref="F:Sels.Core.Processing.BackgroundJob.RecurringJobType.Node"/>.
+            </summary>
+            <param name="deploymentInfo">Enumerator returning all recurring jobs to deploy</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobService.DeploySystemRecurringJobs(System.Collections.Generic.IEnumerable{Sels.Core.Processing.BackgroundJob.RecurringJobDeploymentInfo})">
+            <summary>
+            Deploys all recurring jobs in <paramref name="deploymentInfo"/>. 
+            Recurring jobs with type <see cref="F:Sels.Core.Processing.BackgroundJob.RecurringJobType.System"/> not included in <paramref name="deploymentInfo"/> will be deleted, otherwise they will be created or updated.
+            Recurring jobs will have a type of <see cref="F:Sels.Core.Processing.BackgroundJob.RecurringJobType.System"/>.
+            </summary>
+            <param name="deploymentInfo">Enumerator returning all recurring jobs to deploy</param>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.IBackgroundJobState">
+            <summary>
+            Allows a job to modify it's own state scoped to the current job.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Get``1(System.String)">
+            <summary>
+            Gets the value of parameter <paramref name="name"/> tied to the current job.
+            </summary>
+            <typeparam name="T">The type of the parameter value</typeparam>
+            <param name="name">The name of the parameter to get the value from</param>
+            <returns>The value for parameter <paramref name="name"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Set``1(System.String,``0)">
+            <summary>
+            Sets the value of parameter <paramref name="name"/> to <paramref name="data"/>. The data can be accessed with <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Get``1(System.String)"/>.
+            </summary>
+            <typeparam name="T">The type of the parameter value</typeparam>
+            <param name="name">The name of the parameter to set</param>
+            <param name="data">The value to set. Value must be serializable to json</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.IsActionExecuted(System.String)">
+            <summary>
+            Checks if the current job already executed action with name <paramref name="action"/>. Useful when dealing with resubmits.
+            </summary>
+            <param name="action">The name of the action to check</param>
+            <returns>True if action <paramref name="action"/> was already executed by the current background job, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.AddExecutedAction(System.String,System.String)">
+            <summary>
+            Remember that the current job executed <paramref name="action"/>. Should the job fail afterwards it can check with <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.IsActionExecuted(System.String)"/> if it already executed the action before.
+            </summary>
+            <param name="action">The name of the action that was executed</param>
+            <param name="message">Optional message to add as log entry</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.AddExecutedAction``1(System.String,``0,System.String)">
+            <summary>
+            Remember that the current job executed <paramref name="action"/>. Should the job fail afterwards it can check with <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.TryGetExecutedActionState``1(System.String,``0@)"/> if it already executed the action before.
+            Also saves state <paramref name="data"/> tied to <paramref name="action"/>.
+            </summary>
+            <typeparam name="T">The type of the action state</typeparam>
+            <param name="action">The name of the action that was executed</param>
+            <param name="data">The state tied to <paramref name="action"/>. Must be serializable to json</param>
+            <param name="message">Optional message to add as log entry</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.TryGetExecutedActionState``1(System.String,``0@)">
+            <summary>
+            Checks if <paramref name="action"/> was already executed before and fetches the state of the executed action if it was executed before.
+            </summary>
+            <typeparam name="T">The type of of the action state</typeparam>
+            <param name="action">The name of the action to check</param>
+            <param name="data">The state of the action when it was executed, will only be set when the method returns true</param>
+            <returns>True if <paramref name="action"/> was already executed by the current background job, otherwise false</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.AddLogEntry(Microsoft.Extensions.Logging.LogLevel,System.String,System.Exception)">
+            <summary>
+            Creates a log entry for the current job.
+            </summary>
+            <param name="logLevel">The log level of message</param>
+            <param name="message">The log message</param>
+            <param name="exception">Optional exception tied to the log entry</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Trace(System.String,System.Exception)">
+            <summary>
+            Creates a log entry for the current job with log level <see cref="F:Microsoft.Extensions.Logging.LogLevel.Trace"/>.
+            </summary>
+            <param name="message">The log message</param>
+            <param name="exception">Optional exception tied to the log entry</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Debug(System.String,System.Exception)">
+            <summary>
+            Creates a log entry for the current job with log level <see cref="F:Microsoft.Extensions.Logging.LogLevel.Debug"/>.
+            </summary>
+            <param name="message">The log message</param>
+            <param name="exception">Optional exception tied to the log entry</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Log(System.String,System.Exception)">
+            <summary>
+            Creates a log entry for the current job with log level <see cref="F:Microsoft.Extensions.Logging.LogLevel.Information"/>.
+            </summary>
+            <param name="message">The log message</param>
+            <param name="exception">Optional exception tied to the log entry</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Warning(System.String,System.Exception)">
+            <summary>
+            Creates a log entry for the current job with log level <see cref="F:Microsoft.Extensions.Logging.LogLevel.Warning"/>.
+            </summary>
+            <param name="message">The log message</param>
+            <param name="exception">Optional exception tied to the log entry</param>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Error(System.String,System.Exception)">
+            <summary>
+            Creates a log entry for the current job with log level <see cref="F:Microsoft.Extensions.Logging.LogLevel.Error"/>.
+            </summary>
+            <param name="message">The log message</param>
+            <param name="exception">Optional exception tied to the log entry</param>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.IBackgroundJobTransaction">
+            <summary>
+            Transaction created when scheduling a <see cref="T:Sels.Core.Processing.BackgroundJob.IBackgroundJob"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IBackgroundJobTransaction.JobId">
+            <summary>
+            The id of the current job.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobTransaction.OnQueue(System.String,System.Nullable{System.Int32})">
+            <summary>
+            Schedules the current background job on <paramref name="queue"/>.
+            </summary>
+            <param name="queue">The queue to place the job in</param>
+            <param name="priority">The priority of the job within <paramref name="queue"/></param>
+            <returns>Current transaction for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobTransaction.OnDefaultQueue(System.Nullable{System.Int32})">
+            <summary>
+            Shedules the current background job on the default <see cref="F:Sels.Core.Processing.ProcessingConstants.BackgroundProcessing.DefaultQueue"/>.
+            </summary>
+            <param name="priority">The priority of the job within <see cref="F:Sels.Core.Processing.ProcessingConstants.BackgroundProcessing.DefaultQueue"/></param>
+            <returns>Current transaction for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobTransaction.OnNode(System.String,System.Nullable{System.Int32})">
+            <summary>
+            Schedules the current background job on the <see cref="F:Sels.Core.Processing.ProcessingConstants.BackgroundProcessing.NodeQueue"/> for node with <paramref name="nodeId"/>.
+            </summary>
+            <param name="nodeId">The id of the node to schedule the background job on</param>
+            <param name="priority">The priority of the job within <see cref="F:Sels.Core.Processing.ProcessingConstants.BackgroundProcessing.NodeQueue"/></param>
+            <returns>Current transaction for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobTransaction.OnSelf(System.Nullable{System.Int32})">
+            <summary>
+            Schedules the current background job on the current node that is scheduling the background job. Only works if the current process is a worker node.
+            </summary>
+            <param name="priority">The priority of the job within <see cref="F:Sels.Core.Processing.ProcessingConstants.BackgroundProcessing.NodeQueue"/></param>
+            <returns>Current transaction for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobTransaction.WithDelay(System.TimeSpan)">
+            <summary>
+            Shedules the current background job with a delay. The job will only be picked up after <paramref name="delay"/> when the job is commited.
+            </summary>
+            <param name="delay">How much to delay the processing by</param>
+            <returns>Current transaction for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobTransaction.WithParameter(System.String,System.Object)">
+            <summary>
+            Adds a parameter with value <paramref name="data"/> to the background job. Background jobs can access this data using <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Get``1(System.String)"/>.
+            </summary>
+            <param name="parameter">The name of the parameter to add</param>
+            <param name="data">The value for the parameters. Should be serializable to json</param>
+            <returns>Current transaction for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobTransaction.AfterParentJob(System.String,System.Boolean)">
+            <summary>
+            The current background job will only execute when the job with id <paramref name="parentJobId"/> finishes processing. Useful when background jobs chain queue each other.
+            </summary>
+            <param name="parentJobId">The id of the background job to wait on</param>
+            <param name="onlyOnSuccess">True if the current background job can only execute if the parent job successfully executes, when set to false the current job will also execute even if the parent job fails</param>
+            <returns>Current transaction for method chaining</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobTransaction.CommitAsync">
+            <summary>
+            Commits the current job so it can be processed by the workers nodes.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo">
+            <summary>
+            Contains information about a recurring background job with it's current state.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.Id">
+            <summary>
+            The id of the recurring job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.JobType">
+            <summary>
+            The type of the background job that the recurring jobs queues.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.RecurringJobType">
+            <summary>
+            The type of the recurring job. Indicates how it is deployed.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.NodeId">
+            <summary>
+            The node the recurring job is deployed on when <see cref="P:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.RecurringJobType"/> is set to <see cref="F:Sels.Core.Processing.BackgroundJob.RecurringJobType.Node"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.Schedule">
+            <summary>
+            The cron schedule of the background job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.LastQueueDate">
+            <summary>
+            The last time the recurring job queued a background job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.LastJobId">
+            <summary>
+            The id of the last created background job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.NextQueueDate">
+            <summary>
+            The time that the next background job will be queued.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.RefreshAsync">
+            <summary>
+            Fetches the current state of the recurring job and updates the current object.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.DeleteAsync(System.Boolean)">
+            <summary>
+            Deletes the current recurring job. Only allowed when <see cref="P:Sels.Core.Processing.BackgroundJob.IRecurringJobInfo.RecurringJobType"/> is <see cref="F:Sels.Core.Processing.BackgroundJob.RecurringJobType.User"/>.
+            </summary>
+            <param name="deleteRunningJob">If there is currently a job running created by the current recurring job it will be cancelled and deleted when set to true</param>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.BackgroundJobInterruptedException">
+            <summary>
+            Throw to interrupt the execution of a background job to return a <see cref="T:Sels.Core.Processing.BackgroundJob.IBackgroundJobResult"/>.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.BackgroundJobInterruptedException.Result">
+            <summary>
+            The result to interrupt the background job with.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobInterruptedException.#ctor(Sels.Core.Processing.BackgroundJob.IBackgroundJobResult)">
+            <inheritdoc cref="T:Sels.Core.Processing.BackgroundJob.BackgroundJobInterruptedException"/>
+            <param name="result"><inheritdoc cref="P:Sels.Core.Processing.BackgroundJob.BackgroundJobInterruptedException.Result"/></param>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.InvalidBackgroundJobInputException">
+            <summary>
+            Throw when input provided to a <see cref="T:Sels.Core.Processing.BackgroundJob.IBackgroundJob"/> is invalid.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.InvalidBackgroundJobInputException.#ctor(System.String)">
+            <inheritdoc cref="T:Sels.Core.Processing.BackgroundJob.InvalidBackgroundJobInputException"/>
+            <param name="message">message containing the details why the input is invalid</param>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions">
+            <summary>
+            Contains static extension method for <see cref="T:Sels.Core.Processing.BackgroundJob.IBackgroundJob"/>.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.InterruptFor(Sels.Core.Processing.BackgroundJob.IBackgroundJob,System.Func{Sels.Core.Processing.BackgroundJob.IBackgroundJob,Sels.Core.Processing.BackgroundJob.IBackgroundJobResult})">
+            <summary>
+            Creates an exception to throw from a background job to interrupt the execution with a <see cref="T:Sels.Core.Processing.BackgroundJob.IBackgroundJobResult"/>.
+            </summary>
+            <param name="backgroundJob">The background job to interrupt</param>
+            <param name="resultCreator">Delegate that creates the result to interrupt with</param>
+            <returns>The exception to throw from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.InterruptFor(Sels.Core.Processing.BackgroundJob.IBackgroundJob,Sels.Core.Processing.BackgroundJob.IBackgroundJobResult)">
+            <summary>
+            Creates an exception to throw from a background job to interrupt the execution with a <see cref="T:Sels.Core.Processing.BackgroundJob.IBackgroundJobResult"/>.
+            </summary>
+            <param name="backgroundJob">The background job to interrupt</param>
+            <param name="result">The result to interrupt with</param>
+            <returns>The exception to throw from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.Delete(Sels.Core.Processing.BackgroundJob.IBackgroundJob,System.String,System.Object)">
+            <summary>
+            Creates a background job result to delete the current job.
+            </summary>
+            <param name="backgroundJob">The background job to create the result for</param>
+            <param name="reason">The reason why the background job needs to be deleted</param>
+            <param name="result">Used to to set the background job result</param>
+            <returns>The result to return from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.Fail(Sels.Core.Processing.BackgroundJob.IBackgroundJob,System.String,System.Object)">
+            <summary>
+            Creates a background job result to fail the current job without automatically retrying.
+            </summary>
+            <param name="backgroundJob">The background job to create the result for</param>
+            <param name="reason">The reason why the background job failed</param>
+            <param name="result">Used to to set the background job result</param>
+            <returns>The result to return from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.Requeue(Sels.Core.Processing.BackgroundJob.IBackgroundJob,System.String,System.String,System.Object)">
+            <summary>
+            Creates a background job result to schedule the current job onto another queue using the current priority.
+            </summary>
+            <param name="backgroundJob">The background job to create the result for</param>
+            <param name="queue">The new queue for the current job</param>
+            <param name="reason">The reason why the background job needs to be requeued</param>
+            <param name="result">Used to to set the background job result</param>
+            <returns>The result to return from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.Requeue(Sels.Core.Processing.BackgroundJob.IBackgroundJob,System.Nullable{System.Int32},System.String,System.Object)">
+            <summary>
+            Creates a background job result to schedule the current job using a new priority on the current queue.
+            </summary>
+            <param name="backgroundJob">The background job to create the result for</param>
+            <param name="priority">The new priority for the current job</param>
+            <param name="reason">The reason why the background job needs to be requeued</param>
+            <param name="result">Used to to set the background job result</param>
+            <returns>The result to return from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.Requeue(Sels.Core.Processing.BackgroundJob.IBackgroundJob,System.String,System.Nullable{System.Int32},System.String,System.Object)">
+            <summary>
+            Creates a background job result to schedule the current job onto a new queue with a new priority.
+            </summary>
+            <param name="backgroundJob">The background job to create the result for</param>
+            <param name="queue">The new queue for the current job</param>
+            <param name="priority">The new priority for the current job</param>
+            <param name="reason">The reason why the background job needs to be requeued</param>
+            <param name="result">Used to to set the background job result</param>
+            <returns>The result to return from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.Delay(Sels.Core.Processing.BackgroundJob.IBackgroundJob,System.TimeSpan,System.String,System.Object)">
+            <summary>
+            Creates a background job result to delay the execution of the current job.
+            </summary>
+            <param name="backgroundJob">The background job to create the result for</param>
+            <param name="delay">How much to delay the current job execution for</param>
+            <param name="reason">The reason why the background job needs to be delayed</param>
+            <param name="result">Used to to set the background job result</param>
+            <returns>The result to return from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.Delay(Sels.Core.Processing.BackgroundJob.IBackgroundJob,System.TimeSpan,System.String,System.String,System.Object)">
+            <summary>
+            Creates a background job result to delay the execution of the current job onto a new queue using the current priority.
+            </summary>
+            <param name="backgroundJob">The background job to create the result for</param>
+            <param name="delay">How much to delay the current job execution for</param>
+            <param name="queue">The new queue for the current job</param>
+            <param name="reason">The reason why the background job needs to be delayed</param>
+            <param name="result">Used to to set the background job result</param>
+            <returns>The result to return from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.Delay(Sels.Core.Processing.BackgroundJob.IBackgroundJob,System.TimeSpan,System.Nullable{System.Int32},System.String,System.Object)">
+            <summary>
+            Creates a background job result to delay the execution of the current job on the current queue using a new priority.
+            </summary>
+            <param name="backgroundJob">The background job to create the result for</param>
+            <param name="delay">How much to delay the current job execution for</param>
+            <param name="priority">The new priority for the current job</param>
+            <param name="reason">The reason why the background job needs to be delayed</param>
+            <param name="result">Used to to set the background job result</param>
+            <returns>The result to return from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BackgroundJobExtensions.Delay(Sels.Core.Processing.BackgroundJob.IBackgroundJob,System.TimeSpan,System.String,System.Nullable{System.Int32},System.String,System.Object)">
+            <summary>
+            Creates a background job result to delay the execution of the current job onto a new queue using a new priority.
+            </summary>
+            <param name="backgroundJob">The background job to create the result for</param>
+            <param name="delay">How much to delay the current job execution for</param>
+            <param name="queue">The new queue for the current job</param>
+            <param name="priority">The new priority for the current job</param>
+            <param name="reason">The reason why the background job needs to be delayed</param>
+            <param name="result">Used to to set the background job result</param>
+            <returns>The result to return from <see cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJob.ExecuteAsync(System.String,System.Threading.CancellationToken)"/></returns>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.BackgroundJobStatus">
+            <summary>
+            Indicates the current status of the job.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.BackgroundJob.BackgroundJobStatus.Queued">
+            <summary>
+            Job is waiting to be picked up.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.BackgroundJob.BackgroundJobStatus.Scheduled">
+            <summary>
+            Job is waiting to be picked up at a later date.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.BackgroundJob.BackgroundJobStatus.Executing">
+            <summary>
+            Job is currently being executed.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.BackgroundJob.BackgroundJobStatus.Failed">
+            <summary>
+            Job could not properly execute.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.BackgroundJob.BackgroundJobStatus.Succeeded">
+            <summary>
+            Job succesfully executed.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.BackgroundJob.BackgroundJobStatus.Deleted">
+            <summary>
+            Job is marked for deletion and will be permanently removed after the configured retention.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.RecurringJobDeploymentInfo">
+            <summary>
+            Contains the information needed to deploy a recurring job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.RecurringJobDeploymentInfo.Id">
+            <summary>
+            The id of the recurring job to deploy.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.RecurringJobDeploymentInfo.Schedule">
+            <summary>
+            The cron schedule of the recurring job.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.RecurringJobDeploymentInfo.JobType">
+            <summary>
+            The type of the background job that the recurring job will schedule.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.RecurringJobDeploymentInfo.Input">
+            <summary>
+            Optional input for the scheduled background jobs.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.RecurringJobQueueDeploymentInfo">
+            <summary>
+            Contains the information needed to deploy a recurring job with queue information.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.RecurringJobQueueDeploymentInfo.Queue">
+            <summary>
+            The queue that scheduled background jobs will be placed in.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.RecurringJobQueueDeploymentInfo.Priority">
+            <summary>
+            The priority of scheduled background jobs in <see cref="P:Sels.Core.Processing.BackgroundJob.RecurringJobQueueDeploymentInfo.Queue"/>.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.RecurringJobType">
+            <summary>
+            The different types of recurring jobs.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.BackgroundJob.RecurringJobType.System">
+            <summary>
+            Recurring jobs that are part of the system and deployed each time a worker nodes starts up. Each node should deploy the same system jobs.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.BackgroundJob.RecurringJobType.Node">
+            <summary>
+            Recurring jobs that are tied to a certain node. Will always enqueue jobs on the node it's deployed on.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.BackgroundJob.RecurringJobType.User">
+            <summary>
+            Manually deployed recurring jobs.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1">
+            <summary>
+            Template for implementing a <see cref="T:Sels.Core.Processing.BackgroundJob.IBackgroundJob"/>.
+            Base class provides methods for parsing the input and adds exception handling.
+            </summary>
+            <typeparam name="T">The type of the input</typeparam>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.Context">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.State">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.Logger">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.ExecuteAsync(System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.ParseInputAsync(System.String)">
+            <summary>
+            Parses the background job input to <typeparamref name="T"/>. Uses <see cref="P:Sels.Core.Conversion.Converters.GenericConverter.DefaultJsonConverter"/> by default.
+            </summary>
+            <param name="input">The input to parse</param>
+            <returns><paramref name="input"/> parsed to an instance of <typeparamref name="T"/></returns>
+            <exception cref="T:Sels.Core.Processing.BackgroundJob.InvalidBackgroundJobInputException"></exception>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.ValidateInputAsync(`0)">
+            <summary>
+            Optional method to validate the parsed input.
+            </summary>
+            <param name="input">The input to validate</param>
+            <returns>Any validation errors for the input. Returned null or no errors means the input is valid</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.HandleJobExceptionAsync(System.Exception)">
+            <summary>
+            Optional method that can be implemented to handle any exception thrown during processing.
+            </summary>
+            <param name="exception">The exception to handle</param>
+            <returns>The result to return for the job if needed. Returning null will cause the exception to be rethrown so the job will be retried at a later date</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.ExecuteAsync(`0,System.Threading.CancellationToken)">
+            <summary>
+            Executes the current background job.
+            </summary>
+            <param name="input">The deserialized input</param>
+            <param name="token">Cancellation token that will be cancelled if the job is requested to stop processing</param>
+            <returns>Optional result from executing the background job</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.Get``1(System.String)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Get``1(System.String)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.Set``1(System.String,``0)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Set``1(System.String,``0)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.IsActionExecuted(System.String)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.IsActionExecuted(System.String)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.AddExecutedAction(System.String,System.String)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.AddExecutedAction(System.String,System.String)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.AddExecutedAction``1(System.String,``0,System.String)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.AddExecutedAction``1(System.String,``0,System.String)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.TryGetExecutedActionState``1(System.String,``0@)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.TryGetExecutedActionState``1(System.String,``0@)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.AddLogEntry(Microsoft.Extensions.Logging.LogLevel,System.String,System.Exception)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.AddLogEntry(Microsoft.Extensions.Logging.LogLevel,System.String,System.Exception)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.Trace(System.String,System.Exception)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Trace(System.String,System.Exception)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.Debug(System.String,System.Exception)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Debug(System.String,System.Exception)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.Log(System.String,System.Exception)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Log(System.String,System.Exception)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.Warning(System.String,System.Exception)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Warning(System.String,System.Exception)"/>
+        </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.BaseBackgroundJob`1.Error(System.String,System.Exception)">
+            <inheritdoc cref="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobState.Error(System.String,System.Exception)"/>
+        </member>
         <member name="T:Sels.Core.Processing.Components.ScheduledAction.RecurringTimerAction">
             <summary>
             Runs code on a schedule using a timer.
@@ -98,6 +918,65 @@
             <summary>
             Stops this action and waits if it still executing.
             </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.ProcessingConstants">
+            <summary>
+            Contains constants related to background processing
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.ProcessingConstants.BackgroundProcessing">
+            <summary>
+            Contains constants related to the BackgroundJob domain.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.ProcessingConstants.BackgroundProcessing.NodeQueue">
+            <summary>
+            The special queue name that indicates that a background job is placed on the queue of a specific node. This queue has the highest priority and each node always has it's own unique queue.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Processing.ProcessingConstants.BackgroundProcessing.DefaultQueue">
+            <summary>
+            The default implicit queue for all background jobs when no custom queue is provided. This queue has the lowest priority and is always used by all workers nodes.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Processing.Templates.BackgroundJob.Recurring.BaseQueueProcessorRecurringJob`2">
+            <summary>
+            Template for creating a <see cref="T:Sels.Core.Processing.BackgroundJob.IBackgroundJob"/> that processes a queue of items.
+            </summary>
+            <typeparam name="TItem">The type of the item to process</typeparam>
+            <typeparam name="T">The type of the job input</typeparam>
+        </member>
+        <member name="M:Sels.Core.Processing.Templates.BackgroundJob.Recurring.BaseQueueProcessorRecurringJob`2.#ctor(System.Boolean)">
+            <inheritdoc cref="T:Sels.Core.Processing.Templates.BackgroundJob.Recurring.BaseQueueProcessorRecurringJob`2"/>
+            <param name="deleteIfQueueEmpty">Set to true to delete the current job if it didn't process anything, when set to false the job will just succeed</param>
+        </member>
+        <member name="M:Sels.Core.Processing.Templates.BackgroundJob.Recurring.BaseQueueProcessorRecurringJob`2.ExecuteAsync(`1,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Processing.Templates.BackgroundJob.Recurring.BaseQueueProcessorRecurringJob`2.GetQueue(`1,System.Threading.CancellationToken)">
+            <summary>
+            Returns an enumerator with the items to process.
+            </summary>
+            <param name="input">The job input</param>
+            <param name="token">Cancellation token that will be cancelled if the job is requested to stop processing</param>
+            <returns>An enumerator with the items to process or null if there is nothing to process</returns>
+        </member>
+        <member name="M:Sels.Core.Processing.Templates.BackgroundJob.Recurring.BaseQueueProcessorRecurringJob`2.ProcessAsync(`1,`0,System.Threading.CancellationToken)">
+            <summary>
+            Processes <paramref name="item"/>.
+            </summary>
+            <param name="input">The job input</param>
+            <param name="item">The item to process</param>
+            <param name="token">Cancellation token that will be cancelled if the job is requested to stop processing</param>
+        </member>
+        <member name="M:Sels.Core.Processing.Templates.BackgroundJob.Recurring.BaseQueueProcessorRecurringJob`2.HandleProcessExceptionAsync(`1,`0,System.Exception,System.Threading.CancellationToken)">
+            <summary>
+            Used to handle any exceptions thrown when processing <paramref name="item"/>.
+            </summary>
+            <param name="input">The job input</param>
+            <param name="item">The item that caused the exception</param>
+            <param name="exception">The processing exception</param>
+            <param name="token">Cancellation token that will be cancelled if the job is requested to stop processing</param>
         </member>
     </members>
 </doc>

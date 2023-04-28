@@ -35,7 +35,7 @@ namespace Sels.Core.Conversion.Converters.Simple
             // Converting guid to string
             else
             {
-                return value.Cast<Guid>().ToString(arguments.HasValue() && arguments.ContainsKey(FormatArgument) ? arguments[FormatArgument] : string.Empty);
+                return value.CastTo<Guid>().ToString(arguments.HasValue() && arguments.ContainsKey(FormatArgument) ? arguments[FormatArgument] : string.Empty);
             }            
         }
     }

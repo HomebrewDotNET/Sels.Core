@@ -77,7 +77,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
                 var pairs = _configuration.GetPairs(value);
                 using (_loggers.TraceAction($"Deserializing <{pairs.GetCount()}> key/value pairs to an instance of type <{type}>"))
                 {
-                   return DeserializeTo(pairs, instance).Cast<T>();
+                   return DeserializeTo(pairs, instance).CastTo<T>();
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
             {
                 value.ValidateArgument(nameof(value));
 
-                return Deserialize(value, typeof(T)).CastOrDefault<T>();
+                return Deserialize(value, typeof(T)).CastToOrDefault<T>();
             }
         }
 
@@ -197,7 +197,7 @@ namespace Sels.Core.Conversion.Serializers.KeyValue
                                 if (profile.IsCollection && !_excludedCollectionTypes.Contains(property.PropertyType))
                                 {
                                     _loggers.Debug($"Property <{property.Name}> on <{type}> is a collection. Serializing elements");
-                                    var valueCollection = value.Cast<IEnumerable>();
+                                    var valueCollection = value.CastTo<IEnumerable>();
                                     List<string> serializedElements = new List<string>();
 
                                     valueCollection.Enumerate().Where(x => x != null).Execute((i, element) =>

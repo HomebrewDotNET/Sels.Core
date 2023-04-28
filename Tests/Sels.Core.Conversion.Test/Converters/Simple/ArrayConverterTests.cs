@@ -38,11 +38,11 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
         public void ArrayConverter_ConvertTo_ConvertsCollectionToArrayWithSameElements<T>(Type collectionType, T[] elements)
         {
             // Arrange
-            var collection = collectionType.Construct(elements).Cast<IEnumerable>();
+            var collection = collectionType.Construct(elements).CastTo<IEnumerable>();
             var converter = new ArrayConverter();
 
             // Act
-            var array = converter.ConvertTo(collection, collectionType.GetElementTypeFromCollection().MakeArrayType()).CastOrDefault<IEnumerable>();
+            var array = converter.ConvertTo(collection, collectionType.GetElementTypeFromCollection().MakeArrayType()).CastToOrDefault<IEnumerable>();
 
             // Assert
             Assert.IsNotNull(array);

@@ -35,7 +35,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
             Guard.IsNotNullOrWhitespace(key);
             Guard.IsNotNull(cacheGetter);
 
-            var cacheOptions = options?.CastOrDefault<DistributedCacheOptions>() ?? new DistributedCacheOptions();
+            var cacheOptions = options?.CastToOrDefault<DistributedCacheOptions>() ?? new DistributedCacheOptions();
             _logger.Debug($"Checking distributed cache if an object with key <{key}> is cached");
 
             var bytes = await _cache.GetAsync(key, token);
@@ -44,7 +44,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
             {
                 _logger.Debug($"Found cached object <{key}> in the distributed cache");
                 var serializedString = bytes.ToString<TEncoding>();
-                return cacheOptions.Deserializer(serializedString, typeof(T)).CastOrDefault<T>();
+                return cacheOptions.Deserializer(serializedString, typeof(T)).CastToOrDefault<T>();
             }
             else
             {
@@ -89,7 +89,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// <inheritdoc cref="DistributedCacheOptions"/>
         public DistributedCacheOptions()
         {
-            this.Cast<IDistributedCacheOptions>().ConvertUsing(GenericConverter.DefaultJsonConverter);
+            this.CastTo<IDistributedCacheOptions>().ConvertUsing(GenericConverter.DefaultJsonConverter);
         }
 
         /// <inheritdoc/>

@@ -103,7 +103,7 @@ namespace Sels.Core.Cli
 
                 // Parse arguments
                 TArg arguments = default;
-                if (typeof(TArg).Is<string[]>()) arguments = args.CastOrDefault<TArg>();
+                if (typeof(TArg).Is<string[]>()) arguments = args.CastToOrDefault<TArg>();
                 else if (args.HasValue()) arguments = _parser != null ? _parser(args) : CreateArguments(args);
 
                 // Create service provider
@@ -159,7 +159,7 @@ namespace Sels.Core.Cli
 
                 // Parse arguments
                 TArg arguments = default;
-                if (typeof(TArg).Is<string[]>()) arguments = args.CastOrDefault<TArg>();
+                if (typeof(TArg).Is<string[]>()) arguments = args.CastToOrDefault<TArg>();
                 else if (args.HasValue()) arguments = _parser != null ? _parser(args) : CreateArguments(args);
 
                 // Create service provider

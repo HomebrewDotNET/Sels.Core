@@ -159,7 +159,7 @@ namespace Sels.ObjectValidationFramework.Target
         {
             using(_logger.TraceMethod(this)) {
                 objectToValidate.ValidateArgument(nameof(objectToValidate));
-                var targetContext = context.CastOrDefault<TTargetContext>();
+                var targetContext = context.CastToOrDefault<TTargetContext>();
                 var info = CreateInfo(objectToValidate, targetContext, elementIndex, parents);
                 if (info == null) throw new InvalidOperationException($"Validation target <{Identifier}> returned null when requested to create the info object");
 

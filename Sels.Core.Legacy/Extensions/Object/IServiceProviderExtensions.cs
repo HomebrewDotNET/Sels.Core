@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             provider.ValidateArgument(nameof(provider));
 
-            return provider.CreateInstance(typeof(T)).Cast<T>();
+            return provider.CreateInstance(typeof(T)).CastTo<T>();
         }
     }
 }

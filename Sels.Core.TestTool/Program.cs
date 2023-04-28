@@ -169,7 +169,7 @@ namespace Sels.Core.TestTool
                                 }).SetMinimumLevel(LogLevel.Debug);
                             })
                             .BuildServiceProvider();
-            var memoryLockingProvider = provider.GetRequiredService<ILockingProvider>().Cast<MemoryLockingProvider>();
+            var memoryLockingProvider = provider.GetRequiredService<ILockingProvider>().CastTo<MemoryLockingProvider>();
             var options = memoryLockingProvider.OptionsMonitor.CurrentValue;
             Console.WriteLine(options.SerializeAsJson());
         }

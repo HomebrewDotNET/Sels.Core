@@ -100,7 +100,7 @@ namespace Sels.Core.FileSystem.Extensions.FileSizes
 
             var sizeType = typeof(TSize).Is<FileSize>() ? typeof(SingleByte) : typeof(TSize);
 
-            return FileSize.CreateFromBytes(file.Length, sizeType).Cast<TSize>();
+            return FileSize.CreateFromBytes(file.Length, sizeType).CastTo<TSize>();
         }
     }
 }

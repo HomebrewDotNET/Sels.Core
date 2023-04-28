@@ -58,7 +58,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
                 logger.Debug($"Caching enabled for <{methodName}>");
                 var key = (cacher.KeyGetter ?? _keyGetter).Invoke(invocation);
                 if (!key.HasValue()) throw new InvalidOperationException($"Caching key cannot be null, empty or whitespace for method <{methodName}>");
-                var token = invocation.Arguments.FirstOrDefault(x => x is CancellationToken).CastOrDefault<CancellationToken>();
+                var token = invocation.Arguments.FirstOrDefault(x => x is CancellationToken).CastToOrDefault<CancellationToken>();
 
                 logger.Debug($"Checking cache for <{key}>");
 

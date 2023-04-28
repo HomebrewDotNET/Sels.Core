@@ -58,7 +58,7 @@ namespace Sels.Core.Conversion.Extensions
         /// <returns>Deserialized Xml string</returns>
         public static T DeserializeFromXml<T>(this string value)
         {
-            return value.DeserializeFromXml(typeof(T)).Cast<T>();
+            return value.DeserializeFromXml(typeof(T)).CastTo<T>();
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Sels.Core.Conversion.Extensions
         /// <returns>Deserialized Json string</returns>
         public static T DeserializeFromJson<T>(this string value)
         {
-            return value.DeserializeFromJson(typeof(T)).Cast<T>();
+            return value.DeserializeFromJson(typeof(T)).CastTo<T>();
         }
 
         /// <summary>

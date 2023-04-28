@@ -2082,7 +2082,7 @@
             Contains extension methods for converting objects to other types.
             </summary>
         </member>
-        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.Cast``1(System.Object)">
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.CastTo``1(System.Object)">
             <summary>
             Casts <paramref name="source"/> to type <typeparamref name="T"/>.
             </summary>
@@ -2090,7 +2090,7 @@
             <param name="source">Object to cast</param>
             <returns>Casted object</returns>
         </member>
-        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.CastOrDefault``1(System.Object)">
+        <member name="M:Sels.Core.Extensions.Conversion.ConversionExtensions.CastToOrDefault``1(System.Object)">
             <summary>
             Casts <paramref name="source"/> to type <typeparamref name="T"/> if it can be casted, otherwise return default of <typeparamref name="T"/>.
             </summary>

@@ -43,11 +43,11 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
         public void CollectionConverter_ConvertTo_ConvertsCollectionToTargetCollectionWithSameElements<T>(Type collectionType, Type targetType, T[] elements)
         {
             // Arrange
-            var collection = collectionType.Construct(elements).Cast<IEnumerable>();
+            var collection = collectionType.Construct(elements).CastTo<IEnumerable>();
             var converter = new CollectionConverter();
 
             // Act
-            var result = converter.ConvertTo(collection, targetType).CastOrDefault<IEnumerable>();
+            var result = converter.ConvertTo(collection, targetType).CastToOrDefault<IEnumerable>();
 
             // Assert
             Assert.IsNotNull(result);

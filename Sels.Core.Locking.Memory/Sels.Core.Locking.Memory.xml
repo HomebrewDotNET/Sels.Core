@@ -212,7 +212,7 @@
         </member>
         <member name="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.CleanupInterval">
             <summary>
-            The interval that will be used by <see cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider"/> to perform cleanup of the in-memeory locks to free up memory. When set to null no locks will be cleaned up.
+            The interval that will be used by <see cref="T:Sels.Core.Locking.Memory.MemoryLockingProvider"/> to perform cleanup of the in-memeory locks to free up memory. When set to <see cref="F:System.TimeSpan.Zero"/> no locks will be cleaned up.
             </summary>
         </member>
         <member name="P:Sels.Core.Locking.Memory.MemoryLockingProviderOptions.IsCleanupEnabled">

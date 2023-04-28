@@ -19,7 +19,7 @@ namespace Sels.Core.Extensions.Reflection
         public static IList CreateList(this IEnumerable source, Type listType)
         {
             listType.ValidateArgument(nameof(listType));
-            var list = typeof(List<>).MakeGenericType(listType).Construct().Cast<IList>();
+            var list = typeof(List<>).MakeGenericType(listType).Construct().CastTo<IList>();
 
             if(source != null)
             {
@@ -40,7 +40,7 @@ namespace Sels.Core.Extensions.Reflection
         public static IList CreateList(this Type elementType)
         {
             elementType.ValidateArgument(nameof(elementType));
-            var list = typeof(List<>).MakeGenericType(elementType).Construct().Cast<IList>();
+            var list = typeof(List<>).MakeGenericType(elementType).Construct().CastTo<IList>();
 
             return list;
         }

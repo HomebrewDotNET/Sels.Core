@@ -67,7 +67,7 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             var converter = new EnumConverter();
 
             // Act
-            var result = converter.ConvertTo(source, typeof(StringComparison)).Cast<StringComparison>();
+            var result = converter.ConvertTo(source, typeof(StringComparison)).CastTo<StringComparison>();
 
             // Assert
             Assert.AreEqual(expected, result);
@@ -84,10 +84,10 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             var converter = new EnumConverter();
 
             // Act
-            var result = converter.ConvertTo(source, typeof(int)).Cast<int>();
+            var result = converter.ConvertTo(source, typeof(int)).CastTo<int>();
 
             // Assert
-            Assert.AreEqual(source.Cast<int>(), result);
+            Assert.AreEqual(source.CastTo<int>(), result);
         }
 
         [TestCase(StringComparison.CurrentCulture)]
@@ -102,7 +102,7 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             var converter = new EnumConverter();
 
             // Act
-            var result = converter.ConvertTo(source, typeof(string)).Cast<string>();
+            var result = converter.ConvertTo(source, typeof(string)).CastTo<string>();
 
             // Assert
             Assert.AreEqual(source.ToString(), result);

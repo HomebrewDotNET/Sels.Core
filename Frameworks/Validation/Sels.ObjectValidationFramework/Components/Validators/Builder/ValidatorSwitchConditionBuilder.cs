@@ -33,7 +33,7 @@ namespace Sels.ObjectValidationFramework.Validators.Builder
         private readonly IValidationConfigurator<TEntity, TTargetContext, TError> _targetBuilder;
 
         // Properties
-        private ISwitchRootConditionConfigurator<TEntity, TError, TBaseContext, TTargetContext, TValue> CurrentRoot => this.Cast<ISwitchRootConditionConfigurator<TEntity, TError, TBaseContext, TTargetContext, TValue>>();
+        private ISwitchRootConditionConfigurator<TEntity, TError, TBaseContext, TTargetContext, TValue> CurrentRoot => this.CastTo<ISwitchRootConditionConfigurator<TEntity, TError, TBaseContext, TTargetContext, TValue>>();
 
         /// <inheritdoc cref="ValidatorSwitchConditionBuilder{TEntity, TError, TBaseContext, TTargetContext, TValue}"/>
         /// <param name="parent">The builder used to create the current builder</param>

@@ -34,7 +34,7 @@ namespace Sels.Core.Web.Blazor.Pages
         {
             property.ValidateArgument(nameof(property));
 
-            return _properties.TryGetOrSet(property.StartsWith("get_") ? property.Remove(0, 4) : property, default(T)).Cast<T>();
+            return _properties.TryGetOrSet(property.StartsWith("get_") ? property.Remove(0, 4) : property, default(T)).CastTo<T>();
         }
 
         /// <summary>

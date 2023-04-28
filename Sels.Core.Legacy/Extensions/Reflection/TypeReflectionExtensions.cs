@@ -354,7 +354,7 @@ namespace Sels.Core.Extensions.Reflection
         {
             type.ValidateArgument(nameof(type));
 
-            return Activator.CreateInstance(type).Cast<T>();
+            return Activator.CreateInstance(type).CastTo<T>();
         }
 
         /// <summary>
@@ -368,7 +368,7 @@ namespace Sels.Core.Extensions.Reflection
         {
             type.ValidateArgument(nameof(type));
 
-            return Activator.CreateInstance(type, parameters).Cast<T>();
+            return Activator.CreateInstance(type, parameters).CastTo<T>();
         }
 
         /// <summary>
