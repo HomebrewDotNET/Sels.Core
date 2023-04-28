@@ -46,7 +46,7 @@ namespace Sels.Core.Extensions
         /// <returns>Total minute difference between <paramref name="startDate"/> and <paramref name="endDate"/></returns>
         public static int GetMinuteDifference(this DateTime startDate, DateTime endDate)
         {
-            return Convert.ChangeType(Math.Abs((startDate - endDate).TotalMinutes), typeof(int)).Cast<int>();
+            return Convert.ChangeType(Math.Abs((startDate - endDate).TotalMinutes), typeof(int)).CastTo<int>();
         }
         /// <summary>
         /// Gets the difference in days between <paramref name="startDate"/> and <see cref="DateTime.Now"/>.

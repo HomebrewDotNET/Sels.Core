@@ -104,7 +104,7 @@ namespace Sels.Core.Conversion.Serializers.Table
             {
                 value.ValidateArgument(nameof(value));
 
-                return Deserialize(value, typeof(T), hasHeaderRow).CastOrDefault<T>();
+                return Deserialize(value, typeof(T), hasHeaderRow).CastToOrDefault<T>();
             }
         }
 
@@ -312,7 +312,7 @@ namespace Sels.Core.Conversion.Serializers.Table
                                 if (profile.IsCollection && !_excludedCollectionTypes.Contains(property.PropertyType))
                                 {
                                     _loggers.Debug($"Property <{property.Name}> on <{type}> is a collection. Serializing elements");
-                                    var valueCollection = propertyValue.Cast<IEnumerable>();
+                                    var valueCollection = propertyValue.CastTo<IEnumerable>();
                                     List<string> serializedElements = new List<string>();
 
                                     valueCollection.Enumerate().Where(x => x != null).Execute((e, element) =>
@@ -428,7 +428,7 @@ namespace Sels.Core.Conversion.Serializers.Table
         {
             if (type.IsContainer())
             {
-                var targetType = type.Cast<Type>();
+                var targetType = type;
                 var elementType = targetType.GetElementTypeFromCollection();
                 var objects = Deserialize(elementType, grid, hasHeaderRow).CreateList(elementType);
                 return GenericConverter.DefaultCollectionConverter.ConvertTo(objects, targetType);
@@ -445,7 +445,7 @@ namespace Sels.Core.Conversion.Serializers.Table
 
             if (type.IsContainer())
             {
-                return Serialize(type.GetElementTypeFromCollection(), instance.Cast<IEnumerable>().Enumerate());
+                return Serialize(type.GetElementTypeFromCollection(), instance.CastTo<IEnumerable>().Enumerate());
             }
             else
             {

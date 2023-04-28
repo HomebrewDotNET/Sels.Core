@@ -245,7 +245,7 @@ namespace Sels.ObjectValidationFramework.Profile
 
                 return IgnoreFor(x =>
                 {
-                    var context = x.Context.CastOrDefault<TContext>();
+                    var context = x.Context.CastToOrDefault<TContext>();
                     return contextCondition(context) && x.Info.Name == propertyInfo.Name && x.Info.DeclaringType == propertyInfo.DeclaringType;
                 }, ignoreType);
             }
@@ -355,7 +355,7 @@ namespace Sels.ObjectValidationFramework.Profile
                     {
                         _logger.Debug($"Root object <{objectToValidate}> is a collection. Triggering validation for the elements");
                         var counter = 0;
-                        foreach (var element in objectToValidate.Cast<IEnumerable>())
+                        foreach (var element in objectToValidate.CastTo<IEnumerable>())
                         {
                             await ValidateObject(executionContext, element, counter).ConfigureAwait(false);
                             counter++;
@@ -434,7 +434,7 @@ namespace Sels.ObjectValidationFramework.Profile
                                     // Loop over elements in collection and trigger validation for the elements
                                     _logger.Debug($"Property {property.Name} on <{objectToValidate}> is a collection. Triggering validation for the elements");
                                     var counter = 0;
-                                    foreach (var element in value.Cast<IEnumerable>())
+                                    foreach (var element in value.CastTo<IEnumerable>())
                                     {
                                         await ValidateObject(executionContext, element, counter).ConfigureAwait(false);
                                         counter++;

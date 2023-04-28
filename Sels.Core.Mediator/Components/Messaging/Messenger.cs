@@ -44,7 +44,7 @@ namespace Sels.Core.Mediator.Messaging
                 tasks.AddRange(subscribers.Select(x =>
                 {
                     _logger.Debug($"Sending <{message}> from <{sender}> to <{x}>");
-                    return (x.Cast<object>(), x.ReceiveAsync(sender, message, token));
+                    return (x.CastTo<object>(), x.ReceiveAsync(sender, message, token));
                 }));
 
                 // Untyped subscribers
@@ -52,7 +52,7 @@ namespace Sels.Core.Mediator.Messaging
                 tasks.AddRange(untypedSubscribers.Select(x =>
                 {
                     _logger.Debug($"Sending <{message}> from <{sender}> to <{x}>");
-                    return (x.Cast<object>(), x.ReceiveAsync(sender, message, token));
+                    return (x.CastTo<object>(), x.ReceiveAsync(sender, message, token));
                 }));
 
                 // Gather all results

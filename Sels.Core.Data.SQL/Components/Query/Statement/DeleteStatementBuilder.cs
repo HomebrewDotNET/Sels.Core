@@ -49,7 +49,7 @@ namespace Sels.Core.Data.SQL.Query.Statement
         public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             // Add implicit expressions
-            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(DeleteExpressionPositions.From) || !Expressions[DeleteExpressionPositions.From].HasValue())) this.Cast<IDeleteStatementBuilder<TEntity>>().From();
+            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(DeleteExpressionPositions.From) || !Expressions[DeleteExpressionPositions.From].HasValue())) this.CastTo<IDeleteStatementBuilder<TEntity>>().From();
 
             return base.Build(builder, options);
         }

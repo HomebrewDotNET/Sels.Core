@@ -41,7 +41,7 @@ namespace Sels.Core.Records
         /// <inheritdoc/>
         public override bool Equals(object? obj)
         {
-            T objToCompare = obj is RecordProperty<T> recordProperty ? recordProperty.Value : obj is T ? obj.Cast<T>() : default;
+            T objToCompare = obj is RecordProperty<T> recordProperty ? recordProperty.Value : obj is T ? obj.CastTo<T>() : default;
 
             return _comparator != null ? _comparator.Invoke(Value, objToCompare) : true;
         }

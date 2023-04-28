@@ -32,8 +32,8 @@ namespace Sels.Core.Conversion.Converters.Simple
         {
             value.ValidateArgument(x => CanConvert(x, convertType, arguments), $"Converter <{this}> cannot convert using the provided value. Call <{nameof(CanConvert)}> first");
 
-            var values = value.Cast<IEnumerable>().Enumerate().ToArray();
-            var array = convertType.Construct(values.Length).Cast<Array>();
+            var values = value.CastTo<IEnumerable>().Enumerate().ToArray();
+            var array = convertType.Construct(values.Length).CastTo<Array>();
             for (int i = 0; i < values.Length; i++)
             {
                 array.SetValue(values[i], i);

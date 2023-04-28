@@ -27,7 +27,7 @@ namespace Sels.Core.Data.Linking
         /// <inheritdoc/>
         public T Link<T>(T firstObject, object secondObject, params object[] additionalObjects)
         {
-            var objectsToLink = Helper.Collection.EnumerateAll<object>(firstObject.CastOrDefault<object>().AsEnumerable(), secondObject.AsEnumerable(), additionalObjects)
+            var objectsToLink = Helper.Collection.EnumerateAll<object>(firstObject.CastToOrDefault<object>().AsEnumerable(), secondObject.AsEnumerable(), additionalObjects)
                                .Where(x => x != null)
                                .Select(x =>
                                {
@@ -147,7 +147,7 @@ namespace Sels.Core.Data.Linking
             // Fields
             private readonly IRelationalLinker _parent;
 
-            public LinkProfile(IRelationalLinker parent, Func<T, object> idGetter) : base(typeof(T), x => idGetter.ValidateArgument(nameof(idGetter))(x.Cast<T>()))
+            public LinkProfile(IRelationalLinker parent, Func<T, object> idGetter) : base(typeof(T), x => idGetter.ValidateArgument(nameof(idGetter))(x.CastTo<T>()))
             {
                 _parent = parent.ValidateArgument(nameof(parent));
             }
@@ -157,7 +157,7 @@ namespace Sels.Core.Data.Linking
             {
                 initializer.ValidateArgument(nameof(initializer));
 
-                _initializer = x => initializer(x.Cast<T>());
+                _initializer = x => initializer(x.CastTo<T>());
                 return this;
             }
 
@@ -166,7 +166,7 @@ namespace Sels.Core.Data.Linking
                 condition.ValidateArgument(nameof(condition));
                 linker.ValidateArgument(nameof(linker));
 
-                _links.AddOrUpdate(typeof(TLink), (new Func<object, object, bool>((s, t) => condition(s.Cast<T>(), t.Cast<TLink>())), new Action<object, object>((s, t) => linker(s.Cast<T>(), t.Cast<TLink>()))));
+                _links.AddOrUpdate(typeof(TLink), (new Func<object, object, bool>((s, t) => condition(s.CastTo<T>(), t.CastTo<TLink>())), new Action<object, object>((s, t) => linker(s.CastTo<T>(), t.CastTo<TLink>()))));
                 return this;
             }
 

@@ -67,7 +67,7 @@ namespace Sels.Core.Factory.Autofac
         public IEnumerable<object> ResolveAll(Type type)
         {
             Guard.IsNotNull(type);
-            return _scope.Resolve(typeof(IEnumerable<>).MakeGenericType(type)).Cast<IEnumerable>().Enumerate();
+            return _scope.Resolve(typeof(IEnumerable<>).MakeGenericType(type)).CastTo<IEnumerable>().Enumerate();
         }
         #endregion
 

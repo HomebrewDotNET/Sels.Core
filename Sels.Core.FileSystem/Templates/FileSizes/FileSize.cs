@@ -264,7 +264,7 @@ namespace Sels.Core.FileSystem.Templates.FileSizes
         {
             bytes.ValidateArgumentLargerOrEqual(nameof(bytes), 0);
 
-            return CreateFromBytes(bytes, typeof(T)).Cast<T>();
+            return CreateFromBytes(bytes, typeof(T)).CastTo<T>();
         }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace Sels.Core.FileSystem.Templates.FileSizes
         {
             size.ValidateArgumentLargerOrEqual(nameof(size), 0);
 
-            return CreateFromSize(size, typeof(T)).Cast<T>();
+            return CreateFromSize(size, typeof(T)).CastTo<T>();
         }
 
         /// <summary>
@@ -323,14 +323,14 @@ namespace Sels.Core.FileSystem.Templates.FileSizes
         /// <inheritdoc/>
         public static bool operator ==(FileSize? fileSize, FileSize? otherFileSize)
         {
-            if(fileSize.IsNull() || otherFileSize.IsNull()) return fileSize.CastOrDefault<object>() == otherFileSize.CastOrDefault<object>();
+            if(fileSize.IsNull() || otherFileSize.IsNull()) return fileSize.CastToOrDefault<object>() == otherFileSize.CastToOrDefault<object>();
 
             return fileSize.Equals(otherFileSize);
         }
         /// <inheritdoc/>
         public static bool operator !=(FileSize? fileSize, FileSize? otherFileSize)
         {
-            if (fileSize.IsNull() || otherFileSize.IsNull()) return fileSize.CastOrDefault<object>() != otherFileSize.CastOrDefault<object>();
+            if (fileSize.IsNull() || otherFileSize.IsNull()) return fileSize.CastToOrDefault<object>() != otherFileSize.CastToOrDefault<object>();
 
             return !fileSize.Equals(otherFileSize);
         }

@@ -88,7 +88,7 @@ namespace Sels.Core.Collections
         {
             if (obj == null || obj is not IEnumerable<T>) return false;
 
-            var collection = obj.Cast<IEnumerable<T>>();
+            var collection = obj.CastTo<IEnumerable<T>>();
 
             switch (_type)
             {

@@ -15,7 +15,7 @@ namespace Sels.Core.Extensions.Conversion
         /// <typeparam name="T">Type to cast to</typeparam>
         /// <param name="source">Object to cast</param>
         /// <returns>Casted object</returns>
-        public static T Cast<T>(this object source)
+        public static T CastTo<T>(this object source)
         {
             return (T)source;
         }
@@ -26,7 +26,7 @@ namespace Sels.Core.Extensions.Conversion
         /// <typeparam name="T">Type to cast to</typeparam>
         /// <param name="source">Object to cast</param>
         /// <returns>Casted object</returns>
-        public static T CastOrDefault<T>(this object source)
+        public static T CastToOrDefault<T>(this object source)
         {
             if (source != null && source is T casted)
             {
@@ -47,7 +47,7 @@ namespace Sels.Core.Extensions.Conversion
         {
             source.ValidateArgument(nameof(source));
 
-            return source.ChangeType(typeof(TNew)).Cast<TNew>();
+            return source.ChangeType(typeof(TNew)).CastTo<TNew>();
         }
 
         /// <summary>

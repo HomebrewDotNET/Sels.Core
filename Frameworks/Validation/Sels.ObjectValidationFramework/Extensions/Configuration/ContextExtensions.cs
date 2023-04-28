@@ -142,7 +142,7 @@ namespace Sels.ObjectValidationFramework.Profile
         {
             ruleContext.ValidateArgument(nameof(ruleContext));
 
-            return GetFullDisplayName(ruleContext.Cast<dynamic>(), includeParents);
+            return GetFullDisplayName(ruleContext.CastTo<dynamic>(), includeParents);
         }
     }
 }

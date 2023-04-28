@@ -36,15 +36,15 @@ namespace Sels.Core.Data.SQL.Query.Expressions
             }
             else if (type.Is<DateTime>())
             {
-                builder.Append('\'').Append(Value.Cast<DateTime>().ToString("yyyy-MM-dd HH:mm:ss")).Append('\'');
+                builder.Append('\'').Append(Value.CastTo<DateTime>().ToString("yyyy-MM-dd HH:mm:ss")).Append('\'');
             }
             else if (type.Is<double>())
             {
-                builder.Append(Value.Cast<double>().ToString(CultureInfo.InvariantCulture));
+                builder.Append(Value.CastTo<double>().ToString(CultureInfo.InvariantCulture));
             }
             else if (type.Is<decimal>())
             {
-                builder.Append(Value.Cast<decimal>().ToString(CultureInfo.InvariantCulture));
+                builder.Append(Value.CastTo<decimal>().ToString(CultureInfo.InvariantCulture));
             }
             else if (type.IsNumeric())
             {

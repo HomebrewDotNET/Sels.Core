@@ -100,7 +100,7 @@ namespace Sels.Core.Cli.ArgumentParsing
             setter.ValidateArgument(nameof(setter));
             targetType.ValidateArgument(nameof(targetType));
 
-            return CreateSelector<TArg>((instance, arg) => setter(instance, arg.CastOrDefault<TArg>()), targetType);
+            return CreateSelector<TArg>((instance, arg) => setter(instance, arg.CastToOrDefault<TArg>()), targetType);
         }
 
         private Selector<TArg> CreateSelector<TArg>(Action<T, object?> setter, Type? targetType = null)

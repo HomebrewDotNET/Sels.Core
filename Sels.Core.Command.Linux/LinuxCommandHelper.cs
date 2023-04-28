@@ -36,7 +36,7 @@ namespace Sels.Core.Command.Linux
                 using var logger = loggers.CreateTimedLogger(LogLevel.Debug, $"Building linux arguments for command {commandName}", x => $"Built linux arguments for command {commandName} in {x.PrintTotalMs()}");
 
                 // Get all properties and group properties in a dictionary and select first LinuxArgument, then filter out properties without any LinuxArgument. Last select argument value from attribute and the order. 
-                var propertyArguments = command.GetProperties().ToDictionary(x => x, x => x.GetCustomAttributes().FirstOrDefault(a => a.IsAssignableTo<LinuxArgument>()).CastOrDefault<LinuxArgument>()).Where(x => x.Value.HasValue()).Select(x => (Argument: x.Value.GetArgument(x.Key.Name, x.Key.GetValue(command)), Order: x.Value.Order)).ToList();
+                var propertyArguments = command.GetProperties().ToDictionary(x => x, x => x.GetCustomAttributes().FirstOrDefault(a => a.IsAssignableTo<LinuxArgument>()).CastToOrDefault<LinuxArgument>()).Where(x => x.Value.HasValue()).Select(x => (Argument: x.Value.GetArgument(x.Key.Name, x.Key.GetValue(command)), Order: x.Value.Order)).ToList();
 
                 logger.Log((time, log) => log.LogMessage(LogLevel.Trace, $"Building {propertyArguments.Count} arguments for command {commandName} ({time.PrintTotalMs()})"));
 

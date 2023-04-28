@@ -176,7 +176,7 @@ namespace Sels.Core.Locking.Memory
         {
             using (_logger.TraceMethod(this))
             {
-                return Task.FromResult(GetLockOrSet(resource).Cast<ILockInfo>());
+                return Task.FromResult(GetLockOrSet(resource).CastTo<ILockInfo>());
             }
         }
         /// <inheritdoc/>
@@ -231,7 +231,7 @@ namespace Sels.Core.Locking.Memory
                     {
                         lock (x)
                         {
-                            return new MemoryLockInfo(x.Cast<MemoryLockInfo>());
+                            return new MemoryLockInfo(x.CastTo<MemoryLockInfo>());
                         }
                     }).Cast<ILockInfo>().ToArray();
 

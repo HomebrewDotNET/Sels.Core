@@ -50,7 +50,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
                     return valueToSet;
                 }
 
-                var cacheOptions = options?.CastOrDefault<MemoryCacheOptions>().Build(target);
+                var cacheOptions = options?.CastToOrDefault<MemoryCacheOptions>().Build(target);
                 if(cacheOptions != null)
                 {
                     _cache.Set(key, valueToSet, cacheOptions);

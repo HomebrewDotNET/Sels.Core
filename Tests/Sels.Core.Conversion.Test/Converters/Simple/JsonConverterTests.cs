@@ -48,8 +48,8 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             var source = new int[] { 1, 2, 3, 4, 5 };
 
             // Act
-            var json = converter.ConvertTo(source, typeof(string)).Cast<string>();
-            var result = converter.ConvertTo(json, typeof(int[])).Cast<int[]>();
+            var json = converter.ConvertTo(source, typeof(string)).CastTo<string>();
+            var result = converter.ConvertTo(json, typeof(int[])).CastTo<int[]>();
 
             // Assert
             Assert.IsNotNull(result);

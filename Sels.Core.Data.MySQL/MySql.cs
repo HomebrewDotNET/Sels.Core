@@ -508,7 +508,7 @@ namespace Sels.Core.Data.MySQL
                 }
                 else if (property.PropertyType.IsContainer())
                 {
-                    var values = propertyValue.Cast<IEnumerable>().Enumerate().ToArray();
+                    var values = propertyValue.CastTo<IEnumerable>().Enumerate().ToArray();
                     for(int i = 0; i < values.Length; i++)
                     {
                         parameters.AddParameter($"{property.Name}[{i}]", values[i]);

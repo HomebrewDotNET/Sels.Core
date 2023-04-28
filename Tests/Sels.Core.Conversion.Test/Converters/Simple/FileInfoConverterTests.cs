@@ -36,7 +36,7 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             var converter = new FileInfoConverter();
 
             // Act
-            var result = converter.ConvertTo(File, typeof(FileInfo)).Cast<FileInfo>();
+            var result = converter.ConvertTo(File, typeof(FileInfo)).CastTo<FileInfo>();
 
             // Assert
             Assert.AreEqual(File, result.Name);
@@ -50,7 +50,7 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             var converter = new FileInfoConverter();
 
             // Act
-            var result = converter.ConvertTo(file, typeof(string)).Cast<string>();
+            var result = converter.ConvertTo(file, typeof(string)).CastTo<string>();
 
             // Assert
             Assert.AreEqual(file.FullName, result);

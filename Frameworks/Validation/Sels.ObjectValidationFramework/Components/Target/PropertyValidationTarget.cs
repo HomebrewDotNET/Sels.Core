@@ -77,7 +77,7 @@ namespace Sels.ObjectValidationFramework.Target
                 // Nulls are allowed when there is no subselection
                 else if (!_isSubSelection)
                 {
-                    value = propertyValue.CastOrDefault<TValue>();
+                    value = propertyValue.CastToOrDefault<TValue>();
                     return true;
                 }
 

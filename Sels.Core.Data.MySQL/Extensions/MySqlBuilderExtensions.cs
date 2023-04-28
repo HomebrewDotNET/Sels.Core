@@ -38,7 +38,7 @@ namespace Sels.Core.Data.MySQL
             builder.ValidateArgument(nameof(builder));
             expressionBuilder.ValidateArgument(nameof(expressionBuilder));
 
-            var expression = builder.InnerExpressions.FirstOrDefault(x => x is OnDuplicateKeyUpdateExpression<TEntity>).CastOrDefault<OnDuplicateKeyUpdateExpression<TEntity>>();
+            var expression = builder.InnerExpressions.FirstOrDefault(x => x is OnDuplicateKeyUpdateExpression<TEntity>).CastToOrDefault<OnDuplicateKeyUpdateExpression<TEntity>>();
 
             if(expression != null)
             {
@@ -112,7 +112,7 @@ namespace Sels.Core.Data.MySQL
             var limitExpression = limit is IExpression lE ? lE : new ConstantExpression(limit);
             var offsetExprresion = offset != null ? offset is IExpression oE ? oE : new ConstantExpression(offset) : null;
 
-            var expression = builder.InnerExpressions.FirstOrDefault(x => x is LimitOffsetExpression).CastOrDefault<LimitOffsetExpression>();
+            var expression = builder.InnerExpressions.FirstOrDefault(x => x is LimitOffsetExpression).CastToOrDefault<LimitOffsetExpression>();
 
             // Update existing expression
             if (expression != null)

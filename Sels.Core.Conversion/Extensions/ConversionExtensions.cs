@@ -22,7 +22,7 @@ namespace Sels.Core.Conversion.Extensions
         {
             if (value.HasValue())
             {
-                return GenericConverter.DefaultConverter.ConvertTo(value, typeof(T), arguments).CastOrDefault<T>();
+                return GenericConverter.DefaultConverter.ConvertTo(value, typeof(T), arguments).CastToOrDefault<T>();
             }
 
             return default;

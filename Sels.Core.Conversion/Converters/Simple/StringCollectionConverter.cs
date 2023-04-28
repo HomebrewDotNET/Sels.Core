@@ -65,7 +65,7 @@ namespace Sels.Core.Conversion.Converters.Simple
             // Source is collection so we convert the elements to string and join them into a single string.
             else
             {
-                var strings = value.Cast<IEnumerable>().Enumerate().Select(x => ElementConverter.ConvertTo<string>(x, arguments));
+                var strings = value.CastTo<IEnumerable>().Enumerate().Select(x => ElementConverter.ConvertTo<string>(x, arguments));
                 return strings.JoinString(splitValue.IsNullOrEmpty() ? " " : splitValue); 
             }
         }

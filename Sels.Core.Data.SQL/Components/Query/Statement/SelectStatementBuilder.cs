@@ -69,7 +69,7 @@ namespace Sels.Core.Data.SQL.Query.Statement
         /// <inheritdoc/>
         public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
-            var statementBuilder = this.Cast<ISelectStatementBuilder<TEntity>>();
+            var statementBuilder = this.CastTo<ISelectStatementBuilder<TEntity>>();
             // Add implicit expressions
             if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(SelectExpressionPositions.From) || !Expressions[SelectExpressionPositions.From].HasValue())) statementBuilder.From();
             if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(SelectExpressionPositions.Column) || !Expressions[SelectExpressionPositions.Column].HasValue())) statementBuilder.All();

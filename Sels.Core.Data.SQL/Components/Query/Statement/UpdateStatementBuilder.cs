@@ -60,7 +60,7 @@ namespace Sels.Core.Data.SQL.Query.Statement
         /// <inheritdoc/>
         public IUpdateStatementBuilder<TEntity> SetFrom<T>(object? dataset = null, params string[] excludedProperties)
         {
-            var builder = this.Cast<IUpdateStatementBuilder<TEntity>>();
+            var builder = this.CastTo<IUpdateStatementBuilder<TEntity>>();
             foreach(var property in GetColumnPropertiesFrom<T>(excludedProperties))
             {
                 builder.Set(dataset ?? typeof(T), property.Name).To.Parameter(property.Name);
@@ -73,7 +73,7 @@ namespace Sels.Core.Data.SQL.Query.Statement
         {
             valueObject.ValidateArgument(nameof(valueObject));
 
-            var builder = this.Cast<IUpdateStatementBuilder<TEntity>>();
+            var builder = this.CastTo<IUpdateStatementBuilder<TEntity>>();
             foreach (var property in GetColumnPropertiesFrom<T>(excludedProperties))
             {
                 builder.Set(dataset ?? typeof(T), property.Name).To.Value(property.GetValue(valueObject));
@@ -87,7 +87,7 @@ namespace Sels.Core.Data.SQL.Query.Statement
         public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             // Add implicit expressions
-            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(UpdateExpressionPositions.Table) || !Expressions[UpdateExpressionPositions.Table].HasValue())) this.Cast<IUpdateStatementBuilder<TEntity>>().Table();
+            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(UpdateExpressionPositions.Table) || !Expressions[UpdateExpressionPositions.Table].HasValue())) this.CastTo<IUpdateStatementBuilder<TEntity>>().Table();
 
             return base.Build(builder, options);
         }

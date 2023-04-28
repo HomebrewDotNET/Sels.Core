@@ -39,7 +39,7 @@ namespace Sels.Core.Conversion.Converters.Simple
             // Convert using list
             else
             {
-                var list = value.Cast<IEnumerable>().CreateList(value.GetElementTypeFromCollection());
+                var list = value.CastTo<IEnumerable>().CreateList(value.GetElementTypeFromCollection());
                 return convertType.Construct(list);
             }
 

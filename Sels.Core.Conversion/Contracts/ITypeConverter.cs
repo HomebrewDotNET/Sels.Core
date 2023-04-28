@@ -52,7 +52,7 @@ namespace Sels.Core.Conversion.Converters
             var type = typeof(T);
 
             if (!converter.CanConvert(value, type, arguments)) throw new NotSupportedException($"Converter cannot convert type <{value.GetType()}> to <{type}>");
-            return converter.ConvertTo(value, type, arguments).Cast<T>();
+            return converter.ConvertTo(value, type, arguments).CastTo<T>();
         }
         /// <summary>
         /// Tries to convert <paramref name="value"/> to an instance of type <paramref name="convertType"/>.
@@ -97,7 +97,7 @@ namespace Sels.Core.Conversion.Converters
             converted = default;
 
             var success = TryConvertTo(converter, value, typeof(T), out var convertedObject, arguments);
-            if(success) converted = convertedObject.Cast<T>();
+            if(success) converted = convertedObject.CastTo<T>();
             return success;
         }
 
@@ -136,7 +136,7 @@ namespace Sels.Core.Conversion.Converters
             value.ValidateArgument(nameof(value));
             var type = typeof(T);
 
-            return converters.ConvertTo(value, type, arguments).Cast<T>();
+            return converters.ConvertTo(value, type, arguments).CastTo<T>();
         }
         /// <summary>
         /// Tries to convert <paramref name="value"/> to an instance of type <paramref name="convertType"/>.
@@ -186,7 +186,7 @@ namespace Sels.Core.Conversion.Converters
             converted = default;
 
             var success = TryConvertTo(converters, value, typeof(T), out var convertedObject, arguments);
-            if (success) converted = convertedObject.Cast<T>();
+            if (success) converted = convertedObject.CastTo<T>();
             return success;
         }
     }

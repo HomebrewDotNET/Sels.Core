@@ -36,7 +36,7 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             var converter = new DirectoryInfoConverter();
 
             // Act
-            var result = converter.ConvertTo(Folder, typeof(DirectoryInfo)).Cast<DirectoryInfo>();
+            var result = converter.ConvertTo(Folder, typeof(DirectoryInfo)).CastTo<DirectoryInfo>();
 
             // Assert
             Assert.AreEqual(Folder, result.Name);
@@ -50,7 +50,7 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             var converter = new DirectoryInfoConverter();
 
             // Act
-            var result = converter.ConvertTo(directory, typeof(string)).Cast<string>();
+            var result = converter.ConvertTo(directory, typeof(string)).CastTo<string>();
 
             // Assert
             Assert.AreEqual(directory.FullName, result);

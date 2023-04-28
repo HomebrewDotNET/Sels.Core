@@ -85,7 +85,7 @@ namespace Sels.Core.Extensions.Reflection
             property.ValidateArgument(nameof(property));
             sourceObject.ValidateArgument(nameof(sourceObject));
 
-            return property.GetValue(sourceObject).Cast<T>();
+            return property.GetValue(sourceObject).CastTo<T>();
         }
 
         /// <summary>
