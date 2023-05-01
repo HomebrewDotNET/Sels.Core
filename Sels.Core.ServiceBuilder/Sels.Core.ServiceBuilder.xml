@@ -824,7 +824,7 @@
         </member>
         <member name="M:Sels.Core.ServiceBuilder.IServiceBuilder`2.ConstructWith(System.Func{System.IServiceProvider,`1})">
             <summary>
-            Defines a delgete for creating the instances of <paramref name="factory"/>.
+            Defines a delegate for creating the instances of <paramref name="factory"/>.
             </summary>
             <param name="factory">Delegate that creates a new instance of <typeparamref name="TImpl"/></param>
             <returns>Current builder for method chaining</returns>

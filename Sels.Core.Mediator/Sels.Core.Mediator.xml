@@ -92,6 +92,359 @@
             <param name="assemblies">The assemblies to scan</param>
             <returns><paramref name="services"/> for method chaining</returns>
         </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddNotifier(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds all required services to make use of <see cref="T:Sels.Core.Mediator.INotifier"/> to raise requests/events and subscribe to them.
+            </summary>
+            <param name="services">The collection the service descriptions will be added to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddEventListener``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Sels.Core.ServiceBuilder.IServiceBuilder{Sels.Core.Mediator.Event.IEventListener{``1},``0}})">
+            <summary>
+            Adds a event listener of type <typeparamref name="TListener"/> that can react to events of type <typeparamref name="TEvent"/>.
+            </summary>
+            <typeparam name="TListener">The type of the event listener</typeparam>
+            <typeparam name="TEvent">The type of the event to respond to</typeparam>
+            <param name="services">The collection the service descriptions will be added to</param>
+            <param name="serviceBuilder">Optional delegate for configuring the service registration</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddEventListener``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Delegates.Async.AsyncAction{Sels.Core.Mediator.Event.IEventListenerContext,``0,System.Threading.CancellationToken})">
+            <summary>
+            Adds a event listener that can react to events of type <typeparamref name="TEvent"/> using <paramref name="handler"/>.
+            </summary>
+            <typeparam name="TEvent">The type of the event to respond to</typeparam>
+            <param name="handler">The delegate that will be called to react to raised events</param>
+            <param name="services">The collection the service descriptions will be added to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddEventListener``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Delegates.Async.AsyncAction{System.IServiceProvider,Sels.Core.Mediator.Event.IEventListenerContext,``0,System.Threading.CancellationToken})">
+            <summary>
+            Adds a event listener that can react to events of type <typeparamref name="TEvent"/> using <paramref name="handler"/>.
+            </summary>
+            <typeparam name="TEvent">The type of the event to respond to</typeparam>
+            <param name="handler">The delegate that will be called to react to raised events</param>
+            <param name="services">The collection the service descriptions will be added to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddEventListener``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Sels.Core.ServiceBuilder.IServiceBuilder{Sels.Core.Mediator.Event.IEventListener,``0}})">
+            <summary>
+            Adds a event listener of type <typeparamref name="TListener"/> that can react to all events.
+            </summary>
+            <typeparam name="TListener">The type of the event listener</typeparam>
+            <param name="services">The collection the service descriptions will be added to</param>
+            <param name="serviceBuilder">Optional delegate for configuring the service registration</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddEventListener(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Delegates.Async.AsyncAction{Sels.Core.Mediator.Event.IEventListenerContext,System.Object,System.Threading.CancellationToken})">
+            <summary>
+            Adds a event listener that can react to all events using <paramref name="handler"/>.
+            </summary>
+            <param name="handler">The delegate that will be called to react to raised events</param>
+            <param name="services">The collection the service descriptions will be added to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddEventListener(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Delegates.Async.AsyncAction{System.IServiceProvider,Sels.Core.Mediator.Event.IEventListenerContext,System.Object,System.Threading.CancellationToken})">
+            <summary>
+            Adds a event listener that can react to all events using <paramref name="handler"/>.
+            </summary>
+            <param name="handler">The delegate that will be called to react to raised events</param>
+            <param name="services">The collection the service descriptions will be added to</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.ScanForEventListenersIn(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Reflection.Assembly[])">
+            <summary>
+            Scans <paramref name="assemblies"/> for all types that implement <see cref="T:Sels.Core.Mediator.Event.IEventListener`1"/> or <see cref="T:Sels.Core.Mediator.Event.IEventListener"/> and registers them as <see cref="F:Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped"/>.
+            </summary>
+            <param name="services">The service collection to add the services to</param>
+            <param name="assemblies">The assemblies to scan</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.ScanForListenersIn(Microsoft.Extensions.DependencyInjection.IServiceCollection,Sels.Core.Delegates.Condition{System.Type},System.Func{System.Type,Microsoft.Extensions.DependencyInjection.ServiceLifetime},System.Reflection.Assembly[])">
+            <summary>
+            Scans <paramref name="assemblies"/> for all types that implement <see cref="T:Sels.Core.Mediator.Event.IEventListener`1"/> or <see cref="T:Sels.Core.Mediator.Event.IEventListener"/> and registers them.
+            </summary>
+            <param name="services">The service collection to add the services to</param>
+            <param name="condition">Optional predicate that dictates if the type can be added. Arg is the implementation type</param>
+            <param name="scopeSelector">Optional func that select the lifetime for the implementation</param>
+            <param name="assemblies">The assemblies to scan</param>
+            <returns><paramref name="services"/> for method chaining</returns>
+        </member>
+        <member name="T:Sels.Core.Mediator.Event.DelegateEventListener`1">
+            <summary>
+            Event listener that reacts to events of type <typeparamref name="TEvent"/> by delegating it.
+            </summary>
+            <typeparam name="TEvent">The type of event to listen to</typeparam>
+        </member>
+        <member name="P:Sels.Core.Mediator.Event.DelegateEventListener`1.Handler">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.DelegateEventListener`1.#ctor(System.Object,Sels.Core.Delegates.Async.AsyncAction{Sels.Core.Mediator.Event.IEventListenerContext,`0,System.Threading.CancellationToken})">
+            <inheritdoc cref="T:Sels.Core.Mediator.Event.DelegateEventListener`1"/>
+            <param name="handler">The actual object that's listening to events using <paramref name="asyncAction"/></param>
+            <param name="asyncAction">The delegate that will be called to react to raised events</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.DelegateEventListener`1.HandleAsync(Sels.Core.Mediator.Event.IEventListenerContext,`0,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Mediator.Event.DelegateEventListener">
+            <summary>
+            Event listener that reacts to events by delegating it.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Event.DelegateEventListener.Handler">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.DelegateEventListener.#ctor(System.Object,Sels.Core.Delegates.Async.AsyncAction{Sels.Core.Mediator.Event.IEventListenerContext,System.Object,System.Threading.CancellationToken})">
+            <inheritdoc cref="T:Sels.Core.Mediator.Event.DelegateEventListener"/>
+            <param name="handler">The actual object that's listening to events using <paramref name="asyncAction"/></param>
+            <param name="asyncAction">The delegate that will be called to react to raised events</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.DelegateEventListener.HandleAsync(Sels.Core.Mediator.Event.IEventListenerContext,System.Object,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Mediator.Event.EventSubscriptionManager">
+            <summary>
+            Manages event subscribers that subscribe to events at runtime.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.#ctor(System.IServiceProvider,Microsoft.Extensions.Logging.ILogger{Sels.Core.Mediator.Event.EventSubscriptionManager})">
+            <inheritdoc cref="T:Sels.Core.Mediator.Event.EventSubscriptionManager"/>
+            <param name="serviceProvider">Service provider used to resolve typed <see cref="T:Sels.Core.Mediator.Event.IEventSubscriber`1"/></param>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.GetAllListeners">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.GetAllListeners``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.Subscribe``1(Sels.Core.Mediator.Event.IEventListener{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.Subscribe``1(System.Object,Sels.Core.Delegates.Async.AsyncAction{Sels.Core.Mediator.Event.IEventListenerContext,``0,System.Threading.CancellationToken})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.Unsubscribe``1(Sels.Core.Mediator.Event.IEventListener{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.Unsubscribe``1(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.Subscribe(Sels.Core.Mediator.Event.IEventListener)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.Subscribe(System.Object,Sels.Core.Delegates.Async.AsyncAction{Sels.Core.Mediator.Event.IEventListenerContext,System.Object,System.Threading.CancellationToken})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.Unsubscribe(Sels.Core.Mediator.Event.IEventListener)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager.Unsubscribe(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Mediator.Event.EventSubscriptionManager`1">
+            <summary>
+            Manages event subscribers that subscribe to events of type <typeparamref name="TEvent"/> at runtime.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager`1.#ctor(Microsoft.Extensions.Logging.ILogger{Sels.Core.Mediator.Event.EventSubscriptionManager{`0}})">
+            <inheritdoc cref="T:Sels.Core.Mediator.Event.EventSubscriptionManager`1"/>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager`1.GetAllListeners">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager`1.Subscribe(Sels.Core.Mediator.Event.IEventListener{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager`1.Subscribe(System.Object,Sels.Core.Delegates.Async.AsyncAction{Sels.Core.Mediator.Event.IEventListenerContext,`0,System.Threading.CancellationToken})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager`1.Unsubscribe(Sels.Core.Mediator.Event.IEventListener{`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.EventSubscriptionManager`1.Unsubscribe(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Mediator.Event.IEventListener`1">
+            <summary>
+            Allows an object to listen to events of type <typeparamref name="TEvent"/>.
+            </summary>
+            <typeparam name="TEvent">The type of event to listen to</typeparam>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventListener`1.HandleAsync(Sels.Core.Mediator.Event.IEventListenerContext,`0,System.Threading.CancellationToken)">
+            <summary>
+            React to raised event <paramref name="eventData"/>.
+            </summary>
+            <param name="context"><inheritdoc cref="T:Sels.Core.Mediator.Event.IEventListenerContext"/></param>
+            <param name="eventData">The event that was raised</param>
+            <param name="token">Optional token that can be cancelled by the event raiser</param>
+            <returns>Task containing the execution state</returns>
+        </member>
+        <member name="T:Sels.Core.Mediator.Event.IEventListener">
+            <summary>
+            Allows an object to listen to all raised events
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventListener.HandleAsync(Sels.Core.Mediator.Event.IEventListenerContext,System.Object,System.Threading.CancellationToken)">
+            <summary>
+            React to raised event <paramref name="eventData"/>.
+            </summary>
+            <param name="context"><inheritdoc cref="T:Sels.Core.Mediator.Event.IEventListenerContext"/></param>
+            <param name="eventData">The event that was raised</param>
+            <param name="token">Optional token that can be cancelled by the event raiser</param>
+            <returns>Task containing the execution state</returns>
+        </member>
+        <member name="T:Sels.Core.Mediator.Event.IEventListenerContext">
+            <summary>
+            Exposes more information and functionality to event listeners.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Event.IEventListenerContext.Sender">
+            <summary>
+            The object that raised the event.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Event.IEventListenerContext.OtherSubscribers">
+            <summary>
+            An array of all current subscribers listening to the event.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventListenerContext.WaitForCommitAsync">
+            <summary>
+            Can be awaited to synchronize transaction commits accross all subscribers.
+            </summary>
+            <returns>Task that will be completed when all other subscribers are ready to commit or completed already</returns>
+        </member>
+        <member name="T:Sels.Core.Mediator.Event.IEventSubscriber">
+            <summary>
+            Allows objects to subscribe to events at runtime.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber.GetAllListeners">
+            <summary>
+            Gets all current event listeners.
+            </summary>
+            <returns>All listeners that can react to all type of events</returns>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber.GetAllListeners``1">
+            <summary>
+            Gets all current event listeners that are listening to events of <typeparamref name="TEvent"/>.
+            </summary>
+            <returns>All listeners that can react to events of type <typeparamref name="TEvent"/></returns>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber.Subscribe``1(Sels.Core.Mediator.Event.IEventListener{``0})">
+            <summary>
+            Subscribes <paramref name="listener"/> to events of type <typeparamref name="TEvent"/>.
+            </summary>
+            <param name="listener">The listener that will be able to react to events of type <typeparamref name="TEvent"/></param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber.Unsubscribe``1(Sels.Core.Mediator.Event.IEventListener{``0})">
+            <summary>
+            Unsubscribes <paramref name="listener"/> so it stops listening to events of type <typeparamref name="TEvent"/>.
+            </summary>
+            <param name="listener">The listener that will be unsubscribed</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber.Subscribe(Sels.Core.Mediator.Event.IEventListener)">
+            <summary>
+            Subscribes <paramref name="listener"/> to all events.
+            </summary>
+            <param name="listener">The listener that will be able to react to all events</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber.Unsubscribe(Sels.Core.Mediator.Event.IEventListener)">
+            <summary>
+            Unsubscribes <paramref name="listener"/> so it stops listening to all events.
+            </summary>
+            <param name="listener">The listener that will be unsubscribed</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber.Subscribe``1(System.Object,Sels.Core.Delegates.Async.AsyncAction{Sels.Core.Mediator.Event.IEventListenerContext,``0,System.Threading.CancellationToken})">
+            <summary>
+            Subscribes <paramref name="listener"/> to events of type <typeparamref name="TEvent"/> where the events can be reacted to using <paramref name="subscriberAction"/>.
+            </summary>
+            <param name="listener">The object that's listening using <paramref name="subscriberAction"/></param>
+            <param name="subscriberAction">The delegate that will be called to react to events of type <typeparamref name="TEvent"/></param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber.Unsubscribe``1(System.Object)">
+            <summary>
+            Unsubscribes <paramref name="listener"/> so it stops listening to events of type <typeparamref name="TEvent"/>.
+            </summary>
+            <param name="listener">The listener that will be unsubscribed</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber.Subscribe(System.Object,Sels.Core.Delegates.Async.AsyncAction{Sels.Core.Mediator.Event.IEventListenerContext,System.Object,System.Threading.CancellationToken})">
+            <summary>
+            Subscribes <paramref name="listener"/> to all events where the events can be reacted to using <paramref name="subscriberAction"/>.
+            </summary>
+            <param name="listener">The listener that will be able to react to all events using <paramref name="subscriberAction"/></param>
+            <param name="subscriberAction">The delegate that will be called to react to events</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber.Unsubscribe(System.Object)">
+            <summary>
+            Unsubscribes <paramref name="listener"/> so it stops listening to all events.
+            </summary>
+            <param name="listener">The listener that will be unsubscribed</param>
+        </member>
+        <member name="T:Sels.Core.Mediator.Event.IEventSubscriber`1">
+            <summary>
+            Allows objects to subscribe to events of type <typeparamref name="TEvent"/> at runtime.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber`1.GetAllListeners">
+            <summary>
+            Gets all current event listeners that are listening to events of <typeparamref name="TEvent"/>.
+            </summary>
+            <returns>All listeners that can react to events of type <typeparamref name="TEvent"/></returns>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber`1.Subscribe(Sels.Core.Mediator.Event.IEventListener{`0})">
+            <summary>
+            Subscribes <paramref name="listener"/> to events of type <typeparamref name="TEvent"/>.
+            </summary>
+            <param name="listener">The listener that will be able to react to events of type <typeparamref name="TEvent"/></param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber`1.Unsubscribe(Sels.Core.Mediator.Event.IEventListener{`0})">
+            <summary>
+            Unsubscribes <paramref name="listener"/> so it stops listening to events of type <typeparamref name="TEvent"/>.
+            </summary>
+            <param name="listener">The listener that will be unsubscribed</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber`1.Subscribe(System.Object,Sels.Core.Delegates.Async.AsyncAction{Sels.Core.Mediator.Event.IEventListenerContext,`0,System.Threading.CancellationToken})">
+            <summary>
+            Subscribes <paramref name="listener"/> to events of type <typeparamref name="TEvent"/> where the events can be reacted to using <paramref name="subscriberAction"/>.
+            </summary>
+            <param name="listener">The object that's listening using <paramref name="subscriberAction"/></param>
+            <param name="subscriberAction">The delegate that will be called to react to events of type <typeparamref name="TEvent"/></param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Event.IEventSubscriber`1.Unsubscribe(System.Object)">
+            <summary>
+            Unsubscribes <paramref name="listener"/> so it stops listening to events of type <typeparamref name="TEvent"/>.
+            </summary>
+            <param name="listener">The listener that will be unsubscribed</param>
+        </member>
+        <member name="T:Sels.Core.Mediator.Event.EventOptions">
+            <summary>
+            Exposes extra options when raising events.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Mediator.Event.EventOptions.None">
+            <summary>
+            No options selected.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Mediator.Event.EventOptions.FireAndForget">
+            <summary>
+            Don't wait for any subscribers to handle the event. Method call will return immediately. Exceptions will be logged. 0 will always be returned.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Mediator.Event.EventOptions.IgnoreExceptions">
+            <summary>
+            Exceptions thrown by subscribers will be caught but not rethrown. Exceptions will be logged.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Mediator.Event.EventOptions.NoTransaction">
+            <summary>
+            Subscribers that make use of <see cref="M:Sels.Core.Mediator.Event.IEventListenerContext.WaitForCommitAsync"/> will return immediately instead of waiting for each other.
+            </summary>
+        </member>
         <member name="T:Sels.Core.Mediator.Messaging.DelegateSubscriber`2">
             <summary>
             Subscriber that delegates messages to a handler of type <typeparamref name="THandler"/> using a delegate.
@@ -341,6 +694,83 @@
             <summary>
             The actual object that handles the message.
             </summary>
+        </member>
+        <member name="T:Sels.Core.Mediator.Notifier">
+            <inheritdoc cref="T:Sels.Core.Mediator.INotifier"/>
+        </member>
+        <member name="M:Sels.Core.Mediator.Notifier.#ctor(Sels.Core.Mediator.Event.IEventSubscriber,System.IServiceProvider,Microsoft.Extensions.Logging.ILogger{Sels.Core.Mediator.Notifier})">
+            <inheritdoc cref="T:Sels.Core.Mediator.Notifier"/>
+            <param name="eventSubscriber">Subscriber used to get global listeners</param>
+            <param name="serviceProvider">Provider used to resolve typed event and request subscribers</param>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Mediator.Notifier.RaiseEventAsync``1(System.Object,``0,System.Threading.CancellationToken,Sels.Core.Mediator.Event.EventOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Mediator.Notifier.EventContext.Sender">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Mediator.Notifier.EventContext.OtherSubscribers">
+            <inheritdoc/>
+        </member>
+        <member name="P:Sels.Core.Mediator.Notifier.EventContext.ExecutionTask">
+            <summary>
+            Task containing the execution state of the listener.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Notifier.EventContext.OnReady">
+            <summary>
+            Action raised when the listener either finised execution or is ready to commit.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Notifier.EventContext.CommitTask">
+            <summary>
+            The task returned to the listener when they are waiting to be commited.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Notifier.EventContext.Ready">
+            <summary>
+            Indicates that the current listener is ready
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Notifier.EventContext.Listener">
+            <summary>
+            The listener that the current context is attached to.
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.Notifier.EventContext.ExecutionException">
+            <summary>
+            Any exception throw by executing the listener.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.Notifier.EventContext.WaitForCommitAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Sels.Core.Mediator.IMessageHandler">
+            <summary>
+            Object that can react application wide messages. (such as events and requests)
+            </summary>
+        </member>
+        <member name="P:Sels.Core.Mediator.IMessageHandler.Handler">
+            <summary>
+            The actual object that's listening. Used to subscribe and unsubscribe to messages when dealing with delegates.
+            </summary>
+        </member>
+        <member name="T:Sels.Core.Mediator.INotifier">
+            <summary>
+            Service used to raise events and requests.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Mediator.INotifier.RaiseEventAsync``1(System.Object,``0,System.Threading.CancellationToken,Sels.Core.Mediator.Event.EventOptions)">
+            <summary>
+            Raises an application wide event of type <typeparamref name="TEvent"/> that any listeners can react to.
+            </summary>
+            <typeparam name="TEvent">The type of the event to raise</typeparam>
+            <param name="sender">The object raising the event</param>
+            <param name="eventData">The event to raise</param>
+            <param name="token">Optional token to cancel the request</param>
+            <param name="eventOptions"><inheritdoc cref="T:Sels.Core.Mediator.Event.EventOptions"/></param>
+            <returns>How many listeners received the event</returns>
         </member>
         <member name="T:Sels.Core.Mediator.Models.Messages.State.StateChangedMessage`1">
             <summary>

@@ -94,7 +94,7 @@ namespace Sels.Core.ServiceBuilder
 
         #region Creation
         /// <summary>
-        /// Defines a delgete for creating the instances of <paramref name="factory"/>.
+        /// Defines a delegate for creating the instances of <paramref name="factory"/>.
         /// </summary>
         /// <param name="factory">Delegate that creates a new instance of <typeparamref name="TImpl"/></param>
         /// <returns>Current builder for method chaining</returns>

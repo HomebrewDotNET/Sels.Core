@@ -5,6 +5,7 @@ namespace Sels.Core.Mediator.Messaging
     /// <summary>
     /// Allows object to subscribe to messages of a certain type.
     /// </summary>
+    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
     public interface IMessageSubscriber
     {
         #region Typed

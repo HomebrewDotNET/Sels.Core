@@ -7,6 +7,7 @@ namespace Sels.Core.Mediator.Messaging
     /// </summary>
     /// <typeparam name="THandler">The type of the handler</typeparam>
     /// <typeparam name="TMessage">The type of the message to subscribe to</typeparam>
+    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
     internal class DelegateSubscriber<THandler, TMessage> : ISubscriber<TMessage>
     {
         // Fields
@@ -44,6 +45,7 @@ namespace Sels.Core.Mediator.Messaging
     /// Subscriber that delegates messages to a handler of type <typeparamref name="THandler"/> using a delegate.
     /// </summary>
     /// <typeparam name="THandler">The type of the handler</typeparam>
+    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
     internal class DelegateSubscriber<THandler> : ISubscriber
     {
         // Fields

@@ -3,6 +3,7 @@
     /// <summary>
     /// Thread safe singleton message subscriber that keeps a list of subscribers.
     /// </summary>
+    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
     internal class SubscriptionManager : IMessageSubscriber
     {
         // Fields

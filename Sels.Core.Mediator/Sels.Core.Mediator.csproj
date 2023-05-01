@@ -47,7 +47,12 @@
 	</Target>
 
   <ItemGroup>
+    <Folder Include="Contracts\Request\" />
     <Folder Include="Templates\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.10.2" />
   </ItemGroup>
 
   <ItemGroup>
