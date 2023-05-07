@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Components.Logging;
+using Sels.Core.Extensions.Logging;
+using Sels.Core.Extensions.Logging.Advanced;
 using Microsoft.Extensions.DependencyInjection;
 using Sels.Core.Mediator.Messaging;
 using System.Threading.Tasks;
@@ -20,16 +22,18 @@ using Sels.Core.Locking.Provider;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Locking.Memory;
 using Sels.Core.Conversion.Extensions;
+using Sels.Core.Mediator.Event;
+using Sels.Core.Mediator;
 
 namespace Sels.Core.TestTool
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Helper.Console.Run(() =>
+            await Helper.Console.RunAsync(async () =>
             {
-                TestMemoryLockingProviderOptions();
+                await TestNotifier();
             });
         }
 
@@ -94,6 +98,55 @@ namespace Sels.Core.TestTool
             messageSubscriber.Unsubscribe<string>(handler);
             received = messager.SendAsync(new object(), "Second message from messager").Result;
             Console.WriteLine($"Message received by <{received}> subscribers");
+        }
+
+        internal static async Task TestNotifier()
+        {
+            var provider = new ServiceCollection()
+                                .AddLogging(builder =>
+                                {
+                                    builder.ClearProviders();
+                                    builder.AddSimpleConsole(options =>
+                                    {
+                                        options.IncludeScopes = true;
+                                        options.SingleLine = true;
+                                        options.TimestampFormat = "hh:mm:ss ";
+                                    }).SetMinimumLevel(LogLevel.Debug);
+                                })
+                                .AddEventListener(async (p, c, e, t) =>
+                                {
+                                    var logger = p.GetService<ILogger<Program>>();
+                                    logger.Log($"Global waiting to commit for event <{e}>");
+                                    await c.WaitForCommitAsync();
+                                    logger.Log($"Global commited event transaction");
+                                })
+                                .AddEventListener<string>(async (p, c, e, t) =>
+                                {
+                                    var logger = p.GetService<ILogger<Program>>();
+                                    logger.Log($"Waiting to commit for event <{e}>");
+                                    await c.WaitForCommitAsync();
+                                    logger.Log($"Commited event transaction");
+                                })
+                                .AddNotifier()
+                                .BuildServiceProvider();
+
+            var logger = provider.GetService<ILogger<Program>>();
+            var eventSubscriber = provider.GetRequiredService<IEventSubscriber>();
+            var notifier = provider.GetRequiredService<INotifier>();
+
+            var handler = new object();
+            eventSubscriber.Subscribe<string>(handler, (c, e, t) =>
+            {
+                logger.Log($"Received message <{e}>");
+                return Task.CompletedTask;
+            });
+
+            var received = await notifier.RaiseEventAsync(new object(), "Hello from program");
+            logger.Log($"Message received by <{received}> subscribers");
+            eventSubscriber.Unsubscribe<string>(handler);
+            received = await notifier.RaiseEventAsync(new object(), "Second message from program");
+            logger.Log($"Message received by <{received}> subscribers");
+            eventSubscriber.Unsubscribe(handler);
         }
 
         internal static void TestEnvironmentParser()

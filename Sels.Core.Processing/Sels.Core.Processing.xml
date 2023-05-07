@@ -243,6 +243,13 @@
             <param name="id">The id of the background job</param>
             <returns>The information and current state of the background job</returns>
         </member>
+        <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobService.GetAllRecurringJobs(System.Nullable{Sels.Core.Processing.BackgroundJob.RecurringJobType})">
+            <summary>
+            Fetches the information about all recurring jobs.
+            </summary>
+            <param name="typeFilter">What type of recurring jobs to returns, when set to null all job types will be returned</param>
+            <returns>All currently deployed recurring jobs</returns>
+        </member>
         <member name="M:Sels.Core.Processing.BackgroundJob.IBackgroundJobService.GetRecurringJobInfoAsync(System.String)">
             <summary>
             Fetches the information and state of recurring background job with <paramref name="id"/>.
