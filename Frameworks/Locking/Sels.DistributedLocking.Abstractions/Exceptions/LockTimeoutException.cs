@@ -1,32 +1,38 @@
-﻿using Sels.Core.Locking.Provider;
+﻿using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.Core.Locking
+namespace Sels.DistributedLocking
 {
     /// <summary>
-    /// Thrown when an action was requested to be performed on a lock but was not held by the requester.
+    /// Thrown when a lock could not be placed within the requested timeout.
     /// </summary>
-    public class ResourceAlreadyLockedException : Exception
+    public class LockTimeoutException : Exception
     {
         // Properties
         /// <summary>
-        /// The lock the action was requested on.
+        /// The lock that could not be placed.
         /// </summary>
         public ILockInfo Lock { get; }
         /// <summary>
-        /// The requester who performed the action.
+        /// The requested timeout.
+        /// </summary>
+        public TimeSpan Timeout { get; }
+        /// <summary>
+        /// Who requested the lock.
         /// </summary>
         public string Requester { get; }
 
         /// <inheritdoc cref="LockTimeoutException"/>
         /// <param name="requester"><inheritdoc cref="Requester"/></param>
         /// <param name="lockInfo"><inheritdoc cref="Lock"/></param>
-        public ResourceAlreadyLockedException(string requester, ILockInfo lockInfo) : base($"The action requested by <{requester}> could not be performed on lock <{lockInfo?.Resource}> because it is currently not held by <{requester}>")
+        /// <param name="timeout"><inheritdoc cref="Timeout"/></param>
+        public LockTimeoutException(string requester, ILockInfo lockInfo, TimeSpan timeout) : base($"A lock on resource <{lockInfo?.Resource}> could not be placed by <{requester}> within <{timeout}>")
         {
             Lock = lockInfo ?? throw new ArgumentNullException(nameof(lockInfo));
             Requester = !string.IsNullOrWhiteSpace(requester) ? requester : throw new ArgumentNullException(nameof(lockInfo));
+            Timeout = timeout;
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Locking.Provider
+namespace Sels.DistributedLocking.Provider
 {
     /// <summary>
     /// Service for placing distributed locks on resources.

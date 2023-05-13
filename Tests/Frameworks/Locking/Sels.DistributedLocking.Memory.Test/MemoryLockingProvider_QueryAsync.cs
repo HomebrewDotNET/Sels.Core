@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Locking.Memory.Test
+namespace Sels.DistributedLocking.Memory.Test
 {
     public class MemoryLockingProvider_QueryAsync
     {

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.Core.Locking.Memory
+namespace Sels.DistributedLocking.Memory
 {
     /// <summary>
     /// Exposes configuration options for <see cref="MemoryLockingProvider"/>.

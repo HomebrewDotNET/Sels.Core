@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Locking.Memory.Test
+namespace Sels.DistributedLocking.Memory.Test
 {
     internal static class TestHelper
     {

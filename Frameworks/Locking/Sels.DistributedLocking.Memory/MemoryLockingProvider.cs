@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using Sels.Core;
 using Sels.Core.Components.Scope.Actions;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Object;
 using Sels.Core.Extensions.Reflection;
-using Sels.Core.Locking.Provider;
+using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Locking.Memory
+namespace Sels.DistributedLocking.Memory
 {
     /// <summary>
     /// Provides application wide distributed locks by storing the locks in memory and making use of thread locks to handle concurrency.

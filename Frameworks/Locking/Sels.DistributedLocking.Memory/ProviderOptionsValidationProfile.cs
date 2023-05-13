@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.Core.Locking.Memory
+namespace Sels.DistributedLocking.Memory
 {
     /// <summary>
     /// Validation profile for validating <see cref="MemoryLockingProviderOptions"/>.

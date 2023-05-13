@@ -6,9 +6,9 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
-		<Product>Locking Abstractions Library</Product>
+		<Product>Distributed Locking Abstractions Library</Product>
 		<Description>
-			Contains abstractions used to place distributed locks.
+			Contains abstractions used to place distributed locks on resources.
 			Used by projects maintained here: https://github.com/Jenssels1998
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
@@ -31,9 +31,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Models\Provider\" />
 	</ItemGroup>
 
 	<!--Include non-NuGet package projects in NuGet package-->

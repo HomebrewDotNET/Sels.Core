@@ -29,12 +29,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Frameworks\Locking\Sels.DistributedLocking.Memory\Sels.DistributedLocking.Memory.csproj" />
     <ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
     <ProjectReference Include="..\Sels.Core.Data.MySQL\Sels.Core.Data.MySQL.csproj" />
     <ProjectReference Include="..\Sels.Core.Deployment\Sels.Core.Deployment.csproj" />
     <ProjectReference Include="..\Sels.Core.Factory.Autofac\Sels.Core.Factory.Autofac.csproj" />
     <ProjectReference Include="..\Sels.Core.Localization\Sels.Core.Localization.csproj" />
-    <ProjectReference Include="..\Sels.Core.Locking.Memory\Sels.Core.Locking.Memory.csproj" />
     <ProjectReference Include="..\Sels.Core.Mediator\Sels.Core.Mediator.csproj" />
   </ItemGroup>
 

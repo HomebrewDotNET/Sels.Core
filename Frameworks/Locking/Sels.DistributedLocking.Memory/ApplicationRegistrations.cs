@@ -1,6 +1,6 @@
 ﻿using Sels.Core.Extensions;
-using Sels.Core.Locking.Memory;
-using Sels.Core.Locking.Provider;
+using Sels.DistributedLocking.Memory;
+using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Generic;
 using System.IO.Pipes;

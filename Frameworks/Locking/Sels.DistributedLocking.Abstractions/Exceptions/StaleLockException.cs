@@ -1,9 +1,9 @@
-﻿using Sels.Core.Locking.Provider;
+﻿using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.Core.Locking
+namespace Sels.DistributedLocking
 {
     /// <summary>
     /// Thrown when a lock is currently not being held anymore by the requester. This can happen when requesters are shared or when locks expire.

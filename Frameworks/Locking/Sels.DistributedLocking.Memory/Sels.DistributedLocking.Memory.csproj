@@ -8,7 +8,7 @@
 		<Company>Homebrew IT</Company>
 		<Product>Core memory Locking Library</Product>
 		<Description>
-			Implements abtractions in Sels.Core.Locking using memory for in application distributed locks.
+			Implements abtractions in Sels.DistributedLocking using memory for inner process distributed locks.
 			Used by projects maintained here: https://github.com/Jenssels1998
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
@@ -25,9 +25,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Frameworks\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
-		<ProjectReference Include="..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
-		<ProjectReference Include="..\Sels.Core.Locking\Sels.Core.Locking.csproj" />
+	  <ProjectReference Include="..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+	  <ProjectReference Include="..\..\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
+	  <ProjectReference Include="..\Sels.DistributedLocking.Abstractions\Sels.DistributedLocking.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>
