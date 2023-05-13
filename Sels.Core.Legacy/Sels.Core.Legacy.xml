@@ -5066,7 +5066,7 @@
             <param name="options">Optional options for splitting the strings</param>
             <returns>The first value after splitting</returns>
         </member>
-        <member name="M:System.StringExtensions.TrySplitOnFirst(System.String,System.Object,System.String@,System.String@,System.StringSplitOptions)">
+        <member name="M:System.StringExtensions.TrySplitOnFirst(System.String,System.Object,System.String@,System.String@)">
             <summary>
             Splits <paramref name="source"/> on the first occurance of <paramref name="splitValue"/>.
             </summary>
@@ -5074,7 +5074,16 @@
             <param name="splitValue">Value to split string with</param>
             <param name="first">The first value after splitting</param>
             <param name="other">The other values after splitting</param>
-            <param name="options">Optional options for splitting the strings</param>
+            <returns>If <paramref name="source"/> could be split on <paramref name="splitValue"/></returns>
+        </member>
+        <member name="M:System.StringExtensions.TrySplitOnLast(System.String,System.Object,System.String@,System.String@)">
+            <summary>
+            Splits <paramref name="source"/> on the last occurance of <paramref name="splitValue"/>.
+            </summary>
+            <param name="source">String to split</param>
+            <param name="splitValue">Value to split string with</param>
+            <param name="last">The last value after splitting</param>
+            <param name="other">The first values after splitting</param>
             <returns>If <paramref name="source"/> could be split on <paramref name="splitValue"/></returns>
         </member>
         <member name="M:System.StringExtensions.SplitOnNewLine(System.String)">

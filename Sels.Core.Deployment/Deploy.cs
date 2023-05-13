@@ -244,13 +244,13 @@ namespace Sels.Core.Deployment
                     // Get the name of the property to set and the value for each pair
                     foreach(var pair in Regex.Split(value, splitter).Select(x => x.Trim()))
                     {
-                        if (pair.TrySplitOnFirst(':', out var property, out var propertyValue, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                        if (pair.TrySplitOnFirst(':', out var property, out var propertyValue))
                         {
-                            propertyPairs.AddOrUpdate(property, propertyValue);
+                            propertyPairs.AddOrUpdate(property, propertyValue.Trim());
                         }
                         else if (config.IgnoreConversionErrors)
                         {
-                            if (!config.IgnoreConversionErrors) throw new CouldNotParseEnvironmentVariableException(value, envVariableName);
+                            throw new CouldNotParseEnvironmentVariableException(value, envVariableName);
                         }
                     }
 
@@ -266,7 +266,7 @@ namespace Sels.Core.Deployment
                         }
                         else if (config.IgnoreConversionErrors)
                         {
-                            if (!config.IgnoreConversionErrors) throw new CouldNotParseEnvironmentVariableException(value, envVariableName);
+                            throw new CouldNotParseEnvironmentVariableException(value, envVariableName);
                         }
                     }
 
