@@ -19,7 +19,7 @@ Used by projects maintained here: https://github.com/Jenssels1998
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
 		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
-		<DocumentationFile>$(OutDir)$(MSBuildProjectName).xml</DocumentationFile>
+		<DocumentationFile>bin/$(Configuration)/$(TargetFramework)/$(MSBuildProjectName).xml</DocumentationFile>
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 		<RootNamespace>Sels.Core</RootNamespace>
 	</PropertyGroup>
