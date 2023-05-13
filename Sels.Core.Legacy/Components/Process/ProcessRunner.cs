@@ -251,14 +251,9 @@ namespace Sels.Core.Process
 #if NET5_0_OR_GREATER
                             // Trigger token after kill time
                             bool hasExitedGracefully = true;
-                            var tokenSource = new CancellationTokenSource();
-                            using (var cancelTimer = new System.Timers.Timer(_killTime.ChangeType<double>()) { AutoReset = false })
+                            var tokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(_killTime.ChangeType<double>()));
+                            using (var tokenRegistration = tokenSource.Token.Register(() => hasExitedGracefully = false))
                             {
-                                cancelTimer.Elapsed += (s, e) =>
-                                {
-                                    hasExitedGracefully = false;
-                                    tokenSource.Cancel();
-                                };
                                 await process.WaitForExitAsync(tokenSource.Token);
                             }
 #else

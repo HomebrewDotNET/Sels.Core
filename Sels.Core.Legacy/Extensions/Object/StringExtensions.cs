@@ -343,9 +343,8 @@ namespace System
         /// <param name="splitValue">Value to split string with</param>
         /// <param name="first">The first value after splitting</param>
         /// <param name="other">The other values after splitting</param>
-        /// <param name="options">Optional options for splitting the strings</param>
         /// <returns>If <paramref name="source"/> could be split on <paramref name="splitValue"/></returns>
-        public static bool TrySplitOnFirst(this string source, object splitValue, out string first, out string other, StringSplitOptions options = StringSplitOptions.None)
+        public static bool TrySplitOnFirst(this string source, object splitValue, out string first, out string other)
         {
             splitValue.ValidateArgument(nameof(splitValue));
 
@@ -360,6 +359,36 @@ namespace System
                 {
                     other = split.Skip(1).JoinString(splitValue.ToString());
                     first = split[0];
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Splits <paramref name="source"/> on the last occurance of <paramref name="splitValue"/>.
+        /// </summary>
+        /// <param name="source">String to split</param>
+        /// <param name="splitValue">Value to split string with</param>
+        /// <param name="last">The last value after splitting</param>
+        /// <param name="other">The first values after splitting</param>
+        /// <returns>If <paramref name="source"/> could be split on <paramref name="splitValue"/></returns>
+        public static bool TrySplitOnLast(this string source, object splitValue, out string last, out string other)
+        {
+            splitValue.ValidateArgument(nameof(splitValue));
+
+            last = null;
+            other = null;
+
+            if (source.HasValue())
+            {
+                var split = source.Split(splitValue.ToString(), StringSplitOptions.None);
+
+                if (split.Length > 1)
+                {
+                    other = split.Take(split.Length-1).JoinString(splitValue.ToString());
+                    last = split[split.Length - 1];
                     return true;
                 }
             }
