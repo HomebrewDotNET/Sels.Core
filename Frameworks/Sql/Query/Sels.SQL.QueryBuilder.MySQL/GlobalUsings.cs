@@ -1,0 +1,11 @@
+﻿global using Sels.Core.Extensions;
+global using Sels.Core.Extensions.Conversion;
+global using Sels.Core.Extensions.Linq;
+global using Sels.Core.Extensions.Logging;
+global using Sels.Core.Extensions.Logging.Advanced;
+global using Sels.Core.Extensions.Reflection;
+global using Sels.Core;
+global using Sels.SQL.QueryBuilder.MySQL.Expressions;
+global using Sels.SQL.QueryBuilder;
+global using Sels.SQL.QueryBuilder.MySQL.Builder.Statement;
+global using Microsoft.Extensions.Logging;

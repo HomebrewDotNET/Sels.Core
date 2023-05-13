@@ -88,10 +88,10 @@ namespace Sels.Core.Data.MySQL.Migrator
 
                                    // Create database if it does not yet exist
                                    Console.WriteLine("Creating database if it does not yet exists");
-                                   await MySql.Database.EnsureDatabaseExistsAsync(args.ConnectionString, token);
+                                   await MySqlHelper.Database.EnsureDatabaseExistsAsync(args.ConnectionString, token);
                                    // Wait for exclusive lock on database and run migrations while lock is held
                                    Console.WriteLine($"Waiting for exclusive lock on database");
-                                   await using (await MySql.Database.Locking.LockAsync(args.ConnectionString, "DatabaseDeployer", lockerName, 10, logger.AsEnumerable(), token))
+                                   await using (await MySqlHelper.Database.Locking.LockAsync(args.ConnectionString, "DatabaseDeployer", lockerName, 10, logger.AsEnumerable(), token))
                                    {
                                        // Run migrations
                                        var runner = provider.GetRequiredService<IMigrationRunner>();

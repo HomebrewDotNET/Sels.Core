@@ -1,15 +1,15 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Data.Contracts.Repository;
-using Sels.Core.Data.MySQL.MariaDb;
 using Sels.Core.Data.MySQL.Models.Repository;
 using Sels.Core.Data.SQL.Extensions.Dapper;
-using Sels.Core.Data.SQL.Query;
+using Sels.SQL.QueryBuilder.Builder;
 using System.Reflection;
 using Sels.Core.Extensions.Fluent;
 using LinqExpression = System.Linq.Expressions.Expression;
 using System.Data;
 using Sels.Core.ServiceBuilder.Injection;
+using Sels.SQL.QueryBuilder.Extensions;
 
 namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
 {

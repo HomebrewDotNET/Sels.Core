@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using Sels.Core.Data.SQL.Query.Statement;
+using Sels.SQL.QueryBuilder.Builder.Statement;
 using System.Linq.Expressions;
 using System.Reflection;
 

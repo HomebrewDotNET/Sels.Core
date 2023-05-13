@@ -13,22 +13,22 @@
             <inheritdoc cref="T:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler"/>
             <param name="loggers"></param>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#Statement#InsertExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder{Sels.Core.Data.SQL.Query.Statement.InsertExpressionPositions},System.Func{System.Object,System.String},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#Statement#InsertExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.IQueryBuilder{Sels.SQL.QueryBuilder.Builder.Statement.InsertExpressionPositions},System.Func{System.Object,System.String},Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#Statement#SelectExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder{Sels.Core.Data.SQL.Query.Statement.SelectExpressionPositions},System.Func{System.Object,System.String},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#Statement#SelectExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.IQueryBuilder{Sels.SQL.QueryBuilder.Builder.Statement.SelectExpressionPositions},System.Func{System.Object,System.String},Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder{Sels.Core.Data.SQL.Query.Statement.UpdateExpressionPositions},System.Func{System.Object,System.String},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.CompileTo(System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.IQueryBuilder{Sels.SQL.QueryBuilder.Builder.Statement.UpdateExpressionPositions},System.Func{System.Object,System.String},Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#Statement#DeleteExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.IQueryBuilder{Sels.Core.Data.SQL.Query.Statement.DeleteExpressionPositions},System.Func{System.Object,System.String},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Sels#Core#Data#SQL#Query#Compilation#IQueryCompiler{Sels#Core#Data#SQL#Query#Statement#DeleteExpressionPositions}#CompileTo(System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.IQueryBuilder{Sels.SQL.QueryBuilder.Builder.Statement.DeleteExpressionPositions},System.Func{System.Object,System.String},Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Compile(Sels.Core.Data.SQL.Query.Expressions.IExpression,Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Compile(Sels.SQL.QueryBuilder.Builder.Expressions.IExpression,Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Compile(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression,Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Compiling.MySqlCompiler.Compile(System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.Expressions.IExpression,Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression">
@@ -46,11 +46,11 @@
             The expressions to supply to the concat function.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression.#ctor(System.Collections.Generic.IEnumerable{Sels.Core.Data.SQL.Query.Expressions.IExpression})">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression.#ctor(System.Collections.Generic.IEnumerable{Sels.SQL.QueryBuilder.Builder.Expressions.IExpression})">
             <inheritdoc cref="T:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression"/>
             <param name="expressions"><inheritdoc cref="P:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression.Expressions"/></param>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.ConcatExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.Expressions.IExpression},Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.MySQL.Query.Expressions.ForUpdateExpression">
@@ -63,7 +63,7 @@
             The MySql for update keyword.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.ForUpdateExpression.ToSql(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.ForUpdateExpression.ToSql(System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="P:Sels.Core.Data.MySQL.Query.Expressions.ForUpdateExpression.Instance">
@@ -91,12 +91,12 @@
             Optional expression containing the number of rows to skip.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression.#ctor(Sels.Core.Data.SQL.Query.Expressions.IExpression,Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression.#ctor(Sels.SQL.QueryBuilder.Builder.Expressions.IExpression,Sels.SQL.QueryBuilder.Builder.Expressions.IExpression)">
             <inheritdoc cref="T:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression"/>
              <param name="limitExpression"><inheritdoc cref="P:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression.LimitExpression"/></param>
              <param name="offsetExpression"><inheritdoc cref="P:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression.OffsetExpression"/></param>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.LimitOffsetExpression.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.Expressions.IExpression},Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1">
@@ -121,10 +121,10 @@
             <param name="configurator">Delegate that builds this expression</param>
             <exception cref="T:System.InvalidOperationException"></exception>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1.Expression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1.Expression(Sels.SQL.QueryBuilder.Builder.Expressions.IExpression)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.ReturningExpression`1.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.Expressions.IExpression},Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder`1">
@@ -171,13 +171,13 @@
             <param name="builder">Delegate that build the current instance</param>
             <returns>The current instance</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.Expression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.Expression(Sels.SQL.QueryBuilder.Builder.Expressions.IExpression)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression},Sels.Core.Data.SQL.Query.ExpressionCompileOptions)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.ToSql(System.Text.StringBuilder,System.Action{System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.Expressions.IExpression},Sels.SQL.QueryBuilder.Builder.ExpressionCompileOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.Sels#Core#Data#SQL#Query#Statement#IStatementSetBuilder{TEntity,Sels#Core#Data#MySQL#Query#Statement#IOnDuplicateKeyUpdateValueBuilder{TEntity}}#SetExpression(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Expressions.OnDuplicateKeyUpdateExpression`1.Sels#Core#Data#SQL#Query#Statement#IStatementSetBuilder{TEntity,Sels#Core#Data#MySQL#Query#Statement#IOnDuplicateKeyUpdateValueBuilder{TEntity}}#SetExpression(Sels.SQL.QueryBuilder.Builder.Expressions.IExpression)">
             <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateBuilder`1">
@@ -192,7 +192,7 @@
             </summary>
             <typeparam name="TEntity">The main entity to create the query for</typeparam>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateValueBuilder`1.Values(Sels.Core.Data.SQL.Query.Expressions.IExpression)">
+        <member name="M:Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateValueBuilder`1.Values(Sels.SQL.QueryBuilder.Builder.Expressions.IExpression)">
             <summary>
             Set an expression to a value supplied to the VALUES clause.
             </summary>
@@ -244,7 +244,7 @@
             Contains MariaDb specific MySql extension methods for query builders.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MariaDb.MariaDbBuilderExtensions.Return``2(Sels.Core.Data.SQL.Query.Statement.IDeleteStatementBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder{``0}})">
+        <member name="M:Sels.Core.Data.MySQL.MariaDb.MariaDbBuilderExtensions.Return``2(Sels.SQL.QueryBuilder.Builder.Statement.IDeleteStatementBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder{``0}})">
             <summary>
             Specifies what to return after deleting.
             </summary>
@@ -254,7 +254,7 @@
             <param name="configurator">Delegate used to configure what to return</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MariaDb.MariaDbBuilderExtensions.Return``2(Sels.Core.Data.SQL.Query.Statement.IInsertStatementBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder{``0}})">
+        <member name="M:Sels.Core.Data.MySQL.MariaDb.MariaDbBuilderExtensions.Return``2(Sels.SQL.QueryBuilder.Builder.Statement.IInsertStatementBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Expressions.MariaDb.IReturningExpressionBuilder{``0}})">
             <summary>
             Specifies what to return after inserting.
             </summary>
@@ -269,7 +269,7 @@
             Contains MySql extension methods for query builders.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.ForUpdate``2(Sels.Core.Data.SQL.Query.Statement.ISelectStatementBuilder{``0,``1})">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.ForUpdate``2(Sels.SQL.QueryBuilder.Builder.Statement.ISelectStatementBuilder{``0,``1})">
             <summary>
             Locks the selected rows for updating within the same transaction.
             </summary>
@@ -278,7 +278,7 @@
             <param name="builder">The builder to add the expression to</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.OnDuplicateKeyUpdate``2(Sels.Core.Data.SQL.Query.Statement.IInsertStatementBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateBuilder{``0}})">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.OnDuplicateKeyUpdate``2(Sels.SQL.QueryBuilder.Builder.Statement.IInsertStatementBuilder{``0,``1},System.Action{Sels.Core.Data.MySQL.Query.Statement.IOnDuplicateKeyUpdateBuilder{``0}})">
             <summary>
             Update records if there are duplicate primary keys in the insert statement.
             </summary>
@@ -288,7 +288,7 @@
             <param name="expressionBuilder">Delegate for building what to update on duplicate key</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.OnDuplicateKeyUpdate``2(Sels.Core.Data.SQL.Query.Statement.IInsertStatementBuilder{``0,``1},System.Int32[])">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.OnDuplicateKeyUpdate``2(Sels.SQL.QueryBuilder.Builder.Statement.IInsertStatementBuilder{``0,``1},System.Int32[])">
             <summary>
             Update records if there are duplicate primary keys in the insert statement.
             </summary>
@@ -298,7 +298,7 @@
             <param name="primaryKeyColumnIndexes">The indexes of the columns containing the primary keys, they will be omitted from the update expressions.</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Limit``2(Sels.Core.Data.SQL.Query.Statement.ISelectStatementBuilder{``0,``1},System.Object)">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Limit``2(Sels.SQL.QueryBuilder.Builder.Statement.ISelectStatementBuilder{``0,``1},System.Object)">
             <summary>
             Limits the amount of rows returned.
             </summary>
@@ -308,7 +308,7 @@
             <param name="limit">Object containing the amount of rows to limit by</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Limit``2(Sels.Core.Data.SQL.Query.Statement.ISelectStatementBuilder{``0,``1},System.Object,System.Object)">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Limit``2(Sels.SQL.QueryBuilder.Builder.Statement.ISelectStatementBuilder{``0,``1},System.Object,System.Object)">
             <summary>
             Limits the amount of rows returned.
             </summary>
@@ -319,7 +319,7 @@
             <param name="limit">Object containing the amount of rows to limit by</param>
             <returns>Current builder for method chaining</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Concat``2(Sels.Core.Data.SQL.Query.Statement.ISharedExpressionBuilder{``0,``1},System.Collections.Generic.IEnumerable{System.Object})">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Concat``2(Sels.SQL.QueryBuilder.Builder.Statement.ISharedExpressionBuilder{``0,``1},System.Collections.Generic.IEnumerable{System.Object})">
             <summary>
             Concatenates the supplied values by using the MySql CONCAT function.
             </summary>
@@ -329,7 +329,7 @@
             <param name="values">The expressions to supply to the CONCAT function as arguments</param>
             <returns>Builder for creating more expressions</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Concat``2(Sels.Core.Data.SQL.Query.Statement.ISharedExpressionBuilder{``0,``1},System.Object,System.Object,System.Object[])">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.Concat``2(Sels.SQL.QueryBuilder.Builder.Statement.ISharedExpressionBuilder{``0,``1},System.Object,System.Object,System.Object[])">
             <summary>
             Concatenates the supplied values by using the MySql CONCAT function.
             </summary>
@@ -341,7 +341,7 @@
             <param name="additionalValues">Optional additional values to concatenate</param>
             <returns>Builder for creating more expressions</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.LikeParameter``1(Sels.Core.Data.SQL.Query.Statement.IStatementConditionOperatorExpressionBuilder{``0},System.String)">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.LikeParameter``1(Sels.SQL.QueryBuilder.Builder.Statement.IStatementConditionOperatorExpressionBuilder{``0},System.String)">
             <summary>
             Creates a comparison where an expression is compared to the value of a sql parameter concatenated with wildcards.
             </summary>
@@ -350,7 +350,7 @@
             <param name="parameter">The name of the sql parameter</param>
             <returns>Builder for creating more expressions</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.RecursiveCte``1(Sels.Core.Data.SQL.Query.Statement.ICteStatementBuilder,System.String)">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.RecursiveCte``1(Sels.SQL.QueryBuilder.Builder.Statement.ICteStatementBuilder,System.String)">
             <summary>
             Starts to build a cte recursive expression for the current statement.
             </summary>
@@ -359,7 +359,7 @@
             <param name="name">The name of the cte</param>
             <returns>Builder for creating the cte expression</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.RecursiveCte``1(Sels.Core.Data.SQL.Query.Statement.ICteStatementBuilder)">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.RecursiveCte``1(Sels.SQL.QueryBuilder.Builder.Statement.ICteStatementBuilder)">
             <summary>
             Starts to build a cte recursive expression for the current statement.
             </summary>
@@ -367,7 +367,7 @@
             <param name="builder">The builder to add the cte to</param>
             <returns>Builder for creating the cte expression</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.RecursiveCte(Sels.Core.Data.SQL.Query.Statement.ICteStatementBuilder,System.String)">
+        <member name="M:Sels.Core.Data.MySQL.MySqlBuilderExtensions.RecursiveCte(Sels.SQL.QueryBuilder.Builder.Statement.ICteStatementBuilder,System.String)">
             <summary>
             Starts to build a cte recursive expression for the current statement.
             </summary>
@@ -583,7 +583,7 @@
             <param name="loggers">Optional loggers for tracing</param>
             <returns>A builder for creating a mysql query</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySql.Compile(Sels.Core.Data.SQL.Query.Expressions.IExpression,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.Core.Data.MySQL.MySql.Compile(Sels.SQL.QueryBuilder.Builder.Expressions.IExpression,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Compiles <paramref name="expression"/> into MySql.
             </summary>
@@ -591,7 +591,7 @@
             <param name="loggers">Optional loggers for tracing</param>
             <returns><paramref name="expression"/> compiled into MySql</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySql.Compile(System.Text.StringBuilder,Sels.Core.Data.SQL.Query.Expressions.IExpression,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
+        <member name="M:Sels.Core.Data.MySQL.MySql.Compile(System.Text.StringBuilder,Sels.SQL.QueryBuilder.Builder.Expressions.IExpression,System.Collections.Generic.IEnumerable{Microsoft.Extensions.Logging.ILogger})">
             <summary>
             Compiles <paramref name="expression"/> into MySql and adds it to <paramref name="builder"/>.
             </summary>
@@ -630,7 +630,7 @@
             Contains extra helper methods for building queries.
             </summary>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySql.Builder.BuildConditionsFrom``2(Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{``0},Dapper.DynamicParameters,``1,System.Object,System.String[])">
+        <member name="M:Sels.Core.Data.MySQL.MySql.Builder.BuildConditionsFrom``2(Sels.SQL.QueryBuilder.Builder.Statement.IStatementConditionExpressionBuilder{``0},Dapper.DynamicParameters,``1,System.Object,System.String[])">
             <summary>
             Builds a mysql condition clause using the public instance properties on <paramref name="conditions"/>. Condition will be based on the property type and name.
             </summary>
@@ -643,7 +643,7 @@
             <param name="excludedProperties">Names of properties on <typeparamref name="T"/> to exclude from the condition</param>
             <returns>Builder to chain more conditions or null if no conditions were created</returns>
         </member>
-        <member name="M:Sels.Core.Data.MySQL.MySql.Builder.BuildConditionFrom``1(Sels.Core.Data.SQL.Query.Statement.IStatementConditionExpressionBuilder{``0},Dapper.DynamicParameters,System.Reflection.PropertyInfo,System.Object,System.Object)">
+        <member name="M:Sels.Core.Data.MySQL.MySql.Builder.BuildConditionFrom``1(Sels.SQL.QueryBuilder.Builder.Statement.IStatementConditionExpressionBuilder{``0},Dapper.DynamicParameters,System.Reflection.PropertyInfo,System.Object,System.Object)">
             <summary>
             Builds a mysql condition for <paramref name="property"/>. Condition will be based on the property type and name.
             </summary>

@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Logging;
-using Sels.Core.Data.SQL.Query.Statement;
+using Sels.SQL.QueryBuilder.Builder.Statement;
 using System.Collections;
 using System.Reflection;
 

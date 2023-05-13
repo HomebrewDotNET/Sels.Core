@@ -11,7 +11,6 @@
 	  <Product>MySql Data Library</Product>
 	  <Description>
 		  Contains code for working with MySql based databases.
-		  Contains fluent query builders for Insert, Select, Update and Delete queries.
 		  Used by projects maintained here: https://github.com/Jenssels1998
 	  </Description>
 	  <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
@@ -56,6 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Frameworks\Sql\Query\Sels.SQL.QueryBuilder.MySQL\Sels.SQL.QueryBuilder.MySQL.csproj" />
     <ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
     <ProjectReference Include="..\Sels.Core.Data.SQL\Sels.Core.Data.SQL.csproj" />
     <ProjectReference Include="..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />

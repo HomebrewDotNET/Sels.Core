@@ -35,9 +35,7 @@
 	  <PackageReference Include="Dapper" Version="2.0.123" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Contracts\Query\Generic\" />
-	</ItemGroup>
-	<ItemGroup>
+	  <ProjectReference Include="..\Frameworks\Sql\Query\Sels.SQL.QueryBuilder\Sels.SQL.QueryBuilder.csproj" />
 	  <ProjectReference Include="..\Sels.Core.Data\Sels.Core.Data.csproj" />
 	  <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
 	</ItemGroup>
