@@ -23,7 +23,7 @@
         /// </summary>
         AppendSeparator = 4,
         /// <summary>
-        /// Disables any implicit expressions that get added by the builders themselves.
+        /// Disables any implicit expressions that get added by the builders themselves. Set automatically when TEntity is object.
         /// </summary>
         NoImplitExpressions = 8
     }

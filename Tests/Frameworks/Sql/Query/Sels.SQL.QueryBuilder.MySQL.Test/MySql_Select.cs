@@ -126,7 +126,7 @@ namespace Sels.Core.Data.MySQL.Test
             var builder = MySql.Select().Value(1).Value("Jens");
 
             // Act
-            var query = builder.Build(ExpressionCompileOptions.NoImplitExpressions);
+            var query = builder.Build();
 
             // Assert
             Assert.IsNotNull(query);

@@ -153,7 +153,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             builder.ValidateArgument(nameof(builder));
 
             _compiler.CompileTo(builder, this, x => x is Type type ? GetAlias(type) : x?.ToString(), options);
-            if (options.HasFlag(ExpressionCompileOptions.AppendSeparator)) builder.Append(';');
             if (options.HasFlag(ExpressionCompileOptions.Format)) builder.AppendLine();
             return builder;
         }

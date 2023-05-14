@@ -61,7 +61,7 @@ namespace Sels.Core.Data.MySQL.Test
                                     );
 
             // Act
-            var query = builder.Build(ExpressionCompileOptions.NoImplitExpressions);
+            var query = builder.Build();
 
             // Assert
             Assert.IsNotNull(query);

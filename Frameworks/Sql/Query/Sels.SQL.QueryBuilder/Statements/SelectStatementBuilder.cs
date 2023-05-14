@@ -69,6 +69,12 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <inheritdoc/>
         public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
+            // Auto assume no implicit 
+            if (typeof(TEntity) == typeof(object)) options |= ExpressionCompileOptions.NoImplitExpressions;
+
+            // Auto assume no implicit 
+            if (typeof(TEntity) == typeof(object)) options |= ExpressionCompileOptions.NoImplitExpressions;
+
             var statementBuilder = this.CastTo<ISelectStatementBuilder<TEntity>>();
             // Add implicit expressions
             if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(SelectExpressionPositions.From) || !Expressions[SelectExpressionPositions.From].HasValue())) statementBuilder.From();
