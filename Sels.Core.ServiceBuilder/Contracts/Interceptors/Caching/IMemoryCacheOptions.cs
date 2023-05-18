@@ -1,5 +1,7 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.Caching.Memory;
+using Sels.Core.Extensions;
+using System;
 
 namespace Sels.Core.ServiceBuilder.Contracts.Interceptors.Caching
 {

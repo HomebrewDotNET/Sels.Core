@@ -19,10 +19,9 @@ namespace Sels.DistributedLocking.Provider
         /// <param name="requester">Who is requesting the lock</param>
         /// <param name="expiryTime">Optional time when the lock will expire. If set to null the lock will not expire on it's own</param>
         /// <param name="keepAlive">To keep the lock alive when <paramref name="expiryTime"/> is set. Will extend the expiry date by <paramref name="expiryTime"/> right before it expires</param>
-        /// <param name="lockObject">The lock if it could be placed</param>
         /// <param name="token">Optional token to cancel the request</param>
-        /// <returns>True if <paramref name="requester"/> locked <paramref name="resource"/>, otherwise false if someone else has locked <paramref name="resource"/></returns>
-        Task<bool> TryLockAsync(string resource, string requester, out ILock lockObject, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default);
+        /// <returns>Tuple where Success will be true if <paramref name="requester"/> locked <paramref name="resource"/>, otherwise false if someone else has locked <paramref name="resource"/>. Lock will be the lock if Success is true</returns>
+        Task<(bool Success, ILock Lock)> TryLockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default);
 
         /// <summary>
         /// Tries to place a lock on <paramref name="resource"/>. If the lock is currently held the method call will block until <paramref name="requester"/> manages to place the lock.
@@ -60,8 +59,9 @@ namespace Sels.DistributedLocking.Provider
         /// <param name="pageSize">How many items per page to return when <paramref name="page"/> is set to a value higher than 0</param>
         /// <param name="sortBy">Optional expression that points to the property on <see cref="ILockInfo"/> to sort by</param>
         /// <param name="sortDescending">True to sort <paramref name="sortBy"/> descending, otherwise false for ascending</param>
+        /// <param name="token">Optional token to cancel the request</param>
         /// <returns>All currently known locks</returns>
-        Task<ILockInfo[]> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false);
+        Task<ILockInfo[]> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false, CancellationToken token = default);
     }
 
     /// <summary>
@@ -106,15 +106,15 @@ namespace Sels.DistributedLocking.Provider
         /// <summary>
         /// When the current lock was locked by <see cref="LockedBy"/>. Will be null when the lock is free.
         /// </summary>
-        DateTime? LockedAt { get; }
+        DateTimeOffset? LockedAt { get; }
         /// <summary>
         /// The last time when the lock was held by someone.
         /// </summary>
-        DateTime? LastLockDate { get; } 
+        DateTimeOffset? LastLockDate { get; }
         /// <summary>
         /// When the lock is set to expire. When a lock expires others will be able lock it instead. When set to null the lock never expires.
         /// </summary>
-        DateTime? ExpiryDate { get; }
+        DateTimeOffset? ExpiryDate { get; }
         /// <summary>
         /// How many pending requests there are for the current lock.
         /// </summary>
@@ -145,11 +145,11 @@ namespace Sels.DistributedLocking.Provider
         /// <summary>
         /// When the current request expires. When set to null the request will never expire.
         /// </summary>
-        DateTime? Timeout { get; }
+        DateTimeOffset? Timeout { get; }
         /// <summary>
         /// When the request was created.
         /// </summary>
-        DateTime CreatedAt { get; }
+        DateTimeOffset CreatedAt { get; }
     }
 
     /// <summary>

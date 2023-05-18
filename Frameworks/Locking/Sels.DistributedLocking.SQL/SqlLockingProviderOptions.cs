@@ -1,44 +1,48 @@
-﻿using Sels.Core.Extensions;
-using Sels.Core.Extensions.Validation;
-using Sels.Core.Validation;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.DistributedLocking.Memory
+namespace Sels.DistributedLocking.SQL
 {
     /// <summary>
-    /// Exposes configuration options for <see cref="MemoryLockingProvider"/>.
+    /// Exposes configuration options for <see cref="SqlLockingProvider"/>.
     /// </summary>
-    public class MemoryLockingProviderOptions
+    public class SqlLockingProviderOptions
     {
         // Fields
-        private MemoryLockCleanupMethod _cleanupMethod;
-        private long? _cleanupAmount;
+        private SqlLockCleanupMethod _cleanupMethod;
+        private int? _cleanupAmount;
 
         // Properties
         /// <summary>
-        /// The interval that will be used by <see cref="MemoryLockingProvider"/> to perform cleanup of the in-memeory locks to free up memory. When set to <see cref="TimeSpan.Zero"/> no locks will be cleaned up.
+        /// The interval that will be used by <see cref="SqlLockingProvider"/> to database maintenance.
         /// </summary>
-        public TimeSpan CleanupInterval { get; set; } = new TimeSpan(0, 1, 0);
+        public TimeSpan MaintenanceInterval { get; set; } = new TimeSpan(0, 15, 0);
         /// <summary>
         /// If cleanup of locks is enabled.
         /// </summary>
-        public bool IsCleanupEnabled => CleanupInterval.TotalMilliseconds > 0;
-        /// <inheritdoc cref="MemoryLockCleanupMethod"/>
-        public MemoryLockCleanupMethod CleanupMethod { get => _cleanupMethod; set { _cleanupMethod = value; SetDefaultAmount(); } }
+        public bool IsCleanupEnabled { get; set; }
+        /// <inheritdoc cref="SqlLockCleanupMethod"/>
+        public SqlLockCleanupMethod CleanupMethod { get => _cleanupMethod; set { _cleanupMethod = value; SetDefaultAmount(); } }
         /// <summary>
         /// The value to configure <see cref="CleanupMethod"/>.
         /// </summary>
-        public long? CleanupAmount { get => _cleanupAmount; set { _cleanupAmount = value; SetDefaultAmount(); } }
+        public int? CleanupAmount { get => _cleanupAmount; set { _cleanupAmount = value; SetDefaultAmount(); } }
+
         /// <summary>
         /// Dictates how stale locks are handled. If set to true a <see cref="StaleLockException"/> or <see cref="ResourceAlreadyLockedException"/> will be thrown when actions are performed on a stale lock. When set to false the action will fail silently.
         /// </summary>
         public bool ThrowOnStaleLock { get; set; } = false;
+
         /// <summary>
-        /// How many milliseconds before a lock expires to extend the expiry date. Is also used as offset when to notify that a lock expired.
+        /// How many milliseconds before a lock expires to extend the expiry date.
         /// </summary>
         public int ExpiryOffset { get; set; } = 1000;
+
+        /// <summary>
+        /// How often to check pending requests in milliseconds if they were assigned. Each resource will have it's own poller. Requests are also timed out by the same poller so setting it too high will mean requests will get timed out way past the provided amount.
+        /// </summary>
+        public int RequestPollingRate { get; set; } = 1000;
 
         private void SetDefaultAmount()
         {
@@ -46,20 +50,17 @@ namespace Sels.DistributedLocking.Memory
             {
                 switch (_cleanupMethod)
                 {
-                    case MemoryLockCleanupMethod.Time:
+                    case SqlLockCleanupMethod.Time:
                         _cleanupAmount = 600000;
                         break;
-                    case MemoryLockCleanupMethod.Amount:
+                    case SqlLockCleanupMethod.Amount:
                         _cleanupAmount = 1000;
                         break;
-                    case MemoryLockCleanupMethod.Always:
+                    case SqlLockCleanupMethod.Always:
                         _cleanupAmount = 0;
                         break;
-                    case MemoryLockCleanupMethod.ProcessMemory:
-                        // Equal to 1 gibibyte
-                        _cleanupAmount = 1024 * 1024* 1024;
                         break;
-                    default: 
+                    default:
                         throw new NotSupportedException($"Cleanup method <{_cleanupMethod}> is not supported");
                 }
             }
@@ -67,9 +68,9 @@ namespace Sels.DistributedLocking.Memory
     }
 
     /// <summary>
-    /// Defines when memory locks should be removed from memory. 
+    /// Defines when inactive/expired locks are removed from the lock table.
     /// </summary>
-    public enum MemoryLockCleanupMethod
+    public enum SqlLockCleanupMethod
     {
         /// <summary>
         /// Inactive locks older than the configured amount (in milliseconds) will be removed.
@@ -82,10 +83,6 @@ namespace Sels.DistributedLocking.Memory
         /// <summary>
         /// All inactive locks will be removed.
         /// </summary>
-        Always = 2,
-        /// <summary>
-        /// All inactive locks will be removed when the memory usage of the current process exceeds the configured amount (in bytes)
-        /// </summary>
-        ProcessMemory = 3
+        Always = 2
     }
 }

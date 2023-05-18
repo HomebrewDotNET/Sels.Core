@@ -19,7 +19,7 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             foreach (var @lock in locks)
             {
-                await provider.TryLockAsync(@lock, "Me", out var _);
+                await provider.TryLockAsync(@lock, "Me");
             }
 
             // Act
@@ -44,7 +44,7 @@ namespace Sels.DistributedLocking.Memory.Test
             var locks = new string[] { "Resource", "System.Monitor", "System.Heartbeat", "RecurringJob.1-1" };
             foreach (var @lock in locks)
             {
-                await provider.TryLockAsync(@lock, "Me", out var _);
+                await provider.TryLockAsync(@lock, "Me");
             }
 
             // Act
@@ -71,7 +71,7 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             foreach (var @lock in locks)
             {
-                await provider.TryLockAsync(@lock, "Me", out var _);
+                await provider.TryLockAsync(@lock, "Me");
             }
 
             // Act
@@ -91,7 +91,7 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             foreach (var @lock in locks)
             {
-                await provider.TryLockAsync(@lock, Guid.NewGuid().ToString(), out var _);
+                await provider.TryLockAsync(@lock, Guid.NewGuid().ToString());
             }
 
             // Act
@@ -114,12 +114,12 @@ namespace Sels.DistributedLocking.Memory.Test
                 // Unlock lock to simulate empty LockedBy property
                 if(@lock == null)
                 {
-                    await provider.TryLockAsync(Guid.NewGuid().ToString(), "Nullable", out var locked);
+                    var (wasLocked, locked) = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Nullable");
                     await locked.DisposeAsync();
                 }
                 else
                 {
-                    await provider.TryLockAsync(Guid.NewGuid().ToString(), @lock, out var _);
+                    await provider.TryLockAsync(Guid.NewGuid().ToString(), @lock);
                 }
                 
             }

@@ -2,11 +2,16 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Conversion.Converters;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.ServiceBuilder.Contracts.Interceptors.Caching;
+using System;
+using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sels.Core.ServiceBuilder.Interceptors.Caching
 {
@@ -23,7 +28,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// <param name="logger">Optional logger for tracing</param>
         public DistributedCachingProvider(IDistributedCache cache, ILogger<DistributedCachingProvider<TEncoding>>? logger = null)
         {
-            this._cache = Guard.IsNotNull(cache);
+            this._cache = cache.ValidateArgument(nameof(cache));
             this._logger = logger;
         }
 
@@ -32,8 +37,8 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// <inheritdoc/>
         public async Task<T> GetOrSetAsync<T>(IInvocation target, string key, IDistributedCacheOptions? options, Delegates.Async.AsyncFunc<CancellationToken, T> cacheGetter, CancellationToken token = default)
         {
-            Guard.IsNotNullOrWhitespace(key);
-            Guard.IsNotNull(cacheGetter);
+            key.ValidateArgument(nameof(key));
+            cacheGetter.ValidateArgument(nameof(cacheGetter));
 
             var cacheOptions = options?.CastToOrDefault<DistributedCacheOptions>() ?? new DistributedCacheOptions();
             _logger.Debug($"Checking distributed cache if an object with key <{key}> is cached");
@@ -95,7 +100,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// <inheritdoc/>
         public IDistributedCacheOptions WithOptions(Action<IInvocation, DistributedCacheEntryOptions> optionBuilder)
         {
-            Guard.IsNotNull(optionBuilder);
+            optionBuilder.ValidateArgument(nameof(optionBuilder));
             _optionBuilders.Add(optionBuilder);
             return this;
         }
@@ -103,8 +108,8 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// <inheritdoc/>
         public IDistributedCacheOptions ConvertUsing(Func<object, string> serializeFunc, Func<string, Type, object> deserializeFunc)
         {
-            Serializer = Guard.IsNotNull(serializeFunc);
-            Deserializer = Guard.IsNotNull(deserializeFunc);
+            Serializer = serializeFunc.ValidateArgument(nameof(serializeFunc));
+            Deserializer = deserializeFunc.ValidateArgument(nameof(deserializeFunc));
 
             return this;
         }

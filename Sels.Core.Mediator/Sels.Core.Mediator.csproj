@@ -57,6 +57,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
+    <ProjectReference Include="..\Sels.Core\Sels.Core.csproj" />
   </ItemGroup>
 
 </Project>

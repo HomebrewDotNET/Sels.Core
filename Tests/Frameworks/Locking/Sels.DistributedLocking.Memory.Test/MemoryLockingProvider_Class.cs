@@ -20,7 +20,7 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             for (int i = 0; i < 10; i++)
             {
-                await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me", out var locked);
+                var (wasLocked, locked) = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
                 await locked.DisposeAsync();
             }
 
@@ -50,7 +50,7 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             for (int i = 0; i < 20; i++)
             {
-                await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me", out var locked);
+                var (wasLocked, locked) = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
                 await locked.DisposeAsync();
             }
 
@@ -80,7 +80,7 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             for (int i = 0; i < 20; i++)
             {
-                await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me", out var locked);
+                var (wasLocked, locked) = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
                 await locked.DisposeAsync();
             }
 
@@ -110,7 +110,7 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             for (int i = 0; i < 20; i++)
             {
-                await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me", out var locked);
+                var (wasLocked, locked) = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
                 await locked.DisposeAsync();
             }
 

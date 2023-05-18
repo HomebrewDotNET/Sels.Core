@@ -1,9 +1,12 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.ServiceBuilder.Events;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Sels.Core.ServiceBuilder
 {
@@ -219,7 +222,7 @@ namespace Sels.Core.ServiceBuilder
         /// <inheritdoc/>
         public IServiceBuilder<T, TImpl> OnCreated(Action<IServiceProvider, TImpl> action)
         {
-            Guard.IsNotNull(action);
+            action.ValidateArgument(nameof(action));
             OnCreatedEvent += action;
             return this;
         }

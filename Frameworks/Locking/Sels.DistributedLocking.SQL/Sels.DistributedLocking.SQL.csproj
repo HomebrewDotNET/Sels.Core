@@ -1,19 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFramework>netstandard2.1</TargetFramework>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
-		<Product>Distributed Locking Abstractions Library</Product>
+		<Product>Core memory Locking Library</Product>
 		<Description>
-			Contains abstractions used to place distributed locks on resources.
-			Used by projects maintained here: https://github.com/Jenssels1998
+			Locking provider that uses a ISqlLockProvider to manage lock state. Uses basic sql locking for concurrency. 
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 		<Copyright>Jens Sels</Copyright>
-		<PackageTags>Sels;Locking;Locks;DistributedLock</PackageTags>
+		<PackageTags>Sels;Locking;Locks;DistributedLock;SQL</PackageTags>
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 		<!--For NuGet package-->
 		<VersionPrefix>1.0.0</VersionPrefix>
@@ -31,6 +30,14 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+		<PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\Sels.Core.Data\Sels.Core.Data.csproj" />
+	  <ProjectReference Include="..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+	  <ProjectReference Include="..\..\..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
+	  <ProjectReference Include="..\..\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
+	  <ProjectReference Include="..\Sels.DistributedLocking.Abstractions\Sels.DistributedLocking.Abstractions.csproj" />
 	</ItemGroup>
 
 	<!--Include non-NuGet package projects in NuGet package-->

@@ -2,10 +2,13 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Conversion.Converters;
+using Sels.Core.Extensions;
 using Sels.Core.ServiceBuilder;
 using Sels.Core.ServiceBuilder.Contracts.Interceptors.Caching;
 using Sels.Core.ServiceBuilder.Interceptors;
 using Sels.Core.ServiceBuilder.Interceptors.Caching;
+using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -49,7 +52,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
         /// <param name="loggers">The loggers to use for tracing</param>
         /// <returns>Current builder for method chaining</returns>
-        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, object> interceptorBuilder, IEnumerable<ILogger?>? loggers)
+        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, object> interceptorBuilder, IEnumerable<ILogger> loggers)
             where TImpl : class, T
             where T : class
         {

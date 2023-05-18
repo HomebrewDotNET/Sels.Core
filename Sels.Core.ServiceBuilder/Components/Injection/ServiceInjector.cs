@@ -1,5 +1,6 @@
 ﻿using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.ServiceBuilder.Events;
@@ -33,8 +34,8 @@ namespace Sels.Core.ServiceBuilder.Injection
         /// <inheritdoc />
         public void Handle(IServiceProvider provider, object instance)
         {
-            Guard.IsNotNull(provider);
-            Guard.IsNotNull(instance);
+            provider.ValidateArgument(nameof(provider));
+            instance.ValidateArgument(nameof(instance));
             var type = instance.GetType();
 
             using(_logger.TraceAction($"Injecting services on instance of type <{type.GetDisplayName()}>"))
@@ -64,7 +65,7 @@ namespace Sels.Core.ServiceBuilder.Injection
         /// <returns>An enumerator returning all members to inject</returns>
         protected virtual IEnumerable<(MemberInfo Member, InjectAttribute Attribute)> GetInjectableMembers(object instance)
         {
-            Guard.IsNotNull(instance);
+            instance.ValidateArgument(nameof(instance));
             var type = instance.GetType();
 
             return GetInjectableMembers(type);
@@ -77,7 +78,7 @@ namespace Sels.Core.ServiceBuilder.Injection
         /// <returns>An enumerator returning all members to inject</returns>
         protected IEnumerable<(MemberInfo Member, InjectAttribute Attribute)> GetInjectableMembers(Type type)
         {
-            Guard.IsNotNull(type);
+            type.ValidateArgument(nameof(type));
 
             // Fields
             foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
@@ -117,7 +118,7 @@ namespace Sels.Core.ServiceBuilder.Injection
         /// <inheritdoc />
         protected override IEnumerable<(MemberInfo Member, InjectAttribute Attribute)> GetInjectableMembers(object instance)
         {
-            Guard.IsNotNull(instance);
+            instance.ValidateArgument(nameof(instance));
 
             return instance.GetType().Is(typeof(TImpl)) ? _membersToInject.Select(x => (x.Key, x.Value)) : base.GetInjectableMembers(instance);
         }

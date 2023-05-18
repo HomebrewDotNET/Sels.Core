@@ -1,6 +1,8 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.Caching.Distributed;
 using Sels.Core.Conversion.Converters;
+using Sels.Core.Extensions;
+using System;
 
 namespace Sels.Core.ServiceBuilder.Contracts.Interceptors.Caching
 {

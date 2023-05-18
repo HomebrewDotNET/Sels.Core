@@ -5,6 +5,11 @@ using Sels.Core.ServiceBuilder.Template.Interceptors;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Logging;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
+using Sels.Core.Extensions;
 
 namespace Sels.Core.ServiceBuilder.Interceptors
 {
@@ -15,7 +20,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
     {
         // Fields
         private readonly ILoggerFactory? _factory;
-        private readonly IEnumerable<ILogger?>? _loggers;
+        private readonly IEnumerable<ILogger> _loggers;
 
         // State
         private MethodTracer? _methodTracer;
@@ -23,7 +28,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
 
         /// <inheritdoc cref="TracingInterceptor"/>
         /// <param name="loggers">Static loggers to use for tracing</param>
-        public TracingInterceptor(IEnumerable<ILogger?>? loggers)
+        public TracingInterceptor(IEnumerable<ILogger> loggers)
         {
             _loggers = loggers != null ? loggers.Where(x => x != null) : null;
         }
@@ -81,7 +86,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         private class ExceptionTracer : Delegator, IExceptionTracingInterceptorBuilder
         {
             // Fields
-            private List<Predicate<Exception>> _conditions = new();
+            private List<Predicate<Exception>> _conditions = new List<Predicate<Exception>>();
             private Func<Exception, LogLevel?>? _logLevelSelector;
             private Action<IInvocation, IEnumerable<ILogger>, LogLevel, Exception>? _logger;
 

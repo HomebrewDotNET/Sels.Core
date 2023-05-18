@@ -147,6 +147,28 @@ namespace Sels.Core
         /// </summary>
         public static class App
         {
+            private static CancellationTokenSource _applicationTokenSource = CreateApplicationTokenSource();
+            /// <summary>
+            /// Cancellation token that will be cancelled when the current application is requested to exit.
+            /// </summary>
+            public static CancellationToken ApplicationToken => _applicationTokenSource.Token;
+
+            private static CancellationTokenSource CreateApplicationTokenSource()
+            {
+                var source = new CancellationTokenSource();
+                OnExit((s, a) =>
+                {
+                    source.Cancel();
+                });
+                OnCancel((s, a) =>
+                {
+                    source.Cancel();
+                    a.Cancel = true;
+                });
+
+                return source;
+            }
+
             /// <summary>
             /// Registers the <paramref name="action"/> delegate that will be executed when the application closes.
             /// </summary>
@@ -166,6 +188,28 @@ namespace Sels.Core
                 action.ValidateArgument(nameof(action));
 
                 AppDomain.CurrentDomain.ProcessExit += (x, y) => action(x, y);
+            }
+
+            /// <summary>
+            /// Registers the <paramref name="action"/> delegate that will be executed when the application is requested to cancel.
+            /// </summary>
+            /// <param name="action">The delegate to execute when the application is requested to cancel</param>
+            public static void OnCancel(Action<object, ConsoleCancelEventArgs> action)
+            {
+                action.ValidateArgument(nameof(action));
+
+                SystemConsole.CancelKeyPress += (x, y) => action(x,y);
+            }
+
+            /// <summary>
+            /// Registers the <paramref name="action"/> delegate that will be executed when the application is requested to cancel.
+            /// </summary>
+            /// <param name="action">The delegate to execute when the application is requested to cancel</param>
+            public static void OnCancel(Action action)
+            {
+                action.ValidateArgument(nameof(action));
+
+                OnCancel((x, y) => action());
             }
 
             /// <summary>

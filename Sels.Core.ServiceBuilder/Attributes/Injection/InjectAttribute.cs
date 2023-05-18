@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,9 +30,9 @@ namespace Sels.Core.ServiceBuilder.Injection
         /// <returns>True if the service was injected, otherwise false</returns>
         public bool Set(IServiceProvider provider, MemberInfo member, object instance)
         {
-            Guard.IsNotNull(provider);
-            Guard.IsNotNull(member);
-            Guard.IsNotNull(instance);
+            provider.ValidateArgument(nameof(provider));
+            member.ValidateArgument(nameof(member));
+            instance.ValidateArgument(nameof(instance));
 
             // Get service type to inject.
             Type serviceType;

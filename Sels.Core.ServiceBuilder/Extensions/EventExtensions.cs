@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Sels.Core.Extensions;
 using Sels.Core.ServiceBuilder.Injection;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Sels.Core.ServiceBuilder.Extensions
             where TImpl : class, T
             where T : class
         {
-            Guard.IsNotNull(builder);
+            builder.ValidateArgument(nameof(builder));
 
             builder.Collection.AddServiceInjector<TImpl>();
 

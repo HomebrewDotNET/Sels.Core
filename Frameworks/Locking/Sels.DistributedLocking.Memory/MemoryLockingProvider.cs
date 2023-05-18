@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Sels.DistributedLocking.Memory
 {
     /// <summary>
-    /// Provides application wide distributed locks by storing the locks in memory and making use of thread locks to handle concurrency.
+    /// Provides process wide distributed locks by storing the locks in memory and making use of thread locks to handle concurrency.
     /// </summary>
     public class MemoryLockingProvider : ILockingProvider, IAsyncDisposable
     {
@@ -32,6 +32,7 @@ namespace Sels.DistributedLocking.Memory
         private readonly ILogger<MemoryLockingProvider> _logger;
         private CancellationTokenSource _cancellationTokenSource;
         private Task _cleanupTask;
+        private IDisposable _optionsMonitor;
 
         // Properties
         /// <summary>
@@ -57,7 +58,7 @@ namespace Sels.DistributedLocking.Memory
             if(OptionsMonitor.CurrentValue.IsCleanupEnabled) _cleanupTask = RunCleanupDuringLifetime(_cancellationTokenSource.Token);
 
             // Monitor options for changes
-            options.OnChange((o, n) =>
+            _optionsMonitor = options.OnChange((o, n) =>
             {
                 // Start if not running
                 if((_cleanupTask == null || _cleanupTask.IsCompleted) && o.IsCleanupEnabled)
@@ -79,7 +80,7 @@ namespace Sels.DistributedLocking.Memory
         }
 
         /// <inheritdoc/>
-        public Task<bool> TryLockAsync(string resource, string requester, out ILock lockObject, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default)
+        public Task<(bool Success, ILock Lock)> TryLockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
@@ -88,7 +89,6 @@ namespace Sels.DistributedLocking.Memory
 
                 _logger.Log($"Attempting to lock resource <{resource}> requested by <{requester}>");
 
-                lockObject = null;
                 var memoryLockInfo = GetLockOrSet(resource);
                 lock (memoryLockInfo)
                 {
@@ -112,7 +112,7 @@ namespace Sels.DistributedLocking.Memory
                         if (TryAssignPendingRequest(resource))
                         {
                             _logger.Log($"Resource was not locked but had pending requests. Lock is now assigned to <{memoryLockInfo.LockedBy}>");
-                            return Task.FromResult(false);
+                            return Task.FromResult((false, (ILock)null));
                         }
                     }
                     else if (memoryLockInfo.LockedBy.Equals(requester, StringComparison.OrdinalIgnoreCase))
@@ -129,12 +129,12 @@ namespace Sels.DistributedLocking.Memory
                         memoryLockInfo.LastLockDate = DateTime.Now;
                         memoryLockInfo.LockedAt = DateTime.Now;
                         _logger.Log($"Resource <{resource}> is now held by <{requester}>");
-                        lockObject = new MemoryLock(this, memoryLockInfo, keepAlive, expiryTime ?? TimeSpan.Zero, _logger);
-                        return Task.FromResult(true);
+                        var lockObject = new MemoryLock(this, memoryLockInfo, keepAlive, expiryTime ?? TimeSpan.Zero, _logger);
+                        return Task.FromResult((true, (ILock)lockObject));
                     }
 
                     _logger.Log($"Lock on resource <{resource}> could not be acquired by <{requester}>. Currently held by <{memoryLockInfo.LockedBy}>");
-                    return Task.FromResult(false);
+                    return Task.FromResult((false, (ILock)null));
                 }
             }
         }
@@ -150,8 +150,9 @@ namespace Sels.DistributedLocking.Memory
                 var memoryLock = GetLockOrSet(resource);
                 lock (memoryLock)
                 {
+                    var (wasLocked, @lock) = TryLockAsync(resource, requester, expiryTime, keepAlive).Result;
                     // Method will always run sync so we can just use .Result
-                    if (!TryLockAsync(resource, requester, out var @lock, expiryTime, keepAlive).Result)
+                    if (!wasLocked)
                     {
                         _logger.Log($"Resource <{resource}> is already locked. Creating lock request for <{requester}>");
 
@@ -195,14 +196,13 @@ namespace Sels.DistributedLocking.Memory
             }
         }
         /// <inheritdoc/>
-        public Task<ILockInfo[]> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false)
+        public Task<ILockInfo[]> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
                 lock (_locks)
                 {
                     _logger.Log($"Querying locks");
-                    pageSize.ValidateArgumentLarger(nameof(pageSize), 0);
 
                     var enumerator = _locks.Select(x => x.Value).Cast<ILockInfo>();
                     // Apply filter
@@ -222,7 +222,7 @@ namespace Sels.DistributedLocking.Memory
                         }
                     }
                     // Apply pagination
-                    if(page > 0)
+                    if(page > 0 && pageSize > 0)
                     {
                         enumerator = enumerator.Skip((page - 1) * pageSize).Take(pageSize);
                     }
@@ -466,7 +466,7 @@ namespace Sels.DistributedLocking.Memory
                             _logger.Warning($"Cleanup task was started but cleanup is disabled. Stopping");
                             return;
                         }
-                        _logger.Debug($"Running cleanup in <{options.CleanupInterval}>");
+                        _logger.Debug($"Running cleanup in <{options.CleanupInterval}ms>");
                         await Helper.Async.Sleep(sleepTime, token).ConfigureAwait(false);
                         if (token.IsCancellationRequested)
                         {
@@ -583,6 +583,10 @@ namespace Sels.DistributedLocking.Memory
         public async ValueTask DisposeAsync()
         {
             List<Exception> exceptions = new List<Exception>();
+
+            // Stop monitoring for option changes
+            _optionsMonitor?.Dispose();
+
             // Cancel cleanup task if it's running
             if(_cleanupTask != null)
             {
@@ -885,11 +889,11 @@ namespace Sels.DistributedLocking.Memory
             /// <inheritdoc/>
             public string LockedBy { get; internal set; }
             /// <inheritdoc/>
-            public DateTime? LockedAt { get; internal set; }
+            public DateTimeOffset? LockedAt { get; internal set; }
             /// <inheritdoc/>
-            public DateTime? LastLockDate { get; internal set; }
+            public DateTimeOffset? LastLockDate { get; internal set; }
             /// <inheritdoc/>
-            public DateTime? ExpiryDate { get; internal set; }
+            public DateTimeOffset? ExpiryDate { get; internal set; }
             /// <summary>
             /// Pending locking requests for the current lock.
             /// </summary>
@@ -953,9 +957,9 @@ namespace Sels.DistributedLocking.Memory
             /// <inheritdoc/>
             public bool KeepAlive { get; internal set; }
             /// <inheritdoc/>
-            public DateTime? Timeout { get; }
+            public DateTimeOffset? Timeout { get; }
             /// <inheritdoc/>
-            public DateTime CreatedAt { get; } = DateTime.Now;
+            public DateTimeOffset CreatedAt { get; } = DateTimeOffset.Now;
             /// <summary>
             /// The task returned to caller when they request a lock. 
             /// </summary>

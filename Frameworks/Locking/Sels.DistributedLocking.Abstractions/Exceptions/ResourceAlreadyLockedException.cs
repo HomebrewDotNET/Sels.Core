@@ -20,7 +20,7 @@ namespace Sels.DistributedLocking
         /// </summary>
         public string Requester { get; }
 
-        /// <inheritdoc cref="LockTimeoutException"/>
+        /// <inheritdoc cref="ResourceAlreadyLockedException"/>
         /// <param name="requester"><inheritdoc cref="Requester"/></param>
         /// <param name="lockInfo"><inheritdoc cref="Lock"/></param>
         public ResourceAlreadyLockedException(string requester, ILockInfo lockInfo) : base($"The action requested by <{requester}> could not be performed on lock <{lockInfo?.Resource}> because it is currently not held by <{requester}>")

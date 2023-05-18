@@ -8,12 +8,13 @@
 		<Company>Homebrew IT</Company>
 		<Product>Core memory Locking Library</Product>
 		<Description>
-			Implements abtractions in Sels.DistributedLocking using memory for inner process distributed locks.
-			Used by projects maintained here: https://github.com/Jenssels1998
+			Locking provider using an in-memory store for inner process distributed locks.
+
+			Provider can be added to service container using the AddMemoryLockingProvider() extension method.
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 		<Copyright>Jens Sels</Copyright>
-		<PackageTags>Sels</PackageTags>
+		<PackageTags>Sels;Locking;Locks;DistributedLock;Memory</PackageTags>
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 		<!--For NuGet package-->
 		<VersionPrefix>1.0.0</VersionPrefix>

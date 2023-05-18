@@ -7,6 +7,12 @@ using Sels.Core.Extensions.Linq;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Logging.Advanced;
+using System.Collections.Generic;
+using System;
+using Sels.Core.Extensions;
+using System.Threading.Tasks;
+using System.Linq;
+using System.Threading;
 
 namespace Sels.Core.ServiceBuilder.Interceptors.Caching
 {
@@ -33,9 +39,9 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// <param name="typeConverter">Optional type converter that is used to convert the method parameters to strings. If not provided <see cref="object.ToString"/> will be used</param>
         /// <param name="loggerFactory">Optional factory that creates logger specifically for the target class</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public CachingInterceptor(IInterceptorCachingProvider<TOptions> cacheProvider, ITypeConverter? typeConverter = null, ILoggerFactory? loggerFactory = null, ILogger<CachingInterceptor<TImpl, TOptions>>? logger = null)
+        public CachingInterceptor(IInterceptorCachingProvider<TOptions> cacheProvider, ITypeConverter? typeConverter = null, ILoggerFactory? loggerFactory = null, ILogger<CachingInterceptor<TImpl, TOptions>> logger = null)
         {
-            this._cacheProvider = Guard.IsNotNull(cacheProvider);
+            this._cacheProvider = cacheProvider.ValidateArgument(nameof(cacheProvider));
             this._typeConverter = typeConverter;
             _factory = loggerFactory;
             this._logger = logger;
@@ -150,7 +156,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
             /// <inheritdoc/>
             public ICachingMethodInterceptorBuilder<TImpl, TOptions> WithOptions(Action<IInvocation, TOptions> optionBuilder)
             {
-                OptionBuilder = Guard.IsNotNull(optionBuilder);
+                OptionBuilder = optionBuilder.ValidateArgument(nameof(optionBuilder));
                 return this;
             }
         }

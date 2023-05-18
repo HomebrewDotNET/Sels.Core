@@ -16,7 +16,7 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
 
             // Act
-            _ = await provider.TryLockAsync("Resource", "Me", out var @lock, TimeSpan.FromMinutes(5));
+            var (wasLocked, @lock) = await provider.TryLockAsync("Resource", "Me", TimeSpan.FromMinutes(5));
             var result = await provider.GetAsync("Resource");
 
             // Assert
