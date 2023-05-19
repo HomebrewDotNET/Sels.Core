@@ -30,6 +30,8 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             builder.ValidateArgument(nameof(builder));
             return _compiler.Compile(builder, Expression, options);
         }
+        /// <inheritdoc/>
+        public string? TranslateToAlias(object alias) => alias?.ToString();
 
         /// <inheritdoc/>
         public abstract IExpression[] InnerExpressions { get; }

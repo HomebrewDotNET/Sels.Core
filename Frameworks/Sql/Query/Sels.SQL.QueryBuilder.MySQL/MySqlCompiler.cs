@@ -18,8 +18,14 @@ namespace Sels.SQL.QueryBuilder.MySQL
         IExpressionCompiler
     {
         // Fields
-        private readonly IEnumerable<ILogger>? _loggers;
+        private readonly ILogger? _logger;
         private readonly string _name = nameof(MySqlCompiler);
+
+        // Properties
+        /// <summary>
+        /// Global logger that can be set that will be used as the default logger when none is provided.
+        /// </summary>
+        public static ILogger? DefaultLogger { get; set; }
 
         #region Configs
         private static readonly IReadOnlyDictionary<InsertExpressionPositions, (bool IsNewLine, string? Prefix, string[]? ExpressionJoinValues, string? Suffix, bool IsSingleExpression)> _insertPositionConfigs = new Dictionary<InsertExpressionPositions, (bool IsNewLine, string? Prefix, string[]? ExpressionJoinValues, string? Suffix, bool IsSingleExpression)>()
@@ -55,17 +61,17 @@ namespace Sels.SQL.QueryBuilder.MySQL
         #endregion
 
         /// <inheritdoc cref="MySqlCompiler"/>
-        /// <param name="loggers"></param>
-        public MySqlCompiler(IEnumerable<ILogger>? loggers = null)
+        /// <param name="logger">Optional logger for tracing</param>
+        public MySqlCompiler(ILogger? logger = null)
         {
-            _loggers = loggers;
+            _logger = logger ?? DefaultLogger;
         }
 
         #region Insert
         /// <inheritdoc/>
-        void IQueryCompiler<InsertExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<InsertExpressionPositions> queryBuilder, Func<object, string?>? datasetConverterer, ExpressionCompileOptions options)
+        void IQueryCompiler<InsertExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<InsertExpressionPositions> queryBuilder, ExpressionCompileOptions options)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 builder.ValidateArgument(nameof(builder));
                 queryBuilder.ValidateArgument(nameof(queryBuilder));
@@ -74,7 +80,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 var expressionCount = builderExpressions.SelectMany(x => x.Value).GetCount();
                 var isFormatted = options.HasFlag(ExpressionCompileOptions.Format);
 
-                _loggers.Log($"{_name} compiling <{expressionCount}> expressions into a insert query");
+                _logger.Log($"{_name} compiling <{expressionCount}> expressions into a insert query");
                 if (expressionCount == 0) throw new NotSupportedException($"No expressions to compile into a insert query");
 
                 builder.Append(Sql.Statements.Insert);
@@ -82,7 +88,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 foreach (var builderExpression in builderExpressions.OrderBy(x => x.Key).Where(x => x.Value.HasValue()))
                 {
                     var position = builderExpression.Key;
-                    var expressions = builderExpression.Value;
+                    var expressions = builderExpression.Value.OrderBy(x => x.Order).Select(x => x.Expression).ToArray();
 
                     // Position settings
                     var isConfigSet = _insertPositionConfigs.ContainsKey(position);
@@ -92,7 +98,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                     var suffix = isConfigSet ? _insertPositionConfigs[position].Suffix : null;
                     var isSingleExpression = isConfigSet ? _insertPositionConfigs[position].IsSingleExpression : false;
 
-                    _loggers.Debug($"{_name} compiling <{expressions.Length}> expressions for position <{position}>");
+                    _logger.Debug($"{_name} compiling <{expressions.Length}> expressions for position <{position}>");
 
                     // Formatting
                     if (isFormatted && isNewLine)
@@ -113,15 +119,15 @@ namespace Sels.SQL.QueryBuilder.MySQL
                     // Single value
                     if (isSingleExpression)
                     {
-                        if (expressions.Length > 1) _loggers.Warning($"Expected only 1 expression for position <{position}> but got <{expressions.Length}>. Taking the last expression");
-                        CompileExpressionTo(builder, datasetConverterer, options, expressions.Last(), true);
+                        if (expressions.Length > 1) _logger.Warning($"Expected only 1 expression for position <{position}> but got <{expressions.Length}>. Taking the last expression");
+                        CompileExpressionTo(builder, queryBuilder.TranslateToAlias, options, expressions.Last(), true);
                     }
                     else
                     {
                         expressions.Execute((i, e) =>
                         {
 
-                            CompileExpressionTo(builder, datasetConverterer, options, e, true);
+                            CompileExpressionTo(builder, queryBuilder.TranslateToAlias, options, e, true);
                             if (i < expressions.Length - 1) {
                                 var joinChars = joinValues.Select(x => x == Environment.NewLine && !isFormatted ? Constants.Strings.Space : x);
                                 joinChars.Execute(x => builder.Append(x));
@@ -135,15 +141,16 @@ namespace Sels.SQL.QueryBuilder.MySQL
                         builder.Append(suffix);
                     }
                 }
+                if (options.HasFlag(ExpressionCompileOptions.AppendSeparator)) builder.Append(';');
             }
         }
         #endregion
 
         #region Select
         /// <inheritdoc/>
-        void IQueryCompiler<SelectExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<SelectExpressionPositions> queryBuilder, Func<object, string?>? datasetConverterer, ExpressionCompileOptions options)
+        void IQueryCompiler<SelectExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<SelectExpressionPositions> queryBuilder, ExpressionCompileOptions options)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 builder.ValidateArgument(nameof(builder));
                 queryBuilder.ValidateArgument(nameof(queryBuilder));
@@ -152,7 +159,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 var expressionCount = builderExpressions.SelectMany(x => x.Value).GetCount();
                 var isFormatted = options.HasFlag(ExpressionCompileOptions.Format);
 
-                _loggers.Log($"{_name} compiling <{expressionCount}> expressions into a select query");
+                _logger.Log($"{_name} compiling <{expressionCount}> expressions into a select query");
                 if (expressionCount == 0) throw new NotSupportedException($"No expressions to compile into a select query");
  
                 builder.Append(Sql.Statements.Select);
@@ -160,7 +167,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 foreach (var builderExpression in builderExpressions.OrderBy(x => x.Key).Where(x => x.Value.HasValue()))
                 {
                     var position = builderExpression.Key;
-                    var expressions = builderExpression.Value;
+                    var expressions = builderExpression.Value.OrderBy(x => x.Order).Select(x => x.Expression).ToArray();
 
                     // Position settings
                     var isConfigSet = _selectPositionConfigs.ContainsKey(position);
@@ -169,7 +176,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                     var joinValue = (isConfigSet ? _selectPositionConfigs[position].ExpressionJoinValue : null) ?? Constants.Strings.Space;
                     var isSingleExpression = isConfigSet ? _selectPositionConfigs[position].IsSingleExpression : false;
 
-                    _loggers.Debug($"{_name} compiling <{expressions.Length}> expressions for position <{position}>");
+                    _logger.Debug($"{_name} compiling <{expressions.Length}> expressions for position <{position}>");
 
                     // Formatting
                     if (isFormatted && isNewLine)
@@ -190,8 +197,8 @@ namespace Sels.SQL.QueryBuilder.MySQL
                     // Single value
                     if (isSingleExpression)
                     {
-                        if (expressions.Length > 1) _loggers.Warning($"Expected only 1 expression for position <{position}> but got <{expressions.Length}>. Taking the last expression");
-                        CompileExpressionTo(builder, datasetConverterer, options, expressions.Last());
+                        if (expressions.Length > 1) _logger.Warning($"Expected only 1 expression for position <{position}> but got <{expressions.Length}>. Taking the last expression");
+                        CompileExpressionTo(builder, queryBuilder.TranslateToAlias, options, expressions.Last());
                         continue;
                     }
                     else
@@ -200,20 +207,22 @@ namespace Sels.SQL.QueryBuilder.MySQL
                         {
                             var expressionJoinValue = joinValue == Environment.NewLine && !isFormatted ? Constants.Strings.Space : joinValue;
 
-                            CompileExpressionTo(builder, datasetConverterer, options, e);
+                            CompileExpressionTo(builder, queryBuilder.TranslateToAlias, options, e);
                             if (i < expressions.Length - 1) builder.Append(expressionJoinValue);
                         });
                     }
                 }
+
+                if (options.HasFlag(ExpressionCompileOptions.AppendSeparator)) builder.Append(';');
             }
         }
         #endregion
 
         #region Update
         /// <inheritdoc/>
-        public void CompileTo(StringBuilder builder, IQueryBuilder<UpdateExpressionPositions> queryBuilder, Func<object, string?>? datasetConverterer, ExpressionCompileOptions options)
+        public void CompileTo(StringBuilder builder, IQueryBuilder<UpdateExpressionPositions> queryBuilder, ExpressionCompileOptions options)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 builder.ValidateArgument(nameof(builder));
                 queryBuilder.ValidateArgument(nameof(queryBuilder));
@@ -222,7 +231,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 var expressionCount = builderExpressions.SelectMany(x => x.Value).GetCount();
                 var isFormatted = options.HasFlag(ExpressionCompileOptions.Format);
 
-                _loggers.Log($"{_name} compiling <{expressionCount}> expressions into an update query");
+                _logger.Log($"{_name} compiling <{expressionCount}> expressions into an update query");
                 if (expressionCount == 0) throw new NotSupportedException($"No expressions to compile into an update query");
 
                 builder.Append(Sql.Statements.Update);
@@ -230,7 +239,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 foreach (var builderExpression in builderExpressions.OrderBy(x => x.Key).Where(x => x.Value.HasValue()))
                 {
                     var position = builderExpression.Key;
-                    var expressions = builderExpression.Value;
+                    var expressions = builderExpression.Value.OrderBy(x => x.Order).Select(x => x.Expression).ToArray();
 
                     // Position settings
                     var isConfigSet = _updatePositionConfigs.ContainsKey(position);
@@ -240,7 +249,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                     var suffix = isConfigSet ? _updatePositionConfigs[position].Suffix : null;
                     var isSingleExpression = isConfigSet ? _updatePositionConfigs[position].IsSingleExpression : false;
 
-                    _loggers.Debug($"{_name} compiling <{expressions.Length}> expressions for position <{position}>");
+                    _logger.Debug($"{_name} compiling <{expressions.Length}> expressions for position <{position}>");
 
                     // Formatting
                     if (isFormatted && isNewLine)
@@ -261,15 +270,15 @@ namespace Sels.SQL.QueryBuilder.MySQL
                     // Single value
                     if (isSingleExpression)
                     {
-                        if (expressions.Length > 1) _loggers.Warning($"Expected only 1 expression for position <{position}> but got <{expressions.Length}>. Taking the last expression");
-                        CompileExpressionTo(builder, datasetConverterer, options, expressions.Last());
+                        if (expressions.Length > 1) _logger.Warning($"Expected only 1 expression for position <{position}> but got <{expressions.Length}>. Taking the last expression");
+                        CompileExpressionTo(builder, queryBuilder.TranslateToAlias, options, expressions.Last());
                     }
                     else
                     {
                         expressions.Execute((i, e) =>
                         {
 
-                            CompileExpressionTo(builder, datasetConverterer, options, e);
+                            CompileExpressionTo(builder, queryBuilder.TranslateToAlias, options, e);
                             if (i < expressions.Length - 1)
                             {
                                 var joinChars = joinValues.Select(x => x == Environment.NewLine && !isFormatted ? Constants.Strings.Space : x);
@@ -284,15 +293,17 @@ namespace Sels.SQL.QueryBuilder.MySQL
                         builder.Append(suffix);
                     }
                 }
+
+                if (options.HasFlag(ExpressionCompileOptions.AppendSeparator)) builder.Append(';');
             }
         }
         #endregion
 
         #region Delete
         /// <inheritdoc/>
-        void IQueryCompiler<DeleteExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<DeleteExpressionPositions> queryBuilder, Func<object, string?>? datasetConverterer, ExpressionCompileOptions options)
+        void IQueryCompiler<DeleteExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<DeleteExpressionPositions> queryBuilder, ExpressionCompileOptions options)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 builder.ValidateArgument(nameof(builder));
                 queryBuilder.ValidateArgument(nameof(queryBuilder));
@@ -301,7 +312,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 var expressionCount = builderExpressions.SelectMany(x => x.Value).GetCount();
                 var isFormatted = options.HasFlag(ExpressionCompileOptions.Format);
                 
-                _loggers.Log($"{_name} compiling <{expressionCount}> expressions into a delete query");
+                _logger.Log($"{_name} compiling <{expressionCount}> expressions into a delete query");
                 if (expressionCount == 0) throw new NotSupportedException($"No expressions to compile into a delete query");
 
                 builder.Append(Sql.Statements.Delete);
@@ -309,7 +320,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 foreach (var builderExpression in builderExpressions.OrderBy(x => x.Key).Where(x => x.Value.HasValue()))
                 {
                     var position = builderExpression.Key;
-                    var expressions = builderExpression.Value;
+                    var expressions = builderExpression.Value.OrderBy(x => x.Order).Select(x => x.Expression).ToArray();
 
                     // Position settings
                     var isConfigSet = _deletePositionConfigs.ContainsKey(position);
@@ -318,7 +329,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                     var joinValue = (isConfigSet ? _deletePositionConfigs[position].ExpressionJoinValue : null) ?? Constants.Strings.Space;
                     var isSingleExpression = isConfigSet ? _deletePositionConfigs[position].IsSingleExpression : false;
 
-                    _loggers.Debug($"{_name} compiling <{expressions.Length}> expressions for position <{position}>");
+                    _logger.Debug($"{_name} compiling <{expressions.Length}> expressions for position <{position}>");
 
                     // Formatting
                     if (isFormatted && isNewLine)
@@ -336,7 +347,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                         if(expressions.Any(x => x is IObjectExpression || x is TableExpression))
                         {
                             var aliases = expressions.Where(x => x is IObjectExpression || x is TableExpression)
-                                                        .Select(x => ConvertDataSet(x is TableExpression tableExpression ? tableExpression.DataSet?.DataSet : x.CastTo<IObjectExpression>().DataSet, datasetConverterer))
+                                                        .Select(x => ConvertDataSet(x is TableExpression tableExpression ? tableExpression.DataSet?.DataSet : x.CastTo<IObjectExpression>().DataSet, queryBuilder.TranslateToAlias))
                                                         .Where(x => x != null).ToArray();
 
                             if (aliases.HasValue())
@@ -359,12 +370,12 @@ namespace Sels.SQL.QueryBuilder.MySQL
                             }
                             else
                             {
-                                _loggers.Warning($"{_name}: No table aliases defined. Using default format");
+                                _logger.Warning($"{_name}: No table aliases defined. Using default format");
                             }
                         }
                         else
                         {
-                            _loggers.Warning($"{_name}: No expression is <{nameof(IObjectExpression)}>. Won't be able to determine table to delete from. Using default format");
+                            _logger.Warning($"{_name}: No expression is <{nameof(IObjectExpression)}>. Won't be able to determine table to delete from. Using default format");
                         }
                     }
 
@@ -377,8 +388,8 @@ namespace Sels.SQL.QueryBuilder.MySQL
                     // Single value
                     if (isSingleExpression)
                     {
-                        if (expressions.Length > 1) _loggers.Warning($"Expected only 1 expression for position <{position}> but got <{expressions.Length}>. Taking the last expression");
-                        CompileExpressionTo(builder, datasetConverterer, options, expressions.Last());
+                        if (expressions.Length > 1) _logger.Warning($"Expected only 1 expression for position <{position}> but got <{expressions.Length}>. Taking the last expression");
+                        CompileExpressionTo(builder, queryBuilder.TranslateToAlias, options, expressions.Last());
                         continue;
                     }
                     else
@@ -387,11 +398,13 @@ namespace Sels.SQL.QueryBuilder.MySQL
                         {
                             var expressionJoinValue = joinValue == Environment.NewLine && !isFormatted ? Constants.Strings.Space : joinValue;
 
-                            CompileExpressionTo(builder, datasetConverterer, options, e);
+                            CompileExpressionTo(builder, queryBuilder.TranslateToAlias, options, e);
                             if (i < expressions.Length - 1) builder.Append(expressionJoinValue);
                         });
                     }
                 }
+
+                if (options.HasFlag(ExpressionCompileOptions.AppendSeparator)) builder.Append(';');
             }
         }
         #endregion
@@ -399,7 +412,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <inheritdoc/>
         public string Compile(IExpression expression, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 expression.ValidateArgument(nameof(expression));
 
@@ -409,13 +422,12 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <inheritdoc/>
         public StringBuilder Compile(StringBuilder builder, IExpression expression, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
-            using (_loggers.TraceMethod(this))
+            using (_logger.TraceMethod(this))
             {
                 builder.ValidateArgument(nameof(builder));
                 expression.ValidateArgument(nameof(expression));
 
                 CompileExpressionTo(builder, x => x?.ToString(), options, expression);
-                if (options.HasFlag(ExpressionCompileOptions.AppendSeparator)) builder.Append(';');
 
                 return builder;
             }
@@ -426,7 +438,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             builder.ValidateArgument(nameof(builder));
             expression.ValidateArgument(nameof(expression));
 
-            _loggers.Trace($"{_name} compiling expression of type <{expression.GetTypeName()}>");
+            _logger.Trace($"{_name} compiling expression of type <{expression.GetTypeName()}>");
 
             if(expression is TableExpression tableExpression)
             {
@@ -441,7 +453,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             }
             else if (expression is IObjectExpression objectExpression && !objectExpression.Object.Equals(Sql.All.ToString()))
             {
-                // Add back ticks around column names 
+                // Add back ticks around sql object names 
                 objectExpression.ToSql(builder, x => ConvertDataSet(x, datasetConverterer, isInsert), x => $"`{x}`", options);
             }
             else if (expression is IDataSetExpression dataSetExpression)

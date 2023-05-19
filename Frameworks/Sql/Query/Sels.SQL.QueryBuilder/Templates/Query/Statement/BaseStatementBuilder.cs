@@ -20,14 +20,14 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     {
         // Fields
         private readonly Dictionary<Type, string> _aliases = new Dictionary<Type, string>();
-        private readonly Dictionary<TPosition, List<IExpression>> _expressions = new();
+        private readonly Dictionary<TPosition, List<OrderedExpression>> _expressions = new();
         private readonly IQueryCompiler<TPosition> _compiler;
 
         // Properties
         /// <inheritdoc/>
-        public IReadOnlyDictionary<TPosition, IExpression[]> Expressions => _expressions.ToDictionary(x => x.Key, x => x.Value.ToArray());
+        public IReadOnlyDictionary<TPosition, OrderedExpression[]> Expressions => _expressions.ToDictionary(x => x.Key, x => x.Value.ToArray());
         /// <inheritdoc/>
-        public IExpression[] InnerExpressions => _expressions.OrderBy(x => x.Key).SelectMany(x => x.Value).ToArray();
+        public IExpression[] InnerExpressions => _expressions.OrderBy(x => x.Key).SelectMany(x => x.Value).OrderBy(x => x.Order).Select(x => x.Expression).ToArray();
         /// <inheritdoc/>
         public IReadOnlyDictionary<Type, string> Aliases => _aliases;
 
@@ -43,7 +43,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
         /// <param name="expressions">The expressions for the current query</param>
-        protected BaseStatementBuilder(IQueryCompiler<TPosition> compiler, Dictionary<TPosition, List<IExpression>> expressions)
+        protected BaseStatementBuilder(IQueryCompiler<TPosition> compiler, Dictionary<TPosition, List<OrderedExpression>> expressions)
         {
             _compiler = compiler.ValidateArgument(nameof(compiler));
             // Create new reference
@@ -101,6 +101,12 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
                 return alias;
             }
         }
+
+        /// <inheritdoc/>
+        public string? TranslateToAlias(object alias)
+        {
+            return alias is Type type ? GetAlias(type) : alias?.ToString();
+        }
         #endregion
 
         #region Join
@@ -129,12 +135,12 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
 
         #region Expression
         /// <inheritdoc/>
-        public TDerived Expression(IExpression sqlExpression, TPosition position)
+        public TDerived Expression(IExpression sqlExpression, TPosition position, int order = 0)
         {
             sqlExpression.ValidateArgument(nameof(sqlExpression));
             position.ValidateArgument(nameof(position));    
 
-            _expressions.AddValueToList(position, sqlExpression);
+            _expressions.AddValueToList(position, new OrderedExpression(sqlExpression, order));
             return Instance;
         }
         #endregion
@@ -152,8 +158,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         {
             builder.ValidateArgument(nameof(builder));
 
-            _compiler.CompileTo(builder, this, x => x is Type type ? GetAlias(type) : x?.ToString(), options);
-            if (options.HasFlag(ExpressionCompileOptions.Format)) builder.AppendLine();
+            _compiler.CompileTo(builder, this, options);
             return builder;
         }
         #endregion
@@ -196,6 +201,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="compiler">The compiler to use for the clone</param>
         /// <param name="expressions">The expressions for the clone</param>
         /// <returns>A cloned instance with the same expressions as the current instance</returns>
-        protected abstract TDerived Clone(IQueryCompiler<TPosition> compiler, Dictionary<TPosition, List<IExpression>> expressions);
+        protected abstract TDerived Clone(IQueryCompiler<TPosition> compiler, Dictionary<TPosition, List<OrderedExpression>> expressions);
     }
 }

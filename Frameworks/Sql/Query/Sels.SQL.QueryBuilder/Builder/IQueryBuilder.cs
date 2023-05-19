@@ -12,7 +12,7 @@ namespace Sels.SQL.QueryBuilder.Builder
         /// <summary>
         /// Dictionary of the currently defined expressions grouped by the position where they would appear in the query.
         /// </summary>
-        public IReadOnlyDictionary<TPosition, IExpression[]> Expressions { get; }
+        public IReadOnlyDictionary<TPosition, OrderedExpression[]> Expressions { get; }
     }
 
     /// <summary>
@@ -24,6 +24,12 @@ namespace Sels.SQL.QueryBuilder.Builder
         /// Array of currently defined expressions sorted in the order they would appear in the query.
         /// </summary>
         IExpression[] InnerExpressions { get; }
+        /// <summary>
+        /// Translates <paramref name="alias"/> into the sql dataset alias defined for the object.
+        /// </summary>
+        /// <param name="alias">The type to translate</param>
+        /// <returns>The dataset alias for <paramref name="alias"/></returns>
+        string? TranslateToAlias(object alias);
         /// <summary>
         /// Builds the query string using the current builder.
         /// </summary>

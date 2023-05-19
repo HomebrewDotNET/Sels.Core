@@ -14,8 +14,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Compilation
         /// </summary>
         /// <param name="builder">The builder to add the sql to</param>
         /// <param name="queryBuilder">The builder requesting the compilation</param>
-        /// <param name="datasetConverterer">Optional dataset converter for converting dataset objects into a string</param>
         /// <param name="options">Optional settings for building the query</param>
-        void CompileTo(StringBuilder builder, IQueryBuilder<TPosition> queryBuilder, Func<object, string?>? datasetConverterer = null, ExpressionCompileOptions options = ExpressionCompileOptions.None);
+        void CompileTo(StringBuilder builder, IQueryBuilder<TPosition> queryBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Sels.Core.Testing.Models;
 using System;
 
-namespace Sels.Core.Data.MySQL.Test
+namespace Sels.SQL.QueryBuilder.MySQL.Test
 {
     public class MySql_Delete
     {

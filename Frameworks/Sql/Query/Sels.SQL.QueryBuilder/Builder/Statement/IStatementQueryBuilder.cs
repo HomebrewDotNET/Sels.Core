@@ -61,22 +61,25 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="sqlExpression">The sql expression to add</param>
         /// <param name="position">Where in the query the expression should be placed</param>
+        /// <param name="order">Optional order for <paramref name="sqlExpression"/>. A lower order means it will be compiled first. Can be used to sort custom expressions</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Expression(IExpression sqlExpression, TPosition position);
+        TDerived Expression(IExpression sqlExpression, TPosition position, int order = 0);
         /// <summary>
         /// Adds a raw sql expression to the current builder.
         /// </summary>
         /// <param name="sqlExpression">String containing the sql expression</param>
         /// <param name="position">Where in the query the expression should be placed</param>
+        /// <param name="order">Optional order for <paramref name="sqlExpression"/>. A lower order means it will be compiled first. Can be used to sort custom expressions</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Expression(string sqlExpression, TPosition position) => Expression(new RawExpression(sqlExpression.ValidateArgumentNotNullOrWhitespace(nameof(sqlExpression))), position);
+        TDerived Expression(string sqlExpression, TPosition position, int order = 0) => Expression(new RawExpression(sqlExpression.ValidateArgumentNotNullOrWhitespace(nameof(sqlExpression))), position, order);
         /// <summary>
         /// Adds a sql expression to the current builder.
         /// </summary>
         /// <param name="sqlExpression">Delegate that adds the sql expression to the provided string builder</param>
         /// <param name="position">Where in the query the expression should be placed</param>
+        /// <param name="order">Optional order for <paramref name="sqlExpression"/>. A lower order means it will be compiled first. Can be used to sort custom expressions</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Expression(Action<StringBuilder> sqlExpression, TPosition position) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))), position);
+        TDerived Expression(Action<StringBuilder> sqlExpression, TPosition position, int order = 0) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))), position, order);
         #endregion
 
         /// <summary>

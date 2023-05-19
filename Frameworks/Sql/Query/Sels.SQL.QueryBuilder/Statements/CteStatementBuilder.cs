@@ -62,7 +62,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             var isFormatted = options.HasFlag(ExpressionCompileOptions.Format);
 
             builder.Append(Sql.With).AppendSpace();
-            if (isFormatted) builder.AppendLine(); else builder.AppendSpace();
 
             // Build cte's
             _expressions.Execute((i, e) =>

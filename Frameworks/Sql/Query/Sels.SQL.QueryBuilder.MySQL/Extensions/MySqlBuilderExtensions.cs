@@ -20,7 +20,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         {
             builder.ValidateArgument(nameof(builder));
 
-            return builder.InnerExpressions.Any(x => x is ForUpdateExpression) ? builder.Instance : builder.Expression(ForUpdateExpression.Instance, SelectExpressionPositions.After);
+            return builder.InnerExpressions.Any(x => x is ForUpdateExpression) ? builder.Instance : builder.Expression(ForUpdateExpression.Instance, SelectExpressionPositions.After, 1);
         }
 
         #region OnDuplicateKeyUpdate
@@ -68,7 +68,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
                 for(int i = 0; i < insertColumns.Value.Length; i++)
                 {
-                    var column = insertColumns.Value[i];
+                    var column = insertColumns.Value[i].Expression;
                     // Skip primary key columns
                     if(primaryKeyColumnIndexes.Contains(i)) continue;
 
@@ -123,7 +123,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             // Add new expression
             else
             {
-                return builder.Expression(new LimitOffsetExpression(limitExpression, offsetExprresion), SelectExpressionPositions.After);
+                return builder.Expression(new LimitOffsetExpression(limitExpression, offsetExprresion), SelectExpressionPositions.After, 0);
             }
         }
         #endregion
@@ -164,7 +164,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             return Concat(builder, Helper.Collection.EnumerateAll(firstValue.AsArray(), secondValue.AsArray(), additionalValues));
         }
         /// <summary>
-        /// Creates a comparison where an expression is compared to the value of a sql parameter concatenated with wildcards.
+        /// Creates a comparison where an expression is compared to the value of a sql parameter concatenated with wildcards. (e.g. CONCAT('%', MyExpression, '%'))
         /// </summary>
         /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
         /// <param name="builder">The builder to add the expressions to</param>
