@@ -49,7 +49,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         public void BuildsCorrectRecursiveCteQuery()
         {
             // Arrange
-            var expected = "WITH Recursive `cte` AS ( SELECT 1 as n UNION ALL SELECT n+1 FROM `cte` WHERE n < 20) SELECT * FROM `cte`".GetWithoutWhitespace().ToLower();
+            var expected = "WITH Recursive `cte` AS ( SELECT 1 as `n` UNION ALL SELECT n+1 FROM `cte` WHERE n < 20) SELECT * FROM `cte`".GetWithoutWhitespace().ToLower();
             var builder = MySql.With()
                                 .RecursiveCte("cte").Using(
                                     MySql.Select().Value(1, "n")

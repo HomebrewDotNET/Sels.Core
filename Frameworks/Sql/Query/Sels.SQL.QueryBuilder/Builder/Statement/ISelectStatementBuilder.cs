@@ -1,4 +1,5 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+using Sels.SQL.QueryBuilder.Expressions;
 using System.Linq.Expressions;
 using SqlConstantExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ConstantExpression;
 
@@ -173,6 +174,23 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <returns>Current builder for method chaining</returns>
         TDerived Expression(object value) => Expression(new RawExpression(value.ValidateArgument(nameof(value))), SelectExpressionPositions.Column);
         #endregion
+        #region Case
+        /// <summary>
+        /// Select a value using a case expression.
+        /// </summary>
+        /// <param name="caseBuilder">Delegate that configures the case expression</param>
+        /// <param name="caseAlias">Optional alias for the value returned from the case expression</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Case(Action<ICaseExpressionRootBuilder<TEntity>> caseBuilder, string? caseAlias = null) => Case<TEntity>(caseBuilder, caseAlias);
+        /// <summary>
+        /// Select a value using a case expression.
+        /// </summary>
+        /// <typeparam name="T">The main type to create the case expression with</typeparam>
+        /// <param name="caseBuilder">Delegate that configures the case expression</param>
+        /// <param name="caseAlias">Optional alias for the value returned from the case expression</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Case<T>(Action<ICaseExpressionRootBuilder<T>> caseBuilder, string? caseAlias = null) => Expression(new AliasExpression(new WrappedExpression(new CaseExpression<T>(caseBuilder)), caseAlias), SelectExpressionPositions.Column);
+        #endregion
         #endregion
 
         #region From
@@ -298,7 +316,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="property">The expression that points to the property to use</param>
         /// <param name="columnAlias">Optional column alias</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Count<T>(Expression<Func<T, object?>> property, string? columnAlias = null) => Count<T>(typeof(T) , property, columnAlias);
+        TDerived Count<T>(Expression<Func<T, object?>> property, string? columnAlias = null) => Count<T>(typeof(T), property, columnAlias);
         /// <summary>
         /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="TEntity"/> is not null.
         /// </summary>
@@ -542,10 +560,25 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <summary>
         /// Orders query results by column where the name of the property selected by <paramref name="property"/> from <typeparamref name="TEntity"/> is used as the column name.
         /// </summary>
-        ///<param name="property">The expression that points to the property to use</param>
+        /// <param name="property">The expression that points to the property to use</param>
         /// <param name="sortOrder">In what order to sort</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived OrderBy(Expression<Func<TEntity, object?>> property, SortOrders? sortOrder = null) => OrderBy<TEntity>(typeof(TEntity), property, sortOrder);
+        /// <summary>
+        /// Order query results using a CASE WHEN expression.
+        /// </summary>
+        /// <param name="caseBuilder">Delegate that configures the case expression</param>
+        /// <param name="sortOrder">In what order to sort</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived OrderByCase(Action<ICaseExpressionRootBuilder<TEntity>> caseBuilder, SortOrders? sortOrder = null) => OrderByCase<TEntity>(caseBuilder, sortOrder);
+        /// <summary>
+        /// Order query results using a CASE WHEN expression.
+        /// </summary>
+        /// <typeparam name="T">The main type to create the case expression with</typeparam>
+        /// <param name="caseBuilder">Delegate that configures the case expression</param>
+        /// <param name="sortOrder">In what order to sort</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived OrderByCase<T>(Action<ICaseExpressionRootBuilder<T>> caseBuilder, SortOrders? sortOrder = null) => Expression(new OrderByExpression(new WrappedExpression(new CaseExpression<T>(caseBuilder)), sortOrder), SelectExpressionPositions.OrderBy);
         #endregion
 
         #region GroupBy

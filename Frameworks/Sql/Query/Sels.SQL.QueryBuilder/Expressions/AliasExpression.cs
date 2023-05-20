@@ -9,21 +9,28 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
     {
         // Properties
         /// <summary>
-        /// The column alias.
+        /// The expression containing the alias.
         /// </summary>
-        public string? Alias { get; set; }
+        public IExpression? Alias { get; set; }
         /// <summary>
-        /// The expression that add the alias to.
+        /// The expression to add the alias to.
         /// </summary>
         public IExpression Expression { get; }
 
         /// <inheritdoc cref="AliasExpression"/>
         /// <param name="expression"><inheritdoc cref="Expression"/></param>
-        /// <param name="alias"><inheritdoc cref="Alias"/></param>
-        public AliasExpression(IExpression expression, string? alias)
+        /// <param name="alias">The alias</param>
+        public AliasExpression(IExpression expression, string? alias) : this(expression, alias.HasValue() ? new ObjectExpression(null, alias) : null)
+        {
+        }
+
+        /// <inheritdoc cref="AliasExpression"/>
+        /// <param name="expression"><inheritdoc cref="Expression"/></param>
+        /// <param name="aliasExpression"><inheritdoc cref="Alias"/></param>
+        public AliasExpression(IExpression expression, IExpression? aliasExpression)
         {
             Expression = expression.ValidateArgument(nameof(expression));
-            Alias = alias;
+            Alias = aliasExpression;
         }
 
         /// <inheritdoc/>
@@ -33,7 +40,10 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             subBuilder.ValidateArgument(nameof(subBuilder));
 
             subBuilder(builder, Expression);
-            if (Alias.HasValue()) builder.Append(Sql.As).AppendSpace().Append(Alias);
+            if (Alias.HasValue()) {
+                builder.Append(Sql.As).AppendSpace();
+                subBuilder(builder, Alias);
+            } 
         }
     }
 }

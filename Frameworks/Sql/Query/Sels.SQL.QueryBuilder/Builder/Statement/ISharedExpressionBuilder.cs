@@ -1,4 +1,5 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+using Sels.SQL.QueryBuilder.Expressions;
 using System.Linq.Expressions;
 using System.Text;
 using SqlConstantExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ConstantExpression;
@@ -128,6 +129,22 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="builder">Builder for creating the sub query</param>
         /// <returns>Builder for creating more expressions</returns>
         TReturn Query(IQueryBuilder builder) => Query(x => builder.ValidateArgument(nameof(builder)).Build(x));
+        #endregion
+
+        #region Case
+        /// <summary>
+        /// Adds a case expression.
+        /// </summary>
+        /// <param name="caseBuilder">Delegate that configures the case expression</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Case(Action<ICaseExpressionRootBuilder<TEntity>> caseBuilder) => Case<TEntity>(caseBuilder);
+        /// <summary>
+        /// Adds a case expression.
+        /// </summary>
+        /// <typeparam name="T">The main type to create the case expression with</typeparam>
+        /// <param name="caseBuilder">Delegate that configures the case expression</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Case<T>(Action<ICaseExpressionRootBuilder<T>> caseBuilder) => Expression(new WrappedExpression(new CaseExpression<T>(caseBuilder)));
         #endregion
     }
 

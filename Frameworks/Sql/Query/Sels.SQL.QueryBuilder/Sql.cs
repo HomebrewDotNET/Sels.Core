@@ -247,6 +247,26 @@ namespace Sels.SQL.QueryBuilder
         /// </summary>
         public const string Not = "NOT";
         /// <summary>
+        /// Expression for starting a Sql CASE expression.
+        /// </summary>
+        public const string Case = "CASE";
+        /// <summary>
+        /// Expression for defining a condition in a CASE expression.
+        /// </summary>
+        public const string When = "WHEN";
+        /// <summary>
+        /// Expression for defining the value to return after a CASE WHEN expression.
+        /// </summary>
+        public const string Then = "THEN";
+        /// <summary>
+        /// Expression for defining the value to return when the other conditions fail in a CASE expression.
+        /// </summary>
+        public const string Else = "ELSE";
+        /// <summary>
+        /// Expression to close a statement (e.g. IF, CASE, ...)
+        /// </summary>
+        public const string End = "END";
+        /// <summary>
         /// The prefix to place in front of parameter names.
         /// </summary>
         public const char ParameterPrefix = '@';

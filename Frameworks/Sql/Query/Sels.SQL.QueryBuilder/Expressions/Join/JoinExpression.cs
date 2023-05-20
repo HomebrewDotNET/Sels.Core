@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Sels.Core.Attributes.Enumeration.Value;
 using Sels.SQL.QueryBuilder.Builder.Statement;
+using Sels.SQL.QueryBuilder.Expressions.Condition;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
 {
@@ -19,7 +20,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
     {
         // Fields
         private readonly TDerived _derived;
-        private readonly List<JoinCondition> _conditions = new List<JoinCondition>();
+        private readonly List<ConditionExpression> _conditions = new List<ConditionExpression>();
 
         // Properties
         /// <summary>
@@ -92,7 +93,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
         {
             expression.ValidateArgument(nameof(expression));
 
-            _conditions.Add(new JoinCondition() { LeftExpression = expression });
+            _conditions.Add(new ConditionExpression() { LeftExpression = expression });
 
             return this;
         }
@@ -120,34 +121,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
             _conditions.Last().LogicOperator = logicOperator;
 
             return this;
-        }
-
-        private class JoinCondition : BaseExpressionContainer
-        {
-            public IExpression LeftExpression { get; set; }
-            public IExpression OperatorExpression { get; set; }
-            public IExpression RightExpression { get; set; }
-            public LogicOperators? LogicOperator { get; set; }
-
-            public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
-            {
-                builder.ValidateArgument(nameof(builder));
-                subBuilder.ValidateArgument(nameof(subBuilder));
-
-                if (LeftExpression == null) throw new InvalidOperationException($"{nameof(LeftExpression)} is not set");
-                if (OperatorExpression == null) throw new InvalidOperationException($"{nameof(OperatorExpression)} is not set");
-                if (RightExpression == null) throw new InvalidOperationException($"{nameof(RightExpression)} is not set");
-
-                var expressions = Helper.Collection.Enumerate(LeftExpression, OperatorExpression, RightExpression).ToArray();
-
-                expressions.Execute((i, x) =>
-                {
-                    subBuilder(builder, x);
-                    if (i != expressions.Length - 1) builder.AppendSpace();
-                });
-
-                if (LogicOperator.HasValue) builder.AppendSpace().Append(LogicOperator.Value);
-            }
         }
     }
 }

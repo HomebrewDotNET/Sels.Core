@@ -57,7 +57,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
             // Arrange
             var expected = "SELECT * FROM `Person` P WHERE P.`Name` LIKE CONCAT('%', @Name, '%') LIMIT 1, 10".GetWithoutWhitespace().ToLower();
             var builder = MySql.Select<Person>().All().From()
-                                    .Where(w => 
+                                    .Where(w =>
                                         w.Column(x => x.Name).LikeParameter("Name")
                                     ).Limit(1, 10);
 
@@ -206,7 +206,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
                                 .Where(w => w.Column(x => x.Id).GreaterOrEqualTo.Value(250).And
                                              .Not().WhereGroup(g => g.Column(x => x.Name).NotEqualTo.Parameter(x => x.Name).Or
                                                                      .Not().Column(x => x.SurName).NotEqualTo.Parameter(x => x.SurName)).And
-                                             .Not().Column(x => x.ResidenceId).NotIn.Values(1,2,3,4,5));
+                                             .Not().Column(x => x.ResidenceId).NotIn.Values(1, 2, 3, 4, 5));
 
             // Act
             var query = builder.Build();
@@ -274,9 +274,66 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
             // Arrange
             var expected = "SELECT * From `Person` P WHERE P.`SurName` LIKE CONCAT('%', 'Sel', '%')".GetWithoutWhitespace().ToLower();
             var builder = MySql.Select<Person>().All().From()
-                                    .Where(w => 
+                                    .Where(w =>
                                         w.Column(x => x.SurName).Like.Concat("%", "Sel", "%")
                                     );
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithCaseWhenCondition()
+        {
+            // Arrange
+            var expected = "SELECT (CASE WHEN P.`ProductCategory` = 'NSFW' THEN 1 ELSE 0 END) AS `Hidden` FROM `Products` P".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select()
+                                   .Case(x => x.When(w => w.Column("P", "ProductCategory").EqualTo.Value("NSFW")).Then.Value(1)
+                                               .Else.Value(0),
+                                        "Hidden")
+                                .From("Products", datasetAlias: "P");
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithCaseRawCondition()
+        {
+            // Arrange
+            var expected = "SELECT (CASE WHEN P.`Id` = MAX(P.`Id`) THEN 1 ELSE 0 END) AS `IsLast` FROM `Products` P".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select()
+                                   .Case(x => x.When("P.`Id` = MAX(P.`Id`)").Then.Value(1)
+                                               .Else.Value(0),
+                                        "IsLast")
+                                .From("Products", datasetAlias: "P");
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithOrderByCase()
+        {
+            // Arrange
+            var expected = "SELECT * FROM `Products` P ORDER BY (CASE WHEN P.`ProductCategory` = 'NSFW' THEN 0 ELSE 1 END) DESC".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select().All()
+                                .From("Products", datasetAlias: "P")
+                                .OrderByCase(c => c.When(w => w.Column("P", "ProductCategory").EqualTo.Value("NSFW")).Then.Value(0)
+                                                   .Else.Value(1)
+                                            , SortOrders.Descending);
 
             // Act
             var query = builder.Build();
