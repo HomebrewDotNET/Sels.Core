@@ -114,21 +114,21 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <summary>
         /// Adds a sub query expression.
         /// </summary>
-        /// <param name="query">Delegate that returns the query string</param>
+        /// <param name="query">Delegate that adds the query to the supplied builder</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Query(Func<ExpressionCompileOptions, string> query) => Expression(new SubQueryExpression(null, query.ValidateArgument(nameof(query))));
+        TReturn Query(Action<StringBuilder, ExpressionCompileOptions> query) => Expression(new SubQueryExpression(null, query.ValidateArgument(nameof(query))));
         /// <summary>
         /// Adds a sub query expression.
         /// </summary>
         /// <param name="query">The query string</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Query(string query) => Query(x => query.ValidateArgumentNotNullOrWhitespace(nameof(query)));
+        TReturn Query(string query) => Query((b, o) => b.Append(query.ValidateArgumentNotNullOrWhitespace(nameof(query))));
         /// <summary>
         /// Adds a sub query expression.
         /// </summary>
         /// <param name="builder">Builder for creating the sub query</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Query(IQueryBuilder builder) => Query(x => builder.ValidateArgument(nameof(builder)).Build(x));
+        TReturn Query(IQueryBuilder builder) => Expression(new SubQueryExpression(null, builder.ValidateArgument(nameof(builder))));
         #endregion
 
         #region Case

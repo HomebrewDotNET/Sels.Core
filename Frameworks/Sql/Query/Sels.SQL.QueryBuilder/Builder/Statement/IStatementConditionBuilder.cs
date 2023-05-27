@@ -70,9 +70,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <summary>
         /// Condition is true when any rows are returned by the sub query.
         /// </summary>
-        /// <param name="query">Delegate that returns the query string</param>
+        /// <param name="query">Delegate that adds the query to the supplied builder</param>
         /// <returns>Builder for creating the sub query expression</returns>
-        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> ExistsIn(Func<ExpressionCompileOptions, string> query) => Expression(NullExpression.Value).CompareTo(new EnumExpression<Operators>(Operators.Exists)).Query(query.ValidateArgument(nameof(query)));
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> ExistsIn(Action<StringBuilder, ExpressionCompileOptions> query) => Expression(NullExpression.Value).CompareTo(new EnumExpression<Operators>(Operators.Exists)).Query(query.ValidateArgument(nameof(query)));
         /// <summary>
         /// Condition is true when any rows are returned by the sub query.
         /// </summary>

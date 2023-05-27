@@ -42,7 +42,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             return cteExpression;
         }
         /// <inheritdoc/>
-        public IQueryBuilder Execute(Func<ExpressionCompileOptions, string> query)
+        public IQueryBuilder Execute(Action<StringBuilder, ExpressionCompileOptions> query)
         {
             query.ValidateArgument(nameof(query));
 

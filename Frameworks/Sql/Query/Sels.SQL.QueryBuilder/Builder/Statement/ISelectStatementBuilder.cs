@@ -1,6 +1,7 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Expressions;
 using System.Linq.Expressions;
+using System.Text;
 using SqlConstantExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ConstantExpression;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
@@ -223,31 +224,31 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <summary>
         /// Defines the sub query to select from.
         /// </summary>
-        /// <param name="query">Delegate that returns the sub query</param>
+        /// <param name="query">Delegate that adds the query to the supplied builder</param>
         /// <param name="datasetAlias">Alias for the sub query dataset. If a type is used the alias defined for the type is taken</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived FromQuery(Func<ExpressionCompileOptions, string> query, object datasetAlias) => Expression(new SubQueryExpression(datasetAlias.ValidateArgument(nameof(datasetAlias)), query.ValidateArgument(nameof(query))), SelectExpressionPositions.From);
+        TDerived FromQuery(Action<StringBuilder, ExpressionCompileOptions> query, object datasetAlias) => Expression(new SubQueryExpression(datasetAlias.ValidateArgument(nameof(datasetAlias)), query.ValidateArgument(nameof(query))), SelectExpressionPositions.From);
         /// <summary>
         /// Defines the sub query to select from.
         /// </summary>
         /// <param name="query">The sub query</param>
         /// <param name="datasetAlias">Alias for the sub query dataset. If a type is used the alias defined for the type is taken</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived FromQuery(string query, object datasetAlias) => FromQuery(x => query, datasetAlias);
+        TDerived FromQuery(string query, object datasetAlias) => FromQuery((b, o) => b.Append(query.ValidateArgumentNotNullOrWhitespace(nameof(query))), datasetAlias);
         /// <summary>
         /// Defines the sub query to select from.
         /// </summary>
         /// <param name="builder">Builder that creates the sub query</param>
         /// <param name="datasetAlias">Alias for the sub query dataset. If a type is used the alias defined for the type is taken</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived FromQuery(IQueryBuilder builder, object datasetAlias) => FromQuery(x => builder.ValidateArgument(nameof(builder)).Build(x), datasetAlias);
+        TDerived FromQuery(IQueryBuilder builder, object datasetAlias) => Expression(new SubQueryExpression(datasetAlias.ValidateArgument(nameof(datasetAlias)), builder.ValidateArgument(nameof(builder))), SelectExpressionPositions.From);
         /// <summary>
         /// Defines the sub query to select from.
         /// </summary>
         /// <typeparam name="T">The type to get the dataset alias from</typeparam>
-        /// <param name="query">Delegate that returns the sub query</param>
+        /// <param name="query">Delegate that adds the query to the supplied builder</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived FromQuery<T>(Func<ExpressionCompileOptions, string> query) => FromQuery(query, typeof(T));
+        TDerived FromQuery<T>(Action<StringBuilder, ExpressionCompileOptions> query) => FromQuery(query, typeof(T));
         /// <summary>
         /// Defines the sub query to select from.
         /// </summary>
