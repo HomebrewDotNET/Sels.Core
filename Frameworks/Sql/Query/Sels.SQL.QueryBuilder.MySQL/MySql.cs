@@ -1,7 +1,7 @@
 ﻿using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
-using Sels.SQL.QueryBuilder.MySQL.Statements;
+using Sels.SQL.QueryBuilder.Statements;
 using System.Collections;
 using System.Reflection;
 using System.Text;
@@ -104,7 +104,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         public static IMultiStatementBuilder Build(ILogger? logger = null)
         {
             var compiler = new MySqlCompiler(logger);
-            return new MySqlMultiStatementBuilder(compiler);
+            return new MultiStatementBuilder(compiler);
         }
 
         /// <summary>

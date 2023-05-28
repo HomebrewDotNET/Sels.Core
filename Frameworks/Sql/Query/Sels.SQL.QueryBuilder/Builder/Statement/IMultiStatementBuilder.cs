@@ -16,9 +16,8 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// Adds <paramref name="builder"/> so it can be compiled into sql.
         /// </summary>
         /// <param name="builder">The builder to add</param>
-        /// <param name="isFullStatement">Whether or not <paramref name="builder"/> compiles to a full sql statement. Is used to handle compilation options like <see cref="ExpressionCompileOptions.AppendSeparator"/> and <see cref="ExpressionCompileOptions.Format"/></param>
         /// <returns>Current builder for method chaining</returns>
-        IMultiStatementBuilder Append(IQueryBuilder builder, bool isFullStatement = true);
+        IMultiStatementBuilder Append(IQueryBuilder builder);
         /// <summary>
         /// Adds <paramref name="expression"/> so it can be compiled into sql.
         /// </summary>

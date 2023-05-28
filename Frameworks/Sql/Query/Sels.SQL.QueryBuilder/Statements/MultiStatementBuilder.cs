@@ -1,4 +1,5 @@
 ﻿using Sels.SQL.QueryBuilder.Builder;
+using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using System;
@@ -7,36 +8,37 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.SQL.QueryBuilder.MySQL.Statements
+namespace Sels.SQL.QueryBuilder.Statements
 {
     /// <summary>
     /// Builder for creating a MySql query consisting of multiple statements and/ore expressions.
     /// </summary>
-    public class MySqlMultiStatementBuilder : IMultiStatementBuilder
+    public class MultiStatementBuilder : IMultiStatementBuilder
     {
         // Fields
-        private readonly MySqlCompiler _compiler;
+        private readonly IExpressionCompiler _compiler;
         private readonly List<(IExpression Expression, Action<StringBuilder, ExpressionCompileOptions> BuildAction, bool IsFullStatement)> _builderActions = new List<(IExpression Expression, Action<StringBuilder, ExpressionCompileOptions> BuildAction, bool IsFullStatement)>();
 
         // Properties
         /// <inheritdoc/>
         public IExpression[] InnerExpressions => _builderActions.Select(x => x.Expression).ToArray();
 
-        /// <inheritdoc cref="MySqlMultiStatementBuilder"/>
-        /// <param name="compiler">The compiler used to convert expressions and builder into MySql queries</param>
-        public MySqlMultiStatementBuilder(MySqlCompiler compiler)
+        /// <inheritdoc cref="MultiStatementBuilder"/>
+        /// <param name="compiler">The compiler used to convert expressions and builder into Sql queries</param>
+        public MultiStatementBuilder(IExpressionCompiler compiler)
         {
             _compiler = compiler.ValidateArgument(nameof(compiler));
         }
 
         /// <inheritdoc/>
-        public IMultiStatementBuilder Append(IQueryBuilder builder, bool isFullStatement = true)
+        public IMultiStatementBuilder Append(IQueryBuilder builder)
         {
             builder.ValidateArgument(nameof(builder));
 
             var expression = new SubQueryExpression(null, builder, false);
 
-            _builderActions.Add((expression, (b, o) => builder.Build(b, o), isFullStatement));
+            // Query builder should always be a full statement so default to true
+            _builderActions.Add((expression, (b, o) => builder.Build(b, o), true));
 
             return this;
         }
