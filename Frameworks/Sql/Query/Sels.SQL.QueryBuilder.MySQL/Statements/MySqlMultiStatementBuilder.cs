@@ -46,7 +46,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Statements
             expression.ValidateArgument(nameof(expression));
 
             _builderActions.Add((expression, (b, o) => {
-                _compiler.Compile(b, expression, o);
+                _compiler.Compile(b, expression, null, o);
                 if (isFullStatement && o.HasFlag(ExpressionCompileOptions.AppendSeparator)) b.Append(';');
             }, isFullStatement));
 

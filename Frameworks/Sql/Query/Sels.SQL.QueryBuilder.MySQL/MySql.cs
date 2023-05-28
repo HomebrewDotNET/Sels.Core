@@ -113,9 +113,10 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <param name="expression">The expression to compile</param>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns><paramref name="expression"/> compiled into MySql</returns>
-        public static string Compile(IExpression expression, ILogger? logger = null)
+        /// <param name="options">Optional settings for building the query</param>
+        public static string Compile(IExpression expression, ExpressionCompileOptions options = ExpressionCompileOptions.None, ILogger? logger = null)
         {
-            return new MySqlCompiler(logger).Compile(expression);
+            return new MySqlCompiler(logger).Compile(expression, null, options);
         }
         /// <summary>
         /// Compiles <paramref name="expression"/> into MySql and adds it to <paramref name="builder"/>.
@@ -123,10 +124,11 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <param name="builder">The builder to add the MySql string to</param>
         /// <param name="expression">The expression to compile</param>
         /// <param name="logger">Optional logger for tracing</param>
+        /// <param name="options">Optional settings for building the query</param>
         /// <returns><paramref name="builder"/> for method chaining</returns>
-        public static StringBuilder Compile(StringBuilder builder, IExpression expression, ILogger? logger = null)
+        public static StringBuilder Compile(StringBuilder builder, IExpression expression, ExpressionCompileOptions options = ExpressionCompileOptions.None, ILogger? logger = null)
         {
-            return new MySqlCompiler(logger).Compile(builder, expression);
+            return new MySqlCompiler(logger).Compile(builder, expression, null, options);
         }
         #endregion
 

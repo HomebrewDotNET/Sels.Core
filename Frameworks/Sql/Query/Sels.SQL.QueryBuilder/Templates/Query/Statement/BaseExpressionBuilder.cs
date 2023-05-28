@@ -22,16 +22,14 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <inheritdoc/>
         public string Build(ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
-            return _compiler.Compile(Expression, options);
+            return _compiler.Compile(Expression, null, options);
         }
         /// <inheritdoc/>
         public StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
-            return _compiler.Compile(builder, Expression, options);
+            return _compiler.Compile(builder, Expression, null, options);
         }
-        /// <inheritdoc/>
-        public string? TranslateToAlias(object alias) => alias?.ToString();
 
         /// <inheritdoc/>
         public abstract IExpression[] InnerExpressions { get; }

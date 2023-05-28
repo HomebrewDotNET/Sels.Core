@@ -103,9 +103,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         }
 
         /// <inheritdoc/>
-        public string? TranslateToAlias(object alias)
+        public string TranslateToAlias(object alias)
         {
-            return alias is Type type ? GetAlias(type) : alias?.ToString();
+            return alias is Type type ? GetAlias(type) : alias.ToString();
         }
         #endregion
 
@@ -158,7 +158,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         {
             builder.ValidateArgument(nameof(builder));
 
-            _compiler.CompileTo(builder, this, options);
+            _compiler.CompileTo(builder, this, x => x.SetDataSetConverter(TranslateToAlias), options);
             return builder;
         }
         #endregion
