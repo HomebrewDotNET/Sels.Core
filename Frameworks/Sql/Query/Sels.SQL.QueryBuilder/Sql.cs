@@ -30,6 +30,18 @@ namespace Sels.SQL.QueryBuilder
             /// The sql statement for deleting data.
             /// </summary>
             public const string Delete = "DELETE";
+            /// <summary>
+            /// The sql statement for defining a condition that must be evaluated to true before executing other statements.
+            /// </summary>
+            public const string If = "IF";
+            /// <summary>
+            /// The sql statement for defining additional conditions after <see cref="If"/>.
+            /// </summary>
+            public const string ElseIf = "ELSE IF";
+            /// <summary>
+            /// The sql satement for defining the statements to execute when the previous <see cref="If"/> and <see cref="ElseIf"/> statements evaluated to false.
+            /// </summary>
+            public const string Else = "ELSE";
         }
 
         /// <summary>

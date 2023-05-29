@@ -9,11 +9,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     {
         // Fields
         private readonly List<IExpression> _expressions = new List<IExpression>();
-        private IExpression _selectQueryExpression;
+        private IExpression _queryExpression;
 
         // Properties
         /// <inheritdoc/>
-        public override IExpression[] InnerExpressions => Helper.Collection.EnumerateAll(_expressions, _selectQueryExpression.AsArrayOrDefault()).ToArray();
+        public override IExpression[] InnerExpressions => Helper.Collection.EnumerateAll(_expressions, _queryExpression.AsArrayOrDefault()).ToArray();
         /// <inheritdoc/>
         protected override IExpression Expression => this;
 
@@ -46,7 +46,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         {
             query.ValidateArgument(nameof(query));
 
-            _selectQueryExpression = new SubQueryExpression(null, query, false);
+            _queryExpression = new SubQueryExpression(null, query, false, true);
             return this;
         }
 
@@ -58,7 +58,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             subBuilder.ValidateArgument(nameof(subBuilder));
 
             if (!_expressions.HasValue()) throw new InvalidOperationException($"No cte expressions defined");
-            if (_selectQueryExpression == null) throw new InvalidOperationException($"No select query defined");
+            if (_queryExpression == null) throw new InvalidOperationException($"No select query defined");
             var isFormatted = options.HasFlag(ExpressionCompileOptions.Format);
 
             builder.Append(Sql.With).AppendSpace();
@@ -74,9 +74,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
                 }
             });
 
-            // Build select query
+            // Build query
             if (isFormatted) builder.AppendLine(); else builder.AppendSpace();
-            subBuilder(builder, _selectQueryExpression);
+            subBuilder(builder, _queryExpression);
         }
         /// <inheritdoc/>
         public void ToSql(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)

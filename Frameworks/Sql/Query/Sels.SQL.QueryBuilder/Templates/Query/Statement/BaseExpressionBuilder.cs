@@ -22,7 +22,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <inheritdoc/>
         public string Build(ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
-            return _compiler.Compile(Expression, null, options);
+            var builder = new StringBuilder();
+            _compiler.Compile(builder, Expression, null, options);
+            return builder.ToString();
         }
         /// <inheritdoc/>
         public StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)

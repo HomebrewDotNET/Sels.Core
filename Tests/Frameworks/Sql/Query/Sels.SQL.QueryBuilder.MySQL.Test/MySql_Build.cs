@@ -13,7 +13,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         public void BuildsCorrectQueryWithMultipleStatements()
         {
             // Arrange
-            var expected = "WITH `cte` AS ( SELECT * FROM `Queue` Q ORDER BY Q.`Created` ASC LIMIT 5 FOR UPDATE;) UPDATE `Queue` Q INNER JOIN `cte` C ON Q.`Id` = C.`Id` SET Q.`ProcessId` = @ProcessId; SELECT * FROM `Queue` Q WHERE Q.`ProcessId` = @ProcessId;".GetWithoutWhitespace().ToLower();
+            var expected = "WITH `cte` AS ( SELECT * FROM `Queue` Q ORDER BY Q.`Created` ASC LIMIT 5 FOR UPDATE) UPDATE `Queue` Q INNER JOIN `cte` C ON Q.`Id` = C.`Id` SET Q.`ProcessId` = @ProcessId; SELECT * FROM `Queue` Q WHERE Q.`ProcessId` = @ProcessId;".GetWithoutWhitespace().ToLower();
             var builder = MySql.Build();
 
             // Act

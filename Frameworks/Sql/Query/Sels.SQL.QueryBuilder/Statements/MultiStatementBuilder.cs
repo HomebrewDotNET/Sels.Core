@@ -65,14 +65,15 @@ namespace Sels.SQL.QueryBuilder.Statements
         {
             builder.ValidateArgument(nameof(builder));
 
-            foreach(var (expression, action, isFullStatement) in _builderActions)
+            _builderActions.Execute((i, b) =>
             {
+                var (expression, action, isFullStatement) = b;
                 // Remove append option if the expression isn't a full statement
-                action(builder, isFullStatement ? options : options &  ~ExpressionCompileOptions.AppendSeparator);
+                action(builder, isFullStatement ? options : options & ~ExpressionCompileOptions.AppendSeparator);
 
-                // Add extra line between statements if formatting is enabled
-                if (isFullStatement && options.HasFlag(ExpressionCompileOptions.Format)) builder.AppendLine().AppendLine();
-            }
+                // Add extra line between statements
+                if (i < _builderActions.Count - 1 && isFullStatement && options.HasFlag(ExpressionCompileOptions.Format)) builder.AppendLine();
+            });
 
             return builder;
         }

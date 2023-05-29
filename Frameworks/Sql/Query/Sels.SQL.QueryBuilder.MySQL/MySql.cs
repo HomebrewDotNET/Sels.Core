@@ -9,7 +9,7 @@ using System.Text;
 namespace Sels.SQL.QueryBuilder.MySQL
 {
     /// <summary>
-    /// Contains static helper methods and constant values for MySql.
+    /// Contains static helper methods for building queries and constant values related to MySql.
     /// </summary>
     public static class MySql
     {
@@ -100,11 +100,22 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// Returns a builder for creating queries consisting of multiple statements and/or expressions.
         /// </summary>
         /// <param name="logger">Optional logger for tracing</param>
-        /// <returns></returns>
+        /// <returns>A builder for creating a multi statement SQL query</returns>
         public static IMultiStatementBuilder Build(ILogger? logger = null)
         {
             var compiler = new MySqlCompiler(logger);
             return new MultiStatementBuilder(compiler);
+        }
+
+        /// <summary>
+        /// Returns a builder for creating an IF ELSE statement.
+        /// </summary>
+        /// <param name="logger">Optional logger for tracing</param>
+        /// <returns>A builder for creating a SQL condition using IF ELSE statements</returns>
+        public static IIfConditionStatementBuilder If(ILogger? logger = null)
+        {
+            var compiler = new MySqlCompiler(logger);
+            return new IfStatementBuilder(compiler, compiler);
         }
 
         /// <summary>
@@ -157,6 +168,14 @@ namespace Sels.SQL.QueryBuilder.MySQL
             /// The keyword for a recursive cte.
             /// </summary>
             public const string Recursive = "RECURSIVE";
+            /// <summary>
+            /// The keyword placed between the condition and the statements to execute for <see cref="Sql.Statements.If"/> and <see cref="Sql.Statements.ElseIf"/>
+            /// </summary>
+            public const string Then = "THEN";
+            /// <summary>
+            /// THe keyword used to close a <see cref="Sql.Statements.If"/> statement.
+            /// </summary>
+            public const string EndIf = "END IF";
         }
     }
 }

@@ -3,19 +3,16 @@ using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
+using Sels.SQL.QueryBuilder.Expressions.Condition;
 using System.Text;
+using System.Text.Json.Nodes;
 
 namespace Sels.SQL.QueryBuilder.MySQL
 {
     /// <summary>
     /// Query compiler that converts sql expressions to the mysql syntax.
     /// </summary>
-    public class MySqlCompiler :
-        IQueryCompiler<InsertExpressionPositions>,
-        IQueryCompiler<SelectExpressionPositions>,
-        IQueryCompiler<UpdateExpressionPositions>,
-        IQueryCompiler<DeleteExpressionPositions>,
-        IExpressionCompiler
+    public class MySqlCompiler : ISqlCompiler
     {
         // Fields
         private readonly ILogger? _logger;
@@ -127,7 +124,6 @@ namespace Sels.SQL.QueryBuilder.MySQL
                     {
                         expressions.Execute((i, e) =>
                         {
-
                             CompileExpressionTo(builder, compilerOptions, options, e, true);
                             if (i < expressions.Length - 1) {
                                 var joinChars = joinValues.Select(x => x == Environment.NewLine && !isFormatted ? Constants.Strings.Space : x);
@@ -190,7 +186,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
                         builder.AppendSpace();
                     }
 
-                    //Clause
+                    // Clause
                     if (clause.HasValue())
                     {
                         builder.Append(clause).AppendSpace();
@@ -413,6 +409,85 @@ namespace Sels.SQL.QueryBuilder.MySQL
         }
         #endregion
 
+        #region If 
+        /// <inheritdoc/>
+        public void CompileTo(StringBuilder builder, IIfStatementBuilder statementBuilder, Action<ICompilerOptions>? configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        {
+            using (_logger.TraceMethod(this))
+            {
+                builder.ValidateArgument(nameof(builder));
+                statementBuilder.ValidateArgument(nameof(statementBuilder));
+                var compilerOptions = new MySqlCompilerOptions(configurator);
+
+                var expressionCount = statementBuilder.InnerExpressions.Count();
+                var isFormatted = options.HasFlag(ExpressionCompileOptions.Format);
+
+                _logger.Log($"{_name} compiling <{expressionCount}> expressions into a condition query");
+                if (expressionCount == 0) throw new NotSupportedException($"No expressions to compile into a condition query");
+
+                builder.Append(Sql.Statements.If);
+                builder.AppendSpace();
+                // Conditions for IF statement
+                var conditions = statementBuilder.ConditionExpressions;
+                conditions.Execute((i, e) =>
+                {
+                    CompileExpressionTo(builder, compilerOptions, options, e);
+                    if (i < conditions.Length - 1) builder.AppendSpace().Append(Sql.LogicOperators.And).AppendSpace();
+                });
+                builder.AppendSpace().Append(MySql.Keywords.Then);
+
+                if (isFormatted) builder.AppendLine();
+                else builder.AppendSpace();
+
+                // Body for IF statement
+                statementBuilder.BodyBuilder.Build(builder, options);
+                if (isFormatted) builder.AppendLine().AppendLine();
+                else builder.AppendSpace();
+
+                // ELSE IF statements
+                if (statementBuilder.ElseIfStatements.HasValue())
+                {
+                    foreach(var (elseIfConditions, elseIfBodyBuilder) in statementBuilder.ElseIfStatements)
+                    {
+                        builder.Append(Sql.Statements.ElseIf);
+                        builder.AppendSpace();
+
+                        // Conditions for ELSE IF statement
+                        elseIfConditions.Execute((i, e) =>
+                        {
+                            CompileExpressionTo(builder, compilerOptions, options, e);
+                            if (i < elseIfConditions.Length - 1) builder.AppendSpace().Append(Sql.LogicOperators.And).AppendSpace();
+                        });
+                        builder.AppendSpace().Append(MySql.Keywords.Then);
+
+                        if (isFormatted) builder.AppendLine();
+                        else builder.AppendSpace();
+
+                        // Body for ELSE IF statement
+                        elseIfBodyBuilder.Build(builder, options);
+                        if (isFormatted) builder.AppendLine().AppendLine();
+                        else builder.AppendSpace();
+                    }
+                }
+
+                // Body for ELSE statement
+                if (statementBuilder.ElseBodyBuilder.InnerExpressions.HasValue())
+                {
+                    builder.Append(Sql.Statements.Else);
+                    if (isFormatted) builder.AppendLine();
+                    else builder.AppendSpace();
+
+                    statementBuilder.ElseBodyBuilder.Build(builder, options);
+                    if (isFormatted) builder.AppendLine().AppendLine();
+                    else builder.AppendSpace();
+                }
+
+                builder.Append(MySql.Keywords.EndIf);
+                if (options.HasFlag(ExpressionCompileOptions.AppendSeparator)) builder.Append(';');
+            }
+        }
+        #endregion
+
         /// <inheritdoc/>
         public string Compile(IExpression expression, Action<ICompilerOptions>? configurator, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
@@ -494,6 +569,8 @@ namespace Sels.SQL.QueryBuilder.MySQL
             /// </summary>
             public Func<object, string?> DataSetConverter { get; private set; }
 
+            /// <inheritdoc cref="MySqlCompilerOptions"/>
+            /// <param name="configurator">Optional delegate for configuring the current instance</param>
             public MySqlCompilerOptions(Action<ICompilerOptions>? configurator)
             {
                 // Set defaults

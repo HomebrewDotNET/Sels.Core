@@ -8,7 +8,7 @@ using System.Text;
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
     /// <summary>
-    /// Template for creating a <see cref="IQueryBuilder"/>.
+    /// Template for creating a <see cref="IQueryBuilder{TPosition}"/>.
     /// </summary>
     /// <typeparam name="TEntity">The main entity to create the query for</typeparam>
     /// <typeparam name="TPosition">Type that defines where in a query expressions should be located</typeparam>

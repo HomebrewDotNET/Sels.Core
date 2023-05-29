@@ -29,7 +29,12 @@ namespace Sels.SQL.QueryBuilder.Builder
         /// </summary>
         /// <param name="options">Optional settings for building the query</param>
         /// <returns>The query string</returns>
-        string Build(ExpressionCompileOptions options = ExpressionCompileOptions.None);
+        string Build(ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        {
+            var builder = new StringBuilder();
+            Build(builder, options);
+            return builder.ToString();
+        }
         /// <summary>
         /// Builds the query string using the current builder and appends it to <paramref name="builder"/>.
         /// </summary>
