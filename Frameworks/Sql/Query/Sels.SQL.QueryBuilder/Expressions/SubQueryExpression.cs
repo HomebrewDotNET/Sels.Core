@@ -19,7 +19,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// <param name="subQueryBuilder">Delegate that adds the query to the supplied builder</param>
         /// <param name="wrap">If the query needs to be wrapped with ()</param>
         /// <param name="canSeparatorBeAppended">If separator can be appended to the sub query. In most cases it is not allowed</param>
-        public SubQueryExpression(object? dataset, Action<StringBuilder, ExpressionCompileOptions> subQueryBuilder, bool wrap = true, bool canSeparatorBeAppended = false) : base(dataset)
+        public SubQueryExpression(object dataset, Action<StringBuilder, ExpressionCompileOptions> subQueryBuilder, bool wrap = true, bool canSeparatorBeAppended = false) : base(dataset)
         {
             _subQueryBuilder = subQueryBuilder.ValidateArgument(nameof(subQueryBuilder));
             _wrap = wrap;
@@ -30,13 +30,13 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// <param name="queryBuilder">Builder that creates the query string</param>
         /// <param name="wrap">If the query needs to be wrapped with ()</param>
         /// <param name="canSeparatorBeAppended">If separator can be appended to the sub query. In most cases it is not allowed</param>
-        public SubQueryExpression(object? dataset, IQueryBuilder queryBuilder, bool wrap = true, bool canSeparatorBeAppended = false) : this(dataset, (b, o) => queryBuilder.Build(b, o), wrap, canSeparatorBeAppended)
+        public SubQueryExpression(object dataset, IQueryBuilder queryBuilder, bool wrap = true, bool canSeparatorBeAppended = false) : this(dataset, (b, o) => queryBuilder.Build(b, o), wrap, canSeparatorBeAppended)
         {
             queryBuilder.ValidateArgument(nameof(queryBuilder));
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             datasetConverterer.ValidateArgument(nameof(datasetConverterer));

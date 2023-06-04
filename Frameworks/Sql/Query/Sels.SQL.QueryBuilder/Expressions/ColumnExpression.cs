@@ -13,12 +13,12 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// <param name="dataSet"><inheritdoc cref="IDataSetExpression.DataSet"/></param>
         /// <param name="column"><inheritdoc cref="IObjectExpression.Object"/></param>
         /// <param name="alias"><inheritdoc cref="IColumnExpression.Alias"/></param>
-        public ColumnExpression(object? dataSet, string column, string? alias = null) : base(dataSet, column, alias)
+        public ColumnExpression(object dataSet, string column, string alias = null) : base(dataSet, column, alias)
         {
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? columnConverter, bool includeAlias = true, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, Func<string, string> columnConverter, bool includeAlias = true, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             datasetConverterer.ValidateArgument(nameof(datasetConverterer));

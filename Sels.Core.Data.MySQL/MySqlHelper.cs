@@ -243,7 +243,7 @@ namespace Sels.Core.Data.MySQL
                     var queryBuilder = new StringBuilder();
                     // Update record
                     MySql.Update<DatabaseLock>().Table()
-                                        .Set(x => x.LockedBy).To.Null()
+                                        .Set.Column(x => x.LockedBy).To.Null()
                                         .Where(x =>
                                             x.Column(c => c.Name).EqualTo.Parameter(p => p.Name).And
                                             .Column(c => c.LockedBy).EqualTo.Parameter(p => p.LockedBy)

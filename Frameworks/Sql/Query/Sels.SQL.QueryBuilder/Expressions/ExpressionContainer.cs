@@ -24,7 +24,7 @@ namespace Sels.SQL.QueryBuilder.Expressions
         /// <summary>
         /// The value used to join together <see cref="InnerExpressions"/>.
         /// </summary>
-        public object? JoinValue { get; set; } = Constants.Strings.Space;
+        public object JoinValue { get; set; } = Constants.Strings.Space;
 
         /// <inheritdoc/>
         public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)

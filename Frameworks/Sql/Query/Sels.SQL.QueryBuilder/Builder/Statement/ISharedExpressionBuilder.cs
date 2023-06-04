@@ -45,7 +45,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Optional dataset alias to select <paramref name="column"/> from</param>
         /// <param name="column">The column to create the condition for</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Column(object? dataset, string column) => Expression(new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column))));
+        TReturn Column(object dataset, string column) => Expression(new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column))));
         /// <summary>
         /// Adds a column expression.
         /// </summary>
@@ -59,27 +59,27 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Column<T>(object? dataset, Expression<Func<T, object?>> property) => Column(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        TReturn Column<T>(object dataset, Expression<Func<T, object>> property) => Column(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Adds a column expression where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Column<T>(Expression<Func<T, object?>> property) => Column<T>(typeof(T), property);
+        TReturn Column<T>(Expression<Func<T, object>> property) => Column<T>(typeof(T), property);
         /// <summary>
         /// Adds a column expression where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Column(Expression<Func<TEntity, object?>> property) => Column<TEntity>(property);
+        TReturn Column(Expression<Func<TEntity, object>> property) => Column<TEntity>(property);
         /// <summary>
         /// Adds a column expression where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Column(object? dataset, Expression<Func<TEntity, object?>> property) => Column<TEntity>(dataset, property);
+        TReturn Column(object dataset, Expression<Func<TEntity, object>> property) => Column<TEntity>(dataset, property);
         #endregion
 
         #region Value
@@ -104,13 +104,35 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Parameter<T>(Expression<Func<T, object?>> property) => Parameter(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        TReturn Parameter<T>(Expression<Func<T, object>> property) => Parameter(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Adds a sql parameter expression where the parameter name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Parameter(Expression<Func<TEntity, object?>> property) => Parameter<TEntity>(property);
+        TReturn Parameter(Expression<Func<TEntity, object>> property) => Parameter<TEntity>(property);
+        #endregion
+
+        #region Variable
+        /// <summary>
+        /// Adds a sql variable expression.
+        /// </summary>
+        /// <param name="variable">The name of the sql variable</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Variable(string variable) => Expression(new VariableExpression(variable.ValidateArgumentNotNullOrWhitespace(nameof(variable))));
+        /// <summary>
+        /// Adds a sql variable expression where the variable name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type to select the property from</typeparam>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Variable<T>(Expression<Func<T, object>> property) => Variable(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        /// <summary>
+        /// Adds a sql variable expression where the variable name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Variable(Expression<Func<TEntity, object>> property) => Variable<TEntity>(property);
         #endregion
 
         #region Query

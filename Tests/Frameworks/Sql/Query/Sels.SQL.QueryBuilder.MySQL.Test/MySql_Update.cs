@@ -11,7 +11,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
             // Arrange
             var expected = "UPDATE `Person` Set `Name` = 'Jens' WHERE `Name` = 'jens'".GetWithoutWhitespace().ToLower();
             var builder = MySql.Update().Table("Person")
-                                    .Set("Name").To.Value("Jens")
+                                    .Set.Column("Name").To.Value("Jens")
                                     .Where(x => x.Column("Name").EqualTo.Value("jens"));
 
             // Act
@@ -29,8 +29,8 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
             var expected = "UPDATE `Person` P INNER JOIN `Residence` R ON P.`ResidenceId` = R.`Id` SET P.`BirthDay` = GETDATE(), R.`HouseNumber` = 78 WHERE R.`Id` = 1998".GetWithoutWhitespace().ToLower();
             var builder = MySql.Update<Person>().Table()
                                     .InnerJoin().Table<Residence>().On(x => x.Column(c => c.ResidenceId).EqualTo.Column<Residence>(c => c.Id))
-                                    .Set(x => x.BirthDay).To.Expression("GETDATE()")
-                                    .Set<Residence>(x => x.HouseNumber).To.Value(78)
+                                    .Set.Column(x => x.BirthDay).To.Expression("GETDATE()")
+                                    .Set.Column<Residence>(x => x.HouseNumber).To.Value(78)
                                     .Where(x => x.Column<Residence>(c => c.Id).EqualTo.Value(1998));
 
             // Act
@@ -91,7 +91,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
             // Arrange
             var expected = "UPDATE `Person` P SET P.`Name` = 'Jens' WHERE EXISTS (SELECT * FROM `Residence` R WHERE R.`PostalCode` BETWEEN 2500 AND 2599 AND R.`Id` > P.`ResidenceId`)".GetWithoutWhitespace().ToLower();
             var builder = MySql.Update<Person>().Table()
-                                    .Set(x => x.Name).To.Value("Jens")
+                                    .Set.Column(x => x.Name).To.Value("Jens")
                                     .Where(x => 
                                             x.ExistsIn(
                                                 MySql.Select<Residence>().All().From()

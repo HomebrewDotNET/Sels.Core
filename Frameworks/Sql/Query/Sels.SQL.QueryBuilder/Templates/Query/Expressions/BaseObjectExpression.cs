@@ -20,7 +20,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             Object = objectName.ValidateArgumentNotNullOrWhitespace(nameof(objectName));
         }
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             datasetConverterer.ValidateArgument(nameof(datasetConverterer));

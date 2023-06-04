@@ -10,18 +10,18 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
     public abstract class BaseColumnExpression : BaseObjectExpression, IColumnExpression
     {
         /// <inheritdoc/>
-        public string? Alias { get; }
+        public string Alias { get; }
 
         /// <inheritdoc cref="BaseColumnExpression"/>
         /// <param name="dataset"><inheritdoc cref="IDataSetExpression.DataSet"/></param>
         /// <param name="objectName"><inheritdoc cref="IObjectExpression.Object"/></param>
         /// <param name="alias"><inheritdoc cref="Alias"/></param>
-        public BaseColumnExpression(object? dataset, string objectName, string? alias = null) : base(dataset, objectName)
+        public BaseColumnExpression(object dataset, string objectName, string alias = null) : base(dataset, objectName)
         {
             Alias = alias;
         }
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? objectConverter, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, Func<string, string> objectConverter, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             datasetConverterer.ValidateArgument(nameof(datasetConverterer));
@@ -32,6 +32,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
 
         // Abstractions
         /// <inheritdoc/>
-        public abstract void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? objectConverter, bool includeAlias = true, ExpressionCompileOptions options = ExpressionCompileOptions.None);
+        public abstract void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, Func<string, string> objectConverter, bool includeAlias = true, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }

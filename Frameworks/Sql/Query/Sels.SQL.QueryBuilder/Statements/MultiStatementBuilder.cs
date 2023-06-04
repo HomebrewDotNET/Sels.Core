@@ -81,6 +81,6 @@ namespace Sels.SQL.QueryBuilder.Statements
         }
 
         /// <inheritdoc/>
-        public string? TranslateToAlias(object alias) => alias?.ToString();
+        public string TranslateToAlias(object alias) => alias?.ToString();
     }
 }

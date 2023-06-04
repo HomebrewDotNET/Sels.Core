@@ -30,7 +30,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// <param name="database"><inheritdoc cref="Database"/></param>
         /// <param name="schema"><inheritdoc cref="Schema"/></param>
         /// <param name="table"><inheritdoc cref="Table"/></param>
-        public TableExpression(string? database, string? schema, string table, object? dataset)
+        public TableExpression(string database, string schema, string table, object dataset)
         {
             Table = new ObjectExpression(null, table.ValidateArgumentNotNullOrWhitespace(nameof(table)));
             DataSet = dataset != null ? new DataSetExpression(dataset) : null;

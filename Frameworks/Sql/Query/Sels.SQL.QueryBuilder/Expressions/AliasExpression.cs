@@ -22,7 +22,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// <inheritdoc cref="AliasExpression"/>
         /// <param name="expression"><inheritdoc cref="Expression"/></param>
         /// <param name="alias">The alias</param>
-        public AliasExpression(IExpression expression, string? alias) : this(expression, alias.HasValue() ? new ObjectExpression(null, alias) : null)
+        public AliasExpression(IExpression expression, string alias) : this(expression, alias.HasValue() ? new ObjectExpression(null, alias) : null)
         {
         }
 

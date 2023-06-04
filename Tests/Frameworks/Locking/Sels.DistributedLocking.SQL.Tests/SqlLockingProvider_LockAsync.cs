@@ -88,6 +88,7 @@ namespace Sels.DistributedLocking.Memory.Test
         }
 
         [Test]
+        [MaxTime(2000)]
         public async Task LockRequestIsProperlyTimedOut()
         {
             // Arrange
@@ -123,16 +124,13 @@ namespace Sels.DistributedLocking.Memory.Test
 
             // Act
             var lockResultTask = provider.LockAsync(resource, requester, timeout: TimeSpan.FromMilliseconds(0));
-            await Helper.Async.Sleep(250);
-            if (lockResultTask.IsCompleted)
+            try
             {
-                try
-                {
-                    await lockResultTask;
-                }
-                catch(Exception ex) {
-                    exception = ex;
-                }
+                await lockResultTask;
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
             }
 
             // Assert

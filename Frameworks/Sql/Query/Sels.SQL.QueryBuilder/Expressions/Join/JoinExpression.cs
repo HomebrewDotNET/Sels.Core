@@ -75,7 +75,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
         }
 
         /// <inheritdoc/>
-        public IStatementJoinOnBuilder<TEntity, TDerived> Table(string table, object? datasetAlias = null, string? database = null, string? schema = null)
+        public IStatementJoinOnBuilder<TEntity, TDerived> Table(string table, object datasetAlias = null, string database = null, string schema = null)
         {
             table.ValidateArgument(nameof(table));
 

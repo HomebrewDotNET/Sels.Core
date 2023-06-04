@@ -35,7 +35,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
 
         #region Expressions        
         /// <inheritdoc/>
-        public ISelectStatementBuilder<TEntity> Columns(object? dataset, IEnumerable<string> columns)
+        public ISelectStatementBuilder<TEntity> Columns(object dataset, IEnumerable<string> columns)
         {
             columns.ValidateArgumentNotNullOrEmpty(nameof(columns));
 
@@ -43,7 +43,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             return this;
         }
         /// <inheritdoc/>
-        public ISelectStatementBuilder<TEntity> ColumnsOf<T>(object? dataset, params string[] excludedProperties)
+        public ISelectStatementBuilder<TEntity> ColumnsOf<T>(object dataset, params string[] excludedProperties)
         {
             foreach(var property in GetColumnPropertiesFrom<T>(excludedProperties))
             {

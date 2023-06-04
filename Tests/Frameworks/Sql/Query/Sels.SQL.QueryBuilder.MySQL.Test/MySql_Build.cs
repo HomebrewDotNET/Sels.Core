@@ -24,7 +24,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
                                                         .Limit(5))
                                          .Execute(MySql.Update().Table("Queue", datasetAlias: "Q")
                                                                 .InnerJoin().Table("cte", datasetAlias: "C").On(x => x.Column("Q", "Id").EqualTo.Column("C", "Id"))
-                                                                .Set("Q", "ProcessId").To.Parameter("ProcessId"));
+                                                                .Set.Column("Q", "ProcessId").To.Parameter("ProcessId"));
             var selectBuilder = MySql.Select().All()
                                      .From("Queue", datasetAlias: "Q")
                                      .Where(x => x.Column("Q", "ProcessId").EqualTo.Parameter("ProcessId"));

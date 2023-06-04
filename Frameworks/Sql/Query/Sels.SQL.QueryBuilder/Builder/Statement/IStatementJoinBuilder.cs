@@ -51,7 +51,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="database">Optional database to select the table from</param>
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <returns>Current builder for method chaining</returns>
-        IStatementJoinOnBuilder<TEntity, TDerived> Table(string table, object? datasetAlias = null, string? database = null, string? schema = null);
+        IStatementJoinOnBuilder<TEntity, TDerived> Table(string table, object datasetAlias = null, string database = null, string schema = null);
         /// <summary>
         /// Defines the table to join by using the name of <typeparamref name="T"/>.
         /// </summary>
@@ -60,7 +60,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="database">Optional database to select the table from</param>
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <returns>Current builder for method chaining</returns>
-        IStatementJoinOnBuilder<TEntity, TDerived> Table<T>(object? datasetAlias = null, string? database = null, string? schema = null) => Table(typeof(T).Name, datasetAlias ?? typeof(T), database, schema);
+        IStatementJoinOnBuilder<TEntity, TDerived> Table<T>(object datasetAlias = null, string database = null, string schema = null) => Table(typeof(T).Name, datasetAlias ?? typeof(T), database, schema);
         /// <summary>
         /// Defines the table to join by using the name of <typeparamref name="TEntity"/>.
         /// </summary>
@@ -68,7 +68,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="database">Optional database to select the table from</param>
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <returns>Current builder for method chaining</returns>
-        IStatementJoinOnBuilder<TEntity, TDerived> Table(object? datasetAlias = null, string? database = null, string? schema = null) => Table<TEntity>(datasetAlias, database, schema);
+        IStatementJoinOnBuilder<TEntity, TDerived> Table(object datasetAlias = null, string database = null, string schema = null) => Table<TEntity>(datasetAlias, database, schema);
     }
     /// <summary>
     /// Builder for defining the join condition.
