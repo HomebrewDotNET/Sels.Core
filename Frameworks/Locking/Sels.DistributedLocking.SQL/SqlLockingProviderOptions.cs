@@ -40,7 +40,7 @@ namespace Sels.DistributedLocking.SQL
         public int ExpiryOffset { get; set; } = 1000;
 
         /// <summary>
-        /// How often to check pending requests in milliseconds if they were assigned. Each resource will have it's own poller. Requests are also timed out by the same poller so setting it too high will mean requests will get timed out way past the provided amount.
+        /// How often to check pending requests in milliseconds if they were assigned. Each resource will have it's own poller. Requests are also timed out by the same poller so setting it too high will mean requests will get timed out way past the provided timeout.
         /// </summary>
         public int RequestPollingRate { get; set; } = 1000;
 
@@ -58,7 +58,6 @@ namespace Sels.DistributedLocking.SQL
                         break;
                     case SqlLockCleanupMethod.Always:
                         _cleanupAmount = 0;
-                        break;
                         break;
                     default:
                         throw new NotSupportedException($"Cleanup method <{_cleanupMethod}> is not supported");

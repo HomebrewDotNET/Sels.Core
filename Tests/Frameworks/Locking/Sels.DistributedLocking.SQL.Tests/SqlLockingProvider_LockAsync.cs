@@ -123,7 +123,7 @@ namespace Sels.DistributedLocking.Memory.Test
 
             // Act
             var lockResultTask = provider.LockAsync(resource, requester, timeout: TimeSpan.FromMilliseconds(0));
-            await Helper.Async.Sleep(100 * 2);
+            await Helper.Async.Sleep(250);
             if (lockResultTask.IsCompleted)
             {
                 try

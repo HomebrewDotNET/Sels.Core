@@ -58,7 +58,7 @@ namespace Sels.DistributedLocking.Memory.Test
             var options = TestHelper.GetProviderOptionsMock();
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), "Resource", true, false, default)).Returns(Task.FromResult<SqlLock>(null));
+                x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), "Resource", true, false, default)).Returns(Task.FromResult<SqlLock?>(null));
             });
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
 

@@ -1,6 +1,15 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.Extensions;
+using Sels.SQL.QueryBuilder.MySQL.Builder.Statement;
+using Sels.SQL.QueryBuilder.MySQL.Expressions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Sels.Core.Extensions.Linq;
+using Sels.Core;
 
 namespace Sels.SQL.QueryBuilder.MySQL
 {
@@ -57,7 +66,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <param name="builder">The builder to add the expression to</param>
         /// <param name="primaryKeyColumnIndexes">The indexes of the columns containing the primary keys, they will be omitted from the update expressions.</param>
         /// <returns>Current builder for method chaining</returns>
-        public static TDerived OnDuplicateKeyUpdate<TEntity, TDerived>(this IInsertStatementBuilder<TEntity, TDerived> builder, params int[]? primaryKeyColumnIndexes)
+        public static TDerived OnDuplicateKeyUpdate<TEntity, TDerived>(this IInsertStatementBuilder<TEntity, TDerived> builder, params int[] primaryKeyColumnIndexes)
         {
             builder.ValidateArgument(nameof(builder));
 
@@ -103,7 +112,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <param name="offset">Optional offset containing the amount of rows to skip</param>
         /// <param name="limit">Object containing the amount of rows to limit by</param>
         /// <returns>Current builder for method chaining</returns>
-        public static TDerived Limit<TEntity, TDerived>(this ISelectStatementBuilder<TEntity, TDerived> builder, object? offset, object limit)
+        public static TDerived Limit<TEntity, TDerived>(this ISelectStatementBuilder<TEntity, TDerived> builder, object offset, object limit)
         {
             builder.ValidateArgument(nameof(builder));
             limit.ValidateArgument(nameof(limit));

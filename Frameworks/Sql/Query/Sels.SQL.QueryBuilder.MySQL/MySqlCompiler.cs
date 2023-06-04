@@ -1,11 +1,20 @@
 ﻿using Microsoft.Extensions.Logging;
+using Sels.Core;
+using Sels.Core.Extensions;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.Expressions.Condition;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Text.Json.Nodes;
+using Sels.Core.Extensions.Logging;
+using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Linq;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.SQL.QueryBuilder.MySQL
 {
@@ -15,23 +24,23 @@ namespace Sels.SQL.QueryBuilder.MySQL
     public class MySqlCompiler : ISqlCompiler
     {
         // Fields
-        private readonly ILogger? _logger;
+        private readonly ILogger _logger;
         private readonly string _name = nameof(MySqlCompiler);
 
         // Properties
         /// <summary>
         /// Global logger that can be set that will be used as the default logger when none is provided.
         /// </summary>
-        public static ILogger? DefaultLogger { get; set; }
+        public static ILogger DefaultLogger { get; set; }
 
         #region Configs
-        private static readonly IReadOnlyDictionary<InsertExpressionPositions, (bool IsNewLine, string? Prefix, string[]? ExpressionJoinValues, string? Suffix, bool IsSingleExpression)> _insertPositionConfigs = new Dictionary<InsertExpressionPositions, (bool IsNewLine, string? Prefix, string[]? ExpressionJoinValues, string? Suffix, bool IsSingleExpression)>()
+        private static readonly IReadOnlyDictionary<InsertExpressionPositions, (bool IsNewLine, string Prefix, string[] ExpressionJoinValues, string Suffix, bool IsSingleExpression)> _insertPositionConfigs = new Dictionary<InsertExpressionPositions, (bool IsNewLine, string Prefix, string[] ExpressionJoinValues, string Suffix, bool IsSingleExpression)>()
         {
             { InsertExpressionPositions.Into, (false, Sql.Clauses.Into, null, null, true) },
             { InsertExpressionPositions.Columns, (false, "(", new string[] {  Constants.Strings.Comma}, ")", false) },
             { InsertExpressionPositions.Values, (true, Sql.Clauses.Values + Constants.Strings.Space, new string[]{ Constants.Strings.Comma , Environment.NewLine}, null, false) }
         };
-        private static readonly IReadOnlyDictionary<SelectExpressionPositions, (bool IsNewLine, string? Clause, string? ExpressionJoinValue, bool IsSingleExpression)> _selectPositionConfigs = new Dictionary<SelectExpressionPositions, (bool IsNewLine, string? Clause, string? ExpressionJoinValue, bool IsSingleExpression)>()
+        private static readonly IReadOnlyDictionary<SelectExpressionPositions, (bool IsNewLine, string Clause, string ExpressionJoinValue, bool IsSingleExpression)> _selectPositionConfigs = new Dictionary<SelectExpressionPositions, (bool IsNewLine, string Clause, string ExpressionJoinValue, bool IsSingleExpression)>()
         {
             { SelectExpressionPositions.Column, (false, null, Constants.Strings.Comma, false) },
             { SelectExpressionPositions.From, (true, Sql.Clauses.From, null, true) },
@@ -41,14 +50,14 @@ namespace Sels.SQL.QueryBuilder.MySQL
             { SelectExpressionPositions.GroupBy, (true, Sql.Clauses.GroupBy, Constants.Strings.Comma, false) },
             { SelectExpressionPositions.After, (true, null, Environment.NewLine, false) },
         };
-        private static readonly IReadOnlyDictionary<UpdateExpressionPositions, (bool IsNewLine, string? Prefix, string[]? ExpressionJoinValues, string? Suffix, bool IsSingleExpression)> _updatePositionConfigs = new Dictionary<UpdateExpressionPositions, (bool IsNewLine, string? Prefix, string[]? ExpressionJoinValues, string? Suffix, bool IsSingleExpression)>()
+        private static readonly IReadOnlyDictionary<UpdateExpressionPositions, (bool IsNewLine, string Prefix, string[] ExpressionJoinValues, string Suffix, bool IsSingleExpression)> _updatePositionConfigs = new Dictionary<UpdateExpressionPositions, (bool IsNewLine, string Prefix, string[] ExpressionJoinValues, string Suffix, bool IsSingleExpression)>()
         {
             { UpdateExpressionPositions.Table, (false, null, new string[] {  Constants.Strings.Comma}, null, false) },
             { UpdateExpressionPositions.Join, (true, null, new string[] {  Environment.NewLine}, null, false) },
             { UpdateExpressionPositions.Set, (true, Sql.Clauses.Set + Constants.Strings.Space, new string[] {  Environment.NewLine , Constants.Strings.Comma }, null, false) },
             { UpdateExpressionPositions.Where, (true, Sql.Clauses.Where + Constants.Strings.Space, new string[] { Constants.Strings.Comma, Sql.LogicOperators.And }, null, false) }
         };
-        private static readonly IReadOnlyDictionary<DeleteExpressionPositions, (bool IsNewLine, string? Clause, string? ExpressionJoinValue, bool IsSingleExpression)> _deletePositionConfigs = new Dictionary<DeleteExpressionPositions, (bool IsNewLine, string? Clause, string? ExpressionJoinValue, bool IsSingleExpression)>()
+        private static readonly IReadOnlyDictionary<DeleteExpressionPositions, (bool IsNewLine, string Clause, string ExpressionJoinValue, bool IsSingleExpression)> _deletePositionConfigs = new Dictionary<DeleteExpressionPositions, (bool IsNewLine, string Clause, string ExpressionJoinValue, bool IsSingleExpression)>()
         {
             { DeleteExpressionPositions.From, (true, Sql.Clauses.From, Constants.Strings.Comma, false) },
             { DeleteExpressionPositions.Join, (true, null, Environment.NewLine, false) },
@@ -59,14 +68,14 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
         /// <inheritdoc cref="MySqlCompiler"/>
         /// <param name="logger">Optional logger for tracing</param>
-        public MySqlCompiler(ILogger? logger = null)
+        public MySqlCompiler(ILogger logger = null)
         {
             _logger = logger ?? DefaultLogger;
         }
 
         #region Insert
         /// <inheritdoc/>
-        void IQueryCompiler<InsertExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<InsertExpressionPositions> queryBuilder, Action<ICompilerOptions>? configurator, ExpressionCompileOptions options)
+        void IQueryCompiler<InsertExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<InsertExpressionPositions> queryBuilder, Action<ICompilerOptions> configurator, ExpressionCompileOptions options)
         {
             using (_logger.TraceMethod(this))
             {
@@ -145,7 +154,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
         #region Select
         /// <inheritdoc/>
-        void IQueryCompiler<SelectExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<SelectExpressionPositions> queryBuilder, Action<ICompilerOptions>? configurator, ExpressionCompileOptions options)
+        void IQueryCompiler<SelectExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<SelectExpressionPositions> queryBuilder, Action<ICompilerOptions> configurator, ExpressionCompileOptions options)
         {
             using (_logger.TraceMethod(this))
             {
@@ -218,7 +227,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
         #region Update
         /// <inheritdoc/>
-        public void CompileTo(StringBuilder builder, IQueryBuilder<UpdateExpressionPositions> queryBuilder, Action<ICompilerOptions>? configurator, ExpressionCompileOptions options)
+        public void CompileTo(StringBuilder builder, IQueryBuilder<UpdateExpressionPositions> queryBuilder, Action<ICompilerOptions> configurator, ExpressionCompileOptions options)
         {
             using (_logger.TraceMethod(this))
             {
@@ -300,7 +309,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
         #region Delete
         /// <inheritdoc/>
-        void IQueryCompiler<DeleteExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<DeleteExpressionPositions> queryBuilder, Action<ICompilerOptions>? configurator, ExpressionCompileOptions options)
+        void IQueryCompiler<DeleteExpressionPositions>.CompileTo(StringBuilder builder, IQueryBuilder<DeleteExpressionPositions> queryBuilder, Action<ICompilerOptions> configurator, ExpressionCompileOptions options)
         {
             using (_logger.TraceMethod(this))
             {
@@ -411,7 +420,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
         #region If 
         /// <inheritdoc/>
-        public void CompileTo(StringBuilder builder, IIfStatementBuilder statementBuilder, Action<ICompilerOptions>? configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public void CompileTo(StringBuilder builder, IIfStatementBuilder statementBuilder, Action<ICompilerOptions> configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             using (_logger.TraceMethod(this))
             {
@@ -489,7 +498,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         #endregion
 
         /// <inheritdoc/>
-        public string Compile(IExpression expression, Action<ICompilerOptions>? configurator, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public string Compile(IExpression expression, Action<ICompilerOptions> configurator, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             using (_logger.TraceMethod(this))
             {
@@ -499,7 +508,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             }                 
         }
         /// <inheritdoc/>
-        public StringBuilder Compile(StringBuilder builder, IExpression expression, Action<ICompilerOptions>? configurator, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public StringBuilder Compile(StringBuilder builder, IExpression expression, Action<ICompilerOptions> configurator, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             using (_logger.TraceMethod(this))
             {
@@ -567,11 +576,11 @@ namespace Sels.SQL.QueryBuilder.MySQL
             /// <summary>
             /// Delegate that converts an object that represents a dataset into it's sql equivalent.
             /// </summary>
-            public Func<object, string?> DataSetConverter { get; private set; }
+            public Func<object, string> DataSetConverter { get; private set; }
 
             /// <inheritdoc cref="MySqlCompilerOptions"/>
             /// <param name="configurator">Optional delegate for configuring the current instance</param>
-            public MySqlCompilerOptions(Action<ICompilerOptions>? configurator)
+            public MySqlCompilerOptions(Action<ICompilerOptions> configurator)
             {
                 // Set defaults
                 SetDataSetConverter(x => x.ToString());

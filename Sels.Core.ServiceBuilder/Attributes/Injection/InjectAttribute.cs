@@ -78,7 +78,7 @@ namespace Sels.Core.ServiceBuilder.Injection
         /// <param name="serviceType">The type of the service to resolve</param>
         /// <param name="instance">The instance to set the service on</param>
         /// <returns>The created service or null if the service couldn't be created</returns>
-        protected virtual object? CreateService(IServiceProvider provider, Type serviceType, MemberInfo member, object instance)
+        protected virtual object CreateService(IServiceProvider provider, Type serviceType, MemberInfo member, object instance)
         {
             return Required ? provider.GetRequiredService(serviceType) : provider.GetService(serviceType);
         }

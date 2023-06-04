@@ -1,4 +1,5 @@
-﻿using Sels.SQL.QueryBuilder.Builder;
+﻿using Microsoft.Extensions.Logging;
+using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.Statements;
@@ -20,7 +21,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <typeparam name="T">The main entity to query</typeparam>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>
-        public static IInsertStatementBuilder<T> Insert<T>(ILogger? logger = null)
+        public static IInsertStatementBuilder<T> Insert<T>(ILogger logger = null)
         {
             return new InsertStatementBuilder<T>(new MySqlCompiler(logger));
         }
@@ -30,7 +31,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// </summary>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>
-        public static IInsertStatementBuilder<object> Insert(ILogger? logger = null) => Insert<object>(logger);
+        public static IInsertStatementBuilder<object> Insert(ILogger logger = null) => Insert<object>(logger);
 
         /// <summary>
         /// Returns a builder for creating a mysql select query.
@@ -38,7 +39,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <typeparam name="T">The main entity to query</typeparam>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>
-        public static ISelectStatementBuilder<T> Select<T>(ILogger? logger = null)
+        public static ISelectStatementBuilder<T> Select<T>(ILogger logger = null)
         {
             return new SelectStatementBuilder<T>(new MySqlCompiler(logger));
         }
@@ -48,14 +49,14 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// </summary>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>
-        public static ISelectStatementBuilder<object> Select(ILogger? logger = null) => Select<object>(logger);
+        public static ISelectStatementBuilder<object> Select(ILogger logger = null) => Select<object>(logger);
 
         /// <summary>
         /// Returns a builder for creating a select query using common table expressions.
         /// </summary>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>
-        public static ICteStatementBuilder With(ILogger? logger = null)
+        public static ICteStatementBuilder With(ILogger logger = null)
         {
             return new CteStatementBuilder(new MySqlCompiler(logger));
         }
@@ -66,7 +67,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <typeparam name="T">The main entity to query</typeparam>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>
-        public static IUpdateStatementBuilder<T> Update<T>(ILogger? logger = null)
+        public static IUpdateStatementBuilder<T> Update<T>(ILogger logger = null)
         {
             return new UpdateStatementBuilder<T>(new MySqlCompiler(logger));
         }
@@ -76,7 +77,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// </summary>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>
-        public static IUpdateStatementBuilder<object> Update(ILogger? logger = null) => Update<object>(logger);
+        public static IUpdateStatementBuilder<object> Update(ILogger logger = null) => Update<object>(logger);
 
         /// <summary>
         /// Returns a builder for creating a mysql delete query.
@@ -84,7 +85,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <typeparam name="T">The main entity to query</typeparam>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>
-        public static IDeleteStatementBuilder<T> Delete<T>(ILogger? logger = null)
+        public static IDeleteStatementBuilder<T> Delete<T>(ILogger logger = null)
         {
             return new DeleteStatementBuilder<T>(new MySqlCompiler(logger));
         }
@@ -94,14 +95,14 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// </summary>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>
-        public static IDeleteStatementBuilder<object> Delete(ILogger? logger = null) => Delete<object>(logger);
+        public static IDeleteStatementBuilder<object> Delete(ILogger logger = null) => Delete<object>(logger);
 
         /// <summary>
         /// Returns a builder for creating queries consisting of multiple statements and/or expressions.
         /// </summary>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a multi statement SQL query</returns>
-        public static IMultiStatementBuilder Build(ILogger? logger = null)
+        public static IMultiStatementBuilder Build(ILogger logger = null)
         {
             var compiler = new MySqlCompiler(logger);
             return new MultiStatementBuilder(compiler);
@@ -112,7 +113,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// </summary>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a SQL condition using IF ELSE statements</returns>
-        public static IIfConditionStatementBuilder If(ILogger? logger = null)
+        public static IIfConditionStatementBuilder If(ILogger logger = null)
         {
             var compiler = new MySqlCompiler(logger);
             return new IfStatementBuilder(compiler, compiler);
@@ -125,7 +126,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns><paramref name="expression"/> compiled into MySql</returns>
         /// <param name="options">Optional settings for building the query</param>
-        public static string Compile(IExpression expression, ExpressionCompileOptions options = ExpressionCompileOptions.None, ILogger? logger = null)
+        public static string Compile(IExpression expression, ExpressionCompileOptions options = ExpressionCompileOptions.None, ILogger logger = null)
         {
             return new MySqlCompiler(logger).Compile(expression, null, options);
         }
@@ -137,7 +138,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <param name="logger">Optional logger for tracing</param>
         /// <param name="options">Optional settings for building the query</param>
         /// <returns><paramref name="builder"/> for method chaining</returns>
-        public static StringBuilder Compile(StringBuilder builder, IExpression expression, ExpressionCompileOptions options = ExpressionCompileOptions.None, ILogger? logger = null)
+        public static StringBuilder Compile(StringBuilder builder, IExpression expression, ExpressionCompileOptions options = ExpressionCompileOptions.None, ILogger logger = null)
         {
             return new MySqlCompiler(logger).Compile(builder, expression, null, options);
         }

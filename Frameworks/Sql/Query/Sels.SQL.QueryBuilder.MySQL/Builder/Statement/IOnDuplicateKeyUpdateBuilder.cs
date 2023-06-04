@@ -1,7 +1,12 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
+using System;
 using System.Linq.Expressions;
 using System.Text;
+using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder;
+using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.Conversion;
 
 namespace Sels.SQL.QueryBuilder.MySQL.Builder.Statement
 {
@@ -36,20 +41,20 @@ namespace Sels.SQL.QueryBuilder.MySQL.Builder.Statement
         /// </summary>
         /// <param name="expression">Delegate that adds the sql expression to the provided string builder</param>
         /// <returns>Builder for setting more values</returns>
-        IOnDuplicateKeyUpdateChainedBuilder<TEntity> Values(Action<StringBuilder> expression) => Values(new DelegateExpression(expression.ValidateArgument(nameof(expression))));
+        IOnDuplicateKeyUpdateChainedBuilder<TEntity> Values(Action<StringBuilder,ExpressionCompileOptions> expression) => Values(new DelegateExpression(expression.ValidateArgument(nameof(expression))));
         /// <summary>
         /// Set an expression to a value supplied to the VALUES clause where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for setting more values</returns>
-        IOnDuplicateKeyUpdateChainedBuilder<TEntity> Values<T>(Expression<Func<T, object?>> property) => Values(new ColumnExpression(null, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name));
+        IOnDuplicateKeyUpdateChainedBuilder<TEntity> Values<T>(Expression<Func<T, object>> property) => Values(new ColumnExpression(null, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name));
         /// <summary>
         /// Set an expression to a value supplied to the VALUES clause where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for setting more values</returns>
-        IOnDuplicateKeyUpdateChainedBuilder<TEntity> Values(Expression<Func<TEntity, object?>> property) => Values<TEntity>(property);
+        IOnDuplicateKeyUpdateChainedBuilder<TEntity> Values(Expression<Func<TEntity, object>> property) => Values<TEntity>(property);
     }
     /// <summary>
     /// Builder for setting more values.

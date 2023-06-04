@@ -1,5 +1,7 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Statement;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.MySQL.Expressions.MariaDb;
+using System;
 
 namespace Sels.SQL.QueryBuilder.MySQL.MariaDb
 {

@@ -22,11 +22,11 @@ namespace Sels.Core.ServiceBuilder.Injection
         /// <summary>
         /// Optional logger for tracing.
         /// </summary>
-        protected readonly ILogger<ServiceInjector>? _logger;
+        protected readonly ILogger<ServiceInjector> _logger;
 
         /// <inheritdoc cref="ServiceInjector"/>
         /// <param name="logger"><inheritdoc cref="_logger"/></param>
-        public ServiceInjector(ILogger<ServiceInjector>? logger = null)
+        public ServiceInjector(ILogger<ServiceInjector> logger = null)
         {
             _logger = logger;
         }
@@ -107,7 +107,7 @@ namespace Sels.Core.ServiceBuilder.Injection
 
         /// <inheritdoc cref="ServiceInjector{TImpl}"/>
         /// <param name="logger"><inheritdoc cref="ServiceInjector._logger"/></param>
-        public ServiceInjector(ILogger<ServiceInjector<TImpl>>? logger = null) : base(logger)
+        public ServiceInjector(ILogger<ServiceInjector<TImpl>> logger = null) : base(logger)
         {
             // Cache the members to inject
             _membersToInject = base.GetInjectableMembers(typeof(TImpl)).ToDictionary(x => x.Member, x => x.Attribute);

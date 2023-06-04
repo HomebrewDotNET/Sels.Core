@@ -19,12 +19,12 @@ namespace Sels.Core.ServiceBuilder.Interceptors
     public class TracingInterceptor : BaseResultlessInterceptor, ITracingInterceptorBuilder, IMethodDurationInterceptorBuilder
     {
         // Fields
-        private readonly ILoggerFactory? _factory;
+        private readonly ILoggerFactory _factory;
         private readonly IEnumerable<ILogger> _loggers;
 
         // State
-        private MethodTracer? _methodTracer;
-        private ExceptionTracer? _exceptionTracer;
+        private MethodTracer _methodTracer;
+        private ExceptionTracer _exceptionTracer;
 
         /// <inheritdoc cref="TracingInterceptor"/>
         /// <param name="loggers">Static loggers to use for tracing</param>
@@ -35,7 +35,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
 
         /// <inheritdoc cref="TracingInterceptor"/>
         /// <param name="factory">Logger factory for creating loggers based on the target type</param>
-        public TracingInterceptor(ILoggerFactory? factory)
+        public TracingInterceptor(ILoggerFactory factory)
         {
             _factory = factory;
         }
@@ -87,8 +87,8 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         {
             // Fields
             private List<Predicate<Exception>> _conditions = new List<Predicate<Exception>>();
-            private Func<Exception, LogLevel?>? _logLevelSelector;
-            private Action<IInvocation, IEnumerable<ILogger>, LogLevel, Exception>? _logger;
+            private Func<Exception, LogLevel?> _logLevelSelector;
+            private Action<IInvocation, IEnumerable<ILogger>, LogLevel, Exception> _logger;
 
             // Properties
             /// <inheritdoc/>

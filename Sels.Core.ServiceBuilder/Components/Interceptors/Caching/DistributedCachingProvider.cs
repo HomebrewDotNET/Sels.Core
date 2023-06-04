@@ -21,12 +21,12 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
     {
         // Fields
         private readonly IDistributedCache _cache;
-        private readonly ILogger<DistributedCachingProvider<TEncoding>>? _logger;
+        private readonly ILogger<DistributedCachingProvider<TEncoding>> _logger;
 
         /// <inheritdoc cref="DistributedCachingProvider{TEncoding}"/>
         /// <param name="cache">The cache to use</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public DistributedCachingProvider(IDistributedCache cache, ILogger<DistributedCachingProvider<TEncoding>>? logger = null)
+        public DistributedCachingProvider(IDistributedCache cache, ILogger<DistributedCachingProvider<TEncoding>> logger = null)
         {
             this._cache = cache.ValidateArgument(nameof(cache));
             this._logger = logger;
@@ -35,7 +35,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// <inheritdoc/>
         public IDistributedCacheOptions CreateNewOptions() => new DistributedCacheOptions();
         /// <inheritdoc/>
-        public async Task<T> GetOrSetAsync<T>(IInvocation target, string key, IDistributedCacheOptions? options, Delegates.Async.AsyncFunc<CancellationToken, T> cacheGetter, CancellationToken token = default)
+        public async Task<T> GetOrSetAsync<T>(IInvocation target, string key, IDistributedCacheOptions options, Delegates.Async.AsyncFunc<CancellationToken, T> cacheGetter, CancellationToken token = default)
         {
             key.ValidateArgument(nameof(key));
             cacheGetter.ValidateArgument(nameof(cacheGetter));
@@ -119,7 +119,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// </summary>
         /// <param name="invocation">The target to cache for</param>
         /// <returns>The cache options for <paramref name="invocation"/></returns>
-        public DistributedCacheEntryOptions? Build(IInvocation invocation)
+        public DistributedCacheEntryOptions Build(IInvocation invocation)
         {
             if (_optionBuilders.HasValue())
             {

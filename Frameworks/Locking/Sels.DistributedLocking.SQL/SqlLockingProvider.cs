@@ -50,6 +50,8 @@ namespace Sels.DistributedLocking.SQL
             _lockRepository = lockRepository.ValidateArgument(nameof(lockRepository));
             _logger = logger;   
             OptionsMonitor = options.ValidateArgument(nameof(options));
+
+            _maintenanceTask = Task.Run(async () => await RunCleanupDuringLifetime(_maintenanceTokenSource.Token));
         }
 
         /// <inheritdoc/>

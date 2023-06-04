@@ -1,5 +1,8 @@
-﻿using Sels.SQL.QueryBuilder.Builder;
+﻿using Sels.Core;
+using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.MySQL.Expressions
@@ -26,12 +29,12 @@ namespace Sels.SQL.QueryBuilder.MySQL.Expressions
         /// <summary>
         /// Optional expression containing the number of rows to skip.
         /// </summary>
-        public IExpression? OffsetExpression { get; set; }
+        public IExpression OffsetExpression { get; set; }
 
         ///<inheritdoc cref="LimitOffsetExpression"/>
         /// <param name="limitExpression"><inheritdoc cref="LimitExpression"/></param>
         /// <param name="offsetExpression"><inheritdoc cref="OffsetExpression"/></param>
-        public LimitOffsetExpression(IExpression limitExpression, IExpression? offsetExpression)
+        public LimitOffsetExpression(IExpression limitExpression, IExpression offsetExpression)
         {
             LimitExpression = limitExpression.ValidateArgument(nameof(limitExpression));
             OffsetExpression = offsetExpression;

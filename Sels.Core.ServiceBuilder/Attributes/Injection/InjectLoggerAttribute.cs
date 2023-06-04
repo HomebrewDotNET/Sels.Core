@@ -17,7 +17,7 @@ namespace Sels.Core.ServiceBuilder.Attributes.Injection
     public class InjectLoggerAttribute : InjectAttribute
     {
         /// <inheritdoc/>
-        protected override object? CreateService(IServiceProvider provider, Type serviceType, MemberInfo member, object instance)
+        protected override object CreateService(IServiceProvider provider, Type serviceType, MemberInfo member, object instance)
         {
             if(serviceType.Is<ILogger>())
             {
