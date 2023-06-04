@@ -12,27 +12,16 @@ namespace Sels.SQL.QueryBuilder.Expressions
     /// <summary>
     /// Sql expression that wraps another expression in ().
     /// </summary>
-    public class WrappedExpression : BaseExpressionContainer
+    public class WrappedExpression : WrapperExpression
     {
-        // Fields
-        private readonly IExpression _innerExpression;
+        // Statics
+        private static object[] _prefix = new object[] { '(' };
+        private static object[] _suffix = new object[] { ')' };
 
         /// <inheritdoc cref="WrappedExpression"/>
         /// <param name="innerExpression">The expression to wrap</param>
-        public WrappedExpression(IExpression innerExpression)
+        public WrappedExpression(IExpression innerExpression) : base(_prefix, innerExpression.ValidateArgument(nameof(innerExpression)), _suffix)
         {
-            _innerExpression = innerExpression.ValidateArgument(nameof(innerExpression));
-        }
-
-        /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
-        {
-            builder.ValidateArgument(nameof(builder));
-            subBuilder.ValidateArgument(nameof(subBuilder));
-
-            builder.Append('(');
-            subBuilder(builder, _innerExpression);
-            builder.Append(')');
         }
     }
 }

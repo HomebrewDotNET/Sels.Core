@@ -177,6 +177,10 @@ namespace Sels.SQL.QueryBuilder.MySQL
             /// THe keyword used to close a <see cref="Sql.Statements.If"/> statement.
             /// </summary>
             public const string EndIf = "END IF";
+            /// <summary>
+            /// The operator used to assign variables inline in MySql.
+            /// </summary>
+            public const string VariableAssignmentOperator = ":=";
         }
     }
 }

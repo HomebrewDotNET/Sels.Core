@@ -342,5 +342,38 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
             Assert.IsNotNull(query);
             Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
         }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithVariableAssignment()
+        {
+            // Arrange
+            var expected = "SELECT @Id := P.`Id` FROM `Person` P LIMIT 1".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>()
+                                 .Expression(b => b.AssignVariable("Id", v => v.Column(c => c.Id)))
+                               .From()
+                               .Limit(1);
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithVariable()
+        {
+            // Arrange
+            var expected = "SELECT @Id".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select().Variable("Id");
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
     }
 }

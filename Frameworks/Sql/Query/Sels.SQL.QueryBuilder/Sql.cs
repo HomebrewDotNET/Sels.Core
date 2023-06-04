@@ -290,6 +290,10 @@ namespace Sels.SQL.QueryBuilder
         /// The default prefix for defining variables.
         /// </summary>
         public const char VariablePrefix = '@';
+        /// <summary>
+        /// The default operator used to assign object a new value in SQL.
+        /// </summary>
+        public const char AssignmentOperator = '=';
         #endregion
 
         #region Helpers

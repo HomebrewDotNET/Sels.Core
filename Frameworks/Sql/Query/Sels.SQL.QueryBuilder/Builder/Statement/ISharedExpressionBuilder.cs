@@ -7,6 +7,7 @@ using SqlConstantExpression = Sels.SQL.QueryBuilder.Builder.Expressions.Constant
 using SqlParameterExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ParameterExpression;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
+using Sels.Core.Models;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -135,6 +136,39 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         TReturn Variable(Expression<Func<TEntity, object>> property) => Variable<TEntity>(property);
         #endregion
 
+        #region VariableAssignment
+        /// <summary>
+        /// Assigns a new value to a SQL variable.
+        /// </summary>
+        /// <typeparam name="T">The main entity for build the query for</typeparam>
+        /// <param name="variable">The name of the sql variable</param>
+        /// <param name="builder">Builder to select the value to assign</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn AssignVariable<T>(string variable, Action<ISharedExpressionBuilder<T, Null>> builder) => Expression(new VariableInlineAssignmentExpression(new VariableExpression(variable.ValidateArgumentNotNullOrWhitespace(nameof(variable))), new ExpressionBuilder<T>(builder)));
+        /// <summary>
+        /// Assigns a new value to a SQL variable.
+        /// </summary>
+        /// <param name="variable">The name of the sql variable</param>
+        /// <param name="builder">Builder to select the value to assign</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn AssignVariable(string variable, Action<ISharedExpressionBuilder<TEntity, Null>> builder) => AssignVariable<TEntity>(variable, builder);
+        /// <summary>
+        /// Assigns a new value to a SQL variable where the variable name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The main entity for build the query for</typeparam>
+        /// <param name="property">The expression that points to the property to use</param>
+        ///  <param name="builder">Builder to select the value to assign</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn AssignVariable<T>(Expression<Func<T, object>> property, Action<ISharedExpressionBuilder<T, Null>> builder) => AssignVariable(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, builder);
+        /// <summary>
+        /// Assigns a new value to a SQL variable where the variable name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="builder">Builder to select the value to assign</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn AssignVariable(Expression<Func<TEntity, object>> property, Action<ISharedExpressionBuilder<TEntity, Null>> builder) => AssignVariable<TEntity>(property, builder);
+        #endregion
+
         #region Query
         /// <summary>
         /// Adds a sub query expression.
@@ -171,111 +205,5 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <returns>Builder for creating more expressions</returns>
         TReturn Case<T>(Action<ICaseExpressionRootBuilder<T>> caseBuilder) => Expression(new WrappedExpression(new CaseExpression<T>(caseBuilder)));
         #endregion
-    }
-
-    /// <summary>
-    /// Builder that adds comparison operators.
-    /// </summary>
-    /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
-    /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
-    public interface IComparisonExpressionBuilder<TEntity, out TReturn>
-    {
-        #region Expression
-        /// <summary>
-        /// Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
-        /// </summary>
-        /// <param name="sqlExpression">The sql expression containing the operator</param>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn CompareTo(IExpression sqlExpression);
-        /// <summary>
-        /// Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
-        /// </summary>
-        /// <param name="sqlExpression">String containing the sql operator</param>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn CompareTo(string sqlExpression) => CompareTo(new RawExpression(sqlExpression.ValidateArgumentNotNullOrEmpty(nameof(sqlExpression))));
-        /// <summary>
-        /// Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
-        /// </summary>
-        /// <param name="sqlExpression">Delegate that adds the sql operator to compare to the provided string builder</param>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn CompareTo(Action<StringBuilder, ExpressionCompileOptions> sqlExpression) => CompareTo(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))));
-        #endregion
-
-        #region Operators
-        /// <summary>
-        /// The expressions should be equal.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn EqualTo => CompareTo(new EnumExpression<Operators>(Operators.Equal));
-        /// <summary>
-        /// The expressions should not be equal.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn NotEqualTo => CompareTo(new EnumExpression<Operators>(Operators.NotEqual));
-        /// <summary>
-        /// First expression should be greater than second expression.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn GreaterThan => CompareTo(new EnumExpression<Operators>(Operators.Greater));
-        /// <summary>
-        /// First expression should be lesser than second expression.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn LesserThan => CompareTo(new EnumExpression<Operators>(Operators.Less));
-        /// <summary>
-        /// First expression should be greater or equal to second expression.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn GreaterOrEqualTo => CompareTo(new EnumExpression<Operators>(Operators.GreaterOrEqual));
-        /// <summary>
-        /// First expression should be lesser or equal to second expression.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn LesserOrEqualTo => CompareTo(new EnumExpression<Operators>(Operators.LessOrEqual));
-        /// <summary>
-        /// First expression should be like the pattern defined in the second expression.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn Like => CompareTo(new EnumExpression<Operators>(Operators.Like));
-        /// <summary>
-        /// First expression should not be like the pattern defined in the second expression.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn NotLike => CompareTo(new EnumExpression<Operators>(Operators.NotLike));
-        /// <summary>
-        /// First expression should exist in a list of values defined by the second expression.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn In => CompareTo(new EnumExpression<Operators>(Operators.In));
-        /// <summary>
-        /// First expression should not exist in a list of values defined by the second expression.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn NotIn => CompareTo(new EnumExpression<Operators>(Operators.NotIn));
-        #endregion       
-    }
-    /// <summary>
-    /// Builder for chaining other builder using and/or.
-    /// </summary>
-    /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
-    /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
-    public interface IChainedBuilder<TEntity, out TReturn>
-    {
-        /// <summary>
-        /// Sets the logic operator on how to join the current condition and the condition created after calling this method.
-        /// </summary>
-        /// <param name="logicOperator">The logic operator to use</param>
-        /// <returns>Current builder for method chaining</returns>
-        TReturn AndOr(LogicOperators logicOperator = LogicOperators.And);
-        /// <summary>
-        /// Current condition and the condition created after calling this method either need to result in true.
-        /// </summary>
-        /// <returns>Current builder for method chaining</returns>
-        TReturn Or => AndOr(LogicOperators.Or);
-        /// <summary>
-        /// Current condition and the condition created after calling this method both need to result in true.
-        /// </summary>
-        /// <returns>Current builder for method chaining</returns>
-        TReturn And => AndOr(LogicOperators.And);
     }
 }

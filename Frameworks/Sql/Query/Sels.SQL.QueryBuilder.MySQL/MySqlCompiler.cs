@@ -15,6 +15,7 @@ using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
+using Sels.SQL.QueryBuilder.Expressions;
 
 namespace Sels.SQL.QueryBuilder.MySQL
 {
@@ -536,6 +537,13 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 tableExpression.Schema = null;
                 tableExpression.ToSql(builder, (b, e) => CompileExpressionTo(b, compilerOptions, options, e, isInsert), options);
             }
+            else if (expression is VariableInlineAssignmentExpression variableInlineAssignmentExpression)
+            {
+                // Manually compile so we can use the correct assignment operator
+                CompileExpressionTo(builder, compilerOptions, options, variableInlineAssignmentExpression.VariableExpression);
+                builder.AppendSpace().Append(MySql.Keywords.VariableAssignmentOperator).AppendSpace();
+                CompileExpressionTo(builder, compilerOptions, options, variableInlineAssignmentExpression.ValueExpression);
+            }
             else if (expression is IColumnExpression columnExpression && !columnExpression.Object.Equals(Sql.All.ToString()))
             {
                 // Add back ticks around column names 
@@ -554,6 +562,10 @@ namespace Sels.SQL.QueryBuilder.MySQL
             {
                 expressionContainer.ToSql(builder, (b, e) => CompileExpressionTo(b, compilerOptions, options, e, isInsert), options);
             }
+            else if (expression is ITypeExpression typeExpression)
+            {
+                typeExpression.ToSql(builder, MapTypeToMySqlType, options);
+            }
             else
             {
                 expression.ToSql(builder, options);
@@ -567,6 +579,80 @@ namespace Sels.SQL.QueryBuilder.MySQL
             if (isInsert) return null;
 
             return compilerOptions.DataSetConverter(dataSet);
+        }
+
+        private void MapTypeToMySqlType(StringBuilder builder, Type type, int? length)
+        {
+            builder.ValidateArgument(nameof(builder));
+            type.ValidateArgument(nameof(type));
+            type = Nullable.GetUnderlyingType(type) ?? type;
+
+            if (type.Is<string>())
+            {
+                if (length.HasValue) builder.Append("VARCHAR(").Append(length.Value).Append(')');
+                else builder.Append("LONGTEXT");
+            }
+            else if (type.Is<char>())
+            {
+                builder.Append("VARCHAR(").Append(1).Append(')');
+            }
+            else if (type.Is<bool>())
+            {
+                builder.Append("BIT(").Append(1).Append(')');
+            }
+            else if (type.Is<DateTime>() || type.Is<DateTimeOffset>())
+            {
+                builder.Append("DATETIME");
+            }
+            else if (type.Is<decimal>())
+            {
+                builder.Append("DECIMAL");
+            }
+            else if (type.Is<double>())
+            {
+                builder.Append("DOUBLE");
+            }
+            else if (type.Is<short>())
+            {
+                builder.Append("SMALLINT");
+            }
+            else if (type.Is<int>())
+            {
+                builder.Append("INT");
+            }
+            else if (type.Is<long>())
+            {
+                builder.Append("BIGINT");
+            }
+            else if (type.Is<Guid>())
+            {
+                builder.Append("CHAR(36)");
+            }
+            else if (type.Is<TimeSpan>())
+            {
+                builder.Append("TIME");
+            }
+            else if (type.Is<sbyte>())
+            {
+                builder.Append("TINYINT");
+            }
+            else if (type.Is<float>())
+            {
+                builder.Append("FLOAT");
+            }
+            else if (type.Is<byte>())
+            {
+                builder.Append("TINYINT");
+            }
+            else if (type.Is<byte[]>())
+            {
+                if (length.HasValue) builder.Append("VARBINARY(").Append(length.Value).Append(')');
+                else builder.Append("LONGBLOB");
+            }
+            else
+            {
+                throw new NotSupportedException($"No mapping exists for mapping .net type <{type}> to an MySql type");
+            }
         }
 
         /// <inheritdoc cref="ICompilerOptions"/>

@@ -54,7 +54,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Update
             if (RightExpression == null) throw new InvalidOperationException($"{nameof(RightExpression)} is not set");
 
             subBuilder(builder, LeftExpression);
-            builder.AppendSpace().Append('=').AppendSpace();
+            builder.AppendSpace().Append(Sql.AssignmentOperator).AppendSpace();
             subBuilder(builder, RightExpression);
         }
     }
