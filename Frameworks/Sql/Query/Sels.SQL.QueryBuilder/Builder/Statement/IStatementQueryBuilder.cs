@@ -1,4 +1,7 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
@@ -79,7 +82,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="position">Where in the query the expression should be placed</param>
         /// <param name="order">Optional order for <paramref name="sqlExpression"/>. A lower order means it will be compiled first. Can be used to sort custom expressions</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Expression(Action<StringBuilder> sqlExpression, TPosition position, int order = 0) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))), position, order);
+        TDerived Expression(Action<StringBuilder, ExpressionCompileOptions> sqlExpression, TPosition position, int order = 0) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))), position, order);
         #endregion
 
         /// <summary>

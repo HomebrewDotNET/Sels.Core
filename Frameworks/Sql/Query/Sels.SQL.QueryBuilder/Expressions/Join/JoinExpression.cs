@@ -1,5 +1,10 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Sels.Core.Attributes.Enumeration.Value;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.Expressions.Condition;
 

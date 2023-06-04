@@ -1,9 +1,12 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Expressions;
+using System;
 using System.Linq.Expressions;
 using System.Text;
 using SqlConstantExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ConstantExpression;
 using SqlParameterExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ParameterExpression;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -32,7 +35,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="sqlExpression">Delegate that adds the sql expression to the provided string builder</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Expression(Action<StringBuilder> sqlExpression) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))));
+        TReturn Expression(Action<StringBuilder, ExpressionCompileOptions> sqlExpression) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))));
         #endregion
 
         #region Column
@@ -173,7 +176,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="sqlExpression">Delegate that adds the sql operator to compare to the provided string builder</param>
         /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn CompareTo(Action<StringBuilder> sqlExpression) => CompareTo(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))));
+        TReturn CompareTo(Action<StringBuilder, ExpressionCompileOptions> sqlExpression) => CompareTo(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))));
         #endregion
 
         #region Operators

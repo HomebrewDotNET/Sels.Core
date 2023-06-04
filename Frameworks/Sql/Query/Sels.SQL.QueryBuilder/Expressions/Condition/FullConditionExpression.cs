@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Sels.Core.Extensions;
+using System;
+using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
 {

@@ -1,7 +1,11 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Compilation;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Expressions.Condition;
 using Sels.SQL.QueryBuilder.Builder.Expressions.Join;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -20,7 +24,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     {
         // Fields
         private readonly Dictionary<Type, string> _aliases = new Dictionary<Type, string>();
-        private readonly Dictionary<TPosition, List<OrderedExpression>> _expressions = new();
+        private readonly Dictionary<TPosition, List<OrderedExpression>> _expressions = new Dictionary<TPosition, List<OrderedExpression>>();
         private readonly IQueryCompiler<TPosition> _compiler;
 
         // Properties

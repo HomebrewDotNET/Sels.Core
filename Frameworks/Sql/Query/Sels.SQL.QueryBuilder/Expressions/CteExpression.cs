@@ -1,5 +1,9 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Statement;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Statement;
+using System;
+using System.Collections.Generic;
 using System.Text;
+using Sels.Core.Extensions.Linq;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {

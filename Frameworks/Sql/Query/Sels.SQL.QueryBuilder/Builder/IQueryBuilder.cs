@@ -1,4 +1,5 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder

@@ -1,5 +1,9 @@
-﻿using Sels.SQL.QueryBuilder.Builder;
+﻿using Sels.Core;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
+using Sels.SQL.QueryBuilder.Builder;
 using System.Text;
+using System;
 
 namespace Sels.SQL.QueryBuilder
 {
@@ -282,6 +286,10 @@ namespace Sels.SQL.QueryBuilder
         /// The prefix to place in front of parameter names.
         /// </summary>
         public const char ParameterPrefix = '@';
+        /// <summary>
+        /// The default prefix for defining variables.
+        /// </summary>
+        public const char VariablePrefix = '@';
         #endregion
 
         #region Helpers

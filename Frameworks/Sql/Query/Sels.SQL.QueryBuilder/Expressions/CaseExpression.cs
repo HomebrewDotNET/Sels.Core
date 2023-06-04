@@ -1,4 +1,5 @@
-﻿using Sels.Core.Models;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Models;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Expressions.Update;

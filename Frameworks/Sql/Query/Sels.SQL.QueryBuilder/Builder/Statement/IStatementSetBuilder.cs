@@ -1,6 +1,9 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
 using System.Linq.Expressions;
 using System.Text;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -29,7 +32,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="sqlExpression">Delegate that adds the sql expression to the provided string builder</param>
         /// <returns>Builder to select what to set the expression to</returns>
-        IStatementSetToBuilder<TEntity, TReturn> SetExpression(Action<StringBuilder> sqlExpression) => SetExpression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))));
+        IStatementSetToBuilder<TEntity, TReturn> SetExpression(Action<StringBuilder, ExpressionCompileOptions> sqlExpression) => SetExpression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))));
         #endregion
         #region Column
         /// <summary>

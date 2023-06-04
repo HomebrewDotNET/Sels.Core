@@ -1,8 +1,13 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Expressions.Condition;
+using System;
 using System.Text;
 using SqlConstantExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ConstantExpression;
 using SqlParameterExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ParameterExpression;
+using Sels.Core.Extensions;
+using System.Collections.Generic;
+using Sels.Core;
+using System.Linq;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -63,7 +68,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="expression">String containing the sql expression</param>
         /// <returns>Current builder for creating more conditions</returns>
-        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> FullExpression(Action<StringBuilder> expression) => FullExpression(new DelegateExpression(expression.ValidateArgument(nameof(expression))));
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> FullExpression(Action<StringBuilder, ExpressionCompileOptions> expression) => FullExpression(new DelegateExpression(expression.ValidateArgument(nameof(expression))));
         #endregion
 
         #region Exists

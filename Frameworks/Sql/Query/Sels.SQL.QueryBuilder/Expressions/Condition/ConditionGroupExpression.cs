@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition

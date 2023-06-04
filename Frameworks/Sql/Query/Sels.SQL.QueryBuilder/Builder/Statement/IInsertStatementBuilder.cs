@@ -1,6 +1,12 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
 using System.Linq.Expressions;
 using SqlParameterExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ParameterExpression;
+using Sels.Core.Extensions;
+using System.Collections.Generic;
+using Sels.Core;
+using System.Linq;
+using System;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -19,7 +25,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <param name="table">The name of the table to insert into</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Into(string table, string? database = null, string? schema = null) => Expression(new TableExpression(database, schema, table.ValidateArgumentNotNullOrWhitespace(nameof(table)), null), InsertExpressionPositions.Into);
+        TDerived Into(string table, string database = null, string schema = null) => Expression(new TableExpression(database, schema, table.ValidateArgumentNotNullOrWhitespace(nameof(table)), null), InsertExpressionPositions.Into);
         /// <summary>
         /// Defines the table to insert into where the table name is taken from <typeparamref name="T"/>.
         /// </summary>
@@ -27,14 +33,14 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="database">Optional database to select the table from</param>
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Into<T>(string? database = null, string? schema = null) => Into(typeof(T).Name, database, schema);
+        TDerived Into<T>(string database = null, string schema = null) => Into(typeof(T).Name, database, schema);
         /// <summary>
         /// Defines the table to insert into where the table name is taken from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="database">Optional database to select the table from</param>
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Into(string? database = null, string? schema = null) => Into(typeof(TEntity).Name, database, schema);
+        TDerived Into(string database = null, string schema = null) => Into(typeof(TEntity).Name, database, schema);
         #endregion
 
         #region Columns
@@ -51,13 +57,13 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Column<T>(Expression<Func<T, object?>> property) => Column(property.ExtractProperty(nameof(property)).Name);
+        TDerived Column<T>(Expression<Func<T, object>> property) => Column(property.ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Specifies a column to insert into by using the name of the property selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Column(Expression<Func<TEntity, object?>> property) => Column<TEntity>(property);
+        TDerived Column(Expression<Func<TEntity, object>> property) => Column<TEntity>(property);
         #endregion
         #region Columns
         /// <summary>

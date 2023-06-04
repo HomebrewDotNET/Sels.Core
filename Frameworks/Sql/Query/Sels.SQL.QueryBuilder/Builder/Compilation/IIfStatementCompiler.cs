@@ -19,6 +19,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Compilation
         /// <param name="statementBuilder">The builder to compile into sql</param>
         /// <param name="configurator">Optional delegate for configuring the compiler options</param>
         /// <param name="options">Optional settings for building the query</param>
-        void CompileTo(StringBuilder builder, IIfStatementBuilder statementBuilder, Action<ICompilerOptions>? configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None);
+        void CompileTo(StringBuilder builder, IIfStatementBuilder statementBuilder, Action<ICompilerOptions> configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }

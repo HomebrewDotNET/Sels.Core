@@ -1,4 +1,5 @@
-﻿using Sels.SQL.QueryBuilder.Builder;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sels.Core.Extensions.Linq;
 
 namespace Sels.SQL.QueryBuilder.Statements
 {

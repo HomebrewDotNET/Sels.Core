@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sels.Core.Extensions;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {

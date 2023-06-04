@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Sels.Core.Extensions;
+using System;
+using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
@@ -8,11 +10,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
     public class DelegateExpression : BaseExpression, IExpression
     {
         // Fields
-        private readonly Action<StringBuilder> _action;
+        private readonly Action<StringBuilder, ExpressionCompileOptions> _action;
 
         /// <inheritdoc cref="DelegateExpression"/>
         /// <param name="action">The action to delegate the call to</param>
-        public DelegateExpression(Action<StringBuilder> action)
+        public DelegateExpression(Action<StringBuilder, ExpressionCompileOptions> action)
         {
             _action = action.ValidateArgument(nameof(action));
         }
@@ -21,7 +23,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         public override void ToSql(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
-            _action(builder);
+            _action(builder, options);
         }
     }
 }

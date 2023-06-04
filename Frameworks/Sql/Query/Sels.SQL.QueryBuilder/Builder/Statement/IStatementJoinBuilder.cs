@@ -1,4 +1,6 @@
-﻿namespace Sels.SQL.QueryBuilder.Builder.Statement
+﻿using System;
+
+namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
     /// <summary>
     /// Builder for creating joins in sql queries.

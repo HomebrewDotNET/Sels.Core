@@ -1,4 +1,8 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Statement;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Statement;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
 {

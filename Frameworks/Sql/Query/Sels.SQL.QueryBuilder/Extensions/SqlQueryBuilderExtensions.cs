@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
+using Sels.Core.Extensions;
+using System;
 
 namespace Sels.SQL.QueryBuilder.Extensions
 {

@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sels.Core.Extensions.Linq;
+using Sels.Core;
+using Sels.Core.Extensions;
 
 namespace Sels.SQL.QueryBuilder.Expressions
 {

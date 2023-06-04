@@ -1,6 +1,9 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
 using System.Linq.Expressions;
 using System.Text;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -26,7 +29,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="expressionBuilder">Delegate that adds the cte to the builder</param>
         /// <returns>Current builder for defining more cte's or selecting the query to execute with the cte's</returns>
-        ICteOrSelectStatementBuilder Expression(Action<StringBuilder> expressionBuilder) => Expression(new DelegateExpression(expressionBuilder.ValidateArgument(nameof(expressionBuilder))));
+        ICteOrSelectStatementBuilder Expression(Action<StringBuilder, ExpressionCompileOptions> expressionBuilder) => Expression(new DelegateExpression(expressionBuilder.ValidateArgument(nameof(expressionBuilder))));
 
         #region Cte
         /// <summary>
@@ -93,13 +96,13 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Current builder for method chaining</returns>
-        ICteExpressionBuilder<TEntity> Column<T>(Expression<Func<T, object?>> property) => Column(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        ICteExpressionBuilder<TEntity> Column<T>(Expression<Func<T, object>> property) => Column(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Defines a column for the current cte where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Current builder for method chaining</returns>
-        ICteExpressionBuilder<TEntity> Column(Expression<Func<TEntity, object?>> property) => Column<TEntity>(property);
+        ICteExpressionBuilder<TEntity> Column(Expression<Func<TEntity, object>> property) => Column<TEntity>(property);
         #endregion
 
         #region Using

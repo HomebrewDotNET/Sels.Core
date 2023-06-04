@@ -1,4 +1,6 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Statement;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Statement;
+using System;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions.Update

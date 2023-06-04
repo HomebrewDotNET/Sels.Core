@@ -1,4 +1,5 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Compilation
@@ -16,6 +17,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Compilation
         /// <param name="queryBuilder">The builder requesting the compilation</param>
         /// <param name="configurator">Optional delegate for configuring the compiler options</param>
         /// <param name="options">Optional settings for building the query</param>
-        void CompileTo(StringBuilder builder, IQueryBuilder<TPosition> queryBuilder, Action<ICompilerOptions>? configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None);
+        void CompileTo(StringBuilder builder, IQueryBuilder<TPosition> queryBuilder, Action<ICompilerOptions> configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }

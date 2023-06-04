@@ -1,4 +1,6 @@
-﻿namespace Sels.SQL.QueryBuilder.Builder
+﻿using System;
+
+namespace Sels.SQL.QueryBuilder.Builder
 {
     /// <summary>
     /// Exposes extra settings when compiling expressions or query builders into sql.
