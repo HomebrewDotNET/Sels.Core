@@ -16,6 +16,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Compilation
         IQueryCompiler<UpdateExpressionPositions>,
         IQueryCompiler<DeleteExpressionPositions>,
         IIfStatementCompiler,
+        IVariableDeclarationStatementCompiler,
         IExpressionCompiler
     {
     }

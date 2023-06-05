@@ -498,6 +498,11 @@ namespace Sels.SQL.QueryBuilder.MySQL
         }
         #endregion
 
+        #region Variable
+        /// <inheritdoc/>
+        public void CompileTo(StringBuilder builder, IVariableDeclarationStatementBuilder statementBuilder, Action<ICompilerOptions> configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None) => throw new NotSupportedException($"MySql does not support variable declarations");
+        #endregion
+
         /// <inheritdoc/>
         public string Compile(IExpression expression, Action<ICompilerOptions> configurator, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
