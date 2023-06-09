@@ -8,6 +8,7 @@ using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Object;
 using Sels.Core.Extensions.Reflection;
+using Sels.DistributedLocking.Abstractions.Models;
 using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Concurrent;
@@ -80,7 +81,7 @@ namespace Sels.DistributedLocking.Memory
         }
 
         /// <inheritdoc/>
-        public Task<(bool Success, ILock Lock)> TryLockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default)
+        public Task<ILockResult> TryLockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
@@ -112,7 +113,7 @@ namespace Sels.DistributedLocking.Memory
                         if (TryAssignPendingRequest(resource))
                         {
                             _logger.Log($"Resource was not locked but had pending requests. Lock is now assigned to <{memoryLockInfo.LockedBy}>");
-                            return Task.FromResult((false, (ILock)null));
+                            return Task.FromResult<ILockResult>(new LockResult(memoryLockInfo));
                         }
                     }
                     else if (memoryLockInfo.LockedBy.Equals(requester, StringComparison.OrdinalIgnoreCase))
@@ -130,11 +131,11 @@ namespace Sels.DistributedLocking.Memory
                         memoryLockInfo.LockedAt = DateTime.Now;
                         _logger.Log($"Resource <{resource}> is now held by <{requester}>");
                         var lockObject = new MemoryLock(this, memoryLockInfo, keepAlive, expiryTime ?? TimeSpan.Zero, _logger);
-                        return Task.FromResult((true, (ILock)lockObject));
+                        return Task.FromResult<ILockResult>(new LockResult(lockObject));
                     }
 
                     _logger.Log($"Lock on resource <{resource}> could not be acquired by <{requester}>. Currently held by <{memoryLockInfo.LockedBy}>");
-                    return Task.FromResult((false, (ILock)null));
+                    return Task.FromResult<ILockResult>(new LockResult(memoryLockInfo));
                 }
             }
         }
@@ -150,9 +151,9 @@ namespace Sels.DistributedLocking.Memory
                 var memoryLock = GetLockOrSet(resource);
                 lock (memoryLock)
                 {
-                    var (wasLocked, @lock) = TryLockAsync(resource, requester, expiryTime, keepAlive).Result;
+                    var lockResult = TryLockAsync(resource, requester, expiryTime, keepAlive).Result;
                     // Method will always run sync so we can just use .Result
-                    if (!wasLocked)
+                    if (!lockResult.Success)
                     {
                         _logger.Log($"Resource <{resource}> is already locked. Creating lock request for <{requester}>");
 
@@ -169,7 +170,7 @@ namespace Sels.DistributedLocking.Memory
                     }
 
                     _logger.Log($"Resource <{resource}> was not locked and is now held by <{requester}>");
-                    return Task.FromResult(@lock);
+                    return Task.FromResult(lockResult.AcquiredLock);
                 }
             }
         }
@@ -196,7 +197,7 @@ namespace Sels.DistributedLocking.Memory
             }
         }
         /// <inheritdoc/>
-        public Task<ILockInfo[]> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false, CancellationToken token = default)
+        public Task<ILockQueryResult> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
@@ -221,6 +222,9 @@ namespace Sels.DistributedLocking.Memory
                             enumerator = enumerator.OrderBy(sortBy.Compile());
                         }
                     }
+
+                    var total = enumerator.Count();
+
                     // Apply pagination
                     if(page > 0 && pageSize > 0)
                     {
@@ -237,7 +241,7 @@ namespace Sels.DistributedLocking.Memory
                     }).Cast<ILockInfo>().ToArray();
 
                     _logger.Log($"Query returned <{result.Length}> results");
-                    return Task.FromResult(result);
+                    return Task.FromResult<ILockQueryResult>(pageSize > 0 && page > 0 ? new LockQueryResult(result, pageSize, total) : new LockQueryResult(result));
                 }
             }
         }

@@ -20,8 +20,8 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             for (int i = 0; i < 10; i++)
             {
-                var (wasLocked, locked) = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
-                await locked.DisposeAsync();
+                var lockResult = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
+                await lockResult.AcquiredLock.DisposeAsync();
             }
 
             // Act
@@ -30,11 +30,11 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 await Helper.Async.Sleep(10);
             }
-            var results = await provider.QueryAsync();
+            var result = await provider.QueryAsync();
 
             // Assert
-            Assert.That(results, Is.Not.Null);
-            Assert.That(results.Length, Is.EqualTo(0));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(0));
         }
 
         [Test]
@@ -50,8 +50,8 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             for (int i = 0; i < 20; i++)
             {
-                var (wasLocked, locked) = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
-                await locked.DisposeAsync();
+                var lockResult = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
+                await lockResult.AcquiredLock.DisposeAsync();
             }
 
             // Act
@@ -60,11 +60,11 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 await Helper.Async.Sleep(10);
             }
-            var results = await provider.QueryAsync();
+            var result = await provider.QueryAsync();
 
             // Assert
-            Assert.That(results, Is.Not.Null);
-            Assert.That(results.Length, Is.EqualTo(0));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(0));
         }
 
         [Test]
@@ -80,8 +80,8 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             for (int i = 0; i < 20; i++)
             {
-                var (wasLocked, locked) = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
-                await locked.DisposeAsync();
+                var lockResult = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
+                await lockResult.AcquiredLock.DisposeAsync();
             }
 
             // Act
@@ -90,11 +90,11 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 await Helper.Async.Sleep(10);
             }
-            var results = await provider.QueryAsync();
+            var result = await provider.QueryAsync();
 
             // Assert
-            Assert.That(results, Is.Not.Null);
-            Assert.That(results.Length, Is.EqualTo(0));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(0));
         }
 
         [Test]
@@ -110,8 +110,8 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
             for (int i = 0; i < 20; i++)
             {
-                var (wasLocked, locked) = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
-                await locked.DisposeAsync();
+                var lockResult = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Me");
+                await lockResult.AcquiredLock.DisposeAsync();
             }
 
             // Act
@@ -120,11 +120,11 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 await Helper.Async.Sleep(10);
             }
-            var results = await provider.QueryAsync();
+            var result = await provider.QueryAsync();
 
             // Assert
-            Assert.That(results, Is.Not.Null);
-            Assert.That(results.Length, Is.EqualTo(0));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(0));
         }
     }
 }

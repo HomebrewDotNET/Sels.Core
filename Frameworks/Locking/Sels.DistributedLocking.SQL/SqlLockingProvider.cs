@@ -20,6 +20,7 @@ using Sels.Core.Extensions.Linq;
 using System.Reflection;
 using Sels.Core.Extensions.Reflection;
 using System.Runtime.CompilerServices;
+using Sels.DistributedLocking.Abstractions.Models;
 
 namespace Sels.DistributedLocking.SQL
 {
@@ -91,7 +92,7 @@ namespace Sels.DistributedLocking.SQL
             }
         }
         /// <inheritdoc/>
-        public async Task<(bool Success, ILock Lock)> TryLockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default)
+        public async Task<ILockResult> TryLockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default)
         {
             resource.ValidateArgumentNotNullOrWhitespace(nameof(resource));
             requester.ValidateArgumentNotNullOrWhitespace(nameof(requester));
@@ -111,12 +112,12 @@ namespace Sels.DistributedLocking.SQL
             if(sqlLock.LockedBy.Equals(requester, StringComparison.OrdinalIgnoreCase))
             {
                 _logger.Log($"Resource <{resource}> now locked by <{requester}>");
-                return (true, new AcquiredSqlLock(sqlLock, this, keepAlive, expiryTime.HasValue ? expiryTime.Value : TimeSpan.Zero, _logger));
+                return new LockResult(new AcquiredSqlLock(sqlLock, this, keepAlive, expiryTime.HasValue ? expiryTime.Value : TimeSpan.Zero, _logger));
             }
             else
             {
                 _logger.Log($"Could not assign lock on resource <{resource}> to <{requester}> because it is currently held by <{sqlLock.LockedBy}>");
-                return (false, null);
+                return new LockResult(sqlLock);
             }
         }
         /// <inheritdoc/>
@@ -163,7 +164,7 @@ namespace Sels.DistributedLocking.SQL
             return await requestTask;
         }
         /// <inheritdoc/>
-        public async Task<ILockInfo[]> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false, CancellationToken token = default)
+        public async Task<ILockQueryResult> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false, CancellationToken token = default)
         {
             _logger.Log($"Querying locks");
 
@@ -176,7 +177,9 @@ namespace Sels.DistributedLocking.SQL
 
             await using (var transaction = await _lockRepository.CreateTransactionAsync(token))
             {
-                return (await _lockRepository.SearchAsync(transaction, filter, page, pageSize, sortColumn, sortDescending, token)) ?? Array.Empty<ILockInfo>();
+                var (results, total) = await _lockRepository.SearchAsync(transaction, filter, page, pageSize, sortColumn, sortDescending, token);
+
+                return page > 0 && pageSize > 0 ? new LockQueryResult(results, pageSize, total) : new LockQueryResult(results);
             }
         }
 

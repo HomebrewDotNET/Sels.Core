@@ -102,8 +102,8 @@ namespace Sels.DistributedLocking.SQL
         /// <param name="sortColumn">Optional property on <see cref="SqlLock"/> to sort by</param>
         /// <param name="sortDescending">True if <paramref name="sortColumn"/> should be sorted DESC, otherwise ASC</param>
         /// <param name="token">Optional token to cancel the request</param>
-        /// <returns>All known locks matching the search parameters</returns>
-        Task<SqlLock[]> SearchAsync(IRepositoryTransaction transaction, string filter = null, int page = 0, int pageSize = 100, PropertyInfo sortColumn = null, bool sortDescending = false, CancellationToken token = default);
+        /// <returns>All known locks matching the search parameters with pagination applied (if applicable) and the total amount of matching locks regardless of pagination</returns>
+        Task<(SqlLock[] Results, int TotalMatching)> SearchAsync(IRepositoryTransaction transaction, string filter = null, int page = 0, int pageSize = 100, PropertyInfo sortColumn = null, bool sortDescending = false, CancellationToken token = default);
 
         /// <summary>
         /// Deletes all free/expired locks that have no pending requests.

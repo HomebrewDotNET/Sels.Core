@@ -34,15 +34,15 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
 
             // Act
-            var (wasLocked, @lock) = await provider.TryLockAsync(resource, requester);
+            var lockResult = await provider.TryLockAsync(resource, requester);
 
             // Assert
-            Assert.IsTrue(wasLocked);
+            Assert.IsTrue(lockResult.Success);
             Assert.IsNotNull(requester);
-            Assert.IsNotNull(@lock);
-            Assert.That(@lock.Resource, Is.EqualTo(resource));
-            Assert.That(@lock.LockedBy, Is.EqualTo(requester));
-            Assert.That(@lock.ExpiryDate, Is.Null);
+            Assert.IsNotNull(lockResult.AcquiredLock);
+            Assert.That(lockResult.AcquiredLock.Resource, Is.EqualTo(resource));
+            Assert.That(lockResult.AcquiredLock.LockedBy, Is.EqualTo(requester));
+            Assert.That(lockResult.AcquiredLock.ExpiryDate, Is.Null);
         }
 
         [Test]
@@ -67,14 +67,14 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
 
             // Act
-            var (wasLockedOne, lockOne) = await provider.TryLockAsync(resource, holder);
-            var (wasLockedTwo, lockTwo) = await provider.TryLockAsync(resource, requester);
+            var lockResult = await provider.TryLockAsync(resource, holder);
+            var lockResultTwo = await provider.TryLockAsync(resource, requester);
 
             // Assert
-            Assert.IsTrue(wasLockedOne);
-            Assert.IsNotNull(lockOne);
-            Assert.IsFalse(wasLockedTwo);
-            Assert.IsNull(lockTwo);
+            Assert.IsTrue(lockResult.Success);
+            Assert.IsNotNull(lockResult.AcquiredLock);
+            Assert.IsFalse(lockResultTwo.Success);
+            Assert.IsNull(lockResultTwo.AcquiredLock);
         }
 
         [Test]
@@ -98,14 +98,14 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
 
             // Act
-            var (wasLockedOne, lockOne) = await provider.TryLockAsync(resource, requester);
-            var (wasLockedTwo, lockTwo) = await provider.TryLockAsync(resource, requester);
+            var lockResult = await provider.TryLockAsync(resource, requester);
+            var lockResultTwo = await provider.TryLockAsync(resource, requester);
 
             // Assert
-            Assert.IsTrue(wasLockedOne);
-            Assert.IsNotNull(lockOne);
-            Assert.IsTrue(wasLockedTwo);
-            Assert.IsNotNull(lockTwo);
+            Assert.IsTrue(lockResult.Success);
+            Assert.IsNotNull(lockResult.AcquiredLock);
+            Assert.IsTrue(lockResultTwo.Success);
+            Assert.IsNotNull(lockResultTwo.AcquiredLock);
         }
     }
 }

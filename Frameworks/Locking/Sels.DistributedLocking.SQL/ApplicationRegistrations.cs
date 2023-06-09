@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">Collection to add the service registration to</param>
         /// <param name="configurator">Optional delegate for configuring the options</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddMemoryLockingProvider(this IServiceCollection services, Action<SqlLockingProviderOptions> configurator = null)
+        public static IServiceCollection AddSqlLockingProvider(this IServiceCollection services, Action<SqlLockingProviderOptions> configurator = null)
         {
             services.ValidateArgument(nameof(services));
 

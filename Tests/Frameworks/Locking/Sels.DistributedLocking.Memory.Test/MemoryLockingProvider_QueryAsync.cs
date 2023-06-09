@@ -23,15 +23,15 @@ namespace Sels.DistributedLocking.Memory.Test
             }
 
             // Act
-            var results = await provider.QueryAsync(filter);
+            var result = await provider.QueryAsync(filter);
 
             // Assert
-            Assert.That(results, Is.Not.Null);
-            Assert.That(results.Length, Is.EqualTo(expected));
-            foreach (var result in results)
+            Assert.That(result.Results, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(expected));
+            foreach (var lockResult in result.Results)
             {
-                Assert.That(result, Is.Not.Null);
-                Assert.Contains(result.Resource, locks);
+                Assert.That(lockResult, Is.Not.Null);
+                Assert.Contains(lockResult.Resource, locks);
             }
         }
 
@@ -48,14 +48,14 @@ namespace Sels.DistributedLocking.Memory.Test
             }
 
             // Act
-            var results = await provider.QueryAsync();
+            var result = await provider.QueryAsync();
 
             // Assert
-            Assert.That(results, Is.Not.Null);
-            foreach (var result in results)
+            Assert.That(result, Is.Not.Null);
+            foreach (var lockResult in result.Results)
             {
-                Assert.That(result, Is.Not.Null);
-                Assert.Contains(result.Resource, locks);
+                Assert.That(lockResult, Is.Not.Null);
+                Assert.Contains(lockResult.Resource, locks);
             }
         }
 
@@ -75,11 +75,11 @@ namespace Sels.DistributedLocking.Memory.Test
             }
 
             // Act
-            var results = await provider.QueryAsync(page: page, pageSize: pageSize);
+            var result = await provider.QueryAsync(page: page, pageSize: pageSize);
 
             // Assert
-            Assert.That(results, Is.Not.Null);
-            CollectionAssert.AreEqual(expected, results.Select(x => x.Resource));
+            Assert.That(result, Is.Not.Null);
+            CollectionAssert.AreEqual(expected, result.Results.Select(x => x.Resource));
         }
 
         [TestCase(new string[] { "1", "2", "3", "4", "5" }, new string[] { "1","2","3","4", "5" } , false)]
@@ -99,7 +99,7 @@ namespace Sels.DistributedLocking.Memory.Test
 
             // Assert
             Assert.That(results, Is.Not.Null);
-            CollectionAssert.AreEqual(expected, results.Select(x => x.Resource));
+            CollectionAssert.AreEqual(expected, results.Results.Select(x => x.Resource));
         }
 
         [TestCase(new string?[] { "1", "2", "3", "4", "5", null }, new string?[] { null, "1", "2", "3", "4", "5" }, false)]
@@ -114,8 +114,8 @@ namespace Sels.DistributedLocking.Memory.Test
                 // Unlock lock to simulate empty LockedBy property
                 if(@lock == null)
                 {
-                    var (wasLocked, locked) = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Nullable");
-                    await locked.DisposeAsync();
+                    var lockResult = await provider.TryLockAsync(Guid.NewGuid().ToString(), "Nullable");
+                    await lockResult.AcquiredLock.DisposeAsync();
                 }
                 else
                 {
@@ -129,7 +129,7 @@ namespace Sels.DistributedLocking.Memory.Test
 
             // Assert
             Assert.That(results, Is.Not.Null);
-            CollectionAssert.AreEqual(expected, results.Select(x => x.LockedBy));
+            CollectionAssert.AreEqual(expected, results.Results.Select(x => x.LockedBy));
         }
     }
 }

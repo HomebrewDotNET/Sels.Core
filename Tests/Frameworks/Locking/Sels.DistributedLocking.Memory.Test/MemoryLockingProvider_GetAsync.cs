@@ -16,18 +16,18 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
 
             // Act
-            var (wasLocked, @lock) = await provider.TryLockAsync("Resource", "Me", TimeSpan.FromMinutes(5));
+            var lockResult = await provider.TryLockAsync("Resource", "Me", TimeSpan.FromMinutes(5));
             var result = await provider.GetAsync("Resource");
 
             // Assert
-            Assert.That(@lock, Is.Not.Null);
+            Assert.That(lockResult, Is.Not.Null);
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Resource, Is.EqualTo(@lock.Resource));
-            Assert.That(result.LockedBy, Is.EqualTo(@lock.LockedBy));
-            Assert.That(result.LockedAt, Is.EqualTo(@lock.LockedAt));
-            Assert.That(result.ExpiryDate, Is.EqualTo(@lock.ExpiryDate));
-            Assert.That(result.LastLockDate, Is.EqualTo(@lock.LastLockDate));
-            Assert.That(result.PendingRequests, Is.EqualTo(@lock.PendingRequests));
+            Assert.That(result.Resource, Is.EqualTo(lockResult.AcquiredLock.Resource));
+            Assert.That(result.LockedBy, Is.EqualTo(lockResult.AcquiredLock.LockedBy));
+            Assert.That(result.LockedAt, Is.EqualTo(lockResult.AcquiredLock.LockedAt));
+            Assert.That(result.ExpiryDate, Is.EqualTo(lockResult.AcquiredLock.ExpiryDate));
+            Assert.That(result.LastLockDate, Is.EqualTo(lockResult.AcquiredLock.LastLockDate));
+            Assert.That(result.PendingRequests, Is.EqualTo(lockResult.AcquiredLock.PendingRequests));
         }
 
         [Test]

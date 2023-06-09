@@ -21,7 +21,7 @@ namespace Sels.DistributedLocking.Provider
         /// <param name="keepAlive">To keep the lock alive when <paramref name="expiryTime"/> is set. Will extend the expiry date by <paramref name="expiryTime"/> right before it expires</param>
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>Tuple where Success will be true if <paramref name="requester"/> locked <paramref name="resource"/>, otherwise false if someone else has locked <paramref name="resource"/>. Lock will be the lock if Success is true</returns>
-        Task<(bool Success, ILock Lock)> TryLockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default);
+        Task<ILockResult> TryLockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default);
 
         /// <summary>
         /// Tries to place a lock on <paramref name="resource"/>. If the lock is currently held the method call will block until <paramref name="requester"/> manages to place the lock.
@@ -61,7 +61,7 @@ namespace Sels.DistributedLocking.Provider
         /// <param name="sortDescending">True to sort <paramref name="sortBy"/> descending, otherwise false for ascending</param>
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>All currently known locks</returns>
-        Task<ILockInfo[]> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false, CancellationToken token = default);
+        Task<ILockQueryResult> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false, CancellationToken token = default);
     }
 
     /// <summary>
@@ -151,6 +151,40 @@ namespace Sels.DistributedLocking.Provider
         /// </summary>
         DateTimeOffset CreatedAt { get; }
     }
+
+    /// <summary>
+    /// The result for trying to lock a resource.
+    /// </summary>
+    public interface ILockResult
+    {
+        /// <summary>
+        /// True if the resource could be locked, otherwise false.
+        /// </summary>
+        bool Success { get; }
+        /// <summary>
+        /// The acquired lock if <see cref="Success"/> is set to true.
+        /// </summary>
+        ILock AcquiredLock { get; }
+        /// <summary>
+        /// The current lock state regardless if the lock could be placed.
+        /// </summary>
+        ILockInfo CurrentLockState { get; }
+    }
+
+    /// <summary>
+    /// The result from querying for locks.
+    /// </summary>
+    public interface ILockQueryResult
+    {
+        /// <summary>
+        /// The query results.
+        /// </summary>
+        ILockInfo[] Results { get; }
+        /// <summary>
+        /// How many total pages there are.
+        /// </summary>
+        int MaxPages { get; }
+    } 
 
     /// <summary>
     /// Contains extension methods for <see cref="ILock"/>.

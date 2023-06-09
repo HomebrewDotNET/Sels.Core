@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using Sels.Core.Extensions.Linq;
+using Sels.DistributedLocking.Abstractions.Models;
 using Sels.DistributedLocking.SQL;
 using System;
 using System.Collections.Generic;
@@ -53,24 +54,24 @@ namespace Sels.DistributedLocking.Memory.Test
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.SearchAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<PropertyInfo>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLocks);
+                x.Setup(x => x.SearchAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<PropertyInfo>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync((sqlLocks, sqlLocks.Length));
             });
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
 
             // Act
-            var results = await provider.QueryAsync();
+            var result = await provider.QueryAsync();
 
             // Assert
-            Assert.That(results, Is.Not.Null);
-            Assert.That(results.Length, Is.EqualTo(sqlLocks.Length));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(sqlLocks.Length));
             for(int i = 0; i < sqlLocks.Length; i++)
             {
-                Assert.That(results[i].Resource, Is.EqualTo(sqlLocks[i].Resource));
-                Assert.That(results[i].LockedBy, Is.EqualTo(sqlLocks[i].LockedBy));
-                Assert.That(results[i].ExpiryDate, Is.EqualTo(sqlLocks[i].ExpiryDate));
-                Assert.That(results[i].LockedAt, Is.EqualTo(sqlLocks[i].LockedAt));
-                Assert.That(results[i].LastLockDate, Is.EqualTo(sqlLocks[i].LastLockDate));
-                Assert.That(results[i].PendingRequests, Is.EqualTo(sqlLocks[i].PendingRequests));
+                Assert.That(result.Results[i].Resource, Is.EqualTo(sqlLocks[i].Resource));
+                Assert.That(result.Results[i].LockedBy, Is.EqualTo(sqlLocks[i].LockedBy));
+                Assert.That(result.Results[i].ExpiryDate, Is.EqualTo(sqlLocks[i].ExpiryDate));
+                Assert.That(result.Results[i].LockedAt, Is.EqualTo(sqlLocks[i].LockedAt));
+                Assert.That(result.Results[i].LastLockDate, Is.EqualTo(sqlLocks[i].LastLockDate));
+                Assert.That(result.Results[i].PendingRequests, Is.EqualTo(sqlLocks[i].PendingRequests));
             }
         }
     }
