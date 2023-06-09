@@ -6,9 +6,10 @@
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
 		<Product>Core Library</Product>
-		<Description>Library containing generic code components for creating other libraries/applications.
-Now legacy so it can stay on .net standard 2.0. The new Sels.Core will target the latest .net version so new language features can be used.
-Used by projects maintained here: https://github.com/Jenssels1998
+		<Description>
+			Library containing generic code components for creating other libraries/applications.
+			Now legacy so it can stay on .net standard 2.0. The new Sels.Core will target the latest .net version so new language features can be used.
+			Used by projects maintained here: https://github.com/Jenssels1998
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 		<Copyright>Jens Sels</Copyright>
@@ -27,7 +28,7 @@ Used by projects maintained here: https://github.com/Jenssels1998
 	<Target Name="GetTargetPath">
 
 	</Target>
-	
+
 	<!--Exclude pdb files from release build-->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<DebugType>None</DebugType>
@@ -43,8 +44,8 @@ Used by projects maintained here: https://github.com/Jenssels1998
 
 	<!--Clear local versions if already added and add NuGet package to local repository-->
 	<Target Name="NuGetPushToLocal" AfterTargets="Pack" Condition="'$(OS)' == 'Windows_NT' And Exists('C:\NuGet\nuget.exe')">
-    <Exec Command="if exist %USERPROFILE%\.nuget\packages\$(PackageId) rmdir /s /q %USERPROFILE%\.nuget\packages\$(PackageId)" />
-    <Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
+		<Exec Command="if exist %USERPROFILE%\.nuget\packages\$(PackageId) rmdir /s /q %USERPROFILE%\.nuget\packages\$(PackageId)" />
+		<Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
 
@@ -63,17 +64,17 @@ Used by projects maintained here: https://github.com/Jenssels1998
 		<None Remove="Templates\**" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
+	</ItemGroup>
 
 </Project>

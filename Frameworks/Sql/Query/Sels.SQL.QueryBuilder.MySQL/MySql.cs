@@ -52,7 +52,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         public static ISelectStatementBuilder<object> Select(ILogger logger = null) => Select<object>(logger);
 
         /// <summary>
-        /// Returns a builder for creating a select query using common table expressions.
+        /// Returns a builder for creating a query using common table expressions.
         /// </summary>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a mysql query</returns>

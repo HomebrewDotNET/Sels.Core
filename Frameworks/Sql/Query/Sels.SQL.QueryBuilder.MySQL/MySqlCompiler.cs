@@ -563,7 +563,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             expression.ValidateArgument(nameof(expression));
             compilerOptions.ValidateArgument(nameof(compilerOptions));
 
-            _logger.Trace($"{_name} compiling expression of type <{expression.GetTypeName()}>");
+            _logger.Trace($"{_name} compiling expression of type <{expression.GetType().GetDisplayName()}>");
 
             if(expression is TableExpression tableExpression)
             {

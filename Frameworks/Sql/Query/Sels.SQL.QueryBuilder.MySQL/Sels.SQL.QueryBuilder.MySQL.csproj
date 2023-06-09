@@ -8,9 +8,17 @@
 	  <Company>Homebrew IT</Company>
 	  <Product>MySql/MariaDB query compiler</Product>
 	  <Description>
-		  Query compiler for MySql and MariaDB queries.
+		  MySQL compiler for Sels.SQL.QueryBuilder. Supports MySQL and MariaDB.
 
-		  Start creating queries using one of the following methods:
+		  Custom expressions:
+		  - SELECT FOR UPDATE
+		  - INSERT ON DUPLICATE KEY
+		  - SELECT LIMIT
+		  - CONCACT Function
+		  - RECURSIVE Cte
+		  - MariaDB RETURNING
+
+		  Start creating queries using one of the following static helper methods:
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.Insert();
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.Update();
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.Delete();
@@ -18,6 +26,8 @@
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.With();
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.If();
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.Set();
+
+		  Use IServiceCollection.AddMySqlQueryProvider() or IServiceCollection.AddCachedMySqlQueryProvider to inject ISqlQueryProvider or ICachedSqlQueryProvider to start building MySQL queries.
 	  </Description>
 	  <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 	  <Copyright>Jens Sels</Copyright>

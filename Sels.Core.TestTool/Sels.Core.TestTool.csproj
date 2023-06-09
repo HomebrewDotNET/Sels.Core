@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Frameworks\Locking\Sels.DistributedLocking.Memory\Sels.DistributedLocking.Memory.csproj" />
+    <ProjectReference Include="..\Frameworks\Sql\Query\Sels.SQL.QueryBuilder.MySQL\Sels.SQL.QueryBuilder.MySQL.csproj" />
     <ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
     <ProjectReference Include="..\Sels.Core.Data.MySQL\Sels.Core.Data.MySQL.csproj" />
     <ProjectReference Include="..\Sels.Core.Deployment\Sels.Core.Deployment.csproj" />

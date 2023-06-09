@@ -10,7 +10,20 @@
 		<Description>
 			Framework for creating sql queries using fluent builders.
 			Uses a (somewhat) modular expression system that gets compiled into SQL using compilers.
-			
+			Can be used for simple queries or more advanced queries (Joins, conditions (WHERE), sub queries, order by, group by, functions (MIN, AVG, ...), Union, ...)
+
+			Supports the following sql statements:
+			- Insert
+			- Update
+			- Delete
+			- Select
+			- Common table expressions (CTE)
+			- If, else if, else
+			- Declare variable
+			- Set variable
+
+			Use IServiceCollection.AddSqlQueryProvider() or IServiceCollection.AddCachedSqlQueryProvider to inject ISqlQueryProvider or ICachedSqlQueryProvider to start building sql queries.
+
 			Official compilers:
 			- Sels.SQL.QueryBuilder.MySQL
 		</Description>
@@ -47,7 +60,11 @@
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
 	<ItemGroup>
+	  <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
+	</ItemGroup>
+	<ItemGroup>
 	  <ProjectReference Include="..\..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+	  <ProjectReference Include="..\..\..\..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
 	</ItemGroup>
 
 </Project>
