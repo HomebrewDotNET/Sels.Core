@@ -17,10 +17,11 @@
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.Select();
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.With();
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.If();
+		  - Sels.SQL.QueryBuilder.MySQL.MySql.Set();
 	  </Description>
 	  <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 	  <Copyright>Jens Sels</Copyright>
-	  <PackageTags>Sels;SQL;Query;QueryBuilder;Fluent;Expressions;MySql;MariaDB</PackageTags>
+	  <PackageTags>Sels;SQL;Query;QueryBuilder;Fluent;Expression;MySql;MariaDB</PackageTags>
 	  <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 	  <!--For NuGet package-->
 	  <VersionPrefix>1.0.0</VersionPrefix>

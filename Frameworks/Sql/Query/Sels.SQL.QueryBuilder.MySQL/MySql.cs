@@ -120,6 +120,17 @@ namespace Sels.SQL.QueryBuilder.MySQL
         }
 
         /// <summary>
+        /// Returns a builder for creating a SET statement to assign a value to a variable.
+        /// </summary>
+        /// <param name="logger">Optional logger for tracing</param>
+        /// <returns>A builder for creating a variable set statement</returns>
+        public static IVariableSetterRootStatementBuilder Set(ILogger logger = null)
+        {
+            var compiler = new MySqlCompiler(logger);
+            return new VariableSetterStatementBuilder(compiler);
+        }
+
+        /// <summary>
         /// Compiles <paramref name="expression"/> into MySql.
         /// </summary>
         /// <param name="expression">The expression to compile</param>

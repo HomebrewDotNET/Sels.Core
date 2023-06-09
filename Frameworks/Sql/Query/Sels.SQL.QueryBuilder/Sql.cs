@@ -294,6 +294,10 @@ namespace Sels.SQL.QueryBuilder
         /// The default operator used to assign object a new value in SQL.
         /// </summary>
         public const char AssignmentOperator = '=';
+        /// <summary>
+        /// The command used to set something to a new value.
+        /// </summary>
+        public const string Set = "SET";
         #endregion
 
         #region Helpers
