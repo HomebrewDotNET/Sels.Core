@@ -12,7 +12,7 @@
 			Uses a (somewhat) modular expression system that gets compiled into SQL using compilers.
 			
 			Official compilers:
-			Sels.SQL.QueryBuilder.MySQL
+			- Sels.SQL.QueryBuilder.MySQL
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 		<Copyright>Jens Sels</Copyright>
