@@ -501,6 +501,35 @@ namespace Sels.SQL.QueryBuilder.MySQL
         #region Variable
         /// <inheritdoc/>
         public void CompileTo(StringBuilder builder, IVariableDeclarationStatementBuilder statementBuilder, Action<ICompilerOptions> configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None) => throw new NotSupportedException($"MySql does not support variable declarations");
+        /// <inheritdoc/>
+        public void CompileTo(StringBuilder builder, IVariableSetterStatementBuilder statementBuilder, Action<ICompilerOptions> configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        {
+            using (_logger.TraceMethod(this))
+            {
+                builder.ValidateArgument(nameof(builder));
+                statementBuilder.ValidateArgument(nameof(statementBuilder));
+                var compilerOptions = new MySqlCompilerOptions(configurator);
+
+                var expressionCount = statementBuilder.InnerExpressions.Count();
+                var isFormatted = options.HasFlag(ExpressionCompileOptions.Format);
+
+                _logger.Log($"{_name} compiling <{expressionCount}> expressions into a variable set statement");
+                if (expressionCount == 0) throw new NotSupportedException($"No expressions to compile into a variable set statement");
+
+                builder.Append(Sql.Set);
+                builder.AppendSpace();
+
+                // Variable to set
+                CompileExpressionTo(builder, compilerOptions, options, statementBuilder.Variable);
+                builder.AppendSpace();
+
+                // Value to assign
+                builder.Append(Sql.AssignmentOperator).AppendSpace();
+                CompileExpressionTo(builder, compilerOptions, options, statementBuilder.Value);
+
+                if (options.HasFlag(ExpressionCompileOptions.AppendSeparator)) builder.Append(';');
+            }
+        }
         #endregion
 
         /// <inheritdoc/>

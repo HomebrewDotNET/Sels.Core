@@ -6,9 +6,9 @@ using System.Text;
 namespace Sels.SQL.QueryBuilder.Builder.Compilation
 {
     /// <summary>
-    /// Compiles <see cref="IVariableDeclarationStatementBuilder"/> into SQL.
+    /// Compiles <typeparamref name="T"/> into SQL.
     /// </summary>
-    public interface IVariableDeclarationStatementCompiler
+    public interface IStatementCompiler<T>
     {
         /// <summary>
         /// Compiles the expressions in <paramref name="statementBuilder"/> into SQL and appends it to <paramref name="builder"/>.
@@ -17,6 +17,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Compilation
         /// <param name="statementBuilder">The builder to compile into sql</param>
         /// <param name="configurator">Optional delegate for configuring the compiler options</param>
         /// <param name="options">Optional settings for building the query</param>
-        void CompileTo(StringBuilder builder, IVariableDeclarationStatementBuilder statementBuilder, Action<ICompilerOptions> configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None);
+        void CompileTo(StringBuilder builder, T statementBuilder, Action<ICompilerOptions> configurator = null, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }

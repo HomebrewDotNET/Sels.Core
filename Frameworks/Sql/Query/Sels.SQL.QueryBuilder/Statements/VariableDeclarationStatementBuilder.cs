@@ -20,23 +20,23 @@ namespace Sels.SQL.QueryBuilder.Statements
         IEnumerable<IExpression>
     {
         // Fields
-        private readonly IVariableDeclarationStatementCompiler _compiler;
+        private readonly IStatementCompiler<IVariableDeclarationStatementBuilder> _compiler;
 
         // Properties
         /// <inheritdoc/>
-        public IExpression Variable { get; set; }
+        public IExpression Variable { get; private set; }
         /// <inheritdoc/>
-        public IExpression Type { get; set; }
+        public IExpression Type { get; private set; }
         /// <inheritdoc/>
-        public IExpression InitialValue { get; set; }
+        public IExpression InitialValue { get; private set; }
         /// <inheritdoc/>
         public ISharedExpressionBuilder<object, IVariableDeclarationStatementBuilder> InitialzedBy => this;
         /// <inheritdoc/>
         public IExpression[] InnerExpressions => this.ToArray();
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="VariableDeclarationStatementBuilder"/>
         /// <param name="compiler">Compiler used to compile the current builder into SQL</param>
-        public VariableDeclarationStatementBuilder(IVariableDeclarationStatementCompiler compiler)
+        public VariableDeclarationStatementBuilder(IStatementCompiler<IVariableDeclarationStatementBuilder> compiler)
         {
             _compiler = compiler.ValidateArgument(nameof(compiler));
         }

@@ -18,7 +18,7 @@ namespace Sels.SQL.QueryBuilder.Statements
     {
         // Fields
         private readonly IExpressionCompiler _expressionCompiler;
-        private readonly IIfStatementCompiler _compiler;
+        private readonly IStatementCompiler<IIfStatementBuilder> _compiler;
         private List<IExpression> _conditions = new List<IExpression>();
         private IMultiStatementBuilder _bodyBuilder;
         private Dictionary<List<IExpression>, IMultiStatementBuilder> _elseIfStatements = new Dictionary<List<IExpression>, IMultiStatementBuilder>();
@@ -73,7 +73,7 @@ namespace Sels.SQL.QueryBuilder.Statements
         /// <inheritdoc cref="IfStatementBuilder"/>
         /// <param name="expressionCompiler">Expression compiler used to create <see cref="MultiStatementBuilder"/></param>
         /// <param name="compiler">Used to compile the current builder into SQL</param>
-        public IfStatementBuilder(IExpressionCompiler expressionCompiler, IIfStatementCompiler compiler)
+        public IfStatementBuilder(IExpressionCompiler expressionCompiler, IStatementCompiler<IIfStatementBuilder> compiler)
         {
             _expressionCompiler = expressionCompiler.ValidateArgument(nameof(expressionCompiler));
             _compiler = compiler.ValidateArgument(nameof(compiler));
