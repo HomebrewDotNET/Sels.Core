@@ -1,5 +1,5 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Condition;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,13 +33,13 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <typeparam name="TEntity">The main entity to create the condition for</typeparam>
         /// <param name="builder">The delegate used to configure the condition</param>
         /// <returns>Current builder for method chaining</returns>
-        IIfConditionOrBodyStatementBuilder When<TEntity>(Action<IStatementConditionExpressionBuilder<TEntity>> builder) => When(new ConditionGroupExpression<TEntity>(builder, false, true));
+        IIfConditionOrBodyStatementBuilder When<TEntity>(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder) => When(new ConditionGroupExpression<TEntity>(builder, false, true));
         /// <summary>
         /// Creates a condition using <paramref name="builder"/>.
         /// </summary>
         /// <param name="builder">The delegate used to configure the condition</param>
         /// <returns>Current builder for method chaining</returns>
-        IIfConditionOrBodyStatementBuilder When(Action<IStatementConditionExpressionBuilder<object>> builder) => When<object>(builder);
+        IIfConditionOrBodyStatementBuilder When(Func<IStatementConditionExpressionBuilder<object>, object> builder) => When<object>(builder);
     }
 
     /// <summary>

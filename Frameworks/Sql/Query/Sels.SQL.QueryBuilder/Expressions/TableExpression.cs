@@ -11,15 +11,15 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
     {
         // Properties
         /// <inheritdoc cref="IDataSetExpression.DataSet"/>
-        public DataSetExpression? DataSet { get; set; }
+        public DataSetExpression DataSet { get; set; }
         /// <summary>
         /// Contains the database where the table is located in.
         /// </summary>
-        public ObjectExpression? Database { get; set; }
+        public ObjectExpression Database { get; set; }
         /// <summary>
         /// Contains the schema the table is located in.
         /// </summary>
-        public ObjectExpression? Schema { get; set; }
+        public ObjectExpression Schema { get; set; }
         /// <summary>
         /// Contains the table name.
         /// </summary>

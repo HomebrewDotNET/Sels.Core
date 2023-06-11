@@ -9,8 +9,8 @@
 		<Product>SQL Query Builder Framework</Product>
 		<Description>
 			Framework for creating sql queries using fluent builders.
-			Uses a (somewhat) modular expression system that gets compiled into SQL using compilers.
-			Can be used for simple queries or more advanced queries (Joins, conditions (WHERE), sub queries, order by, group by, functions (MIN, AVG, ...), Union, ...)
+			Uses a (somewhat) easy to extend expression system that gets compiled into SQL using compilers.
+			Can be used for simple queries or more advanced queries (Joins, conditions (WHERE), sub queries, order by, group by, functions (MIN, AVG, ...), Union, case when then else, ...)
 
 			Supports the following sql statements:
 			- Insert

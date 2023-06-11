@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
+namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
     /// <summary>
     /// Template for creating a new <see cref="IStatementConditionExpressionBuilder{TEntity}"/>.
@@ -17,7 +17,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
 
         // State
         private bool _nextConditionIsNot = false;
-        private ComparisonConditionExpression? _lastExpression;
+        private ComparisonConditionExpression _lastExpression;
 
         // Properties
         /// <summary>
@@ -29,7 +29,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
         /// <param name="builder">Delegate for configuring the current builder</param>
         /// <param name="throwOnEmpty">If a <see cref="InvalidOperationException"/> should be thrown when <paramref name="builder"/> created no expressions</param>
         /// <exception cref="InvalidOperationException"></exception>
-        public BaseConditionExpression(Action<IStatementConditionExpressionBuilder<TEntity>> builder, bool throwOnEmpty = true)
+        public BaseConditionExpression(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder, bool throwOnEmpty = true)
         {
             builder.ValidateArgument(nameof(builder));
             builder(this);
@@ -43,7 +43,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
             return this;
         }
         /// <inheritdoc/>
-        public IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Action<IStatementConditionExpressionBuilder<TEntity>> builder)
+        public IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder)
         {
             builder.ValidateArgument(nameof(builder));
 

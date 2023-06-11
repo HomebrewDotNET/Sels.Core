@@ -8,7 +8,7 @@ using Sels.Core.Extensions.Linq;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.Expressions.Condition;
 
-namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
+namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
     /// <summary>
     /// Expression that represents a sql join.

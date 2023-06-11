@@ -15,23 +15,23 @@ namespace Sels.SQL.QueryBuilder
         /// Returns a builder for creating an insert sql statement.
         /// </summary>
         /// <typeparam name="T">The main entity to query</typeparam>
-        /// <returns>A fluent builder for creating an insert sql statement/returns>
+        /// <returns>A fluent builder for creating an insert sql statement</returns>
         public IInsertStatementBuilder<T> Insert<T>();
         /// <summary>
         /// Returns a builder for creating an insert sql statement.
         /// </summary>
-        /// <returns>A fluent builder for creating an insert sql statement/returns>
+        /// <returns>A fluent builder for creating an insert sql statement</returns>
         public IInsertStatementBuilder<object> Insert() => Insert<object>();
         /// <summary>
         /// Returns a builder for creating a select sql statement.
         /// </summary>
         /// <typeparam name="T">The main entity to query</typeparam>
-        /// <returns>A fluent builder for creating a select sql statement/returns>
+        /// <returns>A fluent builder for creating a select sql statement</returns>
         public ISelectStatementBuilder<T> Select<T>();
         /// <summary>
         /// Returns a builder for creating a select sql statement.
         /// </summary>
-        /// <returns>A fluent builder for creating a select sql statement/returns>
+        /// <returns>A fluent builder for creating a select sql statement</returns>
         public ISelectStatementBuilder<object> Select() => Select<object>();
         /// <summary>
         /// Returns a builder for creating a sql statement using common table expressions.
@@ -42,23 +42,23 @@ namespace Sels.SQL.QueryBuilder
         /// Returns a builder for creating an update sql statement.
         /// </summary>
         /// <typeparam name="T">The main entity to query</typeparam>
-        /// <returns>A fluent builder for creating an update sql statement/returns>
+        /// <returns>A fluent builder for creating an update sql statement</returns>
         public IUpdateStatementBuilder<T> Update<T>();
         /// <summary>
         /// Returns a builder for creating an update sql statement.
         /// </summary>
-        /// <returns>A fluent builder for creating an update sql statement/returns>
+        /// <returns>A fluent builder for creating an update sql statement</returns>
         public IUpdateStatementBuilder<object> Update() => Update<object>();
         /// <summary>
         /// Returns a builder for creating a delete sql statement.
         /// </summary>
         /// <typeparam name="T">The main entity to query</typeparam>
-        /// <returns>A fluent builder for creating a delete sql statement/returns>
+        /// <returns>A fluent builder for creating a delete sql statement</returns>
         public IDeleteStatementBuilder<T> Delete<T>();
         /// <summary>
         /// Returns a builder for creating a delete sql statement.
         /// </summary>
-        /// <returns>A fluent builder for creating a delete sql statement/returns>
+        /// <returns>A fluent builder for creating a delete sql statement</returns>
         public IDeleteStatementBuilder<object> Delete() => Delete<object>();
         /// <summary>
         ///  Returns a builder for creating a query consisting of multiple statements and/or expressions.
@@ -92,14 +92,14 @@ namespace Sels.SQL.QueryBuilder
         /// </summary>
         /// <param name="queryName">The name of the query to get. Must be globally unique</param>
         /// <param name="queryBuilder">Delegate that creates and returns the builder to generate the query</param>
-        /// <returns></returns>
+        /// <returns>The generated query</returns>
         public string GetQuery(string queryName, Func<ISqlQueryProvider, IQueryBuilder> queryBuilder);
         /// <summary>
         /// Fetches query with name <paramref name="queryName"/>. If it does not exist yet it will be initialized with <paramref name="queryBuilder"/>.
         /// </summary>
         /// <param name="queryName">The name of the query to get. Must be globally unique</param>
         /// <param name="queryBuilder">Delegate that returns the query string</param>
-        /// <returns></returns>
+        /// <returns>The generated query</returns>
         public string GetQuery(string queryName, Func<ISqlQueryProvider, string> queryBuilder);
     }
 }

@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
+namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
     /// <summary>
     /// Expression that wraps another <see cref="IExpression"/> so it acts as a condition in a where clause.

@@ -1,6 +1,7 @@
 ﻿using Sels.SQL.QueryBuilder.Builder;
 using Sels.Core.Testing.Models;
 using System;
+using Sels.SQL.QueryBuilder.Expressions;
 
 namespace Sels.SQL.QueryBuilder.MySQL.Test
 {
@@ -370,6 +371,50 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
 
             // Act
             var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithCurrentDateAndTypeServer()
+        {
+            // Arrange
+            var expected = "SELECT NOW()".GetWithoutWhitespace().ToLower();
+
+            // Act
+            var query = MySql.Select().Expression(b => b.CurrentDate(DateType.Server)).Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+        [Test]
+        public void BuildsCorrectSelectQueryWithCurrentDateAndTypeUtc()
+        {
+            // Arrange
+            var expected = "SELECT UTC_TIMESTAMP()".GetWithoutWhitespace().ToLower();
+
+            // Act
+            var query = MySql.Select().Expression(b => b.CurrentDate(DateType.Utc)).Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [TestCase(1, DateInterval.Minute, "1", "MINUTE")]
+        [TestCase(-1500, DateInterval.Millisecond, "-1500", "MICROSECOND")]
+        [TestCase(24, DateInterval.Month, "24", "MONTH")]
+        [TestCase(1.5, DateInterval.Hour, "1.5", "MONTH")]
+        public void BuildsCorrectSelectQueryWithModifyDateInterval(double amount, DateInterval interval, string expectedAmount, string expectedInterval)
+        {
+            // Arrange
+            var expected = $"SELECT DATE_ADD(NOW(), INTERVAL {expectedAmount} {expectedInterval})".GetWithoutWhitespace().ToLower();
+
+            // Act
+            var query = MySql.Select().Expression(b => b.ModifyDate(b => b.CurrentDate(DateType.Server), amount, interval)).Build();
 
             // Assert
             Assert.IsNotNull(query);

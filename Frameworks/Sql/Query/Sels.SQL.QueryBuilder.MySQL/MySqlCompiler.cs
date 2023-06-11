@@ -16,6 +16,7 @@ using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 using Sels.SQL.QueryBuilder.Expressions;
+using Sels.SQL.QueryBuilder.MySQL.Expressions;
 
 namespace Sels.SQL.QueryBuilder.MySQL
 {
@@ -64,6 +65,28 @@ namespace Sels.SQL.QueryBuilder.MySQL
             { DeleteExpressionPositions.Join, (true, null, Environment.NewLine, false) },
             { DeleteExpressionPositions.Where, (true, Sql.Clauses.Where, Constants.Strings.Comma + Sql.LogicOperators.And, false) },
             { DeleteExpressionPositions.After, (true, null, Environment.NewLine, false) },
+        };
+
+        private static readonly IReadOnlyDictionary<Type, Func<IExpression, IExpression>> _mappedExpressions = new Dictionary<Type, Func<IExpression, IExpression>>()
+        {
+            // Override assignment operator
+            { typeof(VariableInlineAssignmentExpression), x => {
+                var casted = x.CastTo<VariableInlineAssignmentExpression>();
+                casted.AssignmentOperator = MySql.Keywords.VariableAssignmentOperator;
+                return casted;
+            }},
+            // Remove schema as MySql doesn't support it
+            { typeof(TableExpression), x => {
+                var casted = x.CastTo<TableExpression>();
+                casted.Schema = null;
+                return casted;
+            }},
+            // Needs custom compiler support
+            { typeof(CurrentDateExpression), x => new NowExpression(x.CastTo<CurrentDateExpression>().Type) },
+            { typeof(ModifyDateExpression), x => {
+                var casted = x.CastTo<ModifyDateExpression>();
+                return new DateAddExpression(casted.Date, casted.Amount, casted.Interval);
+            }},
         };
         #endregion
 
@@ -557,7 +580,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             }
         }
 
-        private void CompileExpressionTo(StringBuilder builder, MySqlCompilerOptions compilerOptions, ExpressionCompileOptions options, IExpression expression, bool isInsert = false)
+        private void CompileExpressionTo(StringBuilder builder, MySqlCompilerOptions compilerOptions, ExpressionCompileOptions options, IExpression expression, bool isInsert = false, bool allowMap = true)
         {
             builder.ValidateArgument(nameof(builder));
             expression.ValidateArgument(nameof(expression));
@@ -565,18 +588,10 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
             _logger.Trace($"{_name} compiling expression of type <{expression.GetType().GetDisplayName()}>");
 
-            if(expression is TableExpression tableExpression)
+            if(allowMap && _mappedExpressions.TryGetValue(expression.GetType(), out var mapper))
             {
-                // Remove schema as MySql doesn't support it
-                tableExpression.Schema = null;
-                tableExpression.ToSql(builder, (b, e) => CompileExpressionTo(b, compilerOptions, options, e, isInsert), options);
-            }
-            else if (expression is VariableInlineAssignmentExpression variableInlineAssignmentExpression)
-            {
-                // Manually compile so we can use the correct assignment operator
-                CompileExpressionTo(builder, compilerOptions, options, variableInlineAssignmentExpression.VariableExpression);
-                builder.AppendSpace().Append(MySql.Keywords.VariableAssignmentOperator).AppendSpace();
-                CompileExpressionTo(builder, compilerOptions, options, variableInlineAssignmentExpression.ValueExpression);
+                var mappedExpression = mapper(expression);
+                CompileExpressionTo(builder, compilerOptions, options, mappedExpression, isInsert, false);
             }
             else if (expression is IColumnExpression columnExpression && !columnExpression.Object.Equals(Sql.All.ToString()))
             {

@@ -1,8 +1,6 @@
 ﻿using Sels.Core.Extensions;
 using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Condition;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Join;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -126,7 +124,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
 
         #region Condition
         /// <inheritdoc/>
-        public TDerived Where(Action<IStatementConditionExpressionBuilder<TEntity>> builder)
+        public TDerived Where(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder)
         {
             builder.ValidateArgument(nameof(builder));
 
@@ -173,7 +171,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <typeparam name="T">The type to get the properties from</typeparam>
         /// <param name="excludedProperties">Optional names of properties to exclude</param>
         /// <returns>All usable properties on <typeparamref name="T"/></returns>
-        protected IEnumerable<PropertyInfo> GetColumnPropertiesFrom<T>(string[]? excludedProperties)
+        protected IEnumerable<PropertyInfo> GetColumnPropertiesFrom<T>(string[] excludedProperties)
         {
             return typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters()?.Length == 0 && (!excludedProperties.HasValue() || !excludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase)));
         }

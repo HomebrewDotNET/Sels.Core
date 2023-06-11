@@ -8,6 +8,7 @@ using SqlParameterExpression = Sels.SQL.QueryBuilder.Builder.Expressions.Paramet
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.Models;
+using Sels.SQL.QueryBuilder.Expressions;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -204,6 +205,66 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="caseBuilder">Delegate that configures the case expression</param>
         /// <returns>Builder for creating more expressions</returns>
         TReturn Case<T>(Action<ICaseExpressionRootBuilder<T>> caseBuilder) => Expression(new WrappedExpression(new CaseExpression<T>(caseBuilder)));
+        #endregion
+
+        #region Date
+        /// <summary>
+        /// Adds an expression that returns the current date.
+        /// </summary>
+        /// <param name="type">Determines which date is returned</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn CurrentDate(DateType type = DateType.Utc) => Expression(new CurrentDateExpression(type));
+
+        /// <summary>
+        /// Adds an expression where a date is modified.
+        /// </summary>
+        /// <param name="date">String that contains the date to modify</param>
+        /// <param name="amount">The amount to add/substract to/from the date</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate(string date, double amount, DateInterval interval = DateInterval.Millisecond) => Expression(new ModifyDateExpression(new SqlConstantExpression(date.ValidateArgumentNotNullOrWhitespace(nameof(date))), new SqlConstantExpression(amount), interval));
+        /// <summary>
+        /// Adds an expression where a date is modified.
+        /// </summary>
+        /// <param name="date">The date to modify</param>
+        /// <param name="amount">The amount to add/substract to/from the date</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate(DateTimeOffset date, double amount, DateInterval interval = DateInterval.Millisecond) => Expression(new ModifyDateExpression(new SqlConstantExpression(date), new SqlConstantExpression(amount), interval));
+        /// <summary>
+        /// Adds an expression where a date is modified.
+        /// </summary>
+        /// <typeparam name="T">The main entity to build the expression for</typeparam>
+        /// <param name="dateExpressionBuilder">Delegate that selects the date expression to modify</param>
+        /// <param name="amount">The amount to add/substract to/from the date</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate<T>(Action<ISharedExpressionBuilder<T, Null>> dateExpressionBuilder, double amount, DateInterval interval = DateInterval.Millisecond) => Expression(new ModifyDateExpression(new ExpressionBuilder<T>(dateExpressionBuilder.ValidateArgument(nameof(dateExpressionBuilder))), new SqlConstantExpression(amount), interval));
+        /// <summary>
+        /// Adds an expression where a date is modified.
+        /// </summary>
+        /// <param name="dateExpressionBuilder">Delegate that selects the date expression to modify</param>
+        /// <param name="amount">The amount to add/substract to/from the date</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate(Action<ISharedExpressionBuilder<TEntity, Null>> dateExpressionBuilder, double amount, DateInterval interval = DateInterval.Millisecond) => ModifyDate<TEntity>(dateExpressionBuilder, amount, interval);
+        /// <summary>
+        /// Adds an expression where a date is modified.
+        /// </summary>
+        /// <typeparam name="T">The main entity to build the expression for</typeparam>
+        /// <param name="dateExpressionBuilder">Delegate that selects the date expression to modify</param>
+        /// <param name="amountExpressionBuilder">Delegate that selects the value expression</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate<T>(Action<ISharedExpressionBuilder<T, Null>> dateExpressionBuilder, Action<ISharedExpressionBuilder<T, Null>> amountExpressionBuilder, DateInterval interval = DateInterval.Millisecond) => Expression(new ModifyDateExpression(new ExpressionBuilder<T>(dateExpressionBuilder.ValidateArgument(nameof(dateExpressionBuilder))), new ExpressionBuilder<T>(amountExpressionBuilder.ValidateArgument(nameof(amountExpressionBuilder))), interval));
+        /// <summary>
+        /// Adds an expression where a date is modified.
+        /// </summary>
+        /// <param name="dateExpressionBuilder">Delegate that selects the date expression to modify</param>
+        /// <param name="amountExpressionBuilder">Delegate that selects the value expression</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate(Action<ISharedExpressionBuilder<TEntity, Null>> dateExpressionBuilder, Action<ISharedExpressionBuilder<TEntity, Null>> amountExpressionBuilder, DateInterval interval = DateInterval.Millisecond) => ModifyDate<TEntity>(dateExpressionBuilder, amountExpressionBuilder, interval);
         #endregion
     }
 }

@@ -2,8 +2,6 @@
 using Sels.Core.Extensions.Conversion;
 using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Condition;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Join;
 using System;
 using System.Collections.Generic;
 using System.Linq;

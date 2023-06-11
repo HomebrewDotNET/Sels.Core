@@ -1,7 +1,7 @@
 ﻿using Sels.Core.Extensions;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Update;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,6 +18,10 @@ namespace Sels.SQL.QueryBuilder.Expressions
         /// Expression that contains the variable to set.
         /// </summary>
         public IExpression VariableExpression { get; }
+        /// <summary>
+        /// The assignment operator to use.
+        /// </summary>
+        public string AssignmentOperator { get; set; } = Sql.AssignmentOperator.ToString();
         /// <summary>
         /// Expression that contains the value to set <see cref="VariableExpression"/> to.
         /// </summary>
@@ -39,7 +43,7 @@ namespace Sels.SQL.QueryBuilder.Expressions
             subBuilder.ValidateArgument(nameof(subBuilder));
 
             subBuilder(builder, VariableExpression);
-            builder.AppendSpace().Append(Sql.AssignmentOperator).AppendSpace();
+            builder.AppendSpace().Append(AssignmentOperator.ValidateArgumentNotNullOrWhitespace(nameof(AssignmentOperator))).AppendSpace();
             subBuilder(builder, ValueExpression);
         }
     }

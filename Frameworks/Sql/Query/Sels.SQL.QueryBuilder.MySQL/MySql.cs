@@ -193,5 +193,24 @@ namespace Sels.SQL.QueryBuilder.MySQL
             /// </summary>
             public const string VariableAssignmentOperator = ":=";
         }
+
+        /// <summary>
+        /// Contains static values related to MySQL/MariaDB specific functions.
+        /// </summary>
+        public static class Functions
+        {
+            /// <summary>
+            /// Function that returns the current database date.
+            /// </summary>
+            public const string Now = "NOW";
+            /// <summary>
+            /// Function that returns the current UTC date.
+            /// </summary>
+            public const string UtcNow = "UTC_TIMESTAMP";
+            /// <summary>
+            /// Function that modifies a date.
+            /// </summary>
+            public const string DateAdd = "DATE_ADD";
+        }
     }
 }

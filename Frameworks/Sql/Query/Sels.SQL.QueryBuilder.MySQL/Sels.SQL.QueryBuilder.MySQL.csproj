@@ -14,9 +14,9 @@
 		  - SELECT FOR UPDATE
 		  - INSERT ON DUPLICATE KEY
 		  - SELECT LIMIT
-		  - CONCACT Function
 		  - RECURSIVE Cte
 		  - MariaDB RETURNING
+		  - NOW, UTC_TIMESTAMP, DATE_ADD, CONCACT functions
 
 		  Start creating queries using one of the following static helper methods:
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.Insert();

@@ -1,5 +1,5 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Condition;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
 using System;
 using System.Text;
 using SqlConstantExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ConstantExpression;
@@ -23,7 +23,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="builder">Builder for adding conditions</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Where(Action<IStatementConditionExpressionBuilder<TEntity>> builder);
+        TDerived Where(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder);
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="builder">The builder to create the conditions within the codition group</param>
         /// <returns>Current builder for creating more conditions</returns>
-        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Action<IStatementConditionExpressionBuilder<TEntity>> builder);
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder);
 
         #region FullExpression
         /// <summary>

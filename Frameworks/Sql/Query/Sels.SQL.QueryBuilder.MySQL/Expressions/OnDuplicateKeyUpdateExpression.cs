@@ -2,7 +2,6 @@
 using Sels.Core.Extensions.Linq;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Update;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.MySQL.Builder.Statement;
 using System;

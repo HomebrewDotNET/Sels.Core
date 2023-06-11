@@ -2,7 +2,7 @@
 using Sels.Core.Models;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Update;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.Expressions.Condition;
 using System;
@@ -30,7 +30,7 @@ namespace Sels.SQL.QueryBuilder.Expressions
         ISharedExpressionBuilder<TEntity, Null>
     {
         // Fields
-        private IExpression? _currentWhenExpression;
+        private IExpression _currentWhenExpression;
         private List<(IExpression Condition, IExpression Value)> _whenExpressions = new List<(IExpression Condition, IExpression Value)>();
         private IExpression _elseExpression;
 

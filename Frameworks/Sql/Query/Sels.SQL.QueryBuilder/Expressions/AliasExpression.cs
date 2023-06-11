@@ -13,7 +13,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// <summary>
         /// The expression containing the alias.
         /// </summary>
-        public IExpression? Alias { get; set; }
+        public IExpression Alias { get; set; }
         /// <summary>
         /// The expression to add the alias to.
         /// </summary>
@@ -29,7 +29,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// <inheritdoc cref="AliasExpression"/>
         /// <param name="expression"><inheritdoc cref="Expression"/></param>
         /// <param name="aliasExpression"><inheritdoc cref="Alias"/></param>
-        public AliasExpression(IExpression expression, IExpression? aliasExpression)
+        public AliasExpression(IExpression expression, IExpression aliasExpression)
         {
             Expression = expression.ValidateArgument(nameof(expression));
             Alias = aliasExpression;
