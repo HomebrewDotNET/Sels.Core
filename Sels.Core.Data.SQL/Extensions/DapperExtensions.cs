@@ -1,4 +1,8 @@
 ﻿using Dapper;
+using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder;
+using System;
+using System.Linq;
 using System.Reflection;
 
 namespace Sels.Core.Data.SQL.Extensions.Dapper

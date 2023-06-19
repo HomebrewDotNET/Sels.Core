@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,5 +18,12 @@ namespace Sels.SQL.QueryBuilder.Builder.Compilation
         /// <param name="converterDelegate">The delegate to use for the conversion</param>
         /// <returns>Current options for method chaining</returns>
         ICompilerOptions SetDataSetConverter(Func<object, string> converterDelegate);
+
+        /// <summary>
+        /// Executes <paramref name="action"/> right before it gets compiled to sql.
+        /// </summary>
+        /// <param name="action">The delegate to execute</param>
+        /// <returns>Current options for method chaining</returns>
+        ICompilerOptions OnCompiling(Action<IExpression> action);
     }
 }

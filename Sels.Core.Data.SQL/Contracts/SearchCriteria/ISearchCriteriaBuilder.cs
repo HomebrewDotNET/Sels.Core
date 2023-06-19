@@ -1,7 +1,12 @@
 ﻿using Dapper;
+using Sels.Core.Extensions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.Core.Data.SQL.SearchCriteria
 {
@@ -19,7 +24,7 @@ namespace Sels.Core.Data.SQL.SearchCriteria
         /// <param name="searchCriteria">The search criteria that will be converted</param>
         /// <param name="parameters">Optional parameter bag that can be provided. Implicit conditions that use parameters will automatically add the values to the bag</param>
         /// <returns>The final builder after the creating the conditions or null if no conditions were created</returns>
-        IChainedBuilder<T, IStatementConditionExpressionBuilder<T>>? Build(IStatementConditionExpressionBuilder<T> builder, TSearchCriteria searchCriteria, DynamicParameters? parameters = null);
+        IChainedBuilder<T, IStatementConditionExpressionBuilder<T>> Build(IStatementConditionExpressionBuilder<T> builder, TSearchCriteria searchCriteria, DynamicParameters? parameters = null);
     }
 
     /// <summary>
@@ -50,7 +55,7 @@ namespace Sels.Core.Data.SQL.SearchCriteria
         /// <param name="property">Expression pointing to the property to exclude</param>
         /// <param name="additionalProperties">Optional additional properties to exclude</param>
         /// <returns>Current builder for method chaining</returns>
-        ISearchCriteriaConverterBuilder<T, TSearchCriteria> Excluding(Expression<Func<TSearchCriteria, object>> property, params Expression<Func<TSearchCriteria, object>>[] additionalProperties) => Excluding(Guard.IsNotNull(property).ExtractProperty(nameof(property)).Name, additionalProperties != null ? additionalProperties.Select((i, x) => Guard.IsNotNull(x, $"{nameof(additionalProperties)}[{i}]").ExtractProperty($"{nameof(additionalProperties)}[{i}]").Name).ToArray() : null);
+        ISearchCriteriaConverterBuilder<T, TSearchCriteria> Excluding(Expression<Func<TSearchCriteria, object>> property, params Expression<Func<TSearchCriteria, object>>[] additionalProperties) => Excluding(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, additionalProperties != null ? additionalProperties.Select((x, i) => x.ValidateArgument($"{nameof(additionalProperties)}[{i}]").ExtractProperty($"{nameof(additionalProperties)}[{i}]").Name).ToArray() : null);
 
         /// <summary>
         /// Defines a delegate for converting a property to a column name used for implicit conversions.
@@ -75,7 +80,7 @@ namespace Sels.Core.Data.SQL.SearchCriteria
         /// </summary>
         /// <param name="valueSelector">Delegate that converts the property value to SQL for the supplied property, if null is returned the default logic will be used</param>
         /// <returns>Current builder for method chaining</returns>
-        ISearchCriteriaConverterBuilder<T, TSearchCriteria> WithDefaultValue(Func<PropertyInfo, object, DynamicParameters?, IStatementConditionRightExpressionBuilder<T>, IChainedBuilder<T, IStatementConditionExpressionBuilder<T>>?> valueSelector);
+        ISearchCriteriaConverterBuilder<T, TSearchCriteria> WithDefaultValue(Func<PropertyInfo, object, DynamicParameters, IStatementConditionRightExpressionBuilder<T>, IChainedBuilder<T, IStatementConditionExpressionBuilder<T>>?> valueSelector);
     }
 
     /// <summary>

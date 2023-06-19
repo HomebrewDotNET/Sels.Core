@@ -46,10 +46,10 @@ namespace Sels.DistributedLocking.Memory.Test
                 {
                     Resource = "Resource.2",
                     LockedBy = "Requester.2",
-                    ExpiryDate = DateTimeOffset.Now.AddMinutes(5),
+                    ExpiryDate = DateTime.Now.AddMinutes(5),
                     PendingRequests = 2,
-                    LastLockDate = DateTimeOffset.Now,
-                    LockedAt = DateTimeOffset.Now,
+                    LastLockDate = DateTime.Now,
+                    LockedAt = DateTime.Now,
                 }
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>

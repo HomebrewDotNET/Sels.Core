@@ -34,11 +34,17 @@ namespace Sels.DistributedLocking.Memory
         /// <summary>
         /// Dictates how stale locks are handled. If set to true a <see cref="StaleLockException"/> or <see cref="ResourceAlreadyLockedException"/> will be thrown when actions are performed on a stale lock. When set to false the action will fail silently.
         /// </summary>
-        public bool ThrowOnStaleLock { get; set; } = false;
+        public bool ThrowOnStaleLock { get; set; } = true;
         /// <summary>
         /// How many milliseconds before a lock expires to extend the expiry date. Is also used as offset when to notify that a lock expired.
         /// </summary>
         public int ExpiryOffset { get; set; } = 1000;
+
+        /// <inheritdoc/>
+        public MemoryLockingProviderOptions()
+        {
+            SetDefaultAmount();
+        }
 
         private void SetDefaultAmount()
         {

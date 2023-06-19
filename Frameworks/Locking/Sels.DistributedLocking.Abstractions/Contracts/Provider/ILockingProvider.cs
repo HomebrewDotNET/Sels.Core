@@ -106,15 +106,15 @@ namespace Sels.DistributedLocking.Provider
         /// <summary>
         /// When the current lock was locked by <see cref="LockedBy"/>. Will be null when the lock is free.
         /// </summary>
-        DateTimeOffset? LockedAt { get; }
+        DateTime? LockedAt { get; }
         /// <summary>
         /// The last time when the lock was held by someone.
         /// </summary>
-        DateTimeOffset? LastLockDate { get; }
+        DateTime? LastLockDate { get; }
         /// <summary>
         /// When the lock is set to expire. When a lock expires others will be able lock it instead. When set to null the lock never expires.
         /// </summary>
-        DateTimeOffset? ExpiryDate { get; }
+        DateTime? ExpiryDate { get; }
         /// <summary>
         /// How many pending requests there are for the current lock.
         /// </summary>
@@ -145,11 +145,11 @@ namespace Sels.DistributedLocking.Provider
         /// <summary>
         /// When the current request expires. When set to null the request will never expire.
         /// </summary>
-        DateTimeOffset? Timeout { get; }
+        DateTime? Timeout { get; }
         /// <summary>
         /// When the request was created.
         /// </summary>
-        DateTimeOffset CreatedAt { get; }
+        DateTime CreatedAt { get; }
     }
 
     /// <summary>

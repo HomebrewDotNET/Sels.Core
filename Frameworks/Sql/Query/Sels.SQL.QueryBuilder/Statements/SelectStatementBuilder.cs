@@ -25,9 +25,8 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         }
 
         /// <inheritdoc cref="SelectStatementBuilder{TEntity}"/>
-        /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
-        /// <param name="expressions">The expressions for the current query</param>
-        public SelectStatementBuilder(IQueryCompiler<SelectExpressionPositions> compiler, Dictionary<SelectExpressionPositions, List<OrderedExpression>> expressions) : base(compiler, expressions)
+        /// <param name="other">The builder to copy settings from</param>
+        public SelectStatementBuilder(SelectStatementBuilder<TEntity> other) : base(other)
         {
         }
 
@@ -63,9 +62,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             return SelectExpressionPositions.Where;
         }
         /// <inheritdoc/>
-        protected override ISelectStatementBuilder<TEntity> Clone(IQueryCompiler<SelectExpressionPositions> compiler, Dictionary<SelectExpressionPositions, List<OrderedExpression>> expressions)
+        public override ISelectStatementBuilder<TEntity> Clone()
         {
-            return new SelectStatementBuilder<TEntity>(compiler, expressions);
+            return new SelectStatementBuilder<TEntity>(this);
         }
 
         /// <inheritdoc/>

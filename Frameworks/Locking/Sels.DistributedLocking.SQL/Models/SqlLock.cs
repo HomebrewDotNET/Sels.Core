@@ -15,17 +15,25 @@ namespace Sels.DistributedLocking.SQL
         /// <inheritdoc/>
         public string LockedBy { get; set; }
         /// <inheritdoc/>
-        public DateTimeOffset? LockedAt { get; set; }
+        public DateTime? LockedAt { get; set; }
         /// <inheritdoc/>
-        public DateTimeOffset? LastLockDate { get; set; }
+        public DateTime? LastLockDate { get; set; }
         /// <inheritdoc/>
-        public DateTimeOffset? ExpiryDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
         /// <inheritdoc/>
         public int PendingRequests { get; set; }
 
         /// <summary>
-        /// All the pending requests for the lock. Useful for joins.
+        /// Converts all dates from utc to local.
         /// </summary>
-        List<SqlLockRequest> Requests { get; set; }
+        /// <returns>Current instance</returns>
+        public SqlLock SetFromUtc()
+        {
+            if (LockedAt.HasValue && LockedAt.Value.Kind == DateTimeKind.Unspecified) LockedAt = DateTime.SpecifyKind(LockedAt.Value, DateTimeKind.Utc).ToLocalTime();
+            if (LastLockDate.HasValue && LastLockDate.Value.Kind == DateTimeKind.Unspecified) LastLockDate = DateTime.SpecifyKind(LastLockDate.Value, DateTimeKind.Utc).ToLocalTime();
+            if (ExpiryDate.HasValue && ExpiryDate.Value.Kind == DateTimeKind.Unspecified) ExpiryDate = DateTime.SpecifyKind(ExpiryDate.Value, DateTimeKind.Utc).ToLocalTime();
+
+            return this;
+        }
     }
 }

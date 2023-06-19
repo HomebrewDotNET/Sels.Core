@@ -14,7 +14,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         {
             // Arrange
             var expected = "WITH `cte` AS ( SELECT * FROM `Queue` Q ORDER BY Q.`Created` ASC LIMIT 5 FOR UPDATE) UPDATE `Queue` Q INNER JOIN `cte` C ON Q.`Id` = C.`Id` SET Q.`ProcessId` = @ProcessId; SELECT * FROM `Queue` Q WHERE Q.`ProcessId` = @ProcessId;".GetWithoutWhitespace().ToLower();
-            var builder = MySql.Build();
+            var builder = MySql.New();
 
             // Act
             var cteBuilder = MySql.With().Cte("cte")
@@ -42,7 +42,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         {
             // Arrange
             var expected = "SET @ProcessId = 1; SELECT * FROM `Queue` Q WHERE Q.`ProcessId` = @ProcessId;".GetWithoutWhitespace().ToLower();
-            var builder = MySql.Build();
+            var builder = MySql.New();
 
             // Act
             builder.Append("SET @ProcessId = 1");

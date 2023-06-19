@@ -1,5 +1,4 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,26 +19,26 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="expression">The expression to add as a condition</param>
         /// <returns>Current builder for method chaining</returns>
-        IIfConditionOrBodyStatementBuilder When(IExpression expression);
+        IIfConditionOrBodyStatementBuilder Condition(IExpression expression);
         /// <summary>
         /// Adds <paramref name="rawSql"/> as a SQL condition.
         /// </summary>
         /// <param name="rawSql">String that contains raw sql</param>
         /// <returns>Current builder for method chaining</returns>
-        IIfConditionOrBodyStatementBuilder When(string rawSql) => When(new RawExpression(rawSql.ValidateArgumentNotNullOrWhitespace(nameof(rawSql))));
+        IIfConditionOrBodyStatementBuilder Condition(string rawSql) => Condition(new RawExpression(rawSql.ValidateArgumentNotNullOrWhitespace(nameof(rawSql))));
         /// <summary>
         /// Creates a condition using <paramref name="builder"/>.
         /// </summary>
         /// <typeparam name="TEntity">The main entity to create the condition for</typeparam>
         /// <param name="builder">The delegate used to configure the condition</param>
         /// <returns>Current builder for method chaining</returns>
-        IIfConditionOrBodyStatementBuilder When<TEntity>(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder) => When(new ConditionGroupExpression<TEntity>(builder, false, true));
+        IIfConditionOrBodyStatementBuilder Condition<TEntity>(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder) => Condition(new ConditionGroupExpression<TEntity>(builder, false, true));
         /// <summary>
         /// Creates a condition using <paramref name="builder"/>.
         /// </summary>
         /// <param name="builder">The delegate used to configure the condition</param>
         /// <returns>Current builder for method chaining</returns>
-        IIfConditionOrBodyStatementBuilder When(Func<IStatementConditionExpressionBuilder<object>, object> builder) => When<object>(builder);
+        IIfConditionOrBodyStatementBuilder Condition(Func<IStatementConditionExpressionBuilder<object>, IChainedBuilder<object, IStatementConditionExpressionBuilder<object>>> builder) => Condition<object>(builder);
     }
 
     /// <summary>

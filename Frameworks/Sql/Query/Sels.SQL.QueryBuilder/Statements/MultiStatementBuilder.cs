@@ -15,7 +15,7 @@ namespace Sels.SQL.QueryBuilder.Statements
     /// <summary>
     /// Builder for creating a MySql query consisting of multiple statements and/ore expressions.
     /// </summary>
-    public class MultiStatementBuilder : IMultiStatementBuilder
+    public class MultiStatementBuilder : BaseQueryBuilder, IMultiStatementBuilder
     {
         // Fields
         private readonly IExpressionCompiler _compiler;
@@ -23,7 +23,7 @@ namespace Sels.SQL.QueryBuilder.Statements
 
         // Properties
         /// <inheritdoc/>
-        public IExpression[] InnerExpressions => _builderActions.Select(x => x.Expression).ToArray();
+        public override IExpression[] InnerExpressions => _builderActions.Select(x => x.Expression).ToArray();
 
         /// <inheritdoc cref="MultiStatementBuilder"/>
         /// <param name="compiler">The compiler used to convert expressions and builder into Sql queries</param>
@@ -58,12 +58,7 @@ namespace Sels.SQL.QueryBuilder.Statements
         }
 
         /// <inheritdoc/>
-        public string Build(ExpressionCompileOptions options = ExpressionCompileOptions.None)
-        {
-            return Build(new StringBuilder(), options).ToString();
-        }
-        /// <inheritdoc/>
-        public StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
 

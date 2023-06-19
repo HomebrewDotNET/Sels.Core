@@ -51,7 +51,7 @@ namespace Sels.DistributedLocking.SQL
         /// <param name="expiryDate">The expiry date for the lock if it could be placed</param>
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>The latest state of the lock</returns>
-        Task<SqlLock> TryAssignLockToAsync(IRepositoryTransaction transaction, string resource, string requester, DateTimeOffset? expiryDate, CancellationToken token);
+        Task<SqlLock> TryAssignLockToAsync(IRepositoryTransaction transaction, string resource, string requester, DateTime? expiryDate, CancellationToken token);
 
         /// <summary>
         /// Unlock resource <paramref name="resource"/> if it still held by <paramref name="requester"/>.
@@ -93,6 +93,15 @@ namespace Sels.DistributedLocking.SQL
         Task DeleteAllRequestsById(IRepositoryTransaction transaction, long[] ids, CancellationToken token);
 
         /// <summary>
+        /// Returns all the ids in <paramref name="ids"/> of lock requests that have been deleted.
+        /// </summary>
+        /// <param name="transaction">The transaction to execute the operation in</param>
+        /// <param name="ids">The ids of lock requests to check</param>
+        /// <param name="token">Optional token to cancel the request</param>
+        /// <returns>The ids in <paramref name="ids"/> of requests that have been deleted</returns>
+        Task<long[]> GetDeletedRequestIds(IRepositoryTransaction transaction, long[] ids, CancellationToken token);
+
+        /// <summary>
         /// Searches for all matching sql locks.
         /// </summary>
         /// <param name="transaction">The transaction to execute the operation in</param>
@@ -121,5 +130,13 @@ namespace Sels.DistributedLocking.SQL
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>The amount of locks.</returns>
         Task<int> GetLockAmountAsync(IRepositoryTransaction transaction, CancellationToken token = default);
+
+        /// <summary>
+        /// Clears all the locks and requests from the repository.
+        /// </summary>
+        /// <param name="transaction">The transaction to execute the operation in</param>
+        /// <param name="token">Optional token to cancel the request</param>
+        /// <returns>Task containing the execution state</returns>
+        Task ClearAll(IRepositoryTransaction transaction, CancellationToken token = default);
     }
 }

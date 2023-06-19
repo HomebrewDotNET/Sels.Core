@@ -1,7 +1,6 @@
 ﻿using Sels.Core.Extensions;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Text;

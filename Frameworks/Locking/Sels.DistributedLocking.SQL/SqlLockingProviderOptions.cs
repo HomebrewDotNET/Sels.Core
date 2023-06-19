@@ -32,7 +32,7 @@ namespace Sels.DistributedLocking.SQL
         /// <summary>
         /// Dictates how stale locks are handled. If set to true a <see cref="StaleLockException"/> or <see cref="ResourceAlreadyLockedException"/> will be thrown when actions are performed on a stale lock. When set to false the action will fail silently.
         /// </summary>
-        public bool ThrowOnStaleLock { get; set; } = false;
+        public bool ThrowOnStaleLock { get; set; } = true;
 
         /// <summary>
         /// How many milliseconds before a lock expires to extend the expiry date.
@@ -43,6 +43,12 @@ namespace Sels.DistributedLocking.SQL
         /// How often to check pending requests in milliseconds if they were assigned. Each resource will have it's own poller. Requests are also timed out by the same poller so setting it too high will mean requests will get timed out way past the provided timeout.
         /// </summary>
         public int RequestPollingRate { get; set; } = 1000;
+
+        /// <inheritdoc/>
+        public SqlLockingProviderOptions()
+        {
+            SetDefaultAmount();
+        }
 
         private void SetDefaultAmount()
         {

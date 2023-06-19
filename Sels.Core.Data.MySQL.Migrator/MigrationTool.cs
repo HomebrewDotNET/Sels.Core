@@ -48,7 +48,7 @@ namespace Sels.Core.Data.MySQL.Migrator
             migrationAssembly.ValidateArgument(nameof(migrationAssembly));
 
             return await SelsCommandLine.CreateAsyncTool<TArg>()
-                               .RegisterServices((services, args) =>
+                               .ConfigureServices((services, args) =>
                                {
                                    if (args == null) throw new CommandLineException(SelsCommandLine.InvalidArgumentsExitCode, "No command line argument provided");
 

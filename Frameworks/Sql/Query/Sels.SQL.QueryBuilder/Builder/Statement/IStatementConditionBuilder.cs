@@ -1,5 +1,4 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions;
 using System;
 using System.Text;
 using SqlConstantExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ConstantExpression;
@@ -8,6 +7,8 @@ using Sels.Core.Extensions;
 using System.Collections.Generic;
 using Sels.Core;
 using System.Linq;
+using System.Collections;
+using Sels.Core.Extensions.Conversion;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -23,7 +24,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="builder">Builder for adding conditions</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Where(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder);
+        TDerived Where(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder);
     }
 
     /// <summary>
@@ -42,7 +43,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="builder">The builder to create the conditions within the codition group</param>
         /// <returns>Current builder for creating more conditions</returns>
-        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder);
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder);
 
         #region FullExpression
         /// <summary>
@@ -109,8 +110,15 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <summary>
         /// Compares an expression to a list of values.
         /// </summary>
+        /// <param name="values">Any additional values to compare to</param>
+        /// <typeparam name="T">The type of the elements</typeparam>
+        /// <returns>Current builder for creating more conditions</returns>
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> Values<T>(T[] values) => Values(values.ValidateArgument(nameof(values)).Enumerate());
+        /// <summary>
+        /// Compares an expression to a list of values.
+        /// </summary>
         /// <param name="value">The first value in the list of values to compare to</param>
-        /// <param name="values">Any additional values to conpare to</param>
+        /// <param name="values">Any additional values to compare to</param>
         /// <returns>Current builder for creating more conditions</returns>
         IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> Values(object value, params object[] values) => Values(Helper.Collection.Enumerate(value, values));
         /// <summary>

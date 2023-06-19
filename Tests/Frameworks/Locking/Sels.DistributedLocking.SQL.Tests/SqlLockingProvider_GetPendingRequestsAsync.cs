@@ -23,10 +23,10 @@ namespace Sels.DistributedLocking.Memory.Test
                     Id = 1,
                     Resource = resource,
                     Requester = "Requester.1",
-                    ExpiryTime = TimeSpan.FromMinutes(5),
+                    ExpiryTime = TimeSpan.FromMinutes(5).TotalSeconds,
                     KeepAlive = false,
                     Timeout = null,
-                    CreatedAt = DateTimeOffset.Now.AddMinutes(-2)
+                    CreatedAt = DateTime.Now.AddMinutes(-2)
                 },
                 new SqlLockRequest()
                 {
@@ -36,7 +36,7 @@ namespace Sels.DistributedLocking.Memory.Test
                     ExpiryTime = null,
                     KeepAlive = true,
                     Timeout = null,
-                    CreatedAt = DateTimeOffset.Now.AddMinutes(-1)
+                    CreatedAt = DateTime.Now.AddMinutes(-1)
                 },
                 new SqlLockRequest()
                 {
@@ -45,8 +45,8 @@ namespace Sels.DistributedLocking.Memory.Test
                     Requester = "Requester.3",
                     ExpiryTime = null,
                     KeepAlive = false,
-                    Timeout = DateTimeOffset.Now.AddMilliseconds(1000),
-                    CreatedAt = DateTimeOffset.Now
+                    Timeout = DateTime.Now.AddMilliseconds(1000),
+                    CreatedAt = DateTime.Now
                 }
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
@@ -67,7 +67,7 @@ namespace Sels.DistributedLocking.Memory.Test
                 Assert.IsNotNull(pendingRequests[i]);
                 Assert.That(pendingRequests[i].Resource, Is.EqualTo(sqlRequests[i].Resource));
                 Assert.That(pendingRequests[i].Requester, Is.EqualTo(sqlRequests[i].Requester));
-                Assert.That(pendingRequests[i].ExpiryTime, Is.EqualTo(sqlRequests[i].ExpiryTime));
+                Assert.That(pendingRequests[i].ExpiryTime, Is.EqualTo(sqlRequests[i].ExpiryTime.HasValue ? TimeSpan.FromSeconds(sqlRequests[i].ExpiryTime.Value) : null));
                 Assert.That(pendingRequests[i].Timeout, Is.EqualTo(sqlRequests[i].Timeout));
                 Assert.That(pendingRequests[i].KeepAlive, Is.EqualTo(sqlRequests[i].KeepAlive));
                 Assert.That(pendingRequests[i].CreatedAt, Is.EqualTo(sqlRequests[i].CreatedAt));

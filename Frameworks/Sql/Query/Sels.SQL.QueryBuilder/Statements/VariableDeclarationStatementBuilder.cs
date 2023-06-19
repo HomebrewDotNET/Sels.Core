@@ -12,7 +12,7 @@ using System.Text;
 namespace Sels.SQL.QueryBuilder.Statements
 {
     /// <inheritdoc cref="IVariableDeclarationStatementBuilder"/>
-    public class VariableDeclarationStatementBuilder : 
+    public class VariableDeclarationStatementBuilder : BaseQueryBuilder,
         IVariableDeclarationRootStatementBuilder, 
         IVariableDeclarationTypeStatementBuilder, 
         IVariableDeclarationStatementBuilder,
@@ -32,7 +32,7 @@ namespace Sels.SQL.QueryBuilder.Statements
         /// <inheritdoc/>
         public ISharedExpressionBuilder<object, IVariableDeclarationStatementBuilder> InitialzedBy => this;
         /// <inheritdoc/>
-        public IExpression[] InnerExpressions => this.ToArray();
+        public override IExpression[] InnerExpressions => this.ToArray();
 
         /// <inheritdoc cref="VariableDeclarationStatementBuilder"/>
         /// <param name="compiler">Compiler used to compile the current builder into SQL</param>
@@ -44,23 +44,26 @@ namespace Sels.SQL.QueryBuilder.Statements
         IVariableDeclarationTypeStatementBuilder IVariableDeclarationRootStatementBuilder.Variable(IExpression expression)
         {
             Variable = expression.ValidateArgument(nameof(expression));
+            RaiseExpressionAdded(expression);
             return this;
         }
         /// <inheritdoc/>
         public IVariableDeclarationStatementBuilder As(IExpression expression)
         {
             Type = expression.ValidateArgument(nameof(expression));
+            RaiseExpressionAdded(expression);
             return this;
         }
         /// <inheritdoc/>
         public IVariableDeclarationStatementBuilder Expression(IExpression expression)
         {
             InitialValue = expression.ValidateArgument(nameof(expression));
+            RaiseExpressionAdded(expression);
             return this;
         }
 
         /// <inheritdoc/>
-        public StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             _compiler.CompileTo(builder, this, null, options);

@@ -1,4 +1,5 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,6 +15,13 @@ namespace Sels.SQL.QueryBuilder.Builder
         /// Dictionary of the currently defined expressions grouped by the position where they would appear in the query.
         /// </summary>
         public IReadOnlyDictionary<TPosition, OrderedExpression[]> Expressions { get; }
+
+        /// <summary>
+        /// Executes <paramref name="action"/> each time an expression is added to the current builder.
+        /// </summary>
+        /// <param name="action">The delegate called when an expression is added</param>
+        /// <returns>Current builder for method chaining</returns>
+        IQueryBuilder<TPosition> OnExpressionAdded(Action<OrderedExpression, TPosition> action);
     }
 
     /// <summary>
@@ -25,6 +33,21 @@ namespace Sels.SQL.QueryBuilder.Builder
         /// Array of currently defined expressions sorted in the order they would appear in the query.
         /// </summary>
         IExpression[] InnerExpressions { get; }
+
+        /// <summary>
+        /// Executes <paramref name="action"/> each time an expression is added to the current builder.
+        /// </summary>
+        /// <param name="action">The delegate called when an expression is added</param>
+        /// <returns>Current builder for method chaining</returns>
+        IQueryBuilder OnExpressionAdded(Action<IExpression> action);
+
+        /// <summary>
+        /// Executes <paramref name="action"/> each time an expression in the current builder is compiled. Also includes sub expressions.
+        /// </summary>
+        /// <param name="action">The delegate called when an expression is compiled</param>
+        /// <returns>Current builder for method chaining</returns>
+        IQueryBuilder OnCompiling(Action<IExpression> action);
+
         /// <summary>
         /// Builds the query string using the current builder.
         /// </summary>

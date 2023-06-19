@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
+using Sels.Core.ServiceBuilder;
 using Sels.SQL.QueryBuilder;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Compilation;
@@ -40,10 +41,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="memoryOptionsBuilder">Delegate for configuring the options for the cached queries</param>
         /// <param name="expressionCompileOptions">The default compile options for generated queries</param>
         /// <param name="services">Collection to add the services to</param>
+        /// <param name="overwrite">True to overwrite previous registrations, otherwise false</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddCachedSqlQueryProvider(this IServiceCollection services, Action<MemoryCacheEntryOptions> memoryOptionsBuilder = null, ExpressionCompileOptions expressionCompileOptions = ExpressionCompileOptions.None)
+        public static IServiceCollection AddCachedSqlQueryProvider(this IServiceCollection services, Action<MemoryCacheEntryOptions> memoryOptionsBuilder = null, ExpressionCompileOptions expressionCompileOptions = ExpressionCompileOptions.None, bool overwrite = false)
         {
             services.ValidateArgument(nameof(services));
+
+            services.AddMemoryCache();
 
             services.New<ICachedSqlQueryProvider, CachedSqlQueryProvider>()
                     .ConstructWith(p => {
@@ -53,7 +57,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     })
                     .Trace(x => x.Duration.OfAll)
                     .AsScoped()
-                    .TryRegister();
+                    .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
+                    .Register();
 
             return services;
         }

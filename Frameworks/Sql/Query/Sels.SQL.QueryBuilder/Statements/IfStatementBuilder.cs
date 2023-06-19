@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Sels.SQL.QueryBuilder.Statements
 {
     /// <inheritdoc cref="IIfStatementBuilder"/>
-    public class IfStatementBuilder : IIfStatementBuilder, IIfFullStatementBuilder, IIfConditionOrBodyStatementBuilder, IEnumerable<IExpression>
+    public class IfStatementBuilder : BaseQueryBuilder, IIfStatementBuilder, IIfFullStatementBuilder, IIfConditionOrBodyStatementBuilder, IEnumerable<IExpression>
     {
         // Fields
         private readonly IExpressionCompiler _expressionCompiler;
@@ -34,7 +34,10 @@ namespace Sels.SQL.QueryBuilder.Statements
         /// <inheritdoc/>
         public IMultiStatementBuilder BodyBuilder { 
             get {
-                if (_bodyBuilder == null) _bodyBuilder = new MultiStatementBuilder(_expressionCompiler);
+                if (_bodyBuilder == null) {
+                    _bodyBuilder = new MultiStatementBuilder(_expressionCompiler);
+                    _bodyBuilder.OnExpressionAdded(RaiseExpressionAdded);
+                }
                 return _bodyBuilder;
             } 
         }
@@ -45,12 +48,15 @@ namespace Sels.SQL.QueryBuilder.Statements
         {
             get
             {
-                if (_elseBodyBuilder == null) _elseBodyBuilder = new MultiStatementBuilder(_expressionCompiler);
+                if (_elseBodyBuilder == null) {
+                    _elseBodyBuilder = new MultiStatementBuilder(_expressionCompiler);
+                    _elseBodyBuilder.OnExpressionAdded(RaiseExpressionAdded);
+                }
                 return _elseBodyBuilder;
             }
         }
         /// <inheritdoc/>
-        public IExpression[] InnerExpressions => this.ToArray();
+        public override IExpression[] InnerExpressions => this.ToArray();
         /// <inheritdoc/>
         public IIfConditionOrBodyStatementBuilder ElseIf {
             get {
@@ -83,12 +89,13 @@ namespace Sels.SQL.QueryBuilder.Statements
         }
 
         /// <inheritdoc/>
-        public IIfConditionOrBodyStatementBuilder When(IExpression expression)
+        public IIfConditionOrBodyStatementBuilder Condition(IExpression expression)
         {
             expression.ValidateArgument(nameof(expression));
             if (_currentConditions == null) throw new InvalidOperationException($"No conditions to set");
 
             _currentConditions.Add(expression);
+            RaiseExpressionAdded(expression);
             return this;
         }
         /// <inheritdoc/>
@@ -102,7 +109,7 @@ namespace Sels.SQL.QueryBuilder.Statements
         }
 
         /// <inheritdoc/>
-        public StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             _compiler.CompileTo(builder, this, null, options);

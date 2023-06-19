@@ -27,12 +27,12 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 Resource = resource,
                 LockedBy = requester,
-                LockedAt = DateTimeOffset.Now,
-                LastLockDate = DateTimeOffset.Now
+                LockedAt = DateTime.Now,
+                LastLockDate = DateTime.Now
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTimeOffset?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
+                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
 
@@ -60,20 +60,20 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 Resource = resource,
                 LockedBy = "Requester",
-                LockedAt = DateTimeOffset.Now,
-                LastLockDate = DateTimeOffset.Now
+                LockedAt = DateTime.Now,
+                LastLockDate = DateTime.Now
             };
             var sqlRequest = new SqlLockRequest()
             {
                 Id = 1,
                 Resource = resource,
                 Requester = requester,
-                CreatedAt = DateTimeOffset.Now,
-                Timeout = DateTimeOffset.Now
+                CreatedAt = DateTime.Now,
+                Timeout = DateTime.Now
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTimeOffset?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
+                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
                 x.Setup(x => x.CreateRequestAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<SqlLockRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlRequest);
             });
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
@@ -100,8 +100,8 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 Resource = resource,
                 LockedBy = holder,
-                LockedAt = DateTimeOffset.Now,
-                LastLockDate = DateTimeOffset.Now,
+                LockedAt = DateTime.Now,
+                LastLockDate = DateTime.Now,
                 ExpiryDate = null,
             };
             var sqlRequest = new SqlLockRequest()
@@ -109,12 +109,12 @@ namespace Sels.DistributedLocking.Memory.Test
                 Id = 1,
                 Resource = resource,
                 Requester = requester,
-                CreatedAt = DateTimeOffset.Now,
-                Timeout = DateTimeOffset.Now
+                CreatedAt = DateTime.Now,
+                Timeout = DateTime.Now
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTimeOffset?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
+                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
                 x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), resource, false, true, It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
                 x.Setup(x => x.CreateRequestAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<SqlLockRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlRequest);
                 x.Setup(x => x.DeleteAllRequestsById(It.IsAny<IRepositoryTransaction>(), It.IsAny<long[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
@@ -157,8 +157,8 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 Resource = resource,
                 LockedBy = holder,
-                LockedAt = DateTimeOffset.Now,
-                LastLockDate = DateTimeOffset.Now,
+                LockedAt = DateTime.Now,
+                LastLockDate = DateTime.Now,
                 ExpiryDate = null,
             };
             var sqlRequest = new SqlLockRequest()
@@ -166,12 +166,12 @@ namespace Sels.DistributedLocking.Memory.Test
                 Id = 1,
                 Resource = resource,
                 Requester = requester,
-                CreatedAt = DateTimeOffset.Now,
+                CreatedAt = DateTime.Now,
                 Timeout = null
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTimeOffset?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
+                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
                 x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), resource, false, true, It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
                 x.Setup(x => x.CreateRequestAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<SqlLockRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlRequest);
                 x.Setup(x => x.DeleteAllRequestsById(It.IsAny<IRepositoryTransaction>(), It.IsAny<long[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);

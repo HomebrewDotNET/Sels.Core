@@ -49,6 +49,17 @@ namespace System
             return Regex.Replace(value, @"\s+", "");
         }
         /// <summary>
+        /// Returns <paramref name="value"/> where all newline characters are removed.
+        /// </summary>
+        /// <param name="value">The value to remove the newline from</param>
+        /// <returns><paramref name="value"/> with all newline removed</returns>
+        public static string GetWithoutNewLine(this string value)
+        {
+            value.ValidateArgument(nameof(value));
+
+            return Regex.Replace(value, @"\t|\n|\r", "");
+        }
+        /// <summary>
         /// Checks if <paramref name="value"/> is null or empty.
         /// </summary>
         /// <param name="value">The string to check</param>

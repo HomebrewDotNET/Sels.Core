@@ -2,7 +2,6 @@
 using Sels.Core.Models;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.Expressions.Condition;
 using System;
@@ -20,10 +19,6 @@ namespace Sels.SQL.QueryBuilder.Expressions
     ///  <typeparam name="TEntity">The main entity to create the expression for</typeparam>
     public class CaseExpression<TEntity> : BaseExpressionContainer, 
         ICaseExpressionRootBuilder<TEntity>,
-        ICaseExpressionConditionBuilder<TEntity>,
-        IComparisonExpressionBuilder<TEntity, ICaseExpressionFinalConditionBuilder<TEntity>>,
-        ICaseExpressionFinalConditionBuilder<TEntity>,
-        IChainedBuilder<TEntity, ICaseExpressionConditionBuilder<TEntity>>,
         ICaseExpressionThenBuilder<TEntity>,
         ISharedExpressionBuilder<TEntity, ICaseExpressionBuilder<TEntity>>,
         ICaseExpressionBuilder<TEntity>,
@@ -52,15 +47,13 @@ namespace Sels.SQL.QueryBuilder.Expressions
             configurator.ValidateArgument(nameof(configurator)).Invoke(this);      
         }
         /// <inheritdoc/>
-        public ICaseExpressionThenBuilder<TEntity> When(Action<ICaseExpressionConditionBuilder<TEntity>> whenBuilder)
+        public ICaseExpressionThenBuilder<TEntity> When(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> whenBuilder)
         {
             whenBuilder.ValidateArgument(nameof(whenBuilder));
             if (_currentWhenExpression != null) throw new InvalidOperationException($"When expression already defined");
 
-            var conditionContainer = new ExpressionContainer();
-            conditionContainer.InnerExpressions.Add(new ConditionExpression());
-            _currentWhenExpression = conditionContainer;
-            whenBuilder(this);
+            var conditionExpression = new ConditionGroupExpression<TEntity>(whenBuilder, false, true);
+            _currentWhenExpression = conditionExpression;
             return this;
         }
         /// <inheritdoc/>
@@ -71,66 +64,7 @@ namespace Sels.SQL.QueryBuilder.Expressions
 
             _currentWhenExpression = expression;
             return this;
-        }
-        /// <inheritdoc/>
-        IComparisonExpressionBuilder<TEntity, ICaseExpressionFinalConditionBuilder<TEntity>> ISharedExpressionBuilder<TEntity, IComparisonExpressionBuilder<TEntity, ICaseExpressionFinalConditionBuilder<TEntity>>>.Expression(IExpression expression)
-        {
-            expression.ValidateArgument(nameof(expression));
-            if(_currentWhenExpression is ExpressionContainer container)
-            {
-                if(container.InnerExpressions.LastOrDefault() is ConditionExpression conditionExpression)
-                {
-                    conditionExpression.LeftExpression = expression;
-                    return this;
-                }
-            }
-
-            throw new InvalidOperationException($"Expected last expression to be <{typeof(ConditionExpression)}>");
-        }
-        /// <inheritdoc/>
-        public ICaseExpressionFinalConditionBuilder<TEntity> CompareTo(IExpression sqlExpression)
-        {
-            sqlExpression.ValidateArgument(nameof(sqlExpression));
-            if (_currentWhenExpression is ExpressionContainer container)
-            {
-                if (container.InnerExpressions.LastOrDefault() is ConditionExpression conditionExpression)
-                {
-                    conditionExpression.OperatorExpression = sqlExpression;
-                    return this;
-                }
-            }
-
-            throw new InvalidOperationException($"Expected last expression to be <{typeof(ConditionExpression)}>");
-        }
-        /// <inheritdoc/>
-        IChainedBuilder<TEntity, ICaseExpressionConditionBuilder<TEntity>> ISharedExpressionBuilder<TEntity, IChainedBuilder<TEntity, ICaseExpressionConditionBuilder<TEntity>>>.Expression(IExpression expression)
-        {
-            expression.ValidateArgument(nameof(expression));
-            if (_currentWhenExpression is ExpressionContainer container)
-            {
-                if (container.InnerExpressions.LastOrDefault() is ConditionExpression conditionExpression)
-                {
-                    conditionExpression.RightExpression = expression;
-                    return this;
-                }
-            }
-
-            throw new InvalidOperationException($"Expected last expression to be <{typeof(ConditionExpression)}>");
-        }
-        /// <inheritdoc/>
-        public ICaseExpressionConditionBuilder<TEntity> AndOr(LogicOperators logicOperator = LogicOperators.And)
-        {
-            if (_currentWhenExpression is ExpressionContainer container)
-            {
-                if (container.InnerExpressions.LastOrDefault() is ConditionExpression conditionExpression)
-                {
-                    conditionExpression.LogicOperator = logicOperator;
-                    return this;
-                }
-            }
-
-            throw new InvalidOperationException($"Expected last expression to be <{typeof(ConditionExpression)}>");
-        }
+        }        
 
         /// <inheritdoc/>
         public ICaseExpressionThenBuilder<TEntity> Expression(IExpression expression)
@@ -180,6 +114,7 @@ namespace Sels.SQL.QueryBuilder.Expressions
                        .Append(Sql.Then)
                        .AppendSpace();
                 subBuilder(builder, valueExpression);
+                builder.AppendSpace();
             }
 
             // ELSE

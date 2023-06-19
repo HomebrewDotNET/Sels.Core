@@ -19,7 +19,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// </summary>
         /// <param name="whenBuilder">Builder for creating the condition</param>
         /// <returns>Builder for creating the THEN expression</returns>
-        ICaseExpressionThenBuilder<TEntity> When(Action<ICaseExpressionConditionBuilder<TEntity>> whenBuilder);
+        ICaseExpressionThenBuilder<TEntity> When(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> whenBuilder);
         /// <summary>
         /// Defines the expression for the WHEN expression.
         /// </summary>
@@ -58,20 +58,4 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         ISharedExpressionBuilder<TEntity, ICaseExpressionBuilder<TEntity>> Then { get; }
     }
 
-    /// <summary>
-    /// Builder for creating the condition in a CASE WHEN expression.
-    /// </summary>
-    /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
-    public interface ICaseExpressionConditionBuilder<TEntity> : ISharedExpressionBuilder<TEntity, IComparisonExpressionBuilder<TEntity, ICaseExpressionFinalConditionBuilder<TEntity>>>
-    {
-
-    }
-    /// <summary>
-    /// Builder for selecting the expression on the right side of a CASE WHEN condition.
-    /// </summary>
-    /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
-    public interface ICaseExpressionFinalConditionBuilder<TEntity> : ISharedExpressionBuilder<TEntity, IChainedBuilder<TEntity, ICaseExpressionConditionBuilder<TEntity>>>
-    {
-
-    }
 }

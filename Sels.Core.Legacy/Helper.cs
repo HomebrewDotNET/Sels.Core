@@ -112,31 +112,58 @@ namespace Sels.Core
             }
 
             /// <summary>
-            /// Creates configuration from all json files in <paramref name="directory"/>.
+            /// Creates configuration from all json files in <paramref name="directory"/> and optionally <paramref name="additionalDirectories"/>.
             /// </summary>
             /// <param name="directory">The directory to scan for json files</param>
             /// <param name="filter">Optional filter for defining which json files to include in the configuration</param>
             /// <param name="reloadOnChange">Whether the configuration needs to be reloaded when the file changes</param>
+            /// <param name="additionalDirectories">Additional directories to scan</param>
             /// <returns>Configuration created from all json files in <paramref name="directory"/></returns>
-            public static IConfiguration BuildConfigurationFromDirectory(DirectoryInfo directory, Predicate<FileInfo> filter = null, bool reloadOnChange = true)
+            public static IConfiguration BuildConfigurationFromDirectory(DirectoryInfo directory, Predicate<FileInfo> filter = null, bool reloadOnChange = true, params DirectoryInfo[] additionalDirectories)
             {
-                directory.ValidateArgumentExists(nameof(directory));
+                directory.ValidateArgument(nameof(directory));
                 filter = filter != null ? filter : new Predicate<FileInfo>(x => true);
 
                 var builder = new ConfigurationBuilder();
-                directory.GetFiles().Where(x => x.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) && filter(x)).Execute(x => builder.AddJsonFile(x.FullName, false, reloadOnChange));
+                Helper.Collection.Enumerate(directory, additionalDirectories).Where(x => x != null && x.Exists)
+                                 .SelectMany(x => x.GetFiles())
+                                 .Where(x => x.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) && filter(x))
+                                 .Execute(x => builder.AddJsonFile(x.FullName, false, reloadOnChange));
+
                 return builder.Build();
             }
 
             /// <summary>
-            /// Creates configuration from all json files in <see cref="AppContext.BaseDirectory"/>.
+            /// Creates configuration from all json files in <see cref="AppContext.BaseDirectory"/> and optionally <paramref name="additionalDirectories"/>.
             /// </summary>
             /// <param name="filter">Optional filter for defining which json files to include in the configuration</param>
             /// <param name="reloadOnChange">Whether the configuration needs to be reloaded when the file changes</param>
+            /// <param name="additionalDirectories">Additional directories to scan</param>
             /// <returns>Configuration created from all json files in <see cref="AppContext.BaseDirectory"/></returns>
-            public static IConfiguration BuildConfigurationFromDirectory(Predicate<FileInfo> filter = null, bool reloadOnChange = true)
+            public static IConfiguration BuildConfigurationFromDirectory(Predicate<FileInfo> filter = null, bool reloadOnChange = true, params DirectoryInfo[] additionalDirectories)
             {
-                return BuildConfigurationFromDirectory(new DirectoryInfo(AppContext.BaseDirectory), filter, reloadOnChange);
+                return BuildConfigurationFromDirectory(new DirectoryInfo(AppContext.BaseDirectory), filter, reloadOnChange, additionalDirectories);
+            }
+
+            /// <summary>
+            /// Creates configuration from all json files in <paramref name="directories"/>.
+            /// </summary>
+            /// <param name="directories">The directories to scan for json files</param>
+            /// <param name="filter">Optional filter for defining which json files to include in the configuration</param>
+            /// <param name="reloadOnChange">Whether the configuration needs to be reloaded when the file changes</param>
+            /// <returns>Configuration created from all json files in <paramref name="directories"/></returns>
+            public static IConfiguration BuildConfigurationFromDirectories(IEnumerable<DirectoryInfo> directories, Predicate<FileInfo> filter = null, bool reloadOnChange = true)
+            {
+                directories.ValidateArgument(nameof(directories));
+                filter = filter != null ? filter : new Predicate<FileInfo>(x => true);
+
+                var builder = new ConfigurationBuilder();
+                directories.Where(x => x != null && x.Exists)
+                                 .SelectMany(x => x.GetFiles())
+                                 .Where(x => x.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) && filter(x))
+                                 .Execute(x => builder.AddJsonFile(x.FullName, false, reloadOnChange));
+
+                return builder.Build();
             }
         }
         #endregion
@@ -884,6 +911,128 @@ namespace Sels.Core
                     await Task.Delay(waitTime, token);
                 }
                 catch (TaskCanceledException) { }
+            }
+
+            /// <summary>
+            /// Sleeps for <paramref name="waitTime"/> asynchronously. When <paramref name="token"/> is cancelled no <see cref="TaskCanceledException"/> will be thrown.
+            /// </summary>
+            /// <param name="waitTime">How long to sleep</param>
+            /// <param name="token">Optional token to cancel the sleeping</param>
+            public static async Task Sleep(TimeSpan waitTime, CancellationToken token = default)
+            {
+                if (waitTime.TotalMilliseconds <= 0) return;
+
+                try
+                {
+                    await Task.Delay(waitTime, token).ConfigureAwait(false);
+                }
+                catch (TaskCanceledException) { }
+            }
+
+            /// <summary>
+            /// Waits for the completion of <paramref name="task"/> for a maximum of <paramref name="maxWaitTime"/>.
+            /// </summary>
+            /// <param name="task">The task to wait on</param>
+            /// <param name="maxWaitTime">How long to wait for <paramref name="task"/> to complete</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <returns>Task that gets completed when either <paramref name="task"/> finishes within <paramref name="maxWaitTime"/>, when execution exceeds <paramref name="maxWaitTime"/> or when <paramref name="token"/> gets cancelled</returns>
+            /// <exception cref="TaskCanceledException"></exception>
+            /// <exception cref="TimeoutException"></exception>
+            public static async Task WaitOn(Task task, TimeSpan maxWaitTime, CancellationToken token = default)
+            {
+                _ = task.ValidateArgument(nameof(task));
+
+                // No need to wait here
+                if(maxWaitTime == TimeSpan.Zero)
+                {
+                    await task.ConfigureAwait(false);
+                    return;
+                }
+
+                var taskSource = new TaskCompletionSource<object>();
+                var cancellationSource = new CancellationTokenSource();
+
+                // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
+                using(token.Register(() => cancellationSource.Cancel()))
+                {
+                    // Run continuation to complete callback task
+                    var completionTask = task.ContinueWith(x =>
+                    {
+                        taskSource.SetResult(null);
+                    }, cancellationSource.Token);
+
+                    // Check if task is completed before starting the timeout task
+                    if (task.IsCompleted)
+                    {
+                        await task.ConfigureAwait(false);
+                        return;
+                    }
+
+                    // Start task to cancel our callback task
+                    var timeoutTask = Task.Run(async () =>
+                    {
+                        await Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
+                        if (cancellationSource.Token.IsCancellationRequested) return;
+
+                        taskSource.SetException(new TimeoutException());
+                    }, cancellationSource.Token);
+
+
+                    // Wait for callback
+                    await taskSource.Task.ConfigureAwait(false);
+                }
+            }
+
+            /// <summary>
+            /// Waits for the completion of <paramref name="task"/> for a maximum of <paramref name="maxWaitTime"/>.
+            /// </summary>
+            /// <param name="task">The task to wait on</param>
+            /// <param name="maxWaitTime">How long to wait for <paramref name="task"/> to complete</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <returns>Task that gets completed when either <paramref name="task"/> finishes within <paramref name="maxWaitTime"/>, when execution exceeds <paramref name="maxWaitTime"/> or when <paramref name="token"/> gets cancelled</returns>
+            /// <exception cref="TaskCanceledException"></exception>
+            /// <exception cref="TimeoutException"></exception>
+            public static async Task<T> WaitOn<T>(Task<T> task, TimeSpan maxWaitTime, CancellationToken token = default)
+            {
+                _ = task.ValidateArgument(nameof(task));
+
+                // No need to wait here
+                if (maxWaitTime == TimeSpan.Zero)
+                {
+                    return await task.ConfigureAwait(false);
+                }
+
+                var taskSource = new TaskCompletionSource<T>();
+                var cancellationSource = new CancellationTokenSource();
+
+                // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
+                using (token.Register(() => cancellationSource.Cancel()))
+                {
+                    // Run continuation to complete callback task
+                    var completionTask = task.ContinueWith(x =>
+                    {
+                        taskSource.SetResult(x.Result);
+                    }, cancellationSource.Token);
+
+                    // Check if task is completed before starting the timeout task
+                    if (task.IsCompleted)
+                    {
+                        return await task.ConfigureAwait(false);
+                    }
+
+                    // Start task to cancel our callback task
+                    var timeoutTask = Task.Run(async () =>
+                    {
+                        await Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
+                        if (cancellationSource.Token.IsCancellationRequested) return;
+
+                        taskSource.SetException(new TimeoutException());
+                    }, cancellationSource.Token);
+
+
+                    // Wait for callback
+                    return await taskSource.Task.ConfigureAwait(false);
+                }
             }
         }
         #endregion

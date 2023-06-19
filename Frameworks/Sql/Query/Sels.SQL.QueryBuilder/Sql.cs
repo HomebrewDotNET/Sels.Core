@@ -221,7 +221,7 @@ namespace Sels.SQL.QueryBuilder
             /// <summary>
             /// Expression should not be equal to a contant value.
             /// </summary>
-            public const string IsNot = Not + Constants.Strings.Space + Is;
+            public const string IsNot = Is + Constants.Strings.Space + Not;
         }
         /// <summary>
         /// Contains the sql logic operators for comparing conditions.

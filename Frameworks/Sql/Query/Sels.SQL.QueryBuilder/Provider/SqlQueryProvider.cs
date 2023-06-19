@@ -1,5 +1,7 @@
 ﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Compilation;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.Statements;
 using System;
@@ -9,11 +11,15 @@ using System.Text;
 namespace Sels.SQL.QueryBuilder.Provider
 {
     /// <inheritdoc cref="ISqlQueryProvider"/>
-    public class SqlQueryProvider : ISqlQueryProvider
+    public class SqlQueryProvider : ISqlQueryProvider, ISqlQueryProviderOptions
     {
         // Fields
-        private readonly ISqlCompiler _compiler;
-        
+        /// <summary>
+        /// The compiler to use for the statement builders
+        /// </summary>
+        protected readonly ISqlCompiler _compiler;
+        private readonly List<Action<IQueryBuilder>> _addedHandlers;
+
         /// <inheritdoc cref="SqlQueryProvider"/>
         /// <param name="compiler">The compiler to use for the statement builders</param>
         public SqlQueryProvider(ISqlCompiler compiler)
@@ -21,23 +27,57 @@ namespace Sels.SQL.QueryBuilder.Provider
             _compiler = compiler.ValidateArgument(nameof(compiler));
         }
 
+        /// <inheritdoc cref="SqlQueryProvider"/>
+        /// <param name="compiler">The compiler to use for the statement builders</param>
+        /// <param name="configurator">Delegate that configures the current provider</param>
+        protected SqlQueryProvider(ISqlCompiler compiler, Action<ISqlQueryProviderOptions> configurator) : this(compiler)
+        {
+            _addedHandlers = new List<Action<IQueryBuilder>>();
+            configurator?.Invoke(this);
+        }
+
         /// <inheritdoc/>
-        public IMultiStatementBuilder Build() => new MultiStatementBuilder(_compiler);
+        public IMultiStatementBuilder New() => OnBuilderCreated(new MultiStatementBuilder(_compiler));
         /// <inheritdoc/>
-        public IVariableDeclarationRootStatementBuilder Declare() => new VariableDeclarationStatementBuilder(_compiler);
+        public IVariableDeclarationRootStatementBuilder Declare() => OnBuilderCreated(new VariableDeclarationStatementBuilder(_compiler));
         /// <inheritdoc/>
-        public IDeleteStatementBuilder<T> Delete<T>() => new DeleteStatementBuilder<T>(_compiler);
+        public IDeleteStatementBuilder<T> Delete<T>() => OnBuilderCreated(new DeleteStatementBuilder<T>(_compiler));
         /// <inheritdoc/>
-        public IIfConditionStatementBuilder If() => new IfStatementBuilder(_compiler, _compiler);
+        public IIfConditionStatementBuilder If() => OnBuilderCreated(new IfStatementBuilder(_compiler, _compiler));
         /// <inheritdoc/>
-        public IInsertStatementBuilder<T> Insert<T>() => new InsertStatementBuilder<T>(_compiler);
+        public IInsertStatementBuilder<T> Insert<T>() => OnBuilderCreated(new InsertStatementBuilder<T>(_compiler));
         /// <inheritdoc/>
-        public ISelectStatementBuilder<T> Select<T>() => new SelectStatementBuilder<T>(_compiler);
+        public ISelectStatementBuilder<T> Select<T>() => OnBuilderCreated(new SelectStatementBuilder<T>(_compiler));
         /// <inheritdoc/>
-        public IVariableSetterRootStatementBuilder Set() => new VariableSetterStatementBuilder(_compiler);
+        public IVariableSetterRootStatementBuilder Set() => OnBuilderCreated(new VariableSetterStatementBuilder(_compiler));
         /// <inheritdoc/>
-        public IUpdateStatementBuilder<T> Update<T>() => new UpdateStatementBuilder<T>(_compiler);
+        public IUpdateStatementBuilder<T> Update<T>() => OnBuilderCreated(new UpdateStatementBuilder<T>(_compiler));
         /// <inheritdoc/>
-        public ICteStatementBuilder With() => new CteStatementBuilder(_compiler);
+        public ICteStatementBuilder With() => OnBuilderCreated(new CteStatementBuilder(_compiler));
+
+        /// <inheritdoc/>
+        public ISqlQueryProvider CreateSubProvider(Action<ISqlQueryProviderOptions> options) => new SqlQueryProvider(_compiler, options.ValidateArgument(nameof(options)));
+
+        /// <inheritdoc/>
+        public ISqlQueryProviderOptions OnBuilderCreated(Action<IQueryBuilder> action)
+        {
+            _addedHandlers.Add(action.ValidateArgument(nameof(action)));
+            return this;
+        }
+
+        private T OnBuilderCreated<T>(T builder) where T : IQueryBuilder
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            if (_addedHandlers.HasValue())
+            {
+                foreach(var handler in _addedHandlers)
+                {
+                    handler(builder);
+                }
+            }
+
+            return builder;
+        }
     }
 }

@@ -43,7 +43,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             return this;
         }
         /// <inheritdoc/>
-        public IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder)
+        public IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder)
         {
             builder.ValidateArgument(nameof(builder));
 

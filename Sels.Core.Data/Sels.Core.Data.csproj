@@ -1,28 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-	  <Authors>Jens Sels</Authors>
-	  <Company>Homebrew IT</Company>
-	  <Product>Data Library</Product>
-	  <Description>
-		  Contains code for data persistance and management.
-		  Used by projects maintained here: https://github.com/Jenssels1998
-	  </Description>
-	  <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
-	  <Copyright>Jens Sels</Copyright>
-	  <PackageTags>Sels</PackageTags>
-	  <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
-	  <!--For NuGet package-->
-	  <VersionPrefix>2.0.0</VersionPrefix>
-	  <BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
-	  <BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
-	  <VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
-	  <DocumentationFile>bin/$(Configuration)/$(TargetFramework)/$(MSBuildProjectName).xml</DocumentationFile>
-	  <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<Authors>Jens Sels</Authors>
+		<Company>Homebrew IT</Company>
+		<Product>Data Library</Product>
+		<Description>
+			Contains code for data persistance and management.
+			Used by projects maintained here: https://github.com/Jenssels1998
+		</Description>
+		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
+		<Copyright>Jens Sels</Copyright>
+		<PackageTags>Sels</PackageTags>
+		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
+		<!--For NuGet package-->
+		<VersionPrefix>2.0.0</VersionPrefix>
+		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
+		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
+		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
+		<DocumentationFile>bin/$(Configuration)/$(TargetFramework)/$(MSBuildProjectName).xml</DocumentationFile>
+		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+	</PropertyGroup>
 
 	<!--Exclude pdb files from release build-->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -44,10 +44,10 @@
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+		<ProjectReference Include="..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
 	</ItemGroup>
 
 </Project>

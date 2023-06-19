@@ -1,18 +1,17 @@
 ﻿using Sels.Core.Extensions;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
     /// <summary>
-    /// Exposes methods for building sql statement queries.
+    /// Exposes methods for building typed sql statement queries.
     /// </summary>
     /// <typeparam name="TEntity">The main entity to create the query for</typeparam>
     /// <typeparam name="TPosition">Type that defines where in a query expressions should be located</typeparam>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-    public interface IStatementQueryBuilder<TEntity, TPosition, out TDerived> : IQueryBuilder<TPosition>
+    public interface IStatementQueryBuilder<in TEntity, TPosition, out TDerived> : IQueryBuilder<TPosition>, IAliasQueryBuilder
     {
         /// <summary>
         /// The instance that implemented this interface. Can be used by extensions methods.
@@ -40,22 +39,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="tableAlias">The defined table alias for type <paramref name="tableAlias"/></param>
         /// <returns>Current builder for method chaining</returns>
         TDerived OutAlias<T>(out string tableAlias);
-        /// <summary>
-        /// Dictionary with any defined dataset aliases for the types used in the current builder.
-        /// </summary>
-        IReadOnlyDictionary<Type, string> Aliases { get; }
-        /// <summary>
-        /// Gets the table alias for <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The type to get the alias from</typeparam>
-        /// <returns>Current builder for method chaining</returns>
-        string GetAlias<T>();
-        /// <summary>
-        /// Gets the table alias for <paramref name="type"/>.
-        /// </summary>
-        /// <param name="type">The type to get the alias from</param>
-        /// <returns>Current builder for method chaining</returns>
-        string GetAlias(Type type);
         #endregion
 
         #region Expression

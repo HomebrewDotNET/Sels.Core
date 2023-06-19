@@ -61,15 +61,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="memoryOptionsBuilder">Delegate for configuring the options for the cached queries</param>
         /// <param name="expressionCompileOptions">The default compile options for generated queries</param>
         /// <param name="services">Collection to add the services to</param>
+        /// <param name="overwrite">True to overwrite previous registrations, otherwise false</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddCachedMySqlQueryProvider(this IServiceCollection services, Action<MemoryCacheEntryOptions> memoryOptionsBuilder = null, ExpressionCompileOptions expressionCompileOptions = ExpressionCompileOptions.None)
+        public static IServiceCollection AddCachedMySqlQueryProvider(this IServiceCollection services, Action<MemoryCacheEntryOptions> memoryOptionsBuilder = null, ExpressionCompileOptions expressionCompileOptions = ExpressionCompileOptions.None, bool overwrite = false)
         {
             services.ValidateArgument(nameof(services));
 
             services.AddMySqlCompiler();
             // MySql always needs the separator 
             expressionCompileOptions |= ExpressionCompileOptions.AppendSeparator;
-            services.AddCachedSqlQueryProvider(memoryOptionsBuilder, expressionCompileOptions);
+            services.AddCachedSqlQueryProvider(memoryOptionsBuilder, expressionCompileOptions, overwrite);
 
             return services;
         }

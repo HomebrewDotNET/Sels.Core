@@ -6,11 +6,12 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
-		<Product>Core memory Locking Library</Product>
+		<Product>Distributed Memeory Locking Library</Product>
 		<Description>
 			Locking provider using an in-memory store for inner process distributed locks.
 
-			Provider can be added to service container using the AddMemoryLockingProvider() extension method.
+			Provider can be added to the service container using the IServiceCollection.AddMemoryLockingProvider() extension method.
+			Inject Sels.DistributedLocking.Provider.ILockingProvider to start placing distributed locks.
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 		<Copyright>Jens Sels</Copyright>

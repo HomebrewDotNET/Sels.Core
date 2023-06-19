@@ -6,7 +6,7 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
-		<Product>Core memory Locking Library</Product>
+		<Product>Distributed SQL Locking Library</Product>
 		<Description>
 			Locking provider that uses a ISqlLockProvider to manage lock state. Uses basic sql locking for concurrency. 
 			Exposes a BaseSqlLockRepository that can be implemented to provide support for more RDBMS.
@@ -29,19 +29,6 @@
 		<DebugType>None</DebugType>
 		<DebugSymbols>false</DebugSymbols>
 	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Dapper" Version="2.0.123" />
-		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
-		<PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
-	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\..\..\Sels.Core.Data\Sels.Core.Data.csproj" />
-	  <ProjectReference Include="..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
-	  <ProjectReference Include="..\..\..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
-	  <ProjectReference Include="..\..\Sql\Query\Sels.SQL.QueryBuilder\Sels.SQL.QueryBuilder.csproj" />
-	  <ProjectReference Include="..\..\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
-	  <ProjectReference Include="..\Sels.DistributedLocking.Abstractions\Sels.DistributedLocking.Abstractions.csproj" />
-	</ItemGroup>
 
 	<!--Include non-NuGet package projects in NuGet package-->
 	<Target Name="PrePackage" BeforeTargets="BuildPackage">
@@ -56,5 +43,19 @@
 		<Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="Dapper" Version="2.0.123" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+		<PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Sels.Core.Data\Sels.Core.Data.csproj" />
+		<ProjectReference Include="..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+		<ProjectReference Include="..\..\..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
+		<ProjectReference Include="..\..\Sql\Query\Sels.SQL.QueryBuilder\Sels.SQL.QueryBuilder.csproj" />
+		<ProjectReference Include="..\..\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
+		<ProjectReference Include="..\Sels.DistributedLocking.Abstractions\Sels.DistributedLocking.Abstractions.csproj" />
+	</ItemGroup>
 
 </Project>

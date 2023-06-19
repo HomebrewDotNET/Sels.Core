@@ -25,7 +25,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// <param name="builder">Delegate for configuring the current condition group</param>
         /// <param name="isGrouped">If the condition in this expression should be grouped using ()</param>
         /// <param name="throwOnEmpty">If a <see cref="InvalidOperationException"/> should be thrown when <paramref name="builder"/> created no expressions</param>
-        public ConditionGroupExpression(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder, bool isGrouped, bool throwOnEmpty = false) : base(builder, throwOnEmpty)
+        public ConditionGroupExpression(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder, bool isGrouped, bool throwOnEmpty = false) : base(builder, throwOnEmpty)
         {
             _isGrouped = isGrouped;
         }

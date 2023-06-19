@@ -16,7 +16,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
     /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
     /// <typeparam name="TDerived">The builder that created the expression</typeparam>
     public class JoinExpression<TEntity, TDerived> : BaseExpressionContainer,
-        IStatementJoinTableBuilder<TEntity, TDerived>,
+        IStatementJoinResultSetBuilder<TEntity, TDerived>,
         IStatementJoinOnBuilder<TEntity, TDerived>,
         IStatementJoinConditionBuilder<TEntity>,
         IComparisonExpressionBuilder<TEntity, IStatementJoinFinalConditionBuilder<TEntity>>,
@@ -33,9 +33,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// </summary>
         public Joins JoinType { get; }
         /// <summary>
-        /// The table to join.
+        /// Expression that contains the result set to join.
         /// </summary>
-        public TableExpression TableExpression { get; private set; }
+        public IExpression ResultSetExpression { get; private set; }
         /// <summary>
         /// Array of expressions to join on.
         /// </summary>
@@ -59,9 +59,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             var expression = OnExpressions;
             if(!expression.HasValue()) throw new InvalidOperationException($"{nameof(OnExpressions)} is empty");
 
-            // Table
+            // Result set to join
             builder.Append(JoinType.GetStringValue()).AppendSpace();
-            subBuilder(builder, TableExpression);
+            subBuilder(builder, ResultSetExpression);
 
             // Columns
             builder.AppendSpace().Append(Sql.On).AppendSpace();
@@ -74,15 +74,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             
         }
 
-        /// <inheritdoc/>
-        public IStatementJoinOnBuilder<TEntity, TDerived> Table(string table, object datasetAlias = null, string database = null, string schema = null)
-        {
-            table.ValidateArgument(nameof(table));
-
-            TableExpression = new TableExpression(database, schema, table, datasetAlias);
-
-            return this;
-        }
         /// <inheritdoc/>
         public TDerived On(Action<IStatementJoinConditionBuilder<TEntity>> builder)
         {
@@ -125,6 +116,12 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         {
             _conditions.Last().LogicOperator = logicOperator;
 
+            return this;
+        }
+        /// <inheritdoc/>
+        IStatementJoinOnBuilder<TEntity, TDerived> IStatementJoinResultSetBuilder<TEntity, TDerived>.Expression(IExpression expression)
+        {
+            ResultSetExpression = expression.ValidateArgument(nameof(expression));
             return this;
         }
     }

@@ -12,7 +12,7 @@ using System.Text;
 namespace Sels.SQL.QueryBuilder.Statements
 {
     /// <inheritdoc cref="IVariableSetterStatementBuilder"/>
-    public class VariableSetterStatementBuilder :
+    public class VariableSetterStatementBuilder : BaseQueryBuilder,
         IVariableSetterStatementBuilder,
         IVariableSetterRootStatementBuilder,
         IVariableSetterValueStatementBuilder,
@@ -35,7 +35,7 @@ namespace Sels.SQL.QueryBuilder.Statements
         /// <inheritdoc/>
         public IExpression Value { get; private set; }
         /// <inheritdoc/>
-        public IExpression[] InnerExpressions => this.ToArray();
+        public override IExpression[] InnerExpressions => this.ToArray();
         /// <inheritdoc/>
         public ISharedExpressionBuilder<object, IVariableSetterStatementBuilder> To => this;
 
@@ -43,17 +43,19 @@ namespace Sels.SQL.QueryBuilder.Statements
         IVariableSetterValueStatementBuilder IVariableSetterRootStatementBuilder.Variable(IExpression expression)
         {
             Variable = expression.ValidateArgument(nameof(expression));
+            RaiseExpressionAdded(expression);
             return this;
         }
         /// <inheritdoc/>
         public IVariableSetterStatementBuilder Expression(IExpression expression)
         {
             Value = expression.ValidateArgument(nameof(expression));
+            RaiseExpressionAdded(expression);
             return this;
         }
 
         /// <inheritdoc/>
-        public StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             _compiler.CompileTo(builder, this, null, options);

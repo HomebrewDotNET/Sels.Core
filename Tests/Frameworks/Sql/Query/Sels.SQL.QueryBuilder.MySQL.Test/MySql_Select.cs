@@ -405,9 +405,9 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         }
 
         [TestCase(1, DateInterval.Minute, "1", "MINUTE")]
-        [TestCase(-1500, DateInterval.Millisecond, "-1500", "MICROSECOND")]
+        [TestCase(-1500, DateInterval.Millisecond, "-1500 * 1000", "MICROSECOND")]
         [TestCase(24, DateInterval.Month, "24", "MONTH")]
-        [TestCase(1.5, DateInterval.Hour, "1.5", "MONTH")]
+        [TestCase(1.5, DateInterval.Hour, "1.5", "HOUR")]
         public void BuildsCorrectSelectQueryWithModifyDateInterval(double amount, DateInterval interval, string expectedAmount, string expectedInterval)
         {
             // Arrange

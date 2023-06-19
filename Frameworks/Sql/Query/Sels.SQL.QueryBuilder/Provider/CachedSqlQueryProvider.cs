@@ -12,12 +12,12 @@ using Sels.Core.Extensions.Logging;
 namespace Sels.SQL.QueryBuilder.Provider
 {
     /// <inheritdoc cref="ICachedSqlQueryProvider"/>
-    public class CachedSqlQueryProvider : SqlQueryProvider, ICachedSqlQueryProvider
+    public class CachedSqlQueryProvider : SqlQueryProvider, ICachedSqlQueryProvider, ICachedSqlQueryProviderOptions
     {
         // Fields
         private readonly IMemoryCache _cache;
         private readonly MemoryCacheEntryOptions _cacheOptions;
-        private readonly ILogger _logger;
+        private readonly ILogger<CachedSqlQueryProvider> _logger;
         private ExpressionCompileOptions _compileOptions;
 
         /// <inheritdoc cref="CachedSqlQueryProvider"/>
@@ -32,6 +32,23 @@ namespace Sels.SQL.QueryBuilder.Provider
             _cacheOptions = cacheOptions.ValidateArgument(nameof(cacheOptions));
             _compileOptions = compileOptions;
             _logger = logger;
+        }
+
+        /// <inheritdoc cref="CachedSqlQueryProvider"/>
+        /// <param name="cache">The cache to use</param>
+        /// <param name="cacheOptions">The options for the cached queries</param>
+        /// <param name="compiler">The compiler to use for the statement builders</param>
+        /// <param name="compileOptions">The default compile options when returning a IQueryBuilder</param>
+        /// <param name="logger">Optional logger for tracing</param>
+        /// <param name="configurator">Delegate that configures the current provider</param>
+        protected CachedSqlQueryProvider(IMemoryCache cache, MemoryCacheEntryOptions cacheOptions, ISqlCompiler compiler, Action<ICachedSqlQueryProviderOptions> configurator, ExpressionCompileOptions compileOptions = ExpressionCompileOptions.None, ILogger<CachedSqlQueryProvider> logger = null) : base(compiler, null)
+        {
+            _cache = cache.ValidateArgument(nameof(cache));
+            _cacheOptions = cacheOptions.ValidateArgument(nameof(cacheOptions));
+            _compileOptions = compileOptions;
+            _logger = logger;
+
+            configurator?.Invoke(this);
         }
 
         /// <inheritdoc/>
@@ -92,5 +109,21 @@ namespace Sels.SQL.QueryBuilder.Provider
                 return query;
             }
         }
+
+        /// <inheritdoc/>
+        public ICachedSqlQueryProvider CreateSubCachedProvider(Action<ICachedSqlQueryProviderOptions> options) => new CachedSqlQueryProvider(_cache, _cacheOptions, _compiler, options.ValidateArgument(nameof(options)), _compileOptions, _logger);
+        /// <inheritdoc/>
+        public ICachedSqlQueryProviderOptions WithExpressionCompileOptions(ExpressionCompileOptions compileOptions)
+        {
+            _compileOptions = compileOptions;
+            return this;
+        }
+        /// <inheritdoc/>
+        ICachedSqlQueryProviderOptions ISqlQueryProviderSharedOptions<ICachedSqlQueryProviderOptions>.OnBuilderCreated(Action<IQueryBuilder> action)
+        {
+            base.OnBuilderCreated(action);
+            return this;
+        }
+
     }
 }

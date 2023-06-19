@@ -1,4 +1,5 @@
 ﻿using Sels.SQL.QueryBuilder.Builder;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using System;
 using System.Collections.Generic;
@@ -64,7 +65,7 @@ namespace Sels.SQL.QueryBuilder
         ///  Returns a builder for creating a query consisting of multiple statements and/or expressions.
         /// </summary>
         /// <returns>A fluent builder for creating a query consisting of multiple statements and/or expressions</returns>
-        public IMultiStatementBuilder Build();
+        public IMultiStatementBuilder New();
         /// <summary>
         /// Returns a builder for creating an IF ELSE sql statement.
         /// </summary>
@@ -80,6 +81,13 @@ namespace Sels.SQL.QueryBuilder
         /// </summary>
         /// <returns>A fluent builder for creating an sql statement to assign a value to a sql variable</returns>
         public IVariableSetterRootStatementBuilder Set();
+
+        /// <summary>
+        /// Creates a provider with <paramref name="options"/>.
+        /// </summary>
+        /// <param name="options">Delegate that configured the options for the sub builder</param>
+        /// <returns>A provider with <paramref name="options"/> applied</returns>
+        public ISqlQueryProvider CreateSubProvider(Action<ISqlQueryProviderOptions> options);
     }
 
     /// <summary>
@@ -101,5 +109,47 @@ namespace Sels.SQL.QueryBuilder
         /// <param name="queryBuilder">Delegate that returns the query string</param>
         /// <returns>The generated query</returns>
         public string GetQuery(string queryName, Func<ISqlQueryProvider, string> queryBuilder);
+
+        /// <summary>
+        /// Creates a provider with <paramref name="options"/>.
+        /// </summary>
+        /// <param name="options">Delegate that configured the options for the sub builder</param>
+        /// <returns>A provider with <paramref name="options"/> applied</returns>
+        public ICachedSqlQueryProvider CreateSubCachedProvider(Action<ICachedSqlQueryProviderOptions> options);
+    }
+
+    /// <summary>
+    /// Exposes extra options for a sql query provider.
+    /// </summary>
+    /// <typeparam name="TReturn">The builder to treturn for the fluent syntax</typeparam>
+    public interface ISqlQueryProviderSharedOptions<TReturn>
+    {
+        /// <summary>
+        /// Executes <paramref name="action"/> when a builder is created using the current sql provider.
+        /// </summary>
+        /// <param name="action">The delegate the execute</param>
+        /// <returns>Current options for method chaining</returns>
+        TReturn OnBuilderCreated(Action<IQueryBuilder> action);
+    }
+
+    /// <summary>
+    /// Exposes extra options for a sql query provider.
+    /// </summary>
+    public interface ISqlQueryProviderOptions : ISqlQueryProviderSharedOptions<ISqlQueryProviderOptions>
+    {
+
+    }
+
+    /// <summary>
+    /// Exposes extra options for a sql query provider.
+    /// </summary>
+    public interface ICachedSqlQueryProviderOptions : ISqlQueryProviderSharedOptions<ICachedSqlQueryProviderOptions>
+    {
+        /// <summary>
+        /// Defines the default build options for <see cref="ICachedSqlQueryProvider.GetQuery(string, Func{ISqlQueryProvider, IQueryBuilder})"/>.
+        /// </summary>
+        /// <param name="compileOptions">The build options</param>
+        /// <returns>Current options for method chaining</returns>
+        ICachedSqlQueryProviderOptions WithExpressionCompileOptions(ExpressionCompileOptions compileOptions);
     }
 }

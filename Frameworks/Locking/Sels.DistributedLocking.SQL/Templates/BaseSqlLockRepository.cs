@@ -20,6 +20,9 @@ using Sels.Core.Extensions.Fluent;
 using Sels.SQL.QueryBuilder.Expressions;
 using System.Data.Common;
 using Sels.Core.Conversion.Attributes.Serialization;
+using Sels.SQL.QueryBuilder.Statements;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
+using Castle.Core.Resource;
 
 namespace Sels.DistributedLocking.SQL.Templates
 {
@@ -28,6 +31,16 @@ namespace Sels.DistributedLocking.SQL.Templates
     /// </summary>
     public abstract class BaseSqlLockRepository : ISqlLockRepository
     {
+        // Constants
+        /// <summary>
+        /// The table alias for <see cref="SqlLock"/>.
+        /// </summary>
+        protected const string SqlLockAlias = "L";
+        /// <summary>
+        /// The table alias for <see cref="SqlLockRequest"/>.
+        /// </summary>
+        protected const string SqlLockRequestAlias = "LR";
+
         // Fields
         /// <summary>
         /// The compile options used to build queries.
@@ -40,18 +53,37 @@ namespace Sels.DistributedLocking.SQL.Templates
         /// <summary>
         /// Service that builds database independant sql queries.
         /// </summary>
-        protected readonly ICachedSqlQueryProvider _queryProvider;
+        private readonly Lazy<ICachedSqlQueryProvider> _queryProvider;
         /// <summary>
         /// Optional logger for tracing.
         /// </summary>
         protected readonly ILogger _logger;
+
+        // Properties
+        /// <summary>
+        /// Service that builds database independant sql queries.
+        /// </summary>
+        protected ICachedSqlQueryProvider QueryProvider => _queryProvider.Value;
+        /// <summary>
+        /// The table name for <see cref="SqlLock"/>
+        /// </summary>
+        protected string SqlLockTableName { get; set; } = nameof(SqlLock);
+        /// <summary>
+        /// The table name for <see cref="SqlLockRequest"/>
+        /// </summary>
+        protected string SqlLockRequestTableName { get; set; } = nameof(SqlLockRequest);
+        /// <summary>
+        /// The schema the lock tables are located in. Null by default.
+        /// </summary>
+        protected string Schema { get; set; }
 
         /// <inheritdoc cref="BaseSqlLockRepository"/>
         /// <param name="queryProvider"><inheritdoc cref="_queryProvider"/></param>
         /// <param name="logger">O<inheritdoc cref="_logger"/></param>
         public BaseSqlLockRepository(ICachedSqlQueryProvider queryProvider, ILogger logger = null)
         {
-            _queryProvider = queryProvider.ValidateArgument(nameof(queryProvider));
+            queryProvider.ValidateArgument(nameof(queryProvider));
+            _queryProvider = new Lazy<ICachedSqlQueryProvider>(() => queryProvider.CreateSubCachedProvider(x => x.OnBuilderCreated(OnBuilderCreated).WithExpressionCompileOptions(_queryOptions)), true);
             _queryNameFormat = $"{GetType().GetDisplayName()}.{{0}}";
 
             _logger = logger;
@@ -64,13 +96,13 @@ namespace Sels.DistributedLocking.SQL.Templates
             var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
 
             _logger.Log($"Deleting <{ids.Length}> lock requests");
-            var query = _queryProvider.Delete<SqlLockRequest>()
+            var query = QueryProvider.Delete<SqlLockRequest>()
                                             .Where(w => w.Column(c => c.Id).In.Values(ids))
                                             .Build(_queryOptions);
             _logger.Trace($"Deleting <{ids.Length}> lock requests using query <{query}>");
 
-            await dbConnection.ExecuteAsync(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token));
-            _logger.Log($"Deleted <{ids.Length}> lock requests");
+            var deleted = await dbConnection.ExecuteAsync(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
+            _logger.Log($"Deleted <{deleted}> lock requests");
         }
         /// <inheritdoc/>
         public virtual async Task<int> DeleteInActiveLocksAsync(IRepositoryTransaction transaction, int? inactiveTime = null, CancellationToken token = default)
@@ -78,18 +110,18 @@ namespace Sels.DistributedLocking.SQL.Templates
             var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
             _logger.Log($"Deleting all {(inactiveTime.HasValue ? "inactive" : "free")} locks");
             // Delete all locks with no pending requests that aren't locked
-            var query = _queryProvider.Delete<SqlLock>()
+            var query = QueryProvider.Delete<SqlLock>()
                                         .Where(w => w.Column(c => c.LockedBy).IsNull
                                                     // Add extra filter on last lock date when inactive is set
                                                     .When(inactiveTime.HasValue, b => b.And.WhereGroup(g => g.Column(c => c.LastLockDate).IsNull.Or.Column(c => c.LastLockDate).LesserThan.ModifyDate(b => b.CurrentDate(), -inactiveTime.Value, DateInterval.Millisecond)))
                                                     .And.Not().ExistsIn(
-                                                                        _queryProvider.Select<SqlLockRequest>().Where(w => w.Column(c => c.Resource).EqualTo.Column<SqlLock>(c => c.Resource))
+                                                                        QueryProvider.Select<SqlLockRequest>().Where(w => w.Column(c => c.Resource).EqualTo.Column<SqlLock>(c => c.Resource))
                                                                         )
                                                 )
                                         .Build(_queryOptions);
 
             _logger.Trace($"Deleting all {(inactiveTime.HasValue ? "inactive" : "free")} locks using query {query}");
-            var deleted = await dbConnection.ExecuteAsync(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token));
+            var deleted = await dbConnection.ExecuteAsync(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
             _logger.Log($"Deleted <{deleted}> {(inactiveTime.HasValue ? "inactive" : "free")} locks");
             return deleted;
         }
@@ -100,15 +132,14 @@ namespace Sels.DistributedLocking.SQL.Templates
             var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
 
             _logger.Log($"Fetching all lock requests for resource <{resource}>");
-            var query = _queryProvider.GetQuery(_queryNameFormat.FormatString(nameof(GetAllLockRequestsByResourceAsync)), p => p.Select<SqlLockRequest>().All()
+            var query = QueryProvider.GetQuery(_queryNameFormat.FormatString(nameof(GetAllLockRequestsByResourceAsync)), p => p.Select<SqlLockRequest>().All()
                                                                                                                                 .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)))
-                                                                                                                                .OrderBy(c => c.CreatedAt, SortOrders.Ascending)
-                                                                                                                                .Build(_queryOptions));
+                                                                                                                                .OrderBy(c => c.CreatedAt, SortOrders.Ascending));
             _logger.Trace($"Fetching all lock requests for resource <{resource}> using <{query}>");
             var parameters = new DynamicParameters();
             parameters.Add($"@{nameof(resource)}", resource);
 
-            var results = (await dbConnection.QueryAsync<SqlLockRequest>(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token))).ToArray();
+            var results = (await dbConnection.QueryAsync<SqlLockRequest>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false)).Select(x => x.SetFromUtc()).ToArray();
             _logger.Log($"Fetched <{results.Length}> lock requests for resource <{resource}>");
             return results;
         }
@@ -117,12 +148,11 @@ namespace Sels.DistributedLocking.SQL.Templates
         {
             var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
             _logger.Log($"Getting the total amount of locks");
-            var query = _queryProvider.GetQuery(_queryNameFormat.FormatString(nameof(GetLockAmountAsync)), p => p.Select<SqlLock>().CountAll()
-                                                                                                                 .Build(_queryOptions));
+            var query = QueryProvider.GetQuery(_queryNameFormat.FormatString(nameof(GetLockAmountAsync)), p => p.Select<SqlLock>().CountAll());
 
             _logger.Trace($"Getting the total amount of locks using query <{query}>");
 
-            var count = await dbConnection.ExecuteScalarAsync<int>(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token));
+            var count = await dbConnection.ExecuteScalarAsync<int>(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
             _logger.Log($"Total amount of locks is <{count}>");
             return count;
         }
@@ -134,9 +164,9 @@ namespace Sels.DistributedLocking.SQL.Templates
             var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
 
             _logger.Log($"Trying to unlock resource <{resource}> for <{requester}>");
-            var query = _queryProvider.GetQuery(_queryNameFormat.FormatString(nameof(TryUnlockAsync)), p =>
+            var query = QueryProvider.GetQuery(_queryNameFormat.FormatString(nameof(TryUnlockAsync)), p =>
             {
-                var multiBuilder = p.Build();
+                var multiBuilder = p.New();
 
                 // Try update first
                 multiBuilder.Append(p.Update<SqlLock>()
@@ -147,7 +177,7 @@ namespace Sels.DistributedLocking.SQL.Templates
                 multiBuilder.Append(p.Select<SqlLock>()
                                      .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))));
 
-                return multiBuilder.Build(_queryOptions);
+                return multiBuilder;
             });
 
             _logger.Trace($"Trying to unlock resource <{resource}> for <{requester}> using query <{query}>");
@@ -155,14 +185,12 @@ namespace Sels.DistributedLocking.SQL.Templates
             parameters.Add($"@{nameof(resource)}", resource);
             parameters.Add($"@{nameof(requester)}", requester);
 
-            var multiQuery = await dbConnection.QueryMultipleAsync(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token));
-            var wasUnlocked = (await multiQuery.ReadSingleAsync<int>()) >= 0;
-            var currentLock = await multiQuery.ReadFirstAsync<SqlLock>();
+            var currentLock = await dbConnection.QuerySingleAsync<SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
+            bool wasUnlocked = currentLock.LockedBy == null;
 
             _logger.Log($"Resource <{resource}> was {(wasUnlocked ? "unlocked" : "not unlocked")} by <{requester}>");
-            return (wasUnlocked, currentLock);
+            return (wasUnlocked, currentLock.SetFromUtc());
         }
-
         /// <inheritdoc/>
         public virtual async Task<SqlLock> TryUpdateExpiryDateAsync(IRepositoryTransaction transaction, string resource, string requester, TimeSpan extendTime, CancellationToken token)
         {
@@ -171,14 +199,14 @@ namespace Sels.DistributedLocking.SQL.Templates
             var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
 
             _logger.Log($"Trying to update expiry time for lock on resource <{resource}> for <{requester}>");
-            var query = _queryProvider.GetQuery(_queryNameFormat.FormatString(nameof(TryUpdateExpiryDateAsync)), p =>
+            var query = QueryProvider.GetQuery(_queryNameFormat.FormatString(nameof(TryUpdateExpiryDateAsync)), p =>
             {
-                var multiBuilder = p.Build();
+                var multiBuilder = p.New();
 
                 // Try update
                 multiBuilder.Append(p.Update<SqlLock>()
                                         .Set.Column(c => c.ExpiryDate).To.Case(ca =>
-                                                                            ca.When(w => w.Column(c => c.ExpiryDate).IsNull())
+                                                                            ca.When(w => w.Column(c => c.ExpiryDate).IsNull)
                                                                                 .Then.ModifyDate(b => b.CurrentDate(DateType.Utc), b => b.Parameter(nameof(extendTime)), DateInterval.Millisecond)
                                                                               .Else.ModifyDate(b => b.Column(c => c.ExpiryDate), b => b.Parameter(nameof(extendTime)), DateInterval.Millisecond))
                                         .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))
@@ -188,7 +216,7 @@ namespace Sels.DistributedLocking.SQL.Templates
                 multiBuilder.Append(p.Select<SqlLock>()
                                      .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))));
 
-                return multiBuilder.Build(_queryOptions);
+                return multiBuilder;
             });
 
             _logger.Trace($"Trying to update expiry time for lock on resource <{resource}> for <{requester}> using query <{query}>");
@@ -197,24 +225,67 @@ namespace Sels.DistributedLocking.SQL.Templates
             parameters.Add($"@{nameof(requester)}", requester);
             parameters.Add($"@{nameof(extendTime)}", extendTime.TotalMilliseconds);
 
-            var multiQuery = await dbConnection.QueryMultipleAsync(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token));
-            var wasUpdated = (await multiQuery.ReadSingleAsync<int>()) >= 0;
-            var currentLock = await multiQuery.ReadFirstAsync<SqlLock>();
+            var currentLock = await dbConnection.QuerySingleAsync<SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
+
+            bool wasUpdated = requester.Equals(currentLock.LockedBy, StringComparison.OrdinalIgnoreCase);
 
             if (wasUpdated) _logger.Log($"Expiry date on resource <{resource}> held by <{requester}> has been extended to <{currentLock.ExpiryDate}>");
             else _logger.Warning($"Resource <{resource}> is no longer held by <{requester}> so can't extend expiry date. Resource is currently held by <{currentLock.LockedBy}>");
 
-            return currentLock;
+            return currentLock.SetFromUtc();
         }
+        /// <inheritdoc/>
+        public async virtual Task<long[]> GetDeletedRequestIds(IRepositoryTransaction transaction, long[] ids, CancellationToken token)
+        {
+            ids.ValidateArgument(nameof(ids));
+            var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
 
+            _logger.Log($"Checking which of the <{ids.Length}> lock requests have been removed");
+
+            var query = QueryProvider.Select<SqlLockRequest>()
+                                        .Column(c => c.Id)
+                                        .Where(w => w.Column(c => c.Id).In.Values(ids))
+                                        .Build(_queryOptions);
+            _logger.Trace($"Checking which of the <{ids.Length}> lock requests have been removed using query <{query}>");
+
+            var existingIds = (await dbConnection.QueryAsync<long>(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false)).ToArray();
+            var removedIds = ids.Where(x => !existingIds.Contains(x)).ToArray();
+
+            _logger.Log($"<{removedIds.Length}> lock requests out of the <{ids.Length}> have been removed");
+            return removedIds;
+        }
+        /// <inheritdoc/>
+        public async Task ClearAll(IRepositoryTransaction transaction, CancellationToken token = default)
+        {
+            var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
+
+            _logger.Warning($"Clearing table <{SqlLockTableName}> and <{SqlLockRequestTableName}>");
+            var query = QueryProvider.GetQuery(_queryNameFormat.FormatString(nameof(ClearAll)), p =>
+            {
+                return p.New()
+                        .Append(p.Delete<SqlLockRequest>())
+                        .Append(p.Delete<SqlLock>());
+            });
+
+            _logger.Trace($"Clearing table <{SqlLockTableName}> and <{SqlLockRequestTableName}> using query <{query}>");
+
+            var deleted = await dbConnection.ExecuteAsync(new CommandDefinition(query, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
+            _logger.Log($"Cleared <{deleted}> locks and requests");
+        }
         /// <inheritdoc/>
         public abstract Task<SqlLock> GetLockByResourceAsync(IRepositoryTransaction transaction, string resource, bool countRequests, bool forUpdate, CancellationToken token);
         /// <inheritdoc/>
         public abstract Task<(SqlLock[] Results, int TotalMatching)> SearchAsync(IRepositoryTransaction transaction, string filter = null, int page = 0, int pageSize = 100, PropertyInfo sortColumn = null, bool sortDescending = false, CancellationToken token = default);
         /// <inheritdoc/>
-        public abstract Task<SqlLock> TryAssignLockToAsync(IRepositoryTransaction transaction, string resource, string requester, DateTimeOffset? expiryDate, CancellationToken token);
+        public abstract Task<SqlLock> TryAssignLockToAsync(IRepositoryTransaction transaction, string resource, string requester, DateTime? expiryDate, CancellationToken token);
 
-        private (IDbConnection Connection, IDbTransaction Transaction) GetTransactionInfo(IRepositoryTransaction transaction)
+        /// <summary>
+        /// Returns the connection and transaction contained in <paramref name="transaction"/>.
+        /// </summary>
+        /// <param name="transaction">The transaction to get the info from</param>
+        /// <returns>The connection and transaction contained in <paramref name="transaction"/></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        protected (IDbConnection Connection, IDbTransaction Transaction) GetTransactionInfo(IRepositoryTransaction transaction)
         {
             transaction.ValidateArgument(nameof(transaction));
 
@@ -222,6 +293,42 @@ namespace Sels.DistributedLocking.SQL.Templates
             if (connection == null) throw new InvalidOperationException($"{nameof(GetRepositoryTransactionInfo)} did not return a connection");
             if (dbTransaction == null) throw new InvalidOperationException($"{nameof(GetRepositoryTransactionInfo)} did not return a transaction");
             return (connection, dbTransaction);
+        }
+
+        // Virtuals
+        /// <summary>
+        /// Raised when a query builder is created by the current repository.
+        /// </summary>
+        /// <param name="queryBuilder">The builder that was created</param>
+        protected void OnBuilderCreated(IQueryBuilder queryBuilder)
+        {
+            queryBuilder.ValidateArgument(nameof(queryBuilder));
+
+            // Globally set aliases
+            if (queryBuilder is IAliasQueryBuilder aliasBuilder)
+            {
+                aliasBuilder.SetAlias<SqlLock>(SqlLockAlias);
+                aliasBuilder.SetAlias<SqlLockRequest>(SqlLockRequestAlias);
+            }
+
+            queryBuilder.OnCompiling(x =>
+            {
+                if (x is TableExpression tableExpression)
+                {
+                    // Set schema
+                    tableExpression.SetSchema(Schema);
+
+                    // Overwrite table names
+                    if (tableExpression?.DataSet?.DataSet is Type sqlLockType && sqlLockType.Is<SqlLock>())
+                    {
+                        tableExpression.SetTableName(SqlLockTableName);
+                    }
+                    else if (tableExpression?.DataSet?.DataSet is Type sqlLockRequestType && sqlLockRequestType.Is<SqlLockRequest>())
+                    {
+                        tableExpression.SetTableName(SqlLockRequestTableName);
+                    }
+                }
+            });
         }
 
         // Abstractions

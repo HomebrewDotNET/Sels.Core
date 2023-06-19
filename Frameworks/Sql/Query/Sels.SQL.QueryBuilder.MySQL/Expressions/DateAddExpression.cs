@@ -51,6 +51,8 @@ namespace Sels.SQL.QueryBuilder.MySQL.Expressions
             // Append amount
             builder.Append("INTERVAL").AppendSpace();
             subBuilder(builder, Amount);
+            // MySql doesn't support milliseconds as interval so we multiply it by a 1000 to get microseconds
+            if (Interval == DateInterval.Millisecond) builder.AppendSpace().Append("* 1000");
             builder.AppendSpace();
 
 

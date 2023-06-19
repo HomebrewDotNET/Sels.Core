@@ -15,21 +15,24 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// <typeparam name="TEntity">The main entity to create the query for</typeparam>
     /// <typeparam name="TPosition">Type that defines where in a query expressions should be located</typeparam>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-    public abstract class BaseStatementBuilder<TEntity, TPosition, TDerived> : IStatementQueryBuilder<TEntity, TPosition, TDerived>, 
+    public abstract class BaseStatementBuilder<TEntity, TPosition, TDerived> : BaseQueryBuilder, 
+        IStatementQueryBuilder<TEntity, TPosition, TDerived>, 
         IStatementJoinBuilder<TEntity, TDerived>,
         IStatementConditionBuilder<TEntity, TDerived>
         where TPosition : notnull
     {
         // Fields
-        private readonly Dictionary<Type, string> _aliases = new Dictionary<Type, string>();
-        private readonly Dictionary<TPosition, List<OrderedExpression>> _expressions = new Dictionary<TPosition, List<OrderedExpression>>();
-        private readonly IQueryCompiler<TPosition> _compiler;
+        internal readonly Dictionary<Type, string> _aliases = new Dictionary<Type, string>();
+        internal readonly Dictionary<TPosition, List<OrderedExpression>> _expressions = new Dictionary<TPosition, List<OrderedExpression>>();
+        internal readonly IQueryCompiler<TPosition> _compiler;
+        internal readonly List<Action<IExpression>> _expressionHandlers = new List<Action<IExpression>>();
+        internal readonly List<Action<OrderedExpression, TPosition>> _positionExpressionHandlers = new List<Action<OrderedExpression, TPosition>>();
 
         // Properties
         /// <inheritdoc/>
         public IReadOnlyDictionary<TPosition, OrderedExpression[]> Expressions => _expressions.ToDictionary(x => x.Key, x => x.Value.ToArray());
         /// <inheritdoc/>
-        public IExpression[] InnerExpressions => _expressions.OrderBy(x => x.Key).SelectMany(x => x.Value).OrderBy(x => x.Order).Select(x => x.Expression).ToArray();
+        public override IExpression[] InnerExpressions => _expressions.OrderBy(x => x.Key).SelectMany(x => x.Value).OrderBy(x => x.Order).Select(x => x.Expression).ToArray();
         /// <inheritdoc/>
         public IReadOnlyDictionary<Type, string> Aliases => _aliases;
 
@@ -41,18 +44,29 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         }
         /// <summary>
         /// <inheritdoc cref="BaseStatementBuilder{TEntity, TPosition, TDerived}"/>
-        /// Can set the default expressions.
+        /// Copies settings from <paramref name="other"/>.
         /// </summary>
-        /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
-        /// <param name="expressions">The expressions for the current query</param>
-        protected BaseStatementBuilder(IQueryCompiler<TPosition> compiler, Dictionary<TPosition, List<OrderedExpression>> expressions)
+        /// <param name="other">The builder to copy settings from</param>
+        protected BaseStatementBuilder(BaseStatementBuilder<TEntity, TPosition, TDerived> other)
         {
-            _compiler = compiler.ValidateArgument(nameof(compiler));
+            other.ValidateArgument(nameof(other));
+            _compiler = other._compiler.ValidateArgument(nameof(_compiler));
             // Create new reference
-            _expressions = expressions.ValidateArgument(nameof(expressions)).ToDictionary(x => x.Key, x => x.Value.ToList());
+            _expressions = other._expressions.ValidateArgument(nameof(_expressions)).ToDictionary(x => x.Key, x => x.Value.ToList());
+            _aliases = other._aliases.ValidateArgument(nameof(_aliases)).ToDictionary(x => x.Key, x => x.Value);
+            _expressionHandlers = other._expressionHandlers.ValidateArgument(nameof(_expressionHandlers)).ToList();
+            _positionExpressionHandlers = other._positionExpressionHandlers.ValidateArgument(nameof(_positionExpressionHandlers)).ToList();
         }
 
         #region Alias
+        /// <inheritdoc/>
+        public void SetAlias(Type type, string alias)
+        {
+            type.ValidateArgument(nameof(type));
+            alias.ValidateArgument(nameof(alias));
+
+            _aliases.AddOrUpdate(type, alias);
+        }
         /// <inheritdoc/>
         public TDerived AliasFor<T>(string tableAlias)
         {
@@ -113,7 +127,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
 
         #region Join
         /// <inheritdoc/>
-        public IStatementJoinTableBuilder<TEntity, TDerived> Join(Joins joinType)
+        public IStatementJoinResultSetBuilder<TEntity, TDerived> Join(Joins joinType)
         {
             var expression = new JoinExpression<TEntity, TDerived>(joinType, Instance);
             Expression(expression, GetPositionForJoinExpression(expression));
@@ -124,7 +138,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
 
         #region Condition
         /// <inheritdoc/>
-        public TDerived Where(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder)
+        public TDerived Where(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder)
         {
             builder.ValidateArgument(nameof(builder));
 
@@ -140,27 +154,36 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         public TDerived Expression(IExpression sqlExpression, TPosition position, int order = 0)
         {
             sqlExpression.ValidateArgument(nameof(sqlExpression));
-            position.ValidateArgument(nameof(position));    
+            position.ValidateArgument(nameof(position));
 
-            _expressions.AddValueToList(position, new OrderedExpression(sqlExpression, order));
+            var orderedExpression = new OrderedExpression(sqlExpression, order);
+            _expressions.AddValueToList(position, orderedExpression);
+            RaiseExpressionAdded(position, orderedExpression);
             return Instance;
+        }
+
+        private void RaiseExpressionAdded(TPosition position, OrderedExpression expression)
+        {
+            expression.ValidateArgument(nameof(expression));
+            position.ValidateArgument(nameof(position));
+            foreach (var handler in _positionExpressionHandlers)
+            {
+                handler(expression, position);
+            }
+            foreach (var handler in _expressionHandlers)
+            {
+                handler(expression.Expression);
+            }
         }
         #endregion
 
         #region Build
         /// <inheritdoc/>
-        public string Build(ExpressionCompileOptions options = ExpressionCompileOptions.None)
-        {
-            var builder = new StringBuilder();
-            Build(builder, options);
-            return builder.ToString();
-        }
-        /// <inheritdoc/>
-        public virtual StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
 
-            _compiler.CompileTo(builder, this, x => x.SetDataSetConverter(TranslateToAlias), options);
+            _compiler.CompileTo(builder, this, x => x.SetDataSetConverter(TranslateToAlias).OnCompiling(OnCompiling), options);
             return builder;
         }
         #endregion
@@ -174,6 +197,13 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         protected IEnumerable<PropertyInfo> GetColumnPropertiesFrom<T>(string[] excludedProperties)
         {
             return typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters()?.Length == 0 && (!excludedProperties.HasValue() || !excludedProperties.Contains(x.Name, StringComparer.OrdinalIgnoreCase)));
+        }
+
+        /// <inheritdoc/>
+        public IQueryBuilder<TPosition> OnExpressionAdded(Action<OrderedExpression, TPosition> action)
+        {
+            _positionExpressionHandlers.Add(action.ValidateArgument(nameof(action)));
+            return this;
         }
 
         // Abstractions
@@ -192,17 +222,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         protected abstract TPosition GetPositionForConditionExpression(ConditionGroupExpression<TEntity> conditionExpression);
 
         ///<inheritdoc/>
-        public TDerived Clone()
-        {
-            return Clone(_compiler, _expressions);
-        }
+        public abstract TDerived Clone();
 
-        /// <summary>
-        /// Clones the current query builder with <paramref name="compiler"/> and <paramref name="expressions"/>.
-        /// </summary>
-        /// <param name="compiler">The compiler to use for the clone</param>
-        /// <param name="expressions">The expressions for the clone</param>
-        /// <returns>A cloned instance with the same expressions as the current instance</returns>
-        protected abstract TDerived Clone(IQueryCompiler<TPosition> compiler, Dictionary<TPosition, List<OrderedExpression>> expressions);
     }
 }

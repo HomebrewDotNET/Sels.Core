@@ -8,8 +8,6 @@ using SqlParameterExpression = Sels.SQL.QueryBuilder.Builder.Expressions.Paramet
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.Models;
-using Sels.SQL.QueryBuilder.Expressions;
-
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
     /// <summary>
@@ -86,6 +84,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
 
         #region Value
         /// <summary>
+        /// Adds a SQL null value.
+        /// </summary>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Null() => Value(DBNull.Value);
+        /// <summary>
         /// Adds a constant sql value expression.
         /// </summary>
         /// <param name="constantValue">Object containing the constant sql value to compare to</param>
@@ -138,6 +141,13 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         #endregion
 
         #region VariableAssignment
+        /// <summary>
+        /// Assigns a new value to a SQL variable.
+        /// </summary>
+        /// <param name="variable">The name of the sql variable</param>
+        /// <param name="constant">The constant value to assign to the variable</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn AssignVariable(string variable, object constant) => AssignVariable(variable, e => e.Value(constant));
         /// <summary>
         /// Assigns a new value to a SQL variable.
         /// </summary>

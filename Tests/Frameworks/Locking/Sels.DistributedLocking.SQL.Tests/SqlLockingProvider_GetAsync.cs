@@ -15,8 +15,8 @@ namespace Sels.DistributedLocking.Memory.Test
         {
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
-            var date = DateTimeOffset.Now.AddMinutes(5);
-            var now = DateTimeOffset.Now;
+            var date = DateTime.Now.AddMinutes(5);
+            var now = DateTime.Now;
             var resource = "Resource";
             var requester = "Me";
             var sqlLock = new SqlLock()
@@ -30,7 +30,7 @@ namespace Sels.DistributedLocking.Memory.Test
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTimeOffset?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
+                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
                 x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), resource, true, false, It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
             

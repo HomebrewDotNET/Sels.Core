@@ -61,7 +61,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
             var expected = "INSERT INTO `Person` (`Id`, `Name`, `SurName`) VALUES (1, 'Jens', 'Sels') RETURNING *".GetWithoutWhitespace().ToLower();
             var builder = MySql.Insert<Person>().Into().Column(x => x.Id).Column(x => x.Name).Column(x => x.SurName)
                             .Values(1, "Jens", "Sels")
-                            .Return(x => x.All());
+                            .Returning(x => x.All());
 
             // Act
             var query = builder.Build();

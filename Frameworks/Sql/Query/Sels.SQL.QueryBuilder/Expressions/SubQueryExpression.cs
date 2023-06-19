@@ -44,7 +44,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             var dataset = DataSet != null ? datasetConverterer(DataSet) : null;
 
             if (_wrap) builder.Append('(');
-            if (!_canSeparatorBeAppended) options = options & ~ExpressionCompileOptions.AppendSeparator;
+            if (!_canSeparatorBeAppended) options &= ~ExpressionCompileOptions.AppendSeparator;
             _subQueryBuilder(builder, options);
             if (_wrap) builder.Append(')');
             if (dataset.HasValue()) builder.AppendSpace().Append(dataset);

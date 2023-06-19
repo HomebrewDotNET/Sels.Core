@@ -103,7 +103,7 @@ namespace Sels.DistributedLocking.SQL
             SqlLock sqlLock;
             await using (var transaction = await _lockRepository.CreateTransactionAsync(token))
             {
-                sqlLock = await _lockRepository.TryAssignLockToAsync(transaction, resource, requester, expiryTime.HasValue ? DateTimeOffset.Now.Add(expiryTime.Value) : (DateTimeOffset?)null, token);
+                sqlLock = await _lockRepository.TryAssignLockToAsync(transaction, resource, requester, expiryTime.HasValue ? DateTime.Now.Add(expiryTime.Value) : (DateTime?)null, token);
                 await transaction.CommitAsync(token);
             }
 
@@ -131,7 +131,7 @@ namespace Sels.DistributedLocking.SQL
             Task<ILock> requestTask;
             await using (var transaction = await _lockRepository.CreateTransactionAsync(token))
             {
-                var sqlLock = await _lockRepository.TryAssignLockToAsync(transaction, resource, requester, expiryTime.HasValue ? DateTimeOffset.Now.Add(expiryTime.Value) : (DateTimeOffset?)null, token);
+                var sqlLock = await _lockRepository.TryAssignLockToAsync(transaction, resource, requester, expiryTime.HasValue ? DateTime.Now.Add(expiryTime.Value) : (DateTime?)null, token);
 
                 // Check if lock was placed by requester
                 if (sqlLock == null) throw new InvalidOperationException($"{nameof(ISqlLockRepository.TryAssignLockToAsync)} returned null");
@@ -147,10 +147,10 @@ namespace Sels.DistributedLocking.SQL
                     {
                         Requester = requester,
                         Resource = resource,
-                        ExpiryTime = expiryTime,
+                        ExpiryTime = expiryTime?.TotalSeconds,
                         KeepAlive = keepAlive,
-                        Timeout = timeout.HasValue ? DateTimeOffset.Now.Add(timeout.Value) : (DateTimeOffset?)null,
-                        CreatedAt = DateTimeOffset.Now
+                        Timeout = timeout.HasValue ? DateTime.Now.Add(timeout.Value) : (DateTime?)null,
+                        CreatedAt = DateTime.Now
                     }, token);
 
                     await transaction.CommitAsync();
@@ -280,7 +280,7 @@ namespace Sels.DistributedLocking.SQL
                 if (requestmanager == null)
                 {
                     _logger.Debug($"Creating request manager for resource <{resource}>");
-                    requestmanager = new RequestManager(resource, OptionsMonitor, (l, r) => new AcquiredSqlLock(l, this, r.KeepAlive, r.ExpiryTime.HasValue ? r.ExpiryTime.Value : TimeSpan.Zero, _logger), _lockRepository, _logger);
+                    requestmanager = new RequestManager(resource, OptionsMonitor, (l, r) => new AcquiredSqlLock(l, this, r.KeepAlive, r.ExpiryTime.HasValue ? TimeSpan.FromSeconds(r.ExpiryTime.Value) : TimeSpan.Zero, _logger), _lockRepository, _logger);
                 }
 
                 return requestmanager;
@@ -418,11 +418,11 @@ namespace Sels.DistributedLocking.SQL
             /// <inheritdoc/>
             public string LockedBy { get; set; }
             /// <inheritdoc/>
-            public DateTimeOffset? LockedAt { get; set; }
+            public DateTime? LockedAt { get; set; }
             /// <inheritdoc/>
-            public DateTimeOffset? LastLockDate { get; set; }
+            public DateTime? LastLockDate { get; set; }
             /// <inheritdoc/>
-            public DateTimeOffset? ExpiryDate { get; set; }
+            public DateTime? ExpiryDate { get; set; }
             /// <inheritdoc/>
             public int PendingRequests { get; set; }
 
@@ -456,8 +456,11 @@ namespace Sels.DistributedLocking.SQL
             /// <inheritdoc/>
             public async Task ExtendAsync(TimeSpan extendTime, CancellationToken token = default) 
             {
+                var currentExpiry = ExpiryDate;
                 var sqlLock = await _provider.ExtendExpiryAsync(Resource, LockedBy, extendTime, token);
                 ExpiryDate = sqlLock.ExpiryDate;
+
+                _logger.Log($"Expiry date for lock <{Resource}> has been extended from <{currentExpiry}> to <{ExpiryDate}>");
 
                 TryStartExpiryTask();
             }
@@ -476,9 +479,9 @@ namespace Sels.DistributedLocking.SQL
                             return;
                         }
 
-                        _extendCancelSource = _extendCancelSource == null ? new CancellationTokenSource() : _extendCancelSource;
                         if (_keepAlive)
                         {
+                            _extendCancelSource = _extendCancelSource == null ? new CancellationTokenSource() : _extendCancelSource;
                             _logger.Debug($"Keep alive is enabled on lock <{Resource}> held by <{LockedBy}> with an expiry date set at <{ExpiryDate}>. Starting extend task");
 
                             _extendTask = ExtendLockDuringLifetime(_extendCancelSource.Token);
@@ -502,7 +505,7 @@ namespace Sels.DistributedLocking.SQL
                             }
 
                             // Sleep until we can extend the lock
-                            var sleepTime = (ExpiryDate.Value - LockedAt.Value).TotalMilliseconds.ChangeType<int>() - _provider.OptionsMonitor.CurrentValue.ExpiryOffset;
+                            var sleepTime = (ExpiryDate.Value - LockedAt.Value).Add(TimeSpan.FromMilliseconds(-_provider.OptionsMonitor.CurrentValue.ExpiryOffset));
                             _logger.Debug($"Extending expiry date for lock <{Resource}> held by <{LockedBy}> in <{sleepTime}ms> before it expires at <{ExpiryDate.Value}>");
                             await Helper.Async.Sleep(sleepTime, token).ConfigureAwait(false);
                             if (token.IsCancellationRequested) return;
@@ -651,7 +654,7 @@ namespace Sels.DistributedLocking.SQL
                                 {
                                     _logger.Log($"Lock on resource <{Resource}> can be acquired by {request.Request.Requester}. Attempting to lock");
 
-                                    sqlLock = await _repository.TryAssignLockToAsync(transaction, request.Request.Resource, request.Request.Requester, request.Request.ExpiryTime.HasValue ? DateTimeOffset.Now.Add(request.Request.ExpiryTime.Value) : (DateTimeOffset?)null, token);
+                                    sqlLock = await _repository.TryAssignLockToAsync(transaction, request.Request.Resource, request.Request.Requester, request.Request.ExpiryTime.HasValue ? DateTime.Now.AddSeconds(request.Request.ExpiryTime.Value) : (DateTime?)null, token);
 
                                     matchingRequests = orderedRequests.Where(x => x.Request.Requester.Equals(sqlLock?.LockedBy, StringComparison.OrdinalIgnoreCase));
                                 }
@@ -660,8 +663,13 @@ namespace Sels.DistributedLocking.SQL
 
                             requestsToDelete.AddRange(matchingRequests);
 
+                            // Check if requests have been removed
+                            var requestIds = orderedRequests.Select(x => x.Request.Id).ToArray();
+                            var deletedIds = await _repository.GetDeletedRequestIds(transaction, requestIds, token);
+                            var deletedRequests = orderedRequests.Where(x => !matchingRequests.Contains(x) && deletedIds.Contains(x.Request.Id)).ToArray();
+
                             // Get requests that have timed out
-                            var timedoutRequests = orderedRequests.Where(x => !matchingRequests.Contains(x) && x.Request.Timeout.HasValue && DateTimeOffset.Now > x.Request.Timeout.Value).ToArray();
+                            var timedoutRequests = orderedRequests.Where(x => !matchingRequests.Contains(x) && x.Request.Timeout.HasValue && DateTime.Now > x.Request.Timeout.Value).ToArray();
                             requestsToDelete.AddRange(timedoutRequests);
 
                             // Get cancelled requests
@@ -709,6 +717,17 @@ namespace Sels.DistributedLocking.SQL
                                     _pendingRequests.Remove(x);
                                 }
                                 _logger.Warning($"Cancelled request <{x.Request.Id}> placed by <{x.Request.Requester}> on resource <{x.Request.Resource}>");
+                            });
+
+                            // Completed deleted requests
+                            deletedRequests.Execute(x =>
+                            {
+                                x.Set(new TaskCanceledException($"Request <{x.Request.Id}> placed by <{x.Request.Requester}> on resource <{x.Request.Resource}> was removed"));
+                                lock (_threadLock)
+                                {
+                                    _pendingRequests.Remove(x);
+                                }
+                                _logger.Warning($"Request <{x.Request.Id}> placed by <{x.Request.Requester}> on resource <{x.Request.Resource}> was removed");
                             });
                         }
                     }

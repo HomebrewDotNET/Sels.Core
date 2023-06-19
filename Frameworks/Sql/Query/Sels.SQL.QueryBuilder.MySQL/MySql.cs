@@ -102,7 +102,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// </summary>
         /// <param name="logger">Optional logger for tracing</param>
         /// <returns>A builder for creating a multi statement SQL query</returns>
-        public static IMultiStatementBuilder Build(ILogger logger = null)
+        public static IMultiStatementBuilder New(ILogger logger = null)
         {
             var compiler = new MySqlCompiler(logger);
             return new MultiStatementBuilder(compiler);
@@ -211,6 +211,10 @@ namespace Sels.SQL.QueryBuilder.MySQL
             /// Function that modifies a date.
             /// </summary>
             public const string DateAdd = "DATE_ADD";
+            /// <summary>
+            /// Function that returns the last inserted id.
+            /// </summary>
+            public const string LastInsertId = "LAST_INSERT_ID";
         }
     }
 }

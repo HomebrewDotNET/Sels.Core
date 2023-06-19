@@ -893,11 +893,11 @@ namespace Sels.DistributedLocking.Memory
             /// <inheritdoc/>
             public string LockedBy { get; internal set; }
             /// <inheritdoc/>
-            public DateTimeOffset? LockedAt { get; internal set; }
+            public DateTime? LockedAt { get; internal set; }
             /// <inheritdoc/>
-            public DateTimeOffset? LastLockDate { get; internal set; }
+            public DateTime? LastLockDate { get; internal set; }
             /// <inheritdoc/>
-            public DateTimeOffset? ExpiryDate { get; internal set; }
+            public DateTime? ExpiryDate { get; internal set; }
             /// <summary>
             /// Pending locking requests for the current lock.
             /// </summary>
@@ -961,9 +961,9 @@ namespace Sels.DistributedLocking.Memory
             /// <inheritdoc/>
             public bool KeepAlive { get; internal set; }
             /// <inheritdoc/>
-            public DateTimeOffset? Timeout { get; }
+            public DateTime? Timeout { get; }
             /// <inheritdoc/>
-            public DateTimeOffset CreatedAt { get; } = DateTimeOffset.Now;
+            public DateTime CreatedAt { get; } = DateTime.Now;
             /// <summary>
             /// The task returned to caller when they request a lock. 
             /// </summary>

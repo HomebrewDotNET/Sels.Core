@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Sels.Core.Extensions.Linq;
+using Sels.SQL.QueryBuilder.Expressions;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -45,6 +46,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
 
             var cteExpression = new CteExpression<T>(this, name);
             _expressions.Add(cteExpression);
+            RaiseExpressionAdded(cteExpression);
 
             return cteExpression;
         }
@@ -54,6 +56,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             query.ValidateArgument(nameof(query));
 
             _queryExpression = new SubQueryExpression(null, query, false, true);
+            RaiseExpressionAdded(_queryExpression);
             return this;
         }
 

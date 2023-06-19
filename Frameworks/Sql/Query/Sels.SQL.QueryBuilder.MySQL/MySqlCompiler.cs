@@ -78,7 +78,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             // Remove schema as MySql doesn't support it
             { typeof(TableExpression), x => {
                 var casted = x.CastTo<TableExpression>();
-                casted.Schema = null;
+                casted.SetSchema(null);
                 return casted;
             }},
             // Needs custom compiler support
@@ -593,31 +593,36 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 var mappedExpression = mapper(expression);
                 CompileExpressionTo(builder, compilerOptions, options, mappedExpression, isInsert, false);
             }
-            else if (expression is IColumnExpression columnExpression && !columnExpression.Object.Equals(Sql.All.ToString()))
-            {
-                // Add back ticks around column names 
-                columnExpression.ToSql(builder, x => ConvertDataSet(x, compilerOptions, isInsert), x => $"`{x}`", true, options);
-            }
-            else if (expression is IObjectExpression objectExpression && !objectExpression.Object.Equals(Sql.All.ToString()))
-            {
-                // Add back ticks around sql object names 
-                objectExpression.ToSql(builder, x => ConvertDataSet(x, compilerOptions, isInsert), x => $"`{x}`", options);
-            }
-            else if (expression is IDataSetExpression dataSetExpression)
-            {
-                dataSetExpression.ToSql(builder, x => ConvertDataSet(x, compilerOptions, isInsert), options);
-            }
-            else if (expression is IExpressionContainer expressionContainer)
-            {
-                expressionContainer.ToSql(builder, (b, e) => CompileExpressionTo(b, compilerOptions, options, e, isInsert), options);
-            }
-            else if (expression is ITypeExpression typeExpression)
-            {
-                typeExpression.ToSql(builder, MapTypeToMySqlType, options);
-            }
             else
             {
-                expression.ToSql(builder, options);
+                compilerOptions.RaiseOnCompiling(expression);
+
+                if (expression is IColumnExpression columnExpression && !columnExpression.Object.Equals(Sql.All.ToString()))
+                {
+                    // Add back ticks around column names 
+                    columnExpression.ToSql(builder, x => ConvertDataSet(x, compilerOptions, isInsert), x => $"`{x}`", true, options);
+                }
+                else if (expression is IObjectExpression objectExpression && !objectExpression.Object.Equals(Sql.All.ToString()))
+                {
+                    // Add back ticks around sql object names 
+                    objectExpression.ToSql(builder, x => ConvertDataSet(x, compilerOptions, isInsert), x => $"`{x}`", options);
+                }
+                else if (expression is IDataSetExpression dataSetExpression)
+                {
+                    dataSetExpression.ToSql(builder, x => ConvertDataSet(x, compilerOptions, isInsert), options);
+                }
+                else if (expression is IExpressionContainer expressionContainer)
+                {
+                    expressionContainer.ToSql(builder, (b, e) => CompileExpressionTo(b, compilerOptions, options, e, isInsert), options);
+                }
+                else if (expression is ITypeExpression typeExpression)
+                {
+                    typeExpression.ToSql(builder, MapTypeToMySqlType, options);
+                }
+                else
+                {
+                    expression.ToSql(builder, options);
+                }
             }
         }
 
@@ -707,6 +712,9 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <inheritdoc cref="ICompilerOptions"/>
         private class MySqlCompilerOptions : ICompilerOptions
         {
+            // Fields
+            private readonly List<Action<IExpression>> _compilationHandlers = new List<Action<IExpression>>();
+
             // Properties
             /// <summary>
             /// Delegate that converts an object that represents a dataset into it's sql equivalent.
@@ -724,10 +732,27 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 configurator?.Invoke(this);
             }
 
+            internal void RaiseOnCompiling(IExpression expression)
+            {
+                expression.ValidateArgument(nameof(expression));
+
+                foreach(var handler in _compilationHandlers)
+                {
+                    handler(expression);
+                }
+            }
+
             /// <inheritdoc/>
             public ICompilerOptions SetDataSetConverter(Func<object, string> converterDelegate)
             {
                 DataSetConverter = converterDelegate.ValidateArgument(nameof(converterDelegate));
+                return this;
+            }
+
+            /// <inheritdoc/>
+            public ICompilerOptions OnCompiling(Action<IExpression> action)
+            {
+                _compilationHandlers.Add(action.ValidateArgument(nameof(action)));
                 return this;
             }
         }

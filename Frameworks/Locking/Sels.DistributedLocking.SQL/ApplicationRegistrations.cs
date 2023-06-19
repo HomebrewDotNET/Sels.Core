@@ -20,12 +20,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">Collection to add the service registration to</param>
         /// <param name="configurator">Optional delegate for configuring the options</param>
+        /// <param name="overwrite">True to overwrite previous registrations, otherwise false</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddSqlLockingProvider(this IServiceCollection services, Action<SqlLockingProviderOptions> configurator = null)
+        public static IServiceCollection AddSqlLockingProvider(this IServiceCollection services, Action<SqlLockingProviderOptions> configurator = null, bool overwrite = false)
         {
             services.ValidateArgument(nameof(services));
 
             services.AddOptions();
+            services.AddCachedSqlQueryProvider(overwrite: overwrite);
 
             // Add configuration handler
             services.BindOptionsFromConfig<SqlLockingProviderOptions>();
@@ -41,6 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.New<ILockingProvider, SqlLockingProvider>()
                     .Trace(x => x.Duration.OfAll)
                     .AsSingleton()
+                    .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
                     .Register();
 
             return services;

@@ -43,7 +43,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
 
             subBuilder(builder, Expression);
             if (Alias.HasValue()) {
-                builder.Append(Sql.As).AppendSpace();
+                builder.AppendSpace().Append(Sql.As).AppendSpace();
                 subBuilder(builder, Alias);
             } 
         }

@@ -20,9 +20,8 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         }
 
         /// <inheritdoc cref="DeleteStatementBuilder{TEntity}"/>
-        /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
-        /// <param name="expressions">The expressions for the current query</param>
-        public DeleteStatementBuilder(IQueryCompiler<DeleteExpressionPositions> compiler, Dictionary<DeleteExpressionPositions, List<OrderedExpression>> expressions) : base(compiler, expressions)
+        /// <param name="other">The builder to copy settings from</param>
+        protected DeleteStatementBuilder(DeleteStatementBuilder<TEntity> other) : base(other)
         {
         }
 
@@ -30,9 +29,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         public override IDeleteStatementBuilder<TEntity> Instance => this;
 
         /// <inheritdoc/>
-        protected override IDeleteStatementBuilder<TEntity> Clone(IQueryCompiler<DeleteExpressionPositions> compiler, Dictionary<DeleteExpressionPositions, List<OrderedExpression>> expressions)
+        public override IDeleteStatementBuilder<TEntity> Clone()
         {
-            return new DeleteStatementBuilder<TEntity>(compiler, expressions);
+            return new DeleteStatementBuilder<TEntity>(this);
         }
 
         /// <inheritdoc/>

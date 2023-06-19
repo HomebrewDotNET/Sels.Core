@@ -53,7 +53,7 @@ namespace Sels.Core.Cli
         /// </summary>
         /// <param name="action">Action that configures the service collection</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived RegisterServices(Action<IServiceCollection, TArg?> action);
+        TDerived ConfigureServices(Action<IServiceCollection, TArg?> action);
         /// <summary>
         /// Overwrites the default parser with <paramref name="parser"/>.
         /// </summary>

@@ -22,10 +22,10 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         }
 
         /// <inheritdoc cref="UpdateStatementBuilder{TEntity}"/>
-        /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
-        /// <param name="expressions">The expressions for the current query</param>
-        public UpdateStatementBuilder(IQueryCompiler<UpdateExpressionPositions> compiler, Dictionary<UpdateExpressionPositions, List<OrderedExpression>> expressions) : base(compiler, expressions)
+        /// <param name="other">The builder to copy settings from</param>
+        public UpdateStatementBuilder(UpdateStatementBuilder<TEntity> other) : base(other)
         {
+
         }
 
         #region Base builder
@@ -43,9 +43,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             return UpdateExpressionPositions.Join;
         }
         /// <inheritdoc/>
-        protected override IUpdateStatementBuilder<TEntity> Clone(IQueryCompiler<UpdateExpressionPositions> compiler, Dictionary<UpdateExpressionPositions, List<OrderedExpression>> expressions)
+        public override IUpdateStatementBuilder<TEntity> Clone()
         {
-            return new UpdateStatementBuilder<TEntity>(compiler, expressions);
+            return new UpdateStatementBuilder<TEntity>(this);
         }
         #endregion
 
