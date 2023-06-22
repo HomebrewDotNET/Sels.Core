@@ -116,7 +116,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
                                                                       .Set.Column(c => c.LockedAt).To.CurrentDate()
                                                                       .Set.Column(c => c.LastLockDate).To.CurrentDate()
                                                                       .InnerJoin().SubQuery(q.With().Cte("Request")
-                                                                                                    .Using(q.Select<SqlLockRequest>().ForUpdate()
+                                                                                                    .As(q.Select<SqlLockRequest>().ForUpdate()
                                                                                                             .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)).And.Column(c => c.Timeout).IsNull.Or.Column(c => c.Timeout).GreaterThan.CurrentDate())
                                                                                                             .OrderBy(c => c.CreatedAt, SortOrders.Ascending)
                                                                                                             .Limit(1))

@@ -51,7 +51,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             return this;
         }
         /// <inheritdoc/>
-        public ICteOrSelectStatementBuilder Using(Action<StringBuilder, ExpressionCompileOptions> query)
+        public ICteOrSelectStatementBuilder As(Action<StringBuilder, ExpressionCompileOptions> query)
         {
             query.ValidateArgument(nameof(query));
             if (Builder == null) throw new InvalidOperationException("Builder is not set");

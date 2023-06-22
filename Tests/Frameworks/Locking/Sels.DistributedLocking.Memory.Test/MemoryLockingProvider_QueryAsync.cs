@@ -23,7 +23,7 @@ namespace Sels.DistributedLocking.Memory.Test
             }
 
             // Act
-            var result = await provider.QueryAsync(filter);
+            var result = await provider.QueryAsync(x => x.WithFilterOnResource(filter));
 
             // Assert
             Assert.That(result.Results, Is.Not.Null);
@@ -48,7 +48,7 @@ namespace Sels.DistributedLocking.Memory.Test
             }
 
             // Act
-            var result = await provider.QueryAsync();
+            var result = await provider.QueryAsync(x => { });
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -61,7 +61,6 @@ namespace Sels.DistributedLocking.Memory.Test
 
         [TestCase(1, 2, new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, new string[] { "1", "2" })]
         [TestCase(1, 100, new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" })]
-        [TestCase(0, 1, new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" })]
         [TestCase(2, 5, new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, new string[] { "6", "7", "8", "9" })]
         [TestCase(6, 2, new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9" }, new string[] { })]
         public async Task ReturnsCorrectLocksWhenPaginationIsApplied(int page, int pageSize, string[] locks, string[] expected)
@@ -75,7 +74,7 @@ namespace Sels.DistributedLocking.Memory.Test
             }
 
             // Act
-            var result = await provider.QueryAsync(page: page, pageSize: pageSize);
+            var result = await provider.QueryAsync(x => x.WithPagination(page, pageSize));
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -95,7 +94,7 @@ namespace Sels.DistributedLocking.Memory.Test
             }
 
             // Act
-            var results = await provider.QueryAsync(sortBy: x => x.Resource, sortDescending: sortDescending);
+            var results = await provider.QueryAsync(x => x.OrderByResource(sortDescending));
 
             // Assert
             Assert.That(results, Is.Not.Null);
@@ -125,7 +124,7 @@ namespace Sels.DistributedLocking.Memory.Test
             }
 
             // Act
-            var results = await provider.QueryAsync(sortBy: x => x.LockedBy, sortDescending: sortDescending);
+            var results = await provider.QueryAsync(x => x.OrderByLockedBy(sortDescending));
 
             // Assert
             Assert.That(results, Is.Not.Null);

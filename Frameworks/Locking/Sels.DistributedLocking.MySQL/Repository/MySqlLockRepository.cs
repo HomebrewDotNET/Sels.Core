@@ -27,6 +27,8 @@ using System.Collections;
 using System.Linq;
 using Sels.SQL.QueryBuilder.Expressions;
 using Sels.Core.Extensions.Logging;
+using Sels.SQL.QueryBuilder.Builder.Statement;
+using Sels.Core.Extensions.Fluent;
 
 namespace Sels.DistributedLocking.MySQL.Repository
 {
@@ -126,7 +128,6 @@ namespace Sels.DistributedLocking.MySQL.Repository
             request.Id = id;
             return request.SetFromUtc();
         }
-
         /// <inheritdoc/>
         public override async Task<SqlLock> GetLockByResourceAsync(IRepositoryTransaction transaction, string resource, bool countRequests, bool forUpdate, CancellationToken token)
         {
@@ -169,51 +170,125 @@ namespace Sels.DistributedLocking.MySQL.Repository
             return sqlLock?.SetFromUtc();
         }
         /// <inheritdoc/>
-        public override async Task<(SqlLock[] Results, int TotalMatching)> SearchAsync(IRepositoryTransaction transaction, string filter = null, int page = 0, int pageSize = 100, PropertyInfo sortColumn = null, bool sortDescending = false, CancellationToken token = default)
+        public override async Task<(SqlLock[] Results, int TotalMatching)> SearchAsync(IRepositoryTransaction transaction, SqlQuerySearchCriteria searchCriteria, CancellationToken token = default)
         {
+            searchCriteria.ValidateArgument(nameof(searchCriteria));
             var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
             _logger.Log($"Querying locks");
 
+            const string CteName = "CTE";
+            const string TotalColumnName = "Total";
+
             // Generate query
-            var queryBuilder = QueryProvider.Select<SqlLock>();
             var parameters = new DynamicParameters();
+            var cteQuery = QueryProvider.Select<SqlLock>().AllOf();
 
-            if (filter.HasValue())
+            // Count pending requests
+            if (searchCriteria.IncludePendingRequests)
             {
-                _logger.Debug($"Limiting search query with filter <{filter}> on Resource");
-                queryBuilder.Where(x => x.Column(c => c.Resource).LikeParameter(nameof(filter)));
-                parameters.AddParameter(nameof(filter), filter);
+                cteQuery.Expression(e => e.Query(QueryProvider.Select<SqlLockRequest>().CountAll()
+                                                     .Where(w => w.Column(c => c.Resource).EqualTo.Column<SqlLock>(c => c.Resource)))
+                                       , nameof(SqlLock.PendingRequests));
+                _logger.Debug($"Including pending requests in search query");
+            }
+            else
+            {
+                _logger.Debug($"Not including pending requests in search query. Defaulting to 0");
+                cteQuery.Value(0, nameof(SqlLock.PendingRequests));
             }
 
-            var countQueryBuilder = queryBuilder.Clone()
-                                        .CountAll();
 
-            if (page > 0 && pageSize > 0)
+            // Conditions
+            int parameterCounter = 0;
+            if (searchCriteria.Filters.HasValue())
             {
+                cteQuery.Where(w =>
+                {
+                    // Add filters on columns
+                    foreach (var filterGroup in searchCriteria.Filters.GroupBy(x => x.Column))
+                    {
+                        if (w.LastBuilder != null) w = w.LastBuilder.And;
+                        w.WhereGroup(g =>
+                        {
+                            foreach(var (column, filter, isFullMatch) in filterGroup)
+                            {
+                                if (g.LastBuilder != null) g = g.LastBuilder.Or;
+                                if (filter == null && isFullMatch)
+                                {
+                                    _logger.Debug($"Filtering search query where column <{column}> is NULL");
+                                    _ = g.Column(SqlLockAlias, column).IsNull;
+                                }
+                                else
+                                {
+                                    _logger.Debug($"Filtering search query where column <{column}> is {(isFullMatch ? "equal to" : "like")} <{filter}>");
+                                    var parameterName = $"Filter{parameterCounter++}";
+                                    parameters.Add(parameterName, filter);
+                                    g.Column(SqlLockAlias, column)
+                                     .When(isFullMatch, x => x.EqualTo.Parameter(parameterName),
+                                                        x => x.LikeParameter(parameterName));
+                                }
+                                
+                            }
+                            return g.LastBuilder;
+                        });
+                    }
+
+                    // Filter on expiry date
+                    if (searchCriteria.ShowExpiredOnly.HasValue)
+                    {
+                        if (w.LastBuilder != null) w = w.LastBuilder.And;
+
+                        _logger.Debug($"Filtering search query on {(searchCriteria.ShowExpiredOnly.Value ? "expired" : "non expired")} locks");
+                        w.Column(x => x.ExpiryDate)
+                         .When(searchCriteria.ShowExpiredOnly.Value, x => x.LesserThan, x => x.GreaterOrEqualTo)
+                         .CurrentDate(DateType.Utc);
+                    }
+
+                    return w.LastBuilder;
+                });
+                
+            }
+
+            // Full select
+            var selectQuery = QueryProvider.Select<SqlLock>()
+                                           .Expression(x => x.Query(QueryProvider.Select().CountAll().From(CteName)), TotalColumnName)
+                                           .From(CteName, datasetAlias: SqlLockAlias);
+
+            // Pagination
+            if (searchCriteria.Pagination.HasValue)
+            {
+                var (page, pageSize) = searchCriteria.Pagination.Value;
                 _logger.Debug($"Applying pagination to search query using pages of size <{pageSize}> returning page <{page}>");
-                queryBuilder.Limit((page - 1) * pageSize, pageSize);
+                selectQuery.Limit((page - 1) * pageSize, pageSize);
             }
 
-            if (sortColumn != null)
+            // Sorting
+            if (searchCriteria.SortColumns.HasValue())
             {
-                _logger.Debug($"Sorting search results <{(sortDescending ? "descending" : "ascending")}> on column <{sortColumn.Name}>");
-                queryBuilder.OrderBy(typeof(SqlLock), sortColumn.Name, sortDescending ? SortOrders.Descending : SortOrders.Ascending);
+                foreach(var (column, sortDescending) in searchCriteria.SortColumns)
+                {
+                    _logger.Debug($"Sorting query by column <{column}> {(sortDescending ? "descending" : "ascending")}");
+                    selectQuery.OrderBy(SqlLockAlias, column, sortDescending ? SortOrders.Descending : SortOrders.Ascending);
+                }
             }
 
-            var query = QueryProvider.New()
-                                        .Append(countQueryBuilder)
-                                        .Append(queryBuilder)
-                                        .Build(_queryOptions);
+            // Build query
+
+            var query = QueryProvider.With().Cte(CteName)
+                                            .As(cteQuery)
+                                     .Execute(selectQuery)
+                                     .Build(_queryOptions);
 
             _logger.Trace($"Querying locks using query <{query}>");
 
-            using (var resultBundle = await dbConnection.QueryMultipleAsync(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false))
-            {
-                var total = await resultBundle.ReadSingleAsync<int>().ConfigureAwait(false);
-                var results = (await resultBundle.ReadAsync<SqlLock>().ConfigureAwait(false)).Select(x => x.SetFromUtc()).ToArray();
-                _logger.Log($"Search query returned <{results.Length}> results out of the total <{total}>");
-                return (results, total);
-            };
+            int total = 0;
+            var results = (await dbConnection.QueryAsync<SqlLock, int, SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token), (s, t) => {
+                total = t;
+                return s;
+            }, TotalColumnName).ConfigureAwait(false)).ToArray();
+
+            _logger.Log($"Search query returned <{results.Length}> results out of the total <{total}>");
+            return (results, total);
         }
         /// <inheritdoc/>
         public override async Task<SqlLock> TryAssignLockToAsync(IRepositoryTransaction transaction, string resource, string requester, DateTime? expiryDate, CancellationToken token)
@@ -263,7 +338,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
                                                                       .Set.Column(c => c.LockedAt).To.CurrentDate()
                                                                       .Set.Column(c => c.LastLockDate).To.CurrentDate()
                                                                       .InnerJoin().SubQuery(q.With().Cte("Request")
-                                                                                                    .Using(q.Select<SqlLockRequest>().ForUpdate()
+                                                                                                    .As(q.Select<SqlLockRequest>().ForUpdate()
                                                                                                             .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)).And.Column(c => c.Timeout).IsNull.Or.Column(c => c.Timeout).GreaterThan.CurrentDate())
                                                                                                             .OrderBy(c => c.CreatedAt, SortOrders.Ascending)
                                                                                                             .Limit(1))

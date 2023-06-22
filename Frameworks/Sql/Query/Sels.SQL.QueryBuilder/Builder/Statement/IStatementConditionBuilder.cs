@@ -34,6 +34,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     public interface IStatementConditionExpressionBuilder<TEntity> : ISharedExpressionBuilder<TEntity, IStatementConditionOperatorExpressionBuilder<TEntity>>
     {
         /// <summary>
+        /// The last builder used to create expression. Useful for reflection.
+        /// </summary>
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> LastBuilder { get; }
+
+        /// <summary>
         /// Inverts the result of the next condition by using the NOT keyword.
         /// </summary>
         /// <returns>Current selector for method chaining</returns>

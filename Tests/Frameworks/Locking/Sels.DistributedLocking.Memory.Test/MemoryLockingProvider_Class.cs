@@ -30,7 +30,7 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 await Helper.Async.Sleep(10);
             }
-            var result = await provider.QueryAsync();
+            var result = await provider.QueryAsync(x => { });
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -60,7 +60,7 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 await Helper.Async.Sleep(10);
             }
-            var result = await provider.QueryAsync();
+            var result = await provider.QueryAsync(x => { });
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -90,7 +90,7 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 await Helper.Async.Sleep(10);
             }
-            var result = await provider.QueryAsync();
+            var result = await provider.QueryAsync(x => { });
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -120,7 +120,7 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 await Helper.Async.Sleep(10);
             }
-            var result = await provider.QueryAsync();
+            var result = await provider.QueryAsync(x => { });
 
             // Assert
             Assert.That(result, Is.Not.Null);

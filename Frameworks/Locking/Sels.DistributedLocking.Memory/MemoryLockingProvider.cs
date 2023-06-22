@@ -179,7 +179,12 @@ namespace Sels.DistributedLocking.Memory
         {
             using (_logger.TraceMethod(this))
             {
-                return Task.FromResult(GetLockOrSet(resource).CastTo<ILockInfo>());
+                _logger.Log($"Returning lock on <{resource}>");
+                var memoryLock = GetLockOrSet(resource);
+                lock (memoryLock)
+                {
+                    return Task.FromResult(new MemoryLockInfo(memoryLock).CastTo<ILockInfo>());
+                }
             }
         }
         /// <inheritdoc/>
@@ -189,6 +194,8 @@ namespace Sels.DistributedLocking.Memory
             {
                 resource.ValidateArgumentNotNullOrWhitespace(nameof(resource));
 
+                _logger.Log($"Returning pending requests on resource <{resource}>");
+
                 var memoryLock = GetLockOrSet(resource);
                 lock (memoryLock)
                 {
@@ -197,37 +204,29 @@ namespace Sels.DistributedLocking.Memory
             }
         }
         /// <inheritdoc/>
-        public Task<ILockQueryResult> QueryAsync(string filter = null, int page = 0, int pageSize = 100, Expression<Func<ILockInfo, object>> sortBy = null, bool sortDescending = false, CancellationToken token = default)
+        public Task<ILockQueryResult> QueryAsync(Action<ILockQueryCriteria> searchCriteria, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
+                searchCriteria.ValidateArgument(nameof(searchCriteria));
+
+                var querySearchCriteria = new MemoryQuerySearchCriteria(searchCriteria);
                 lock (_locks)
                 {
                     _logger.Log($"Querying locks");
-
+                    
                     var enumerator = _locks.Select(x => x.Value).Cast<ILockInfo>();
                     // Apply filter
-                    if (filter.HasValue()) enumerator = enumerator.Where(x => x.Resource.Contains(filter));
-                    // Apply sorting
-                    if (sortBy.HasValue())
-                    {
-                        if (!sortBy.TryExtractProperty(out _)) throw new NotSupportedException($"{nameof(sortBy)} does not point to a property on {typeof(ILockInfo)}");
-
-                        if (sortDescending)
-                        {
-                            enumerator = enumerator.OrderByDescending(sortBy.Compile());
-                        }
-                        else
-                        {
-                            enumerator = enumerator.OrderBy(sortBy.Compile());
-                        }
-                    }
-
+                    enumerator = querySearchCriteria.ApplyFilter(enumerator);
+                    
                     var total = enumerator.Count();
+                    // Apply sorting
+                    enumerator = querySearchCriteria.ApplySorting(enumerator);
 
                     // Apply pagination
-                    if(page > 0 && pageSize > 0)
+                    if (querySearchCriteria.Pagination.HasValue)
                     {
+                        var (page, pageSize) = querySearchCriteria.Pagination.Value;
                         enumerator = enumerator.Skip((page - 1) * pageSize).Take(pageSize);
                     }
 
@@ -241,8 +240,43 @@ namespace Sels.DistributedLocking.Memory
                     }).Cast<ILockInfo>().ToArray();
 
                     _logger.Log($"Query returned <{result.Length}> results");
-                    return Task.FromResult<ILockQueryResult>(pageSize > 0 && page > 0 ? new LockQueryResult(result, pageSize, total) : new LockQueryResult(result));
+                    return Task.FromResult<ILockQueryResult>(querySearchCriteria.Pagination.HasValue ? new LockQueryResult(result, querySearchCriteria.Pagination.Value.PageSize, total) : new LockQueryResult(result));
                 }
+            }
+        }
+        /// <inheritdoc/>
+        public Task ForceUnlockAsync(string resource, bool removePendingRequests = false, CancellationToken token = default)
+        {
+            using (_logger.TraceMethod(this))
+            {
+                resource.ValidateArgumentNotNullOrWhitespace(nameof(resource));
+
+                _logger.Warning($"Forcefully unlocking resource <{resource}>");
+
+                var memoryLock = GetLockOrSet(resource);
+                lock (memoryLock)
+                {
+                    token.ThrowIfCancellationRequested();
+                    // Remove any pending locks
+                    if (removePendingRequests)
+                    {
+                        _logger.Warning($"Cancelling all lock requests on resource <{resource}>");
+                        while (memoryLock.Requests.TryDequeue(out var request))
+                        {
+                            using (request)
+                            {
+                                request.AbortRequest(new TaskCanceledException($"Forcefully cancelled"));
+                            }
+                        }
+                    }
+
+                    // Set temp lock user so we can reuse Unlock logic
+                    memoryLock.LockedBy = "SYS";
+                    if (!Unlock(resource, "SYS")) throw new InvalidOperationException($"Did not expect force unlock to fail");
+                }
+
+                _logger.Warning($"Forcefully unlocked resource <{resource}>");
+                return Task.CompletedTask;
             }
         }
 
@@ -1035,6 +1069,185 @@ namespace Sels.DistributedLocking.Memory
                 AbortRequest(new ObjectDisposedException(nameof(MemoryLockRequest)));
 
                 if (exception != null) exception.Rethrow();
+            }
+        }
+
+        /// <summary>
+        /// Captures the search criteria from <see cref="ILockQueryCriteria"/>.
+        /// </summary>
+        private class MemoryQuerySearchCriteria : ILockQueryCriteria
+        {
+            // Fields
+            private Dictionary<string, List<Predicate<ILockInfo>>> _predicates;
+            private List<(Expression<Func<ILockInfo, object>> PropertyToSortBy, bool SortDescending)> _sortExpressions;
+
+            // Properties
+            private Dictionary<string, List<Predicate<ILockInfo>>> Predicates { 
+                get {
+                    if (_predicates == null) _predicates = new Dictionary<string, List<Predicate<ILockInfo>>>();
+                    return _predicates;
+                } 
+            }
+            private List<(Expression<Func<ILockInfo, object>> PropertyToSortBy, bool SortDescending)> SortExpressions
+            {
+                get
+                {
+                    if (_sortExpressions == null) _sortExpressions = new List<(Expression<Func<ILockInfo, object>> PropertyToSortBy, bool SortDescending)>();
+                    return _sortExpressions;
+                }
+            }
+            /// <summary>
+            /// The pagination to apply. Null if not required.
+            /// </summary>
+            public (int Page, int PageSize)? Pagination { get; private set; }
+
+            /// <inheritdoc cref="MemoryQuerySearchCriteria"/>
+            /// <param name="configurator">Delegate that configures this instance</param>
+            public MemoryQuerySearchCriteria(Action<ILockQueryCriteria> configurator)
+            {
+                configurator.ValidateArgument(nameof(configurator))(this);
+            }
+
+            /// <summary>
+            /// Applies all configured filters on <paramref name="locks"/>.
+            /// </summary>
+            /// <param name="locks">The enumerator to filter</param>
+            /// <returns><paramref name="locks"/> with filter applied</returns>
+            public IEnumerable<ILockInfo> ApplyFilter(IEnumerable<ILockInfo> locks)
+            {
+                locks.ValidateArgument(nameof(locks));
+
+                foreach (var @lock in locks)
+                {
+                    if (!_predicates.HasValue() || _predicates.All(x => x.Value.Any(v => v(@lock))))
+                    {
+                        yield return @lock;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Sorts <paramref name="locks"/> with any configured sorting rules.
+            /// </summary>
+            /// <param name="locks">The locks to sort</param>
+            /// <returns><paramref name="locks"/> sorted by any configured sorting rules</returns>
+            public IEnumerable<ILockInfo> ApplySorting(IEnumerable<ILockInfo> locks)
+            {
+                locks.ValidateArgument(nameof(locks));
+
+                if (_sortExpressions.HasValue())
+                {
+                    IOrderedEnumerable<ILockInfo> current = null;
+
+                    foreach(var (expression, sortDescending) in _sortExpressions)
+                    {
+                        if (current == null)
+                        {
+                            if (sortDescending)
+                            {
+                                current = locks.OrderByDescending(expression.Compile());
+                            }
+                            else
+                            {
+                                current = locks.OrderBy(expression.Compile());
+                            }
+                        }
+                        else
+                        {
+                            if (sortDescending)
+                            {
+                                current = current.ThenByDescending(expression.Compile());
+                            }
+                            else
+                            {
+                                current = current.ThenBy(expression.Compile());
+                            }
+                        }
+                    }
+
+                    return current;
+                }
+
+                return locks;
+            }
+
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.WithFilterOnLockedBy(string filter)
+            {
+                filter.ValidateArgument(nameof(filter));
+
+                if(filter == string.Empty) Predicates.AddValueToList(nameof(ILockInfo.LockedBy), x => x.LockedBy != null);
+                else Predicates.AddValueToList(nameof(ILockInfo.LockedBy), x => x.LockedBy != null && x.LockedBy.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
+                return this;
+            }
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.WithFilterOnResource(string filter)
+            {
+                filter.ValidateArgument(nameof(filter));
+
+                if (filter == string.Empty) Predicates.AddValueToList(nameof(ILockInfo.Resource), x => x.Resource != null);
+                else Predicates.AddValueToList(nameof(ILockInfo.Resource), x => x.Resource != null && x.Resource.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
+                return this;
+            }
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.WithLockedByEqualTo(string lockOwner)
+            {
+                if(lockOwner == null) Predicates.AddValueToList(nameof(ILockInfo.LockedBy), x => x.LockedBy == null);
+                else Predicates.AddValueToList(nameof(ILockInfo.LockedBy), x => x.LockedBy != null && x.LockedBy.Equals(lockOwner, StringComparison.OrdinalIgnoreCase));
+
+                return this;
+            }
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.WithPendingRequestsLargerThan(int amount)
+            {
+                amount.ValidateArgumentLargerOrEqual(nameof(amount), 0);
+                Predicates.AddValueToList(nameof(ILockInfo.PendingRequests), x => x.PendingRequests > amount);
+                return this;
+            }
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.WithOnlyExpired()
+            {
+                Predicates.AddValueToList(nameof(ILockInfo.ExpiryDate), x => x.ExpiryDate.HasValue && x.ExpiryDate.Value < DateTime.Now);
+                return this;
+            }
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.WithOnlyNotExpired()
+            {
+                Predicates.AddValueToList(nameof(ILockInfo.ExpiryDate), x => x.ExpiryDate.HasValue && x.ExpiryDate.Value >= DateTime.Now);
+                return this;
+            }
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.WithPagination(int page, int pageSize)
+            {
+                page.ValidateArgumentLarger(nameof(page), 0);
+                page.ValidateArgumentLarger(nameof(pageSize), 0);
+
+                Pagination = (page, pageSize);
+                return this;
+            }
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.WithPendingRequest()
+            {
+                // Always enabled
+                return this;
+            }
+
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.OrderByExpiryDate(bool sortDescending) => SortBy(x => x.ExpiryDate, sortDescending);
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.OrderByLastLockDate(bool sortDescending) => SortBy(x => x.LastLockDate, sortDescending);
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.OrderByLockedAt(bool sortDescending) => SortBy(x => x.LockedAt, sortDescending);
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.OrderByLockedBy(bool sortDescending) => SortBy(x => x.LockedBy, sortDescending);
+            /// <inheritdoc/>
+            ILockQueryCriteria ILockQueryCriteria.OrderByResource(bool sortDescending) => SortBy(x => x.Resource, sortDescending);
+
+            private ILockQueryCriteria SortBy(Expression<Func<ILockInfo, object>> sortExpression, bool sortDescending)
+            {
+                sortExpression.ValidateArgument(nameof(sortExpression));
+                SortExpressions.Add((sortExpression, sortDescending));
+                return this;
             }
         }
         #endregion

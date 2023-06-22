@@ -111,19 +111,19 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="query">Delegate that adds the query to the supplied builder</param>
         /// <returns>Current builder for defining more cte's or selecting the query to execute with the cte's</returns>
-        ICteOrSelectStatementBuilder Using(Action<StringBuilder, ExpressionCompileOptions> query);
+        ICteOrSelectStatementBuilder As(Action<StringBuilder, ExpressionCompileOptions> query);
         /// <summary>
         /// Defines the query for the cte.
         /// </summary>
         /// <param name="query">The sub query</param>
         /// <returns>Current builder for defining more cte's or selecting the query to execute with the cte's</returns>
-        ICteOrSelectStatementBuilder Using(string query) => Using((b, o) => b.Append(query.ValidateArgumentNotNullOrWhitespace(nameof(query))));
+        ICteOrSelectStatementBuilder As(string query) => As((b, o) => b.Append(query.ValidateArgumentNotNullOrWhitespace(nameof(query))));
         /// <summary>
         /// Defines the query for the cte.
         /// </summary>
         /// <param name="builder">Builder that creates the sub query</param>
         /// <returns>Current builder for defining more cte's or selecting the query to execute with the cte's</returns>
-        ICteOrSelectStatementBuilder Using(IQueryBuilder builder) => Using((b, o) => builder.ValidateArgument(nameof(builder)).Build(b, o));
+        ICteOrSelectStatementBuilder As(IQueryBuilder builder) => As((b, o) => builder.ValidateArgument(nameof(builder)).Build(b, o));
         #endregion
     }
 }

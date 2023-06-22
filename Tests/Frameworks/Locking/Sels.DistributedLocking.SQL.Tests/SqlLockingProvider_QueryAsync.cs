@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
+using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
 using Sels.DistributedLocking.Abstractions.Models;
 using Sels.DistributedLocking.SQL;
@@ -24,10 +25,16 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
 
             // Act
-            var results = await provider.QueryAsync("Deployment.", 2, 50, x => x.LastLockDate, true);
+            var results = await provider.QueryAsync(x => x.WithFilterOnResource("Deployment")
+                                                          .WithPagination(2, 50)
+                                                          .OrderByLastLockDate(true));
 
             // Assert
-            repositoryMock.Verify(x => x.SearchAsync(It.IsAny<IRepositoryTransaction>(), "Deployment.", 2, 50, It.Is<PropertyInfo>(x => x.Name == nameof(SqlLock.LastLockDate)), true, It.IsAny<CancellationToken>()), Times.Once);
+            repositoryMock.Verify(x => x.SearchAsync(It.IsAny<IRepositoryTransaction>(),
+                                                     It.Is<SqlQuerySearchCriteria>(x => x.Filters.Any(f => f.Column.Equals("Resource") && f.Filter.Equals("Deployment") && !f.IsFullMatch)
+                                                                                        && x.Pagination.HasValue && x.Pagination.Value.Page == 2 && x.Pagination.Value.PageSize == 50
+                                                                                        && x.SortColumns.Any(s => s.Column.Equals("LastLockDate") && s.SortDescending)), 
+                                                     It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
@@ -54,12 +61,12 @@ namespace Sels.DistributedLocking.Memory.Test
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.SearchAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<PropertyInfo>(), It.IsAny<bool>(), It.IsAny<CancellationToken>())).ReturnsAsync((sqlLocks, sqlLocks.Length));
+                x.Setup(x => x.SearchAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<SqlQuerySearchCriteria>(), It.IsAny<CancellationToken>())).ReturnsAsync((sqlLocks, sqlLocks.Length));
             });
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
 
             // Act
-            var result = await provider.QueryAsync();
+            var result = await provider.QueryAsync(x => { });
 
             // Assert
             Assert.That(result, Is.Not.Null);

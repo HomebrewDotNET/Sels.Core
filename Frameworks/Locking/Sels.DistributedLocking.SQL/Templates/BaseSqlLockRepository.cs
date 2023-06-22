@@ -255,12 +255,45 @@ namespace Sels.DistributedLocking.SQL.Templates
             return removedIds;
         }
         /// <inheritdoc/>
-        public async Task ClearAll(IRepositoryTransaction transaction, CancellationToken token = default)
+        public async virtual Task ForceUnlockAsync(IRepositoryTransaction transaction, string resource, bool removePendingRequests, CancellationToken token = default)
+        {
+            resource.ValidateArgumentNotNullOrWhitespace(nameof(resource));
+            var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
+
+            // Generate query
+            _logger.Warning($"Forcefully removing lock owner on resource <{resource}>{(removePendingRequests ? " and any pending requests" : string.Empty)}");
+
+            var queryBuilder = QueryProvider.New()
+                                     .Append(QueryProvider.Update<SqlLock>()
+                                                          .Set.Column(c => c.LockedBy).To.Null()
+                                                          .Set.Column(c => c.LockedAt).To.Null()
+                                                          .Set.Column(c => c.ExpiryDate).To.Null()
+                                                          .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)))
+                                            );
+
+            if (removePendingRequests)
+            {
+                queryBuilder.Append(QueryProvider.Delete<SqlLockRequest>()
+                                                 .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))));
+            }
+
+            var query = queryBuilder.Build(_queryOptions);
+            _logger.Trace($"Forcefully removing lock owner on resource <{resource}>{(removePendingRequests ? " and any pending requests" : string.Empty)} using query <{query}>");
+            var parameters = new DynamicParameters();
+            parameters.Add($"@{nameof(resource)}", resource);
+
+            // Execute query
+            await dbConnection.ExecuteAsync(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
+            _logger.Warning($"Forcefully removed lock owner on resource <{resource}>{(removePendingRequests ? " and any pending requests" : string.Empty)}");
+        }
+
+        /// <inheritdoc/>
+        public async virtual Task ClearAllAsync(IRepositoryTransaction transaction, CancellationToken token = default)
         {
             var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
 
             _logger.Warning($"Clearing table <{SqlLockTableName}> and <{SqlLockRequestTableName}>");
-            var query = QueryProvider.GetQuery(_queryNameFormat.FormatString(nameof(ClearAll)), p =>
+            var query = QueryProvider.GetQuery(_queryNameFormat.FormatString(nameof(ClearAllAsync)), p =>
             {
                 return p.New()
                         .Append(p.Delete<SqlLockRequest>())
@@ -275,7 +308,7 @@ namespace Sels.DistributedLocking.SQL.Templates
         /// <inheritdoc/>
         public abstract Task<SqlLock> GetLockByResourceAsync(IRepositoryTransaction transaction, string resource, bool countRequests, bool forUpdate, CancellationToken token);
         /// <inheritdoc/>
-        public abstract Task<(SqlLock[] Results, int TotalMatching)> SearchAsync(IRepositoryTransaction transaction, string filter = null, int page = 0, int pageSize = 100, PropertyInfo sortColumn = null, bool sortDescending = false, CancellationToken token = default);
+        public abstract Task<(SqlLock[] Results, int TotalMatching)> SearchAsync(IRepositoryTransaction transaction, SqlQuerySearchCriteria searchCriteria, CancellationToken token = default);
         /// <inheritdoc/>
         public abstract Task<SqlLock> TryAssignLockToAsync(IRepositoryTransaction transaction, string resource, string requester, DateTime? expiryDate, CancellationToken token);
 

@@ -73,7 +73,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Providers
 
             await using (var transaction = await sqlLockRepository.CreateTransactionAsync(token))
             {
-                await sqlLockRepository.ClearAll(transaction, token);
+                await sqlLockRepository.ClearAllAsync(transaction, token);
 
                 await transaction.CommitAsync(token);
             }

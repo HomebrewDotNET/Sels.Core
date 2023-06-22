@@ -24,6 +24,8 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// The currently configured condition expressions.
         /// </summary>
         public IConditionExpression[] Expressions => _expressions.ToArray();
+        /// <inheritdoc/>
+        public IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> LastBuilder => _expressions.HasValue() ? this : null;
 
         /// <inheritdoc cref=" BaseConditionExpression{TEntity}"/>
         /// <param name="builder">Delegate for configuring the current builder</param>

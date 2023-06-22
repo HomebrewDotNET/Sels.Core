@@ -263,7 +263,7 @@ namespace Sels.Core.TestTool
             var builderAction = new Func<ISqlQueryProvider, IQueryBuilder>(b =>
             {
                 return b.With().Cte("Cte")
-                                .Using(b.Select<Person>()
+                                .As(b.Select<Person>()
                                         .OrderBy(p => p.LastName)
                                         .Limit(5))
                                .Execute(b.Update<Person>()

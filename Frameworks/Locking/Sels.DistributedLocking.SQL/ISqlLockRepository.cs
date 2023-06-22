@@ -105,14 +105,10 @@ namespace Sels.DistributedLocking.SQL
         /// Searches for all matching sql locks.
         /// </summary>
         /// <param name="transaction">The transaction to execute the operation in</param>
-        /// <param name="filter">Like filter on <see cref="SqlLock.Resource"/></param>
-        /// <param name="page">Used to specify what page to return when pagination is preferred when getting the locks. Setting the page to lower than 0 means no pagination will be applied</param>
-        /// <param name="pageSize">How many items per page to return when <paramref name="page"/> is set to a value higher than 0</param>
-        /// <param name="sortColumn">Optional property on <see cref="SqlLock"/> to sort by</param>
-        /// <param name="sortDescending">True if <paramref name="sortColumn"/> should be sorted DESC, otherwise ASC</param>
+        /// <param name="searchCriteria">The search criteria for the query</param>
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>All known locks matching the search parameters with pagination applied (if applicable) and the total amount of matching locks regardless of pagination</returns>
-        Task<(SqlLock[] Results, int TotalMatching)> SearchAsync(IRepositoryTransaction transaction, string filter = null, int page = 0, int pageSize = 100, PropertyInfo sortColumn = null, bool sortDescending = false, CancellationToken token = default);
+        Task<(SqlLock[] Results, int TotalMatching)> SearchAsync(IRepositoryTransaction transaction, SqlQuerySearchCriteria searchCriteria, CancellationToken token = default);
 
         /// <summary>
         /// Deletes all free/expired locks that have no pending requests.
@@ -137,6 +133,16 @@ namespace Sels.DistributedLocking.SQL
         /// <param name="transaction">The transaction to execute the operation in</param>
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>Task containing the execution state</returns>
-        Task ClearAll(IRepositoryTransaction transaction, CancellationToken token = default);
+        Task ClearAllAsync(IRepositoryTransaction transaction, CancellationToken token = default);
+
+        /// <summary>
+        /// Force unlocks resource <paramref name="resource"/>.
+        /// </summary>
+        /// <param name="transaction">The transaction to execute the operation in</param>
+        /// <param name="resource">The resource to force unlock</param>
+        /// <param name="removePendingRequests">If any pending requests need to be removed as well</param>
+        /// <param name="token">Optional token to cancel the request</param>
+        /// <returns>Task containing the execution state</returns>
+        Task ForceUnlockAsync(IRepositoryTransaction transaction, string resource, bool removePendingRequests, CancellationToken token = default);
     }
 }

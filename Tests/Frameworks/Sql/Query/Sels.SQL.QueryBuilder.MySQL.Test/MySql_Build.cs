@@ -18,7 +18,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
 
             // Act
             var cteBuilder = MySql.With().Cte("cte")
-                                            .Using(MySql.Select().All()
+                                            .As(MySql.Select().All()
                                                         .From("Queue", datasetAlias: "Q").ForUpdate()
                                                         .OrderBy("Q", "Created", SortOrders.Ascending)
                                                         .Limit(5))
