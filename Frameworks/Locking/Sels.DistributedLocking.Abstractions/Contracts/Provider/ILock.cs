@@ -20,14 +20,15 @@ namespace Sels.DistributedLocking.Provider
         /// </summary>
         /// <param name="extendTime">By how many time to extend the expiry date for</param>
         /// <param name="token">Optional token to cancel the request</param>
-        /// <returns>Task containing the execution state</returns>
-        Task ExtendAsync(TimeSpan extendTime, CancellationToken token = default);
+        /// <returns>True if the expiry date was extended, otherwise false</returns>
+        Task<bool> ExtendAsync(TimeSpan extendTime, CancellationToken token = default);
         /// <summary>
         /// Unlocks the current lock. Also called when disposing the lock.
         /// </summary>
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>Task containing the execution state</returns>
-        Task UnlockAsync(CancellationToken token = default);
+        /// <returns>True if the expiry date was extended, otherwise false</returns>
+        Task<bool> UnlockAsync(CancellationToken token = default);
     }
 
     /// <summary>

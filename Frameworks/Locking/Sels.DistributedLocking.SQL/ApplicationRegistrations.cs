@@ -39,12 +39,18 @@ namespace Microsoft.Extensions.DependencyInjection
             // Add custom delegate
             if(configurator != null) services.Configure<SqlLockingProviderOptions>(configurator);
 
-            // Add provider
-            services.New<ILockingProvider, SqlLockingProvider>()
+            // Add provider as self for interception
+            services.New<SqlLockingProvider>()
                     .Trace(x => x.Duration.OfAll)
                     .AsSingleton()
                     .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
                     .Register();
+            // Add provider
+            services.New<ILockingProvider, SqlLockingProvider>()
+                    .AsForwardedService()
+                    .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
+                    .Register();
+
 
             return services;
         }

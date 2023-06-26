@@ -132,7 +132,18 @@ namespace Sels.Core.ServiceBuilder
                 RegisterServiceWithFactory(p =>
                 {
                     // Factory for the actual implementation
-                    var instanceFactory = _factory ?? new Func<IServiceProvider, TImpl>(prov => prov.GetService<TImpl>() ?? prov.CreateInstance<TImpl>());
+                    var instanceFactory = _factory ?? new Func<IServiceProvider, TImpl>(prov =>
+                    {
+                        // Only try service provider if we have an abstraction. Otherwise factory will call itself
+                        if (!IsAbstractionless)
+                        {
+                            return prov.GetService<TImpl>() ?? prov.CreateInstance<TImpl>();
+                        }
+                        else
+                        {
+                            return prov.CreateInstance<TImpl>();
+                        }
+                    });
                     var instance = instanceFactory(p);
 
                     // Create using defined factories

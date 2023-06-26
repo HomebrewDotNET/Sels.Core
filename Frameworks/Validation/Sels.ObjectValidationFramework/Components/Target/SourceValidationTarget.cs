@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using static Sels.Core.Delegates.Async;
 using Sels.ObjectValidationFramework.Rules;
 using Sels.Core.Extensions.Reflection;
-
+using Sels.ObjectValidationFramework.Profile;
 
 namespace Sels.ObjectValidationFramework.Target
 {
@@ -60,6 +60,8 @@ namespace Sels.ObjectValidationFramework.Target
                 return true;
             }
         }
+        /// <inheritdoc/>
+        protected override string GetDisplayNameFor(ValidationRuleContext<TEntity, NullValidationInfo, TTargetContext, TValue> context, bool includeParents) => context.GetFullDisplayName(includeParents);
     }
 
     /// <summary>

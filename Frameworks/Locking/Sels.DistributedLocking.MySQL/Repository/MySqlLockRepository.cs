@@ -119,6 +119,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
             });
 
             _logger.Trace($"Inserting new lock request on resource <{request.Resource}> for requester <{request.Requester}> using query <{query}>");
+            request.SetToUtc();
             var parameters = new DynamicParameters()
                                 .AddParametersUsing(request, nameof(SqlLockRequest.Id));
 
@@ -126,7 +127,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
 
             _logger.Log($"Inserted lock request <{id}> on resource <{request.Resource}> for requester <{request.Requester}>");
             request.Id = id;
-            return request.SetFromUtc();
+            return request.SetToLocal();
         }
         /// <inheritdoc/>
         public override async Task<SqlLock> GetLockByResourceAsync(IRepositoryTransaction transaction, string resource, bool countRequests, bool forUpdate, CancellationToken token)
@@ -167,7 +168,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
                 _logger.Log($"Fetched lock on resource <{resource}>");
             }
 
-            return sqlLock?.SetFromUtc();
+            return sqlLock?.SetToLocal();
         }
         /// <inheritdoc/>
         public override async Task<(SqlLock[] Results, int TotalMatching)> SearchAsync(IRepositoryTransaction transaction, SqlQuerySearchCriteria searchCriteria, CancellationToken token = default)
@@ -401,7 +402,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
             if (sqlLock == null) throw new InvalidOperationException($"Expected to receive latest sql state");
 
             _logger.Log($"Lock <{sqlLock.Resource}> is now assigned to <{sqlLock.LockedBy}>");
-            return sqlLock.SetFromUtc();
+            return sqlLock.SetToLocal();
         }
 
         private void DeployDatabaseSchema(MySqlLockRepositoryDeploymentOptions options)

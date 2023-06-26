@@ -85,6 +85,6 @@ namespace Sels.ObjectValidationFramework.Addons
             }
         }
 
-        private string Project(ValidationError<string> error) => $"{(error.Property != null ? $"{error.Property.Name}: " : string.Empty)}{error.Message}";
+        private string Project(ValidationError<string> error) => $"{error.DisplayName}: {error.Message}";
     }
 }

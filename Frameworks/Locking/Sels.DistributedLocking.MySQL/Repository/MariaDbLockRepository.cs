@@ -59,13 +59,14 @@ namespace Sels.DistributedLocking.MySQL.Repository
                                                                                                                 .Returning(x => x.All()));
 
             _logger.Trace($"Inserting new lock request on resource <{request.Resource}> for requester <{request.Requester}> using query <{query}>");
+            request.SetToUtc();
             var parameters = new DynamicParameters()
                                 .AddParametersUsing(request, nameof(SqlLockRequest.Id));
 
             request = await dbConnection.QuerySingleAsync<SqlLockRequest>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
 
             _logger.Log($"Inserted lock request <{request.Id}> on resource <{request.Resource}> for requester <{request.Requester}>");
-            return request.SetFromUtc();
+            return request.SetToLocal();
         }
 
         /// <inheritdoc/>
@@ -178,7 +179,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
             if (sqlLock == null) throw new InvalidOperationException($"Expected to receive latest sql state");
 
             _logger.Log($"Lock <{sqlLock.Resource}> is now assigned to <{sqlLock.LockedBy}>");
-            return sqlLock.SetFromUtc();
+            return sqlLock.SetToLocal();
         }
     }
 }

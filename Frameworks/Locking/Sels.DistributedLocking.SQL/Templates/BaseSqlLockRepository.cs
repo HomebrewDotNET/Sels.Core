@@ -139,7 +139,7 @@ namespace Sels.DistributedLocking.SQL.Templates
             var parameters = new DynamicParameters();
             parameters.Add($"@{nameof(resource)}", resource);
 
-            var results = (await dbConnection.QueryAsync<SqlLockRequest>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false)).Select(x => x.SetFromUtc()).ToArray();
+            var results = (await dbConnection.QueryAsync<SqlLockRequest>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false)).Select(x => x.SetToLocal()).ToArray();
             _logger.Log($"Fetched <{results.Length}> lock requests for resource <{resource}>");
             return results;
         }
@@ -185,11 +185,11 @@ namespace Sels.DistributedLocking.SQL.Templates
             parameters.Add($"@{nameof(resource)}", resource);
             parameters.Add($"@{nameof(requester)}", requester);
 
-            var currentLock = await dbConnection.QuerySingleAsync<SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
-            bool wasUnlocked = currentLock.LockedBy == null;
+            var currentLock = await dbConnection.QuerySingleOrDefaultAsync<SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
+            bool wasUnlocked = currentLock?.LockedBy == null;
 
             _logger.Log($"Resource <{resource}> was {(wasUnlocked ? "unlocked" : "not unlocked")} by <{requester}>");
-            return (wasUnlocked, currentLock.SetFromUtc());
+            return (wasUnlocked, currentLock?.SetToLocal());
         }
         /// <inheritdoc/>
         public virtual async Task<SqlLock> TryUpdateExpiryDateAsync(IRepositoryTransaction transaction, string resource, string requester, TimeSpan extendTime, CancellationToken token)
@@ -225,14 +225,14 @@ namespace Sels.DistributedLocking.SQL.Templates
             parameters.Add($"@{nameof(requester)}", requester);
             parameters.Add($"@{nameof(extendTime)}", extendTime.TotalMilliseconds);
 
-            var currentLock = await dbConnection.QuerySingleAsync<SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
+            var currentLock = await dbConnection.QuerySingleOrDefaultAsync<SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
 
-            bool wasUpdated = requester.Equals(currentLock.LockedBy, StringComparison.OrdinalIgnoreCase);
+            bool wasUpdated = requester.Equals(currentLock?.LockedBy, StringComparison.OrdinalIgnoreCase);
 
-            if (wasUpdated) _logger.Log($"Expiry date on resource <{resource}> held by <{requester}> has been extended to <{currentLock.ExpiryDate}>");
-            else _logger.Warning($"Resource <{resource}> is no longer held by <{requester}> so can't extend expiry date. Resource is currently held by <{currentLock.LockedBy}>");
+            if (wasUpdated) _logger.Log($"Expiry date on resource <{resource}> held by <{requester}> has been extended to <{currentLock?.ExpiryDate}>");
+            else _logger.Warning($"Resource <{resource}> is no longer held by <{requester}> so can't extend expiry date. Resource is currently held by <{currentLock?.LockedBy}>");
 
-            return currentLock.SetFromUtc();
+            return currentLock?.SetToLocal();
         }
         /// <inheritdoc/>
         public async virtual Task<long[]> GetDeletedRequestIds(IRepositoryTransaction transaction, long[] ids, CancellationToken token)

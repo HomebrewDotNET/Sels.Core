@@ -27,9 +27,9 @@ namespace Sels.DistributedLocking.MySQL.Migrations
                 Create.Table(MigrationState.LockTableName)
                         .WithColumn("Resource").AsString().PrimaryKey($"PK_{MigrationState.LockTableName}").NotNullable()
                         .WithColumn("LockedBy").AsString().Nullable()
-                        .WithColumn("LockedAt").AsDateTime().Nullable()
-                        .WithColumn("LastLockDate").AsDateTime().Nullable()
-                        .WithColumn("ExpiryDate").AsDateTime().Nullable();
+                        .WithColumn("LockedAt").AsCustom("DateTime(6)").Nullable()
+                        .WithColumn("LastLockDate").AsCustom("DateTime(6)").Nullable()
+                        .WithColumn("ExpiryDate").AsCustom("DateTime(6)").Nullable();
             }
             else
             {
@@ -47,8 +47,8 @@ namespace Sels.DistributedLocking.MySQL.Migrations
                         .WithColumn("Requester").AsString().NotNullable()
                         .WithColumn("ExpiryTime").AsDouble().Nullable()
                         .WithColumn("KeepAlive").AsBoolean().NotNullable()
-                        .WithColumn("Timeout").AsDateTime().Nullable()
-                        .WithColumn("CreatedAt").AsDateTime().NotNullable();
+                        .WithColumn("Timeout").AsCustom("DateTime(6)").Nullable()
+                        .WithColumn("CreatedAt").AsCustom("DateTime(6)").NotNullable();
             }
             else
             {

@@ -167,6 +167,14 @@ namespace Sels.ObjectValidationFramework.Target
             }
         }
 
+        /// <summary>
+        /// Returns a display name for the current value that being validated.
+        /// </summary>
+        /// <param name="context">Validation rule context for the currently being validated value</param>
+        /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
+        /// <returns>The display name</returns>
+        protected abstract string GetDisplayNameFor(ValidationRuleContext<TEntity, TInfo, TTargetContext, TValue> context, bool includeParents);
+
         // Abstrations
         /// <summary>
         /// Creates the <typeparamref name="TInfo"/> for the <see cref="IValidationRuleContext{TEntity, TInfo, TTargetContext, TValue}"/>.

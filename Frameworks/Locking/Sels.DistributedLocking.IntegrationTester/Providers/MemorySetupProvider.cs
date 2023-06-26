@@ -17,12 +17,16 @@ namespace Sels.DistributedLocking.IntegrationTester.Providers
         /// <inheritdoc/>
         public Task<AsyncWrapper<ILockingProvider>> SetupProvider(IServiceCollection services, CancellationToken token)
         {
-            var provider = services.AddMemoryLockingProvider().BuildServiceProvider();
-            var lockingProvider = provider.GetRequiredService<ILockingProvider>();
+            var provider = services.AddMemoryLockingProvider(x => x.ExpiryOffset = 1000).BuildServiceProvider();
+            var scope = provider.CreateAsyncScope();
+            var lockingProvider = scope.ServiceProvider.GetRequiredService<ILockingProvider>();
 
             // In-memory store so no need to do cleanup
 
-            return Task.FromResult(new AsyncWrapper<ILockingProvider>(lockingProvider, stopAction: async (p, t) => await provider.DisposeAsync()));
+            return Task.FromResult(new AsyncWrapper<ILockingProvider>(lockingProvider, stopAction: async (p, t) => {
+                await scope.DisposeAsync();
+                await provider.DisposeAsync();
+            }));
         }
     }
 }

@@ -32,13 +32,25 @@ namespace Sels.DistributedLocking.SQL
         TimeSpan? ILockRequest.ExpiryTime => ExpiryTime != null ? TimeSpan.FromSeconds(ExpiryTime.Value) : (TimeSpan?)null;
 
         /// <summary>
-        /// Converts all dates to utc kind.
+        /// Converts all dates from utc to local.
         /// </summary>
         /// <returns>Current instance</returns>
-        public SqlLockRequest SetFromUtc()
+        public SqlLockRequest SetToLocal()
         {
-            if (Timeout.HasValue && Timeout.Value.Kind == DateTimeKind.Unspecified) Timeout = DateTime.SpecifyKind(Timeout.Value, DateTimeKind.Utc).ToLocalTime();
-            if(CreatedAt.Kind == DateTimeKind.Unspecified) CreatedAt = DateTime.SpecifyKind(CreatedAt, DateTimeKind.Utc).ToLocalTime();
+            if (Timeout.HasValue && Timeout.Value.Kind != DateTimeKind.Local) Timeout = DateTime.SpecifyKind(Timeout.Value, DateTimeKind.Utc).ToLocalTime();
+            if(CreatedAt.Kind != DateTimeKind.Local) CreatedAt = DateTime.SpecifyKind(CreatedAt, DateTimeKind.Utc).ToLocalTime();
+
+            return this;
+        }
+
+        /// <summary>
+        /// Converts all dates to utc.
+        /// </summary>
+        /// <returns>Current instance</returns>
+        public SqlLockRequest SetToUtc()
+        {
+            if (Timeout.HasValue && Timeout.Value.Kind != DateTimeKind.Utc) Timeout = Timeout.Value.ToUniversalTime();
+            if (CreatedAt.Kind != DateTimeKind.Utc) CreatedAt = CreatedAt.ToUniversalTime();
 
             return this;
         }

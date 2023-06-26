@@ -28,34 +28,36 @@ namespace Sels.ObjectValidationFramework.Profile
 
             var builder = new StringBuilder();
 
-            if (includeParents && ruleContext.Parents.HasValue())
+            if (includeParents)
             {
-                for(int i = 0; i < ruleContext.Parents.Length; i++)
+                if (ruleContext.Parents.HasValue())
                 {
-                    var parent = ruleContext.Parents[i];
-
-                    // First parent so we use type name as root
-                    if(i == 0)
+                    for (int i = 0; i < ruleContext.Parents.Length; i++)
                     {
-                        builder.Append(parent.Instance.GetType().GetDisplayName(false));
-                    }
+                        var parent = ruleContext.Parents[i];
 
-                    // Append array like display when parent was part of collection
-                    if (parent.ElementIndex.HasValue())
-                    {
-                        builder.Append($"[{parent.ElementIndex.Value}]");
-                    }
+                        // First parent so we use type name as root
+                        if (i == 0)
+                        {
+                            builder.Append(parent.Instance.GetType().GetDisplayName(false));
+                        }
 
-                    // Append child property
-                    builder.Append("." + parent.ChildProperty.Name);
+                        // Append array like display when parent was part of collection
+                        if (parent.ElementIndex.HasValue())
+                        {
+                            builder.Append($"[{parent.ElementIndex.Value}]");
+                        }
+
+                        // Append child property
+                        builder.Append("." + parent.ChildProperty.Name);
+                    }
+                }
+                // No parents so we use entity name as root
+                else
+                {
+                    builder.Append(ruleContext.Source.GetType().GetDisplayName(false));
                 }
             }
-            // No parents so we use entity name as root
-            else
-            {
-                builder.Append(ruleContext.Source.GetType().GetDisplayName(false));
-            }
-
             // Append array like display when current value was part of collection
             if (includeParents && ruleContext.ElementIndex.HasValue)
             {
@@ -81,7 +83,6 @@ namespace Sels.ObjectValidationFramework.Profile
 
             return ruleContext.GetDisplayName(includeParents);
         }
-
         /// <summary>
         /// Returns a display name for the current value that being validated. Includes the property name.
         /// </summary>
@@ -97,7 +98,8 @@ namespace Sels.ObjectValidationFramework.Profile
 
             var builder = new StringBuilder();
 
-            builder.Append(ruleContext.GetDisplayName(includeParents)).Append('.');
+            builder.Append(ruleContext.GetDisplayName(includeParents));
+            if(builder.Length > 0) builder.Append('.');
 
             // Include property name
             builder.Append(ruleContext.Info.Property.Name);
@@ -120,29 +122,13 @@ namespace Sels.ObjectValidationFramework.Profile
 
             var builder = new StringBuilder();
 
-            builder.Append(ruleContext.GetDisplayName(includeParents) + ".");
+            builder.Append(ruleContext.GetDisplayName(includeParents));
+            if (builder.Length > 0) builder.Append('.');
 
             // Include property name with index
             builder.Append($"{ruleContext.Info.Property.Name}[{ruleContext.Info.ValueIndex}]");
 
             return builder.ToString();
-        }
-
-        /// <summary>
-        /// Returns a display name for the current value that being validated. Dynamically selects the right overload.
-        /// </summary>
-        /// <typeparam name="TEntity">Type of source object that the validation rule was created for</typeparam>
-        /// <typeparam name="TInfo">Type of object that contains additional info that the validation rule can use depending on what is being validated</typeparam>
-        /// <typeparam name="TContext">Optional context that can be supplied to a validation profile</typeparam>
-        /// <typeparam name="TValue">Type of value that is being validated</typeparam>
-        /// <param name="ruleContext">Validation rule context for the currently being validated value</param>
-        /// <param name="includeParents">If the hierarchy of parents should be included in the display name</param>
-        /// <returns>Display name representing the current value that's being validated</returns>
-        public static string GetFullDisplayNameDynamically<TEntity, TInfo, TContext, TValue>(this IValidationRuleContext<TEntity, TInfo, TContext, TValue> ruleContext, bool includeParents = true)
-        {
-            ruleContext.ValidateArgument(nameof(ruleContext));
-
-            return GetFullDisplayName(ruleContext.CastTo<dynamic>(), includeParents);
         }
     }
 }

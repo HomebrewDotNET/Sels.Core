@@ -219,7 +219,7 @@ namespace Sels.DistributedLocking.Memory.Test
         }
 
         [Test]
-        public async Task CancelingRequestThrowsTaskCanceledException()
+        public async Task CancelingRequestThrowsOperationCanceledException()
         {
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
@@ -246,7 +246,7 @@ namespace Sels.DistributedLocking.Memory.Test
 
             // Assert
             Assert.That(exception, Is.Not.Null);
-            Assert.That(exception, Is.InstanceOf<TaskCanceledException>());
+            Assert.That(exception, Is.InstanceOf<OperationCanceledException>());
         }
 
         [Test]

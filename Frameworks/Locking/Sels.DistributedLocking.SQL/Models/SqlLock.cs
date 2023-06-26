@@ -27,11 +27,11 @@ namespace Sels.DistributedLocking.SQL
         /// Converts all dates from utc to local.
         /// </summary>
         /// <returns>Current instance</returns>
-        public SqlLock SetFromUtc()
+        public SqlLock SetToLocal()
         {
-            if (LockedAt.HasValue && LockedAt.Value.Kind == DateTimeKind.Unspecified) LockedAt = DateTime.SpecifyKind(LockedAt.Value, DateTimeKind.Utc).ToLocalTime();
-            if (LastLockDate.HasValue && LastLockDate.Value.Kind == DateTimeKind.Unspecified) LastLockDate = DateTime.SpecifyKind(LastLockDate.Value, DateTimeKind.Utc).ToLocalTime();
-            if (ExpiryDate.HasValue && ExpiryDate.Value.Kind == DateTimeKind.Unspecified) ExpiryDate = DateTime.SpecifyKind(ExpiryDate.Value, DateTimeKind.Utc).ToLocalTime();
+            if (LockedAt.HasValue && LockedAt.Value.Kind != DateTimeKind.Local) LockedAt = DateTime.SpecifyKind(LockedAt.Value, DateTimeKind.Utc).ToLocalTime();
+            if (LastLockDate.HasValue && LastLockDate.Value.Kind != DateTimeKind.Local) LastLockDate = DateTime.SpecifyKind(LastLockDate.Value, DateTimeKind.Utc).ToLocalTime();
+            if (ExpiryDate.HasValue && ExpiryDate.Value.Kind != DateTimeKind.Local) ExpiryDate = DateTime.SpecifyKind(ExpiryDate.Value, DateTimeKind.Utc).ToLocalTime();
 
             return this;
         }

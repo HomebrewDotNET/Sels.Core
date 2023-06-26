@@ -78,6 +78,10 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
 
                    // Testers
                    s.AddScoped<AssertionTester>();
+                   s.AddOptions<AssertionTesterOptions>();
+                   s.AddValidationProfile<AssertionTesterOptionsValidationProfile, string>();
+                   s.AddOptionProfileValidator<AssertionTesterOptions, AssertionTesterOptionsValidationProfile>();
+                   s.BindOptionsFromConfig<AssertionTesterOptions>();
                })
                .Execute(async (p, a, t) =>
                {

@@ -34,6 +34,18 @@ namespace Sels.Core.Extensions.Logging.Advanced
         {
             loggers.LogMessage(LogLevel.Warning, message, args);
         }
+
+        /// <summary>
+        /// Logs a message using severity <see cref="LogLevel.Warning"/>.
+        /// </summary>
+        /// <param name="message">Message to log</param>
+        /// <param name="args">Optional logging parameters</param>
+        /// <param name="exception">The exception to log</param>
+        /// <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
+        public static void Warning(this IEnumerable<ILogger> loggers, string message, Exception exception, params object[] args)
+        {
+            loggers.LogMessage(LogLevel.Warning, message, exception, args);
+        }
         #endregion
 
         #region Log
@@ -217,6 +229,18 @@ namespace Sels.Core.Extensions.Logging.Advanced
         public static void Warning(this ILogger logger, string message, params object[] args)
         {
             logger.LogMessage(LogLevel.Warning, message, args);
+        }
+
+        /// <summary>
+        /// Logs a message using severity <see cref="LogLevel.Warning"/>.
+        /// </summary>
+        /// <param name="message">Message to log</param>
+        /// <param name="args">Optional logging parameters</param>
+        /// <param name="exception">The exception to log</param>
+        /// <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
+        public static void Warning(this ILogger logger, string message, Exception exception, params object[] args)
+        {
+            logger.LogMessage(LogLevel.Warning, message, exception, args);
         }
         #endregion
 

@@ -30,5 +30,24 @@ namespace Sels.DistributedLocking.Abstractions.Extensions
 
             return false;
         }
+
+        /// <summary>
+        /// Checks that <paramref name="lock"/> is locked by <paramref name="requester"/>.
+        /// </summary>
+        /// <param name="lock">The lock to check</param>
+        /// <param name="requester">Who is supposed to have the lock</param>
+        /// <returns>True if <paramref name="lock"/> is held by <paramref name="requester"/>, otherwise false</returns>
+        public static bool HasLock(this ILockInfo @lock, string requester)
+        {
+            if (@lock == null) throw new ArgumentNullException(nameof(@lock));
+            if (string.IsNullOrWhiteSpace(requester)) throw new ArgumentException($"{nameof(requester)} cannot be null, empty or whitespace");
+
+            // Not locked
+            if (@lock.LockedBy == null) return false;
+            // Has lock
+            if (@lock.LockedBy.Equals(requester, StringComparison.OrdinalIgnoreCase)) return true;
+
+            return false;
+        }
     }
 }

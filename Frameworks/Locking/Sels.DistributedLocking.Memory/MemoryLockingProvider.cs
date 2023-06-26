@@ -3,11 +3,13 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using Sels.Core;
 using Sels.Core.Components.Scope.Actions;
+using Sels.Core.Dispose;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Object;
 using Sels.Core.Extensions.Reflection;
+using Sels.DistributedLocking.Abstractions.Extensions;
 using Sels.DistributedLocking.Abstractions.Models;
 using Sels.DistributedLocking.Provider;
 using System;
@@ -26,7 +28,7 @@ namespace Sels.DistributedLocking.Memory
     /// <summary>
     /// Provides process wide distributed locks by storing the locks in memory and making use of thread locks to handle concurrency.
     /// </summary>
-    public class MemoryLockingProvider : ILockingProvider, IAsyncDisposable
+    public class MemoryLockingProvider : ILockingProvider, IAsyncExposedDisposable
     {
         // Fields
         private readonly Dictionary<string, MemoryLockInfo> _locks = new Dictionary<string, MemoryLockInfo>(StringComparer.OrdinalIgnoreCase);
@@ -45,6 +47,8 @@ namespace Sels.DistributedLocking.Memory
         /// Indicates that the current instance is currently running cleanup on inactive locks.
         /// </summary>
         public bool IsRunningCleanup { get; private set; }
+        /// <inheritdoc/>
+        public bool? IsDisposed { get; private set; }
 
         /// <inheritdoc cref="MemoryLockingProvider"/>
         /// <param name="options"><inheritdoc cref="Options"/></param>
@@ -81,7 +85,7 @@ namespace Sels.DistributedLocking.Memory
         }
 
         /// <inheritdoc/>
-        public Task<ILockResult> TryLockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default)
+        public virtual Task<ILockResult> TryLockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
@@ -140,7 +144,7 @@ namespace Sels.DistributedLocking.Memory
             }
         }
         /// <inheritdoc/>
-        public Task<ILock> LockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, TimeSpan? timeout = null, CancellationToken token = default)
+        public virtual Task<ILock> LockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, TimeSpan? timeout = null, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
@@ -175,7 +179,7 @@ namespace Sels.DistributedLocking.Memory
             }
         }
         /// <inheritdoc/>
-        public Task<ILockInfo> GetAsync(string resource, CancellationToken token = default)
+        public virtual Task<ILockInfo> GetAsync(string resource, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
@@ -188,7 +192,7 @@ namespace Sels.DistributedLocking.Memory
             }
         }
         /// <inheritdoc/>
-        public Task<ILockRequest[]> GetPendingRequestsAsync(string resource, CancellationToken token = default)
+        public virtual Task<ILockRequest[]> GetPendingRequestsAsync(string resource, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
@@ -204,7 +208,7 @@ namespace Sels.DistributedLocking.Memory
             }
         }
         /// <inheritdoc/>
-        public Task<ILockQueryResult> QueryAsync(Action<ILockQueryCriteria> searchCriteria, CancellationToken token = default)
+        public virtual Task<ILockQueryResult> QueryAsync(Action<ILockQueryCriteria> searchCriteria, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
@@ -245,7 +249,7 @@ namespace Sels.DistributedLocking.Memory
             }
         }
         /// <inheritdoc/>
-        public Task ForceUnlockAsync(string resource, bool removePendingRequests = false, CancellationToken token = default)
+        public virtual Task ForceUnlockAsync(string resource, bool removePendingRequests = false, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
@@ -286,7 +290,7 @@ namespace Sels.DistributedLocking.Memory
         /// <param name="resource">The lock to check</param>
         /// <param name="requester">Who is supposed to have the lock</param>
         /// <returns>True if lock <paramref name="resource"/> is still held by <paramref name="requester"/></returns>
-        public bool HasLock(string resource, string requester)
+        public virtual bool HasLock(string resource, string requester)
         {
             using (_logger.TraceMethod(this))
             {
@@ -296,7 +300,7 @@ namespace Sels.DistributedLocking.Memory
                 var memoryLock = GetLockOrSet(resource);
                 lock (memoryLock)
                 {
-                    var hasLock = memoryLock.LockedBy.Equals(requester, StringComparison.OrdinalIgnoreCase);
+                    var hasLock = memoryLock.HasLock(requester);
                     _logger.Debug($"Lock <{resource}> is {(hasLock ? "locked" : "not locked")} by <{requester}>");
                     return hasLock;
                 }
@@ -310,7 +314,7 @@ namespace Sels.DistributedLocking.Memory
         /// <param name="extendTime">How much time to extend the expiry date with</param>
         /// <param name="lockInfo">The current state of the lock</param>
         /// <returns>True if the expiry date was extended, otherwise false</returns>
-        public bool TryExtend(string resource, string requester, TimeSpan extendTime, out ILockInfo lockInfo)
+        public virtual bool TryExtend(string resource, string requester, TimeSpan extendTime, out ILockInfo lockInfo)
         {
             using (_logger.TraceMethod(this))
             {
@@ -343,7 +347,7 @@ namespace Sels.DistributedLocking.Memory
         /// </summary>
         /// <param name="resource">The lock to release</param>
         /// <param name="requester">Who is supposed to hold the lock</param>
-        public bool Unlock(string resource, string requester)
+        public virtual bool Unlock(string resource, string requester)
         {
             using (_logger.TraceMethod(this))
             {
@@ -380,7 +384,7 @@ namespace Sels.DistributedLocking.Memory
         /// Tries to assign the next pending lock request on <paramref name="resource"/>.
         /// </summary>
         /// <param name="resource">The resource to check the pending requests for</param>
-        public bool TryAssignPendingRequest(string resource)
+        public virtual bool TryAssignPendingRequest(string resource)
         {
             using (_logger.TraceMethod(this))
             {
@@ -401,6 +405,9 @@ namespace Sels.DistributedLocking.Memory
                     {
                         using (request)
                         {
+                            // Skip finished requests
+                            if (request.IsCompleted) continue;
+
                             _logger.Debug($"Got pending lock request on resource <{resource}> requested by <{request.Requester}> created at <{request.CreatedAt}>");
                             memoryLock.LockedBy = request.Requester;
                             memoryLock.ExpiryDate = request.ExpiryTime.HasValue ? DateTime.Now.Add(request.ExpiryTime.Value) : (DateTime?)null;
@@ -436,7 +443,7 @@ namespace Sels.DistributedLocking.Memory
         /// Event handler called when lock <paramref name="resource"/> expires.
         /// </summary>
         /// <param name="resource">The resource that expired</param>
-        public void OnLockExpired(string resource)
+        public virtual void OnLockExpired(string resource)
         {
             using (_logger.TraceMethod(this))
             {
@@ -618,63 +625,72 @@ namespace Sels.DistributedLocking.Memory
         }
 
         /// <inheritdoc/>
-        public async ValueTask DisposeAsync()
+        public async virtual ValueTask DisposeAsync()
         {
-            List<Exception> exceptions = new List<Exception>();
+            // Exit if already disposed
+            if (IsDisposed.HasValue && IsDisposed.Value) return;
 
-            // Stop monitoring for option changes
-            _optionsMonitor?.Dispose();
-
-            // Cancel cleanup task if it's running
-            if(_cleanupTask != null)
+            using (new ExecutedAction(x => IsDisposed = x))
             {
-                using (_logger.TraceAction(LogLevel.Debug, "Dispose: Cancel cleanup task")) {
-                    try
+                List<Exception> exceptions = new List<Exception>();
+                _logger.Log($"Disposing");
+
+                // Stop monitoring for option changes
+                _optionsMonitor?.Dispose();
+
+                // Cancel cleanup task if it's running
+                if (_cleanupTask != null)
+                {
+                    using (_logger.TraceAction(LogLevel.Debug, "Dispose: Cancel cleanup task"))
                     {
-                        _cancellationTokenSource.Cancel();
-                        await _cleanupTask.ConfigureAwait(false);
-                        _cancellationTokenSource.Dispose();
-                    }
-                    catch(Exception ex)
-                    {
-                        exceptions.Add(ex);
-                        _logger.Log($"Could not properly stop cleanup task", ex);
+                        try
+                        {
+                            _cancellationTokenSource.Cancel();
+                            await _cleanupTask.ConfigureAwait(false);
+                            _cancellationTokenSource.Dispose();
+                        }
+                        catch (Exception ex)
+                        {
+                            exceptions.Add(ex);
+                            _logger.Log($"Could not properly stop cleanup task", ex);
+                        }
                     }
                 }
-            }
 
-            // Cancel any pending requests so callers can return
-            using(_logger.TraceAction(LogLevel.Debug, "Dispose: Cancel pending lock requests"))
-            {
-                lock (_locks)
+                // Cancel any pending requests so callers can return
+                using (_logger.TraceAction(LogLevel.Debug, "Dispose: Cancel pending lock requests"))
                 {
-                    foreach (var @lock in _locks.Values.Where(x => !x.Requests.IsEmpty))
+                    lock (_locks)
                     {
-                        lock(@lock)
+                        foreach (var @lock in _locks.Values.Where(x => !x.Requests.IsEmpty))
                         {
-                            foreach(var request in @lock.Requests)
+                            lock (@lock)
                             {
-                                try
+                                foreach (var request in @lock.Requests)
                                 {
-                                    using (request)
+                                    try
                                     {
-                                        _logger.Trace($"Cancelling locking request made by <{request.Requester}> on resource <{request.Resource}>");
-                                        request.AbortRequest(new ObjectDisposedException(nameof(MemoryLockingProvider)));
+                                        using (request)
+                                        {
+                                            var message = $"Cancelled request placed by <{request.Requester}> on resource <{request.Resource}>";
+                                            _logger.Log(message);
+                                            request.AbortRequest(new OperationCanceledException(message));
+                                        }
                                     }
-                                }
-                                catch(Exception ex)
-                                {
-                                    exceptions.Add(ex);
-                                    _logger.Log($"Could not properly cancel locking request made by <{request.Requester}> on resource <{request.Resource}>", ex);
-                                }
+                                    catch (Exception ex)
+                                    {
+                                        exceptions.Add(ex);
+                                        _logger.Log($"Could not properly cancel locking request made by <{request.Requester}> on resource <{request.Resource}>", ex);
+                                    }
 
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (exceptions.HasValue()) throw new AggregateException(exceptions);
+                if (exceptions.HasValue()) throw new AggregateException(exceptions); 
+            }
         }
 
         #region Classes
@@ -686,7 +702,7 @@ namespace Sels.DistributedLocking.Memory
             // Fields
             private readonly object _threadLock = new object();
             private readonly MemoryLockingProvider _provider;
-            private bool unlockCalled = false;
+            private bool _unlockCalled = false;
             private CancellationTokenSource _cancellationTokenSource;
             private Task _expiryTask;
             private bool _keepAlive;
@@ -726,7 +742,7 @@ namespace Sels.DistributedLocking.Memory
                 }
             }
             /// <inheritdoc/>
-            public async Task ExtendAsync(TimeSpan extendTime, CancellationToken token = default)
+            public async Task<bool> ExtendAsync(TimeSpan extendTime, CancellationToken token = default)
             {
                 using (_logger.TraceMethod(this))
                 {
@@ -738,6 +754,10 @@ namespace Sels.DistributedLocking.Memory
                             _logger.Debug($"Expiry task is running for lock <{Resource}> held by <{LockedBy}>. Cancelling task before extending the expiry date");
                             _cancellationTokenSource.Cancel();
                             await _expiryTask.ConfigureAwait(false);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            _expiryTask = null;
                         }
                         catch (Exception ex)
                         {
@@ -751,15 +771,19 @@ namespace Sels.DistributedLocking.Memory
                         if(_provider.TryExtend(Resource, LockedBy, extendTime, out var memoryLock))
                         {
                             ExpiryDate = memoryLock.ExpiryDate;
+                            TryStartExpiryTask();
+                            return true;
                         }
-
-                        TryStartExpiryTask();
+                        else
+                        {
+                            return false;
+                        }
                     }
                 }
             }
 
             /// <inheritdoc/>
-            public async Task UnlockAsync(CancellationToken token = default)
+            public async Task<bool> UnlockAsync(CancellationToken token = default)
             {
                 using (_logger.TraceMethod(this))
                 {
@@ -774,23 +798,29 @@ namespace Sels.DistributedLocking.Memory
                             _cancellationTokenSource.Cancel();
                             await _expiryTask.ConfigureAwait(false);
                         }
-                        catch(Exception ex)
+                        catch (OperationCanceledException)
+                        {
+                            _expiryTask = null;
+                        }
+                        catch (Exception ex)
                         {
                             _logger.Warning($"Could not properly stop expiry task for lock <{Resource}> held by <{LockedBy}>", ex);
                             _expiryTask = null;
                         }
                     }
 
+                    _unlockCalled = true;
                     // Try unlock
-                    if(_provider.Unlock(Resource, LockedBy))
+                    if (_provider.Unlock(Resource, LockedBy))
                     {
                         _logger.Log($"Released lock on resource <{Resource}> held by <{LockedBy}>");
+                        return true;
                     }
                     else
                     {
                         _logger.Warning($"Could not release lock <{Resource}> supposed to be held by <{LockedBy}>. Lock is probably stale");
-                    }
-                    unlockCalled = true;                    
+                        return true;
+                    }          
                 }
             }
 
@@ -881,9 +911,24 @@ namespace Sels.DistributedLocking.Memory
             {
                 using (_logger.TraceMethod(this))
                 {
+                    _logger.Log($"Disposing lock <{Resource}> held by <{LockedBy}>");
+                    // Stop expiry task
+                    _cancellationTokenSource?.Cancel();
+
                     try
                     {
-                        if (!unlockCalled)
+                        if (_expiryTask != null) await _expiryTask;
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.Log($"Error occured while trying to stop expiry task", ex);
+                    }
+                    
+
+                    // Unlock lock
+                    try
+                    {
+                        if (!_unlockCalled)
                         {
                             await UnlockAsync().ConfigureAwait(false);
                         }
@@ -892,7 +937,11 @@ namespace Sels.DistributedLocking.Memory
                     {
                         _logger.Log($"Error occured while unlocking task during dispose", ex);
                         throw;
-                    }                    
+                    }
+                    finally
+                    {
+                        _cancellationTokenSource?.Dispose();
+                    }
                 }
             }
         }
@@ -1002,6 +1051,10 @@ namespace Sels.DistributedLocking.Memory
             /// The task returned to caller when they request a lock. 
             /// </summary>
             public Task<ILock> CallbackTask => _taskSource.Task;
+            /// <summary>
+            /// Indicates that the current request has been completed.
+            /// </summary>
+            public bool IsCompleted => CallbackTask.IsCompleted;
 
             /// <summary>
             /// Assigns the lock to the caller of the request.
@@ -1014,7 +1067,7 @@ namespace Sels.DistributedLocking.Memory
 
                 lock (_threadLock)
                 {
-                    if (!CallbackTask.IsCompleted)
+                    if (!IsCompleted)
                     {
                         _taskSource.SetResult(memoryLock);
                         return true;
@@ -1034,7 +1087,7 @@ namespace Sels.DistributedLocking.Memory
 
                 lock (_threadLock)
                 {
-                    if (!CallbackTask.IsCompleted)
+                    if (!IsCompleted)
                     {
                         _taskSource.SetException(exception);
                         return true;

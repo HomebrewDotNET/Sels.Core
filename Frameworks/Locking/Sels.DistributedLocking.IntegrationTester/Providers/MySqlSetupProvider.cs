@@ -45,11 +45,15 @@ namespace Sels.DistributedLocking.IntegrationTester.Providers
         public async Task<AsyncWrapper<ILockingProvider>> SetupProvider(IServiceCollection services, CancellationToken token)
         {
             var provider = BuildProvider(services);
+            var scope = provider.CreateAsyncScope();
 
-            var lockingProvider = provider.GetRequiredService<ILockingProvider>();
-            var repository = provider.GetRequiredService<ISqlLockRepository>();
+            var lockingProvider = scope.ServiceProvider.GetRequiredService<ILockingProvider>();
+            var repository = scope.ServiceProvider.GetRequiredService<ISqlLockRepository>();
 
-            var wrapper = new AsyncWrapper<ILockingProvider>(lockingProvider, async (p, t) => await SetupForTestRun(p, repository, t), async (p, t) => await provider.DisposeAsync());
+            var wrapper = new AsyncWrapper<ILockingProvider>(lockingProvider, async (p, t) => await SetupForTestRun(p, repository, t), async (p, t) => {
+                await scope.DisposeAsync();
+                await provider.DisposeAsync();
+            });
             await wrapper.StartAsync(token);
             return wrapper;
         }
@@ -59,7 +63,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Providers
         /// </summary>
         /// <param name="services">The service collection to use to build the service provider</param>
         /// <returns>The service provider to resolve the locking provider</returns>
-        protected virtual ServiceProvider BuildProvider(IServiceCollection services) => services.AddMySqlLockingProvider(x => x.ConfigureDeployment(c => c.IgnoreMigrationExceptions = false)).BuildServiceProvider();
+        protected virtual ServiceProvider BuildProvider(IServiceCollection services) => services.AddMySqlLockingProvider(x => x.ConfigureDeployment(c => c.IgnoreMigrationExceptions = false).ConfigureProvider(p => p.RequestPollingRate = 500)).BuildServiceProvider();
 
         /// <summary>
         /// Setup the environment for a next test run.

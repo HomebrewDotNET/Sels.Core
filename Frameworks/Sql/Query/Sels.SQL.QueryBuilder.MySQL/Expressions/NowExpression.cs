@@ -36,13 +36,13 @@ namespace Sels.SQL.QueryBuilder.MySQL.Expressions
             switch (Type)
             {
                 case DateType.Server:
-                    builder.Append(MySql.Functions.Now).Append("()");
+                    builder.Append(MySql.Functions.Now).Append("(6)");
                     break;
                 case DateType.Utc:
-                    builder.Append(MySql.Functions.UtcNow).Append("()");
+                    builder.Append(MySql.Functions.UtcNow).Append("(6)");
                     break;
                 case DateType.Local:
-                    subBuilder(builder, new SqlConstantExpression(DateTimeOffset.Now));
+                    subBuilder(builder, new SqlConstantExpression(DateTime.Now));
                     break;
                 default:
                     throw new NotSupportedException($"Date type <{Type}> is not supported");

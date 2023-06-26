@@ -112,27 +112,33 @@ namespace Sels.Core.Cli
 
                 using (var provider = collection.BuildServiceProvider())
                 {
-                    // Execute tool
-                    try
+                    foreach (var execution in _syncExecutions)
                     {
-                        _syncExecutions.Execute(x => x(provider, arguments));
-                    }
-                    catch (CommandLineException cliEx)
-                    {
-                        Console.Error.WriteLine(cliEx.Message);
-                        return cliEx.ExitCode;
-                    }
-                    catch (Exception ex)
-                    {
-                        var handler = _exceptionHandlers.Where(x => ex.GetType().IsAssignableTo(x.Key)).Select(x => x.Value).FirstOrDefault();
-
-                        if (handler != null)
+                        // Execute tool
+                        try
                         {
-                            return handler(ex);
+                            using(var scope = provider.CreateScope())
+                            {
+                                execution(scope.ServiceProvider, arguments);
+                            }
                         }
-                        Console.Error.WriteLine($"Could not execute tool successfully: {ex.Message}");
-                        return CommandLine.ErrorExitCode;
-                    } 
+                        catch (CommandLineException cliEx)
+                        {
+                            Console.Error.WriteLine(cliEx.Message);
+                            return cliEx.ExitCode;
+                        }
+                        catch (Exception ex)
+                        {
+                            var handler = _exceptionHandlers.Where(x => ex.GetType().IsAssignableTo(x.Key)).Select(x => x.Value).FirstOrDefault();
+
+                            if (handler != null)
+                            {
+                                return handler(ex);
+                            }
+                            Console.Error.WriteLine($"Could not execute tool successfully: {ex.Message}");
+                            return CommandLine.ErrorExitCode;
+                        }  
+                    }
                 }
             }
             catch (Exception ex)
@@ -170,30 +176,33 @@ namespace Sels.Core.Cli
 
                 using (var provider = collection.BuildServiceProvider())
                 {
-                    // Execute tool
-                    try
+                    foreach (var execution in _asyncExecutions)
                     {
-                        foreach (var execution in _asyncExecutions)
+                        // Execute tool
+                        try
                         {
-                            await execution(provider, arguments, cancellationSource.Token);
+                            await using(var scope = provider.CreateAsyncScope())
+                            {
+                                await execution(scope.ServiceProvider, arguments, cancellationSource.Token);
+                            }
                         }
-                    }
-                    catch (CommandLineException cliEx)
-                    {
-                        Console.Error.WriteLine(cliEx.Message);
-                        return cliEx.ExitCode;
-                    }
-                    catch (Exception ex)
-                    {
-                        var handler = _exceptionHandlers.Where(x => ex.GetType().IsAssignableTo(x.Key)).Select(x => x.Value).FirstOrDefault();
+                        catch (CommandLineException cliEx)
+                        {
+                            Console.Error.WriteLine(cliEx.Message);
+                            return cliEx.ExitCode;
+                        }
+                        catch (Exception ex)
+                        {
+                            var handler = _exceptionHandlers.Where(x => ex.GetType().IsAssignableTo(x.Key)).Select(x => x.Value).FirstOrDefault();
 
-                        if (handler != null)
-                        {
-                            return handler(ex);
-                        }
-                        Console.Error.WriteLine($"Could not execute tool successfully: {ex.Message}");
-                        return CommandLine.ErrorExitCode;
-                    } 
+                            if (handler != null)
+                            {
+                                return handler(ex);
+                            }
+                            Console.Error.WriteLine($"Could not execute tool successfully: {ex.Message}");
+                            return CommandLine.ErrorExitCode;
+                        }  
+                    }
                 }
             }
             catch (Exception ex)
