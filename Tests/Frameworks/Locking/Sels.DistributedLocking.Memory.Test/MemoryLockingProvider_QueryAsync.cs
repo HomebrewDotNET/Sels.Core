@@ -12,7 +12,7 @@ namespace Sels.DistributedLocking.Memory.Test
         [TestCase("System.", new string[] { "Resource", "System.Monitor", "System.Heartbeat", "RecurringJob.1-1" }, 2)]
         [TestCase("RecurringJob", new string[] { "Resource", "System.Monitor", "System.Heartbeat", "RecurringJob.1-1" }, 1)]
         [TestCase("Database.Deployment", new string[] { "Resource", "System.Monitor", "System.Heartbeat", "RecurringJob.1-1" }, 0)]
-        public async Task FilterIsAppliedAndCorrectNumberOfResultsAreReturned(string filter, string[] locks, int expected)
+        public async Task FilterOnResourceIsAppliedAndCorrectNumberOfResultsAreReturned(string filter, string[] locks, int expected)
         {
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
@@ -33,6 +33,142 @@ namespace Sels.DistributedLocking.Memory.Test
                 Assert.That(lockResult, Is.Not.Null);
                 Assert.Contains(lockResult.Resource, locks);
             }
+        }
+
+        [TestCase("Thread", new string[] { "Thread.1", "Thread.2", "BackgroundJob.1", "BackgroundJob.2", "RecurringJob.1" }, 2)]
+        [TestCase("Thread.2", new string[] { "Thread.1", "Thread.2", "BackgroundJob.1", "BackgroundJob.2", "RecurringJob.1" }, 1)]
+        [TestCase("Thread.3", new string[] { "Thread.1", "Thread.2", "BackgroundJob.1", "BackgroundJob.2", "RecurringJob.1" }, 0)]
+        [TestCase("RecurringJob", new string[] { "Thread.1", "Thread.2", "BackgroundJob.1", "BackgroundJob.2", "RecurringJob.1" }, 1)]
+        [TestCase("Me", new string[] { "Thread.1", "Thread.2", "BackgroundJob.1", "BackgroundJob.2", "RecurringJob.1" }, 0)]
+        public async Task FilterOnLockedByIsAppliedAndCorrectNumberOfResultsAreReturned(string filter, string[] requesters, int expected)
+        {
+            // Arrange
+            var options = TestHelper.GetProviderOptionsMock();
+            await using var provider = new MemoryLockingProvider(options);
+            foreach (var requester in requesters)
+            {
+                await provider.TryLockAsync(Guid.NewGuid().ToString(), requester);
+            }
+
+            // Act
+            var result = await provider.QueryAsync(x => x.WithFilterOnLockedBy(filter));
+
+            // Assert
+            Assert.That(result.Results, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(expected));
+            foreach (var lockResult in result.Results)
+            {
+                Assert.That(lockResult, Is.Not.Null);
+                Assert.Contains(lockResult.LockedBy, requesters);
+            }
+        }
+
+        [TestCase("Thread.1", new string?[] { "Thread.1", "Thread.1", null, "BackgroundJob.2", null }, 2)]
+        [TestCase(null, new string?[] { "Thread.1", "Thread.1", null, "BackgroundJob.2", null }, 2)]
+        [TestCase("Thread.3", new string?[] { "Thread.1", "Thread.1", null, "BackgroundJob.2", null }, 0)]
+        [TestCase("BackgroundJob.2", new string?[] { "Thread.1", "Thread.1", null, "BackgroundJob.2", null }, 1)]
+        [TestCase("Me", new string?[] { "Thread.1", "Thread.1", null, "BackgroundJob.2", null }, 0)]
+        public async Task EqualToOnLockedByIsAppliedAndCorrectNumberOfResultsAreReturned(string? equalTo, string?[] requesters, int expected)
+        {
+            // Arrange
+            var options = TestHelper.GetProviderOptionsMock();
+            await using var provider = new MemoryLockingProvider(options);
+            foreach (var requester in requesters)
+            {
+                if(requester == null)
+                {
+                    var @lock = await provider.LockAsync(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+                    await @lock.DisposeAsync();
+                }
+                else
+                {
+                    await provider.TryLockAsync(Guid.NewGuid().ToString(), requester);
+                }
+            }
+
+            // Act
+            var result = await provider.QueryAsync(x => x.WithLockedByEqualTo(equalTo));
+
+            // Assert
+            Assert.That(result.Results, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(expected));
+            foreach (var lockResult in result.Results)
+            {
+                Assert.That(lockResult, Is.Not.Null);
+            }
+        }
+
+        [TestCase(5, 0, 4)]
+        [TestCase(3, 1, 1)]
+        [TestCase(10, 5, 4)]
+        public async Task FilterOnPendingRequestsIsAppliedAndCorrectNumberOfResultsAreReturned(int amountOfLocks, int threshold, int expected)
+        {
+            // Arrange
+            var options = TestHelper.GetProviderOptionsMock();
+            await using var provider = new MemoryLockingProvider(options);
+
+            for(int i = 0; i < amountOfLocks; i++)
+            {
+                await provider.LockAsync($"Resource.{i}", Guid.NewGuid().ToString());
+                for (int y = 0; y < i; y++)
+                {
+                    _ = provider.LockAsync($"Resource.{i}", $"Requester,{y}");
+                }
+            }
+            await Helper.Async.Sleep(TimeSpan.FromSeconds(1));
+
+            // Act
+            var result = await provider.QueryAsync(x => x.WithPendingRequestsLargerThan(threshold));
+
+            // Assert
+            Assert.That(result.Results, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(expected));
+        }
+
+        [TestCase(10, 5)]
+        [TestCase(1, 0)]
+        [TestCase(100, 10)]
+        public async Task CorrectNumberOfResultsAreReturnedWhenFilteringOnOnlyExpired(int amountOfLocks, int amountOfExpiredLocks)
+        {
+            // Arrange
+            var options = TestHelper.GetProviderOptionsMock();
+            await using var provider = new MemoryLockingProvider(options);
+
+            for (int i = 0; i < amountOfLocks; i++)
+            {
+                await provider.LockAsync($"Resource.{i}", Guid.NewGuid().ToString(), i < amountOfExpiredLocks ? TimeSpan.Zero : TimeSpan.FromHours(24));
+            }
+            await Helper.Async.Sleep(TimeSpan.FromSeconds(1));
+
+            // Act
+            var result = await provider.QueryAsync(x => x.WithOnlyExpired());
+
+            // Assert
+            Assert.That(result.Results, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(amountOfExpiredLocks));
+        }
+
+        [TestCase(10, 5)]
+        [TestCase(1, 0)]
+        [TestCase(100, 10)]
+        public async Task CorrectNumberOfResultsAreReturnedWhenFilteringOnOnlyNotExpired(int amountOfLocks, int amountOfExpiredLocks)
+        {
+            // Arrange
+            var options = TestHelper.GetProviderOptionsMock();
+            await using var provider = new MemoryLockingProvider(options);
+
+            for (int i = 0; i < amountOfLocks; i++)
+            {
+                await provider.LockAsync($"Resource.{i}", Guid.NewGuid().ToString(), i < amountOfExpiredLocks ? TimeSpan.Zero : TimeSpan.FromHours(24));
+            }
+            await Helper.Async.Sleep(TimeSpan.FromSeconds(1));
+
+            // Act
+            var result = await provider.QueryAsync(x => x.WithOnlyNotExpired());
+
+            // Assert
+            Assert.That(result.Results, Is.Not.Null);
+            Assert.That(result.Results.Length, Is.EqualTo(amountOfLocks-amountOfExpiredLocks));
         }
 
         [Test]
@@ -129,6 +265,64 @@ namespace Sels.DistributedLocking.Memory.Test
             // Assert
             Assert.That(results, Is.Not.Null);
             CollectionAssert.AreEqual(expected, results.Results.Select(x => x.LockedBy));
+        }
+        [Test]
+        public async Task CorrectSortingIsAppliedWhenSortingOnLastLockDate()
+        {
+            // Arrange
+            var options = TestHelper.GetProviderOptionsMock();
+            await using var provider = new MemoryLockingProvider(options);
+            foreach (var i in Enumerable.Range(0, 100))
+            {
+                await using(await provider.LockAsync(i.ToString(), "Random"))
+                {
+
+                }
+            }
+
+            // Act
+            var results = await provider.QueryAsync(x => x.OrderByLastLockDate());
+
+            // Assert
+            Assert.That(results, Is.Not.Null);
+            CollectionAssert.AreEqual(Enumerable.Range(0, 100).Select(x => x.ToString()), results.Results.Select(x => x.Resource));
+        }
+        [Test]
+        public async Task CorrectSortingIsAppliedWhenSortingOnLockDate()
+        {
+            // Arrange
+            var options = TestHelper.GetProviderOptionsMock();
+            await using var provider = new MemoryLockingProvider(options);
+            foreach (var i in Enumerable.Range(0, 100))
+            {
+                _ = await provider.LockAsync(i.ToString(), "Random");
+            }
+
+            // Act
+            var results = await provider.QueryAsync(x => x.OrderByLockedAt());
+
+            // Assert
+            Assert.That(results, Is.Not.Null);
+            CollectionAssert.AreEqual(Enumerable.Range(0, 100).Select(x => x.ToString()), results.Results.Select(x => x.Resource));
+        }
+        [Test]
+        public async Task CorrectSortingIsAppliedWhenSortingOnExpiryDate()
+        {
+            // Arrange
+            var options = TestHelper.GetProviderOptionsMock();
+            await using var provider = new MemoryLockingProvider(options);
+            foreach (var i in Enumerable.Range(0, 100))
+            {
+                _ = await provider.LockAsync(i.ToString(), "Random", TimeSpan.FromMilliseconds(10));
+                await Helper.Async.Sleep(TimeSpan.FromMilliseconds(5));
+            }
+
+            // Act
+            var results = await provider.QueryAsync(x => x.OrderByLockedAt());
+
+            // Assert
+            Assert.That(results, Is.Not.Null);
+            CollectionAssert.AreEqual(Enumerable.Range(0, 100).Select(x => x.ToString()), results.Results.Select(x => x.Resource));
         }
     }
 }

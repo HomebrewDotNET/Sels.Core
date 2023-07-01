@@ -381,7 +381,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         public void BuildsCorrectSelectQueryWithCurrentDateAndTypeServer()
         {
             // Arrange
-            var expected = "SELECT NOW()".GetWithoutWhitespace().ToLower();
+            var expected = "SELECT NOW(6)".GetWithoutWhitespace().ToLower();
 
             // Act
             var query = MySql.Select().Expression(b => b.CurrentDate(DateType.Server)).Build();
@@ -394,7 +394,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         public void BuildsCorrectSelectQueryWithCurrentDateAndTypeUtc()
         {
             // Arrange
-            var expected = "SELECT UTC_TIMESTAMP()".GetWithoutWhitespace().ToLower();
+            var expected = "SELECT UTC_TIMESTAMP(6)".GetWithoutWhitespace().ToLower();
 
             // Act
             var query = MySql.Select().Expression(b => b.CurrentDate(DateType.Utc)).Build();
@@ -411,7 +411,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         public void BuildsCorrectSelectQueryWithModifyDateInterval(double amount, DateInterval interval, string expectedAmount, string expectedInterval)
         {
             // Arrange
-            var expected = $"SELECT DATE_ADD(NOW(), INTERVAL {expectedAmount} {expectedInterval})".GetWithoutWhitespace().ToLower();
+            var expected = $"SELECT DATE_ADD(NOW(6), INTERVAL {expectedAmount} {expectedInterval})".GetWithoutWhitespace().ToLower();
 
             // Act
             var query = MySql.Select().Expression(b => b.ModifyDate(b => b.CurrentDate(DateType.Server), amount, interval)).Build();

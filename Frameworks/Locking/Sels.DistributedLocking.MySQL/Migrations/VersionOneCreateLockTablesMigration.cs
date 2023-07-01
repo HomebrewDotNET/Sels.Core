@@ -56,17 +56,16 @@ namespace Sels.DistributedLocking.MySQL.Migrations
             }
 
             // Indexes
-            if (!Schema.Table(MigrationState.LockTableName).Index("IX_Resource_LockedBy_LastLockDate_ExpiryDate").Exists())
+            if (!Schema.Table(MigrationState.LockTableName).Index("IX_Resource_LockedBy_ExpiryDate").Exists())
             {
-                Create.Index("IX_Resource_LockedBy_LastLockDate_ExpiryDate").OnTable(MigrationState.LockTableName)
+                Create.Index("IX_Resource_LockedBy_ExpiryDate").OnTable(MigrationState.LockTableName)
                         .OnColumn("Resource").Ascending()
                         .OnColumn("LockedBy").Ascending()
-                        .OnColumn("LastLockDate").Descending()
                         .OnColumn("ExpiryDate").Descending();
             }
             else
             {
-                logger.Warning($"Index IX_Resource_LockedBy_LastLockDate_ExpiryDate already exists on table <{MigrationState.LockTableName}>. Skipping");
+                logger.Warning($"Index IX_Resource_LockedBy_ExpiryDate already exists on table <{MigrationState.LockTableName}>. Skipping");
             }
 
             if (!Schema.Table(MigrationState.LockRequestTableName).Index("IX_Resource_CreatedAt").Exists())
@@ -77,7 +76,7 @@ namespace Sels.DistributedLocking.MySQL.Migrations
             }
             else
             {
-                logger.Warning($"Index IX_Resource_LockedBy_LastLockDate_ExpiryDate already exists on table <{MigrationState.LockTableName}>. Skipping");
+                logger.Warning($"Index IX_Resource_CreatedAt already exists on table <{MigrationState.LockTableName}>. Skipping");
             }
         }
     }

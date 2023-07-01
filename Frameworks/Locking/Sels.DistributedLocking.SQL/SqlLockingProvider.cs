@@ -842,6 +842,11 @@ namespace Sels.DistributedLocking.SQL
                             });
                         }
                     }
+                    catch (OperationCanceledException)
+                    {
+                        _logger.Warning($"Watcher was cancelled while checking pending requests on <{Resource}>. Stopping");
+                        return;
+                    }
                     catch (ObjectDisposedException)
                     {
                         throw;

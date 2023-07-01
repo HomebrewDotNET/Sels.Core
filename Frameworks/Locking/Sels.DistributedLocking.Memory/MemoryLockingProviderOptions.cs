@@ -36,7 +36,7 @@ namespace Sels.DistributedLocking.Memory
         /// </summary>
         public bool ThrowOnStaleLock { get; set; } = true;
         /// <summary>
-        /// How many milliseconds before a lock expires to extend the expiry date. Is also used as offset when to notify that a lock expired.
+        /// How many milliseconds before a lock expires to extend the expiry date.
         /// </summary>
         public int ExpiryOffset { get; set; } = 1000;
 

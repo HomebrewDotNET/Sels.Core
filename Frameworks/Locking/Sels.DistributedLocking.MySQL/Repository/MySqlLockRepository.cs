@@ -29,6 +29,7 @@ using Sels.SQL.QueryBuilder.Expressions;
 using Sels.Core.Extensions.Logging;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.Core.Extensions.Fluent;
+using Sels.Core.Conversion.Extensions;
 
 namespace Sels.DistributedLocking.MySQL.Repository
 {
@@ -137,7 +138,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
 
             _logger.Log($"Fetching lock on resource <{resource}>");
             // Generate query
-            var queryBuilder = QueryProvider.Select<SqlLock>()
+            var queryBuilder = QueryProvider.Select<SqlLock>().AllOf()
                                                 .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)));
             if (countRequests)
             {
@@ -157,11 +158,13 @@ namespace Sels.DistributedLocking.MySQL.Repository
             _logger.Trace($"Fetching lock on resource <{resource}> using <{query}>");
 
             // Execute query
-            var sqlLock = await dbConnection.QuerySingleAsync<SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
+            var sqlLock = await dbConnection.QuerySingleOrDefaultAsync<SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
 
-            if (sqlLock == null)
+            // Query always returns even though there's no row so check resource too
+            if (sqlLock == null || sqlLock.Resource == null)
             {
                 _logger.Warning($"Lock on resource <{resource}> does not exist");
+                return null;
             }
             else
             {
@@ -252,8 +255,17 @@ namespace Sels.DistributedLocking.MySQL.Repository
 
             // Full select
             var selectQuery = QueryProvider.Select<SqlLock>()
+                                           .AllOf()
                                            .Expression(x => x.Query(QueryProvider.Select().CountAll().From(CteName)), TotalColumnName)
                                            .From(CteName, datasetAlias: SqlLockAlias);
+
+            // Filter on pending results
+            if (searchCriteria.PendingRequestFilter.HasValue)
+            {
+                var parameterName = $"Filter{parameterCounter++}";
+                parameters.Add(parameterName, searchCriteria.PendingRequestFilter.Value);
+                selectQuery.Where(w => w.Column(c => c.PendingRequests).GreaterThan.Parameter(parameterName));
+            }
 
             // Pagination
             if (searchCriteria.Pagination.HasValue)
@@ -283,8 +295,8 @@ namespace Sels.DistributedLocking.MySQL.Repository
             _logger.Trace($"Querying locks using query <{query}>");
 
             int total = 0;
-            var results = (await dbConnection.QueryAsync<SqlLock, int, SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token), (s, t) => {
-                total = t;
+            var results = (await dbConnection.QueryAsync<SqlLock, long, SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token), (s, t) => {
+                if(total == 0) total = t.ConvertTo<int>();
                 return s;
             }, TotalColumnName).ConfigureAwait(false)).ToArray();
 

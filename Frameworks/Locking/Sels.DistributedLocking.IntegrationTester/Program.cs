@@ -15,6 +15,7 @@ using Sels.DistributedLocking.IntegrationTester.Providers;
 using Sels.Core.Components.Scope;
 using System.Diagnostics;
 using Sels.DistributedLocking.IntegrationTester.Tests;
+using Sels.Core.Cli;
 
 static IEnumerable<(TestProvider, ISetupProvider)> GetProviders(IServiceProvider serviceProvider, TestProvider testProviders)
 {
@@ -29,7 +30,6 @@ static IEnumerable<(TestType, ITester)> GetTesters(IServiceProvider serviceProvi
     //if (types.HasFlag(TestType.Concurrency)) yield return (TestType.Concurrency, serviceProvider.GetRequiredService<MySqlSetupProvider>());
     //if (types.HasFlag(TestType.Benchmark)) yield return (TestType.Benchmark, serviceProvider.GetRequiredService<MariaDbSetupProvider>());
 }
-
 
 var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                .ConfigureServices((s, a) =>
@@ -58,19 +58,22 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                    s.AddSingleton(s);
 
                    // Setup logging
-                   s.AddLogging(x =>
+                   if (!a.Quiet)
                    {
-                       x.SetMinimumLevel(a.Debug ? LogLevel.Trace : a.Verbose ? LogLevel.Information : LogLevel.Warning)
-                       .AddConsole(c =>
+                       s.AddLogging(x =>
                        {
-                           c.LogToStandardErrorThreshold = LogLevel.Trace;
-                       })
-                       .AddSimpleConsole(c =>
-                       {
-                           //c.SingleLine = true;
+                           x.SetMinimumLevel(a.Debug ? LogLevel.Trace : a.Verbose ? LogLevel.Information : LogLevel.Warning)
+                           .AddConsole(c =>
+                           {
+                               c.LogToStandardErrorThreshold = LogLevel.Trace;
+                           })
+                           .AddSimpleConsole(c =>
+                           {
+                               //c.SingleLine = true;
+                           });
                        });
-                   });
-
+                   }
+                   
                    // Providers
                    s.AddScoped<MemorySetupProvider>();
                    s.AddScoped<MySqlSetupProvider>();
@@ -92,11 +95,13 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                    var provider = a.Provider ?? TestProvider.All;
                    var testType = a.Type ?? TestType.Functional;
                    List<Exception> exceptions = new List<Exception>();
+                   var anyTestFailed = false;
 
                    foreach (var (type, tester) in GetTesters(p, testType))
                    {
                        foreach (var (providerKey, testProvider) in GetProviders(p, provider))
                        {
+                           t.ThrowIfCancellationRequested();
                            try
                            {
                                logger.Log($"Setting up provider <{providerKey}> for next test run");
@@ -123,7 +128,8 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                                    await using (setupProvider)
                                    {
                                        logger.Log($"Executing test <{testType}> for provider <{providerKey}>");
-                                       await tester.RunTests(providerKey, setupProvider.Value, t);
+                                       var success = await tester.RunTests(providerKey, setupProvider.Value, t);
+                                       if(!success) anyTestFailed = true;
                                    }
                                }
                                catch (Exception ex)
@@ -142,6 +148,7 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
 
                    
                    if (exceptions.HasValue()) throw new AggregateException(exceptions);
+                   if (anyTestFailed) throw new CommandLineException(2, "Not all tests executed successfully");
 
                    logger.Log($"Tests executed. Tool stopping");
                })
@@ -149,6 +156,7 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
 
 if(Debugger.IsAttached && Environment.UserInteractive)
 {
+    Console.WriteLine($"Exit code is {exitCode}");
     Console.WriteLine($"Press any key to close");
     Console.ReadLine();
 }

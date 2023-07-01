@@ -72,7 +72,7 @@ namespace Sels.DistributedLocking.SQL
         /// <inheritdoc/>
         ILockQueryCriteria ILockQueryCriteria.WithOnlyNotExpired()
         {
-            ShowExpiredOnly = true;
+            ShowExpiredOnly = false;
             return this;
         }
         /// <inheritdoc/>
@@ -85,7 +85,7 @@ namespace Sels.DistributedLocking.SQL
             return this;
         }
         /// <inheritdoc/>
-        ILockQueryCriteria ILockQueryCriteria.WithPendingRequest()
+        ILockQueryCriteria ILockQueryCriteria.IncludePendingRequest()
         {
             IncludePendingRequests = true;
             return this;

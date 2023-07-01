@@ -65,7 +65,7 @@ namespace Sels.DistributedLocking.Provider
         /// Disabled by default to improve performance. Can be enabled by default depending on the implementation.
         /// </summary>
         /// <returns>Current criteria for method chaining</returns>
-        ILockQueryCriteria WithPendingRequest();
+        ILockQueryCriteria IncludePendingRequest();
 
         /// <summary>
         /// Orders the query results by <see cref="ILockInfo.Resource"/>.

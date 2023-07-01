@@ -18,7 +18,7 @@ namespace Sels.DistributedLocking.IntegrationTester
         /// <param name="provider">The provider being tested</param>
         /// <param name="lockingProvider">The provider to use in the tests</param>
         /// <param name="token">Optional token to cancel the request</param>
-        /// <returns>Task containing the execution state</returns>
-        Task RunTests(TestProvider provider, ILockingProvider lockingProvider, CancellationToken token);
+        /// <returns>True if all tests executed successfully, otherwise false</returns>
+        Task<bool> RunTests(TestProvider provider, ILockingProvider lockingProvider, CancellationToken token);
     }
 }

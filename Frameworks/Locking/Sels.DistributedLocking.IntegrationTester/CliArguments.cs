@@ -35,6 +35,11 @@ namespace Sels.DistributedLocking.IntegrationTester
         [Option('v')]
         public bool Verbose { get; set; }
         /// <summary>
+        /// If warnings/errors shouldn't be logged.
+        /// </summary>
+        [Option('q')]
+        public bool Quiet { get; set; }
+        /// <summary>
         /// Logs more for debugging.
         /// </summary>
         [Option('d')]
@@ -52,6 +57,7 @@ namespace Sels.DistributedLocking.IntegrationTester
             Type ??= other.Type;
             if (!Verbose) Verbose = other.Verbose;
             if (!Debug) Debug = other.Debug;
+            if (!Quiet) Quiet = other.Quiet;
         }
     }
 }

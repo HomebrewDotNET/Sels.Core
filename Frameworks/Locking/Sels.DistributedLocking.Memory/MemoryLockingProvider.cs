@@ -7,17 +7,14 @@ using Sels.Core.Dispose;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Logging.Advanced;
-using Sels.Core.Extensions.Object;
 using Sels.Core.Extensions.Reflection;
 using Sels.DistributedLocking.Abstractions.Extensions;
 using Sels.DistributedLocking.Abstractions.Models;
 using Sels.DistributedLocking.Provider;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -215,37 +212,39 @@ namespace Sels.DistributedLocking.Memory
                 searchCriteria.ValidateArgument(nameof(searchCriteria));
 
                 var querySearchCriteria = new MemoryQuerySearchCriteria(searchCriteria);
+                _logger.Log($"Querying locks");
+                HashSet<MemoryLockInfo> locks = null;
+
                 lock (_locks)
                 {
-                    _logger.Log($"Querying locks");
-                    
-                    var enumerator = _locks.Select(x => x.Value).Cast<ILockInfo>();
-                    // Apply filter
-                    enumerator = querySearchCriteria.ApplyFilter(enumerator);
-                    
-                    var total = enumerator.Count();
-                    // Apply sorting
-                    enumerator = querySearchCriteria.ApplySorting(enumerator);
-
-                    // Apply pagination
-                    if (querySearchCriteria.Pagination.HasValue)
-                    {
-                        var (page, pageSize) = querySearchCriteria.Pagination.Value;
-                        enumerator = enumerator.Skip((page - 1) * pageSize).Take(pageSize);
-                    }
-
-                    // Return result
-                    var result = enumerator.Select(x =>
-                    {
-                        lock (x)
-                        {
-                            return new MemoryLockInfo(x.CastTo<MemoryLockInfo>());
-                        }
-                    }).Cast<ILockInfo>().ToArray();
-
-                    _logger.Log($"Query returned <{result.Length}> results");
-                    return Task.FromResult<ILockQueryResult>(querySearchCriteria.Pagination.HasValue ? new LockQueryResult(result, querySearchCriteria.Pagination.Value.PageSize, total) : new LockQueryResult(result));
+                    locks = _locks.Select(x => x.Value).ToHashSet();
                 }
+
+                // Apply filter
+                locks = querySearchCriteria.ApplyFilter(locks).ToHashSet();
+
+                var total = locks.Count;
+                // Apply sorting
+                var enumerator = querySearchCriteria.ApplySorting(locks);
+
+                // Apply pagination
+                if (querySearchCriteria.Pagination.HasValue)
+                {
+                    var (page, pageSize) = querySearchCriteria.Pagination.Value;
+                    enumerator = enumerator.Skip((page - 1) * pageSize).Take(pageSize);
+                }
+
+                // Return result
+                var result = enumerator.Select(x =>
+                {
+                    lock (x)
+                    {
+                        return new MemoryLockInfo(x.CastTo<MemoryLockInfo>());
+                    }
+                }).Cast<ILockInfo>().ToArray();
+
+                _logger.Log($"Query returned <{result.Length}> results");
+                return Task.FromResult<ILockQueryResult>(querySearchCriteria.Pagination.HasValue ? new LockQueryResult(result, querySearchCriteria.Pagination.Value.PageSize, total) : new LockQueryResult(result));
             }
         }
         /// <inheritdoc/>
@@ -359,23 +358,27 @@ namespace Sels.DistributedLocking.Memory
                 var memoryLock = GetLockOrSet(resource);
                 lock (memoryLock)
                 {
+                    var wasUnlocked = false;
                     // Check if lock is being held
                     if (!ValidateLock(requester, memoryLock))
                     {
                         _logger.Warning($"Lock <{memoryLock.Resource}> is not held anymore by <{requester}>. Can't unlock");
-                        return false;
+                        wasUnlocked = false;
+                    }
+                    else
+                    {
+                        // Release the lock
+                        memoryLock.LockedBy = null;
+                        memoryLock.LockedAt = null;
+                        memoryLock.ExpiryDate = null;
+
+                        _logger.Log($"Lock <{resource}> was unlocked by <{requester}>");
+                        wasUnlocked = true;
                     }
 
-                    // Release the lock
-                    memoryLock.LockedBy = null;
-                    memoryLock.LockedAt = null;
-                    memoryLock.ExpiryDate = null;
-
                     TryAssignPendingRequest(resource);
-
-                    _logger.Log($"Lock <{resource}> was unlocked by <{requester}>");
                     
-                    return true;
+                    return wasUnlocked;
                 }
             }
         }
@@ -395,6 +398,8 @@ namespace Sels.DistributedLocking.Memory
 
                 lock (memoryLock)
                 {
+                    if (!memoryLock.CanbeLocked()) return false;
+
                     var currentHolder = memoryLock.LockedBy;
                     var currentExpiryDate = memoryLock.ExpiryDate;
                     var currentLastLockDate = memoryLock.LastLockDate;
@@ -456,13 +461,6 @@ namespace Sels.DistributedLocking.Memory
                     if (TryAssignPendingRequest(resource))
                     {
                         _logger.Log($"Request was assigned to expired lock on resource <{resource}>");
-                    }
-                    else
-                    {
-                        _logger.Log($"No pending requests for expired lock on resource <{resource}>. Resetting lock");
-                        @lock.LockedBy = null;
-                        @lock.LockedAt = null;
-                        @lock.ExpiryDate = null;
                     }
                 }               
             }
@@ -692,617 +690,5 @@ namespace Sels.DistributedLocking.Memory
                 if (exceptions.HasValue()) throw new AggregateException(exceptions); 
             }
         }
-
-        #region Classes
-        /// <summary>
-        /// Represents a lock placed on a resource in memory.
-        /// </summary>
-        private class MemoryLock : MemoryLockInfo, ILock
-        {
-            // Fields
-            private readonly object _threadLock = new object();
-            private readonly MemoryLockingProvider _provider;
-            private bool _unlockCalled = false;
-            private CancellationTokenSource _cancellationTokenSource;
-            private Task _expiryTask;
-            private bool _keepAlive;
-            private TimeSpan _extendTime;
-            private ILogger _logger;
-
-            // Properties
-
-            /// <inheritdoc cref="MemoryLock"/>
-            /// <param name="provider">The provider creating the lock</param>
-            /// <param name="memoryLock">Information about the lock being placed</param>
-            /// <param name="keepAlive">If the lock needs to be kept alive when an expiry date is set</param>
-            /// <param name="extendTime">By how much time to extend the expiry date when <paramref name="keepAlive"/> is enabled</param>
-            /// <param name="logger">Optional logger for tracing</param>
-            public MemoryLock(MemoryLockingProvider provider, MemoryLockInfo memoryLock, bool keepAlive, TimeSpan extendTime, ILogger logger) : base(memoryLock?.Resource)
-            {
-                _provider = provider;
-                _keepAlive = keepAlive;
-                _extendTime = extendTime;
-                _logger = logger;
-
-                // Copy over properties
-                LockedBy = memoryLock.LockedBy;
-                LockedAt = memoryLock.LockedAt;
-                LastLockDate = memoryLock.LastLockDate;
-                ExpiryDate = memoryLock.ExpiryDate;
-
-                TryStartExpiryTask();
-            }
-
-            /// <inheritdoc/>
-            public Task<bool> HasLockAsync(CancellationToken token = default)
-            {
-                using (_logger.TraceMethod(this))
-                {
-                    return Task.FromResult(_provider.HasLock(Resource, LockedBy));
-                }
-            }
-            /// <inheritdoc/>
-            public async Task<bool> ExtendAsync(TimeSpan extendTime, CancellationToken token = default)
-            {
-                using (_logger.TraceMethod(this))
-                {
-                    // Stop keep expiry task if it's running
-                    if (_expiryTask != null)
-                    {
-                        try
-                        {
-                            _logger.Debug($"Expiry task is running for lock <{Resource}> held by <{LockedBy}>. Cancelling task before extending the expiry date");
-                            _cancellationTokenSource.Cancel();
-                            await _expiryTask.ConfigureAwait(false);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            _expiryTask = null;
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.Warning($"Could not properly stop expiry task for lock <{Resource}> held by <{LockedBy}>", ex);
-                            _expiryTask = null;
-                        }
-                    }
-
-                    lock (_threadLock)
-                    {
-                        if(_provider.TryExtend(Resource, LockedBy, extendTime, out var memoryLock))
-                        {
-                            ExpiryDate = memoryLock.ExpiryDate;
-                            TryStartExpiryTask();
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            /// <inheritdoc/>
-            public async Task<bool> UnlockAsync(CancellationToken token = default)
-            {
-                using (_logger.TraceMethod(this))
-                {
-                    _logger.Log($"Releasing lock on resource <{Resource}> held by <{LockedBy}>");
-
-                    // Stop keep expiry task if it's running
-                    if (_expiryTask != null)
-                    {
-                        try
-                        {
-                            _logger.Debug($"Expiry task is running for lock <{Resource}> held by <{LockedBy}>. Cancelling task before releasing the lock");
-                            _cancellationTokenSource.Cancel();
-                            await _expiryTask.ConfigureAwait(false);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            _expiryTask = null;
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.Warning($"Could not properly stop expiry task for lock <{Resource}> held by <{LockedBy}>", ex);
-                            _expiryTask = null;
-                        }
-                    }
-
-                    _unlockCalled = true;
-                    // Try unlock
-                    if (_provider.Unlock(Resource, LockedBy))
-                    {
-                        _logger.Log($"Released lock on resource <{Resource}> held by <{LockedBy}>");
-                        return true;
-                    }
-                    else
-                    {
-                        _logger.Warning($"Could not release lock <{Resource}> supposed to be held by <{LockedBy}>. Lock is probably stale");
-                        return true;
-                    }          
-                }
-            }
-
-            private void TryStartExpiryTask()
-            {
-                using (_logger.TraceMethod(this))
-                {
-                    lock (_threadLock)
-                    {
-                        if (!ExpiryDate.HasValue) {
-                            _logger.Debug($"No expiry set on lock <{Resource}> held by <{LockedBy}> so no need to start expiry task");
-                            return;
-                        }
-
-                        _cancellationTokenSource = _cancellationTokenSource == null ? new CancellationTokenSource() : _cancellationTokenSource;
-                        if (_keepAlive)
-                        {
-                            _logger.Debug($"Keep alive is enabled on lock <{Resource}> held by <{LockedBy}> with an expiry date set at <{ExpiryDate}>. Starting extend task");
-
-                            _expiryTask = ExtendLockDuringLifetime(_cancellationTokenSource.Token);
-                        }
-                        else
-                        {
-                            _logger.Debug($"Keep alive is disabled on lock <{Resource}> held by <{LockedBy}> with an expiry date set at <{ExpiryDate}>. Starting expiry notifier task");
-                            _expiryTask = NotifyExpiryDateExceeded(_cancellationTokenSource.Token);
-                        }
-                    }                   
-                }
-            }
-
-            private async Task ExtendLockDuringLifetime(CancellationToken token)
-            {
-                using (_logger.TraceMethod(this))
-                {
-                    try
-                    {
-                        while (!token.IsCancellationRequested)
-                        {
-                            if (!ExpiryDate.HasValue)
-                            {
-                                _logger.Warning($"Keep alive task for lock <{Resource}> held by <{LockedBy}> is running but no expiry date is set. Stopping task");
-                                return;
-                            }
-
-                            // Sleep until we can extend the lock
-                            var sleepTime = (ExpiryDate.Value - LockedAt.Value).TotalMilliseconds.ChangeType<int>() - _provider.OptionsMonitor.CurrentValue.ExpiryOffset;
-                            _logger.Debug($"Extending expiry date for lock <{Resource}> held by <{LockedBy}> in <{sleepTime}ms> before it expires at <{ExpiryDate.Value}>");
-                            await Helper.Async.Sleep(sleepTime, token).ConfigureAwait(false);
-                            if (token.IsCancellationRequested) return;
-
-                            // Extend lock
-                            _logger.Debug($"Extending expiry date for lock <{Resource}> held by <{LockedBy}> by <{_extendTime}>");
-                            if (_provider.TryExtend(Resource, LockedBy, _extendTime, out var memoryLock))
-                            {
-                                ExpiryDate = memoryLock.ExpiryDate;
-                                _logger.Debug($"New expiry date for lock <{Resource}> held by <{LockedBy}> is <{ExpiryDate}>");
-                            }
-                            else
-                            {
-                                _logger.Warning($"Keep alive task on lock <{Resource}> supposed to be held by <{LockedBy}> could not extend expiry date. Lock is probably stale. Stopping");
-                                return;
-                            }
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        _logger.Warning($"Something when wrong while trying to extend the expiry for lock <{Resource}> held by <{LockedBy}>. Starting notify task", ex);
-                        _expiryTask = NotifyExpiryDateExceeded(token);
-                    }                   
-                }
-            }
-
-            private async Task NotifyExpiryDateExceeded(CancellationToken token)
-            {
-                using (_logger.TraceMethod(this))
-                {
-                    var sleepTime = (ExpiryDate.Value - DateTime.Now.AddMilliseconds(_provider.OptionsMonitor.CurrentValue.ExpiryOffset));
-                    _logger.Debug($"Notifying provider in <{sleepTime.TotalMilliseconds}ms> that lock <{Resource}> held by <{LockedBy}> expired");
-                    await Helper.Async.Sleep(sleepTime.TotalMilliseconds.ChangeType<int>(), token).ConfigureAwait(false);
-                    if(token.IsCancellationRequested) return;
-                    if (!await HasLockAsync(token).ConfigureAwait(false)) return;
-                    _provider.OnLockExpired(Resource);
-                }
-            }
-
-            /// <inheritdoc/>
-            public async ValueTask DisposeAsync()
-            {
-                using (_logger.TraceMethod(this))
-                {
-                    _logger.Log($"Disposing lock <{Resource}> held by <{LockedBy}>");
-                    // Stop expiry task
-                    _cancellationTokenSource?.Cancel();
-
-                    try
-                    {
-                        if (_expiryTask != null) await _expiryTask;
-                    }
-                    catch(Exception ex)
-                    {
-                        _logger.Log($"Error occured while trying to stop expiry task", ex);
-                    }
-                    
-
-                    // Unlock lock
-                    try
-                    {
-                        if (!_unlockCalled)
-                        {
-                            await UnlockAsync().ConfigureAwait(false);
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        _logger.Log($"Error occured while unlocking task during dispose", ex);
-                        throw;
-                    }
-                    finally
-                    {
-                        _cancellationTokenSource?.Dispose();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Represents information about a lock in memory.
-        /// </summary>
-        private class MemoryLockInfo : ILockInfo
-        {
-            /// <inheritdoc cref="MemoryLockInfo"/>
-            /// <param name="resource">The resource the current lock info is being created for</param>
-            public MemoryLockInfo(string resource)
-            {
-                Resource = resource.ValidateArgument(nameof(resource));
-            }
-
-            /// <inheritdoc cref="MemoryLockInfo"/>
-            /// <param name="copy">The instance to copy state from</param>
-            public MemoryLockInfo(MemoryLockInfo copy)
-            {
-                copy.ValidateArgument(nameof(copy));
-                Resource = copy.Resource;
-                LockedBy = copy.LockedBy;
-                LockedAt = copy.LockedAt;
-                LastLockDate = copy.LastLockDate;
-                ExpiryDate = copy.ExpiryDate;
-                Requests = copy.Requests;
-            }
-
-            /// <inheritdoc/>
-            public string Resource { get; }
-            /// <inheritdoc/>
-            public string LockedBy { get; internal set; }
-            /// <inheritdoc/>
-            public DateTime? LockedAt { get; internal set; }
-            /// <inheritdoc/>
-            public DateTime? LastLockDate { get; internal set; }
-            /// <inheritdoc/>
-            public DateTime? ExpiryDate { get; internal set; }
-            /// <summary>
-            /// Pending locking requests for the current lock.
-            /// </summary>
-            public ConcurrentQueue<MemoryLockRequest> Requests { get; } = new ConcurrentQueue<MemoryLockRequest>();
-            /// <inheritdoc/>
-            public int PendingRequests => Requests.Count;
-        }
-
-        /// <summary>
-        /// Represents an in-memory request on a lock.
-        /// </summary>
-        private class MemoryLockRequest : ILockRequest, IDisposable
-        {
-            // Fields
-            private readonly object _threadLock = new object();
-            private readonly TaskCompletionSource<ILock> _taskSource = new TaskCompletionSource<ILock>();
-            private readonly CancellationTokenRegistration _cancellationTokenRegistration;
-            private readonly CancellationTokenSource _tokenSource;
-            private readonly Task _timeoutTask;
-
-            /// <inheritdoc cref="MemoryLockRequest"/>
-            /// <param name="requester">Who created the request</param>
-            /// <param name="memoryLock">The lock the request is placed on</param>
-            /// <param name="cancellationToken">The cancellation token provided by the caller of the request</param>
-            /// <param name="timeout">When the current request times out. When set to null the request never times out</param>
-            public MemoryLockRequest(string requester, MemoryLockInfo memoryLock, TimeSpan? timeout, CancellationToken cancellationToken)
-            {
-                Requester = requester.ValidateArgument(nameof(requester));
-                Resource = memoryLock.ValidateArgument(nameof(memoryLock)).Resource;
-                Timeout = timeout.HasValue ? DateTime.Now.Add(timeout.Value) : (DateTime?)null;
-
-                // Launch fire and forget task to time out the request
-                if (Timeout.HasValue)
-                {
-                    _tokenSource = new CancellationTokenSource();
-                    _timeoutTask = Task.Run(async () =>
-                    {
-                        var sleepTime = Timeout.Value - DateTime.Now;
-                        await Helper.Async.Sleep(sleepTime.TotalMilliseconds.ChangeType<int>(), _tokenSource.Token).ConfigureAwait(false);
-                        if (_tokenSource.Token.IsCancellationRequested) return;
-                        AbortRequest(new LockTimeoutException(requester, memoryLock, timeout.Value));
-                    });
-                }
-
-                // Add handler when cancellation token is cancelled so we can abort the caller task
-                _cancellationTokenRegistration = cancellationToken.Register(() =>
-                {
-                    // Cancel internal tasks
-                    _tokenSource?.Cancel();
-
-                    // Abort request
-                    AbortRequest(new TaskCanceledException());
-                });
-            }
-            /// <inheritdoc/>
-            public string Resource { get; }
-            /// <inheritdoc/>
-            public string Requester { get; }
-            /// <inheritdoc/>
-            public TimeSpan? ExpiryTime { get; internal set; }
-            /// <inheritdoc/>
-            public bool KeepAlive { get; internal set; }
-            /// <inheritdoc/>
-            public DateTime? Timeout { get; }
-            /// <inheritdoc/>
-            public DateTime CreatedAt { get; } = DateTime.Now;
-            /// <summary>
-            /// The task returned to caller when they request a lock. 
-            /// </summary>
-            public Task<ILock> CallbackTask => _taskSource.Task;
-            /// <summary>
-            /// Indicates that the current request has been completed.
-            /// </summary>
-            public bool IsCompleted => CallbackTask.IsCompleted;
-
-            /// <summary>
-            /// Assigns the lock to the caller of the request.
-            /// </summary>
-            /// <param name="memoryLock">The lock to assign</param>
-            /// <returns>True if the lock was assigned or false if the request was modified while calling this method</returns>
-            public bool AssignLock(MemoryLock memoryLock)
-            {
-                memoryLock.ValidateArgument(nameof(memoryLock));
-
-                lock (_threadLock)
-                {
-                    if (!IsCompleted)
-                    {
-                        _taskSource.SetResult(memoryLock);
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            /// <summary>
-            /// Aborts the current request.
-            /// </summary>
-            /// <param name="exception">Exception containing the reason why the request was cancelled</param>
-            /// <returns>True if the lock was assigned or false if the request was modified while calling this method</returns>
-            public bool AbortRequest(Exception exception)
-            {
-                exception.ValidateArgument(nameof(exception));
-
-                lock (_threadLock)
-                {
-                    if (!IsCompleted)
-                    {
-                        _taskSource.SetException(exception);
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            /// <inheritdoc/>
-            public async void Dispose()
-            {
-                Exception exception = null;
-                // Dispose registration to avoid leaks
-                _cancellationTokenRegistration.Dispose();
-
-                // Cancel internal tasks
-                if(_timeoutTask != null)
-                {
-                    try
-                    {
-                        _tokenSource.Cancel();
-                        await _timeoutTask.ConfigureAwait(false);
-                        _tokenSource.Dispose();
-                    }
-                    catch(Exception ex)
-                    {
-                        exception = ex;
-                    }
-                }
-
-                // Abort calling task if not happened already
-                AbortRequest(new ObjectDisposedException(nameof(MemoryLockRequest)));
-
-                if (exception != null) exception.Rethrow();
-            }
-        }
-
-        /// <summary>
-        /// Captures the search criteria from <see cref="ILockQueryCriteria"/>.
-        /// </summary>
-        private class MemoryQuerySearchCriteria : ILockQueryCriteria
-        {
-            // Fields
-            private Dictionary<string, List<Predicate<ILockInfo>>> _predicates;
-            private List<(Expression<Func<ILockInfo, object>> PropertyToSortBy, bool SortDescending)> _sortExpressions;
-
-            // Properties
-            private Dictionary<string, List<Predicate<ILockInfo>>> Predicates { 
-                get {
-                    if (_predicates == null) _predicates = new Dictionary<string, List<Predicate<ILockInfo>>>();
-                    return _predicates;
-                } 
-            }
-            private List<(Expression<Func<ILockInfo, object>> PropertyToSortBy, bool SortDescending)> SortExpressions
-            {
-                get
-                {
-                    if (_sortExpressions == null) _sortExpressions = new List<(Expression<Func<ILockInfo, object>> PropertyToSortBy, bool SortDescending)>();
-                    return _sortExpressions;
-                }
-            }
-            /// <summary>
-            /// The pagination to apply. Null if not required.
-            /// </summary>
-            public (int Page, int PageSize)? Pagination { get; private set; }
-
-            /// <inheritdoc cref="MemoryQuerySearchCriteria"/>
-            /// <param name="configurator">Delegate that configures this instance</param>
-            public MemoryQuerySearchCriteria(Action<ILockQueryCriteria> configurator)
-            {
-                configurator.ValidateArgument(nameof(configurator))(this);
-            }
-
-            /// <summary>
-            /// Applies all configured filters on <paramref name="locks"/>.
-            /// </summary>
-            /// <param name="locks">The enumerator to filter</param>
-            /// <returns><paramref name="locks"/> with filter applied</returns>
-            public IEnumerable<ILockInfo> ApplyFilter(IEnumerable<ILockInfo> locks)
-            {
-                locks.ValidateArgument(nameof(locks));
-
-                foreach (var @lock in locks)
-                {
-                    if (!_predicates.HasValue() || _predicates.All(x => x.Value.Any(v => v(@lock))))
-                    {
-                        yield return @lock;
-                    }
-                }
-            }
-
-            /// <summary>
-            /// Sorts <paramref name="locks"/> with any configured sorting rules.
-            /// </summary>
-            /// <param name="locks">The locks to sort</param>
-            /// <returns><paramref name="locks"/> sorted by any configured sorting rules</returns>
-            public IEnumerable<ILockInfo> ApplySorting(IEnumerable<ILockInfo> locks)
-            {
-                locks.ValidateArgument(nameof(locks));
-
-                if (_sortExpressions.HasValue())
-                {
-                    IOrderedEnumerable<ILockInfo> current = null;
-
-                    foreach(var (expression, sortDescending) in _sortExpressions)
-                    {
-                        if (current == null)
-                        {
-                            if (sortDescending)
-                            {
-                                current = locks.OrderByDescending(expression.Compile());
-                            }
-                            else
-                            {
-                                current = locks.OrderBy(expression.Compile());
-                            }
-                        }
-                        else
-                        {
-                            if (sortDescending)
-                            {
-                                current = current.ThenByDescending(expression.Compile());
-                            }
-                            else
-                            {
-                                current = current.ThenBy(expression.Compile());
-                            }
-                        }
-                    }
-
-                    return current;
-                }
-
-                return locks;
-            }
-
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.WithFilterOnLockedBy(string filter)
-            {
-                filter.ValidateArgument(nameof(filter));
-
-                if(filter == string.Empty) Predicates.AddValueToList(nameof(ILockInfo.LockedBy), x => x.LockedBy != null);
-                else Predicates.AddValueToList(nameof(ILockInfo.LockedBy), x => x.LockedBy != null && x.LockedBy.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
-                return this;
-            }
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.WithFilterOnResource(string filter)
-            {
-                filter.ValidateArgument(nameof(filter));
-
-                if (filter == string.Empty) Predicates.AddValueToList(nameof(ILockInfo.Resource), x => x.Resource != null);
-                else Predicates.AddValueToList(nameof(ILockInfo.Resource), x => x.Resource != null && x.Resource.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
-                return this;
-            }
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.WithLockedByEqualTo(string lockOwner)
-            {
-                if(lockOwner == null) Predicates.AddValueToList(nameof(ILockInfo.LockedBy), x => x.LockedBy == null);
-                else Predicates.AddValueToList(nameof(ILockInfo.LockedBy), x => x.LockedBy != null && x.LockedBy.Equals(lockOwner, StringComparison.OrdinalIgnoreCase));
-
-                return this;
-            }
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.WithPendingRequestsLargerThan(int amount)
-            {
-                amount.ValidateArgumentLargerOrEqual(nameof(amount), 0);
-                Predicates.AddValueToList(nameof(ILockInfo.PendingRequests), x => x.PendingRequests > amount);
-                return this;
-            }
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.WithOnlyExpired()
-            {
-                Predicates.AddValueToList(nameof(ILockInfo.ExpiryDate), x => x.ExpiryDate.HasValue && x.ExpiryDate.Value < DateTime.Now);
-                return this;
-            }
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.WithOnlyNotExpired()
-            {
-                Predicates.AddValueToList(nameof(ILockInfo.ExpiryDate), x => x.ExpiryDate.HasValue && x.ExpiryDate.Value >= DateTime.Now);
-                return this;
-            }
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.WithPagination(int page, int pageSize)
-            {
-                page.ValidateArgumentLarger(nameof(page), 0);
-                page.ValidateArgumentLarger(nameof(pageSize), 0);
-
-                Pagination = (page, pageSize);
-                return this;
-            }
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.WithPendingRequest()
-            {
-                // Always enabled
-                return this;
-            }
-
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.OrderByExpiryDate(bool sortDescending) => SortBy(x => x.ExpiryDate, sortDescending);
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.OrderByLastLockDate(bool sortDescending) => SortBy(x => x.LastLockDate, sortDescending);
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.OrderByLockedAt(bool sortDescending) => SortBy(x => x.LockedAt, sortDescending);
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.OrderByLockedBy(bool sortDescending) => SortBy(x => x.LockedBy, sortDescending);
-            /// <inheritdoc/>
-            ILockQueryCriteria ILockQueryCriteria.OrderByResource(bool sortDescending) => SortBy(x => x.Resource, sortDescending);
-
-            private ILockQueryCriteria SortBy(Expression<Func<ILockInfo, object>> sortExpression, bool sortDescending)
-            {
-                sortExpression.ValidateArgument(nameof(sortExpression));
-                SortExpressions.Add((sortExpression, sortDescending));
-                return this;
-            }
-        }
-        #endregion
     }
 }

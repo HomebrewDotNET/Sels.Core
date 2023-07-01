@@ -19,6 +19,7 @@ using Newtonsoft.Json.Linq;
 using Sels.Core.Process;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Extensions.Linq;
+using Sels.Core.Extensions.Object;
 
 namespace Sels.Core
 {
@@ -891,9 +892,9 @@ namespace Sels.Core
         }
         #endregion
 
-        #region Async
+        #region Task
         /// <summary>
-        /// Contains static helper methods when coding asynchronous.
+        /// Contains static helper methods when coding asynchronously.
         /// </summary>
         public static class Async
         {
@@ -958,7 +959,10 @@ namespace Sels.Core
                     // Run continuation to complete callback task
                     var completionTask = task.ContinueWith(x =>
                     {
-                        taskSource.SetResult(null);
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x); 
+                        }
                     }, cancellationSource.Token);
 
                     // Check if task is completed before starting the timeout task
@@ -974,12 +978,16 @@ namespace Sels.Core
                         await Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
                         if (cancellationSource.Token.IsCancellationRequested) return;
 
-                        taskSource.SetException(new TimeoutException());
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>")); 
+                        }
                     }, cancellationSource.Token);
 
 
                     // Wait for callback
                     await taskSource.Task.ConfigureAwait(false);
+                    return;
                 }
             }
 
@@ -1011,7 +1019,10 @@ namespace Sels.Core
                     // Run continuation to complete callback task
                     var completionTask = task.ContinueWith(x =>
                     {
-                        taskSource.SetResult(x.Result);
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x); 
+                        }
                     }, cancellationSource.Token);
 
                     // Check if task is completed before starting the timeout task
@@ -1026,12 +1037,155 @@ namespace Sels.Core
                         await Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
                         if (cancellationSource.Token.IsCancellationRequested) return;
 
-                        taskSource.SetException(new TimeoutException());
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>")); 
+                        }
                     }, cancellationSource.Token);
 
 
                     // Wait for callback
                     return await taskSource.Task.ConfigureAwait(false);
+                }
+            }
+        }
+        /// <summary>
+        /// Contains static helper methods when coding with tasks synchronously.
+        /// </summary>
+        public static class Sync
+        {
+            /// <summary>
+            /// Waits for the completion of <paramref name="task"/> for a maximum of <paramref name="maxWaitTime"/>.
+            /// </summary>
+            /// <param name="task">The task to wait on</param>
+            /// <param name="maxWaitTime">How long to wait for <paramref name="task"/> to complete</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <returns>Task that gets completed when either <paramref name="task"/> finishes within <paramref name="maxWaitTime"/>, when execution exceeds <paramref name="maxWaitTime"/> or when <paramref name="token"/> gets cancelled</returns>
+            /// <exception cref="TaskCanceledException"></exception>
+            /// <exception cref="TimeoutException"></exception>
+            public static void WaitOn(Task task, TimeSpan maxWaitTime, CancellationToken token = default)
+            {
+                const double maxSleepTimeMs = 250;
+                _ = task.ValidateArgument(nameof(task));
+
+                // No need to wait here
+                if (maxWaitTime == TimeSpan.Zero)
+                {
+                    task.GetAwaiter().GetResult();
+                    return;
+                }
+
+                var taskSource = new TaskCompletionSource<object>();
+                var cancellationSource = new CancellationTokenSource();
+
+                // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
+                using (token.Register(() => cancellationSource.Cancel()))
+                {
+                    // Run continuation to complete callback task
+                    var completionTask = task.ContinueWith(x =>
+                    {
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x);
+                        }
+                    }, cancellationSource.Token);
+
+                    // Check if task is completed before starting the timeout task
+                    if (task.IsCompleted)
+                    {
+                        task.GetAwaiter().GetResult();
+                        return;
+                    }
+
+                    // Start task to cancel our callback task
+                    var timeoutTask = Task.Run(async () =>
+                    {
+                        await Helper.Async.Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
+                        if (cancellationSource.Token.IsCancellationRequested) return;
+
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>"));
+                        }
+                    }, cancellationSource.Token);
+
+
+                    // Wait for callback
+                    var sleepTime = TimeSpan.FromTicks(maxWaitTime.Ticks / 4);
+                    if (sleepTime.TotalMilliseconds > maxSleepTimeMs) sleepTime = TimeSpan.FromMilliseconds(maxSleepTimeMs);
+                    while (!task.IsCompleted)
+                    {
+                        Thread.Sleep(sleepTime);
+                    }
+
+                    task.GetAwaiter().GetResult();
+                    return;
+                }
+            }
+
+            /// <summary>
+            /// Waits for the completion of <paramref name="task"/> for a maximum of <paramref name="maxWaitTime"/>.
+            /// </summary>
+            /// <param name="task">The task to wait on</param>
+            /// <param name="maxWaitTime">How long to wait for <paramref name="task"/> to complete</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <returns>Task that gets completed when either <paramref name="task"/> finishes within <paramref name="maxWaitTime"/>, when execution exceeds <paramref name="maxWaitTime"/> or when <paramref name="token"/> gets cancelled</returns>
+            /// <exception cref="TaskCanceledException"></exception>
+            /// <exception cref="TimeoutException"></exception>
+            public static T WaitOn<T>(Task<T> task, TimeSpan maxWaitTime, CancellationToken token = default)
+            {
+                const double maxSleepTimeMs = 250;
+                _ = task.ValidateArgument(nameof(task));
+
+                // No need to wait here
+                if (maxWaitTime == TimeSpan.Zero)
+                {
+                    return task.GetAwaiter().GetResult();
+                }
+
+                var taskSource = new TaskCompletionSource<T>();
+                var cancellationSource = new CancellationTokenSource();
+
+                // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
+                using (token.Register(() => cancellationSource.Cancel()))
+                {
+                    // Run continuation to complete callback task
+                    var completionTask = task.ContinueWith(x =>
+                    {
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x);
+                        }
+                    }, cancellationSource.Token);
+
+                    // Check if task is completed before starting the timeout task
+                    if (task.IsCompleted)
+                    {
+                        return task.GetAwaiter().GetResult();
+                    }
+
+                    // Start task to cancel our callback task
+                    var timeoutTask = Task.Run(async () =>
+                    {
+                        await Helper.Async.Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
+                        if (cancellationSource.Token.IsCancellationRequested) return;
+
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>"));
+                        }
+                    }, cancellationSource.Token);
+
+
+                    // Wait for callback
+                    var sleepTime = TimeSpan.FromTicks(maxWaitTime.Ticks / 4);
+                    if (sleepTime.TotalMilliseconds > maxSleepTimeMs) sleepTime = TimeSpan.FromMilliseconds(maxSleepTimeMs);
+                    while (!task.IsCompleted)
+                    {
+                        Thread.Sleep(sleepTime);
+                    }
+
+                    return task.GetAwaiter().GetResult();
                 }
             }
         }

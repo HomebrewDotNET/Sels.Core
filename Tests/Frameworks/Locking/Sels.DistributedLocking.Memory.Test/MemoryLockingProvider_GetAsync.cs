@@ -41,7 +41,6 @@ namespace Sels.DistributedLocking.Memory.Test
             var result = await provider.GetAsync("Resource");
 
             // Assert
-
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Resource, Is.EqualTo("Resource"));
             Assert.That(result.LockedBy, Is.Null);
