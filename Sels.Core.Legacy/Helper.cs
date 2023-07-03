@@ -20,6 +20,9 @@ using Sels.Core.Process;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Object;
+using Sels.Core.Components.Scope;
+using Sels.Core.Models;
+using Sels.Core.Components.Scope.Actions;
 
 namespace Sels.Core
 {
@@ -750,7 +753,19 @@ namespace Sels.Core
         /// </summary>
         public static class Random
         {
-            private static SystemRandom _random = new SystemRandom();
+            private static int _threadSeed = 0;
+            private static object _threadLock = new object();
+            private static ThreadLocal<SystemRandom> ThreadInstance => new ThreadLocal<SystemRandom>(() =>
+            {
+                lock(_threadLock)
+                {
+                    return new SystemRandom(++_threadSeed);
+                }
+            });
+            /// <summary>
+            /// The local random instance for the calling thread.
+            /// </summary>
+            public static SystemRandom Instance => ThreadInstance.Value;
 
             /// <summary>
             /// Returns a random int larger or equal to <paramref name="min"/> and smaller or equal to <paramref name="max"/>.
@@ -762,7 +777,7 @@ namespace Sels.Core
             {
                 max.ValidateArgumentLarger(nameof(max), min);
 
-                return _random.Next(min, max+1);
+                return Instance.Next(min, max+1);
             }
             /// <summary>
             /// Returns a random double larger or equal to <paramref name="min"/> and smaller or equal to <paramref name="max"/>.
@@ -774,7 +789,7 @@ namespace Sels.Core
             {
                 max.ValidateArgumentLarger(nameof(max), min);
 
-                return _random.NextDouble() * (max - min) + min;
+                return Instance.NextDouble() * (max - min) + min;
             }
         }
         #endregion
@@ -1221,6 +1236,27 @@ namespace Sels.Core
                     }
                 }
                 return false;
+            }
+        }
+        #endregion
+
+        #region Time
+        /// <summary>
+        /// Contains helper methods related to dates/time.
+        /// </summary>
+        public static class Time
+        {
+            /// <summary>
+            /// Captures the duration of the action executed within the scope. 
+            /// Disposing the returned object will stop the stopwatch and output the duration to <paramref name="duration"/>.
+            /// </summary>
+            /// <param name="duration">Object where the duration will be outputted to</param>
+            /// <returns>Disposable to define the scope to capture the duraction for</returns>
+            public static IDisposable CaptureDuration(out Ref<TimeSpan> duration)
+            {
+                duration = new Ref<TimeSpan>();
+
+                return new DurationAction(duration);
             }
         }
         #endregion

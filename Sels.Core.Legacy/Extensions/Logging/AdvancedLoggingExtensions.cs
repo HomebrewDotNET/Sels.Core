@@ -44,7 +44,7 @@ namespace Sels.Core.Extensions.Logging.Advanced
         /// <param name="loggers">Loggers to perform logging action with. If loggers is null nothing will be logged but no exceptions are thrown</param>
         public static void Warning(this IEnumerable<ILogger> loggers, string message, Exception exception, params object[] args)
         {
-            loggers.LogMessage(LogLevel.Warning, message, exception, args);
+            loggers.LogException(LogLevel.Warning, message, exception, args);
         }
         #endregion
 
@@ -240,7 +240,7 @@ namespace Sels.Core.Extensions.Logging.Advanced
         /// <param name="logger">Logger to perform logging action with. If logger is null nothing will be logged but no exceptions are thrown</param>
         public static void Warning(this ILogger logger, string message, Exception exception, params object[] args)
         {
-            logger.LogMessage(LogLevel.Warning, message, exception, args);
+            logger.LogException(LogLevel.Warning, message, exception, args);
         }
         #endregion
 

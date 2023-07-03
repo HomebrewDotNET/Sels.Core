@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Sels.Core.Cli\Sels.Core.Cli.csproj" />
+    <ProjectReference Include="..\..\..\Sels.Core\Sels.Core.csproj" />
     <ProjectReference Include="..\Sels.DistributedLocking.Memory\Sels.DistributedLocking.Memory.csproj" />
     <ProjectReference Include="..\Sels.DistributedLocking.MySQL\Sels.DistributedLocking.MySQL.csproj" />
   </ItemGroup>

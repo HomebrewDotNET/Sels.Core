@@ -45,7 +45,7 @@ namespace Sels.DistributedLocking.SQL.Templates
         /// <summary>
         /// The compile options used to build queries.
         /// </summary>
-        protected ExpressionCompileOptions _queryOptions = ExpressionCompileOptions.Format | ExpressionCompileOptions.DateAsUtc;
+        protected ExpressionCompileOptions _queryOptions = ExpressionCompileOptions.DateAsUtc;
         /// <summary>
         /// The default format used to created named queries.
         /// </summary>
@@ -85,6 +85,10 @@ namespace Sels.DistributedLocking.SQL.Templates
             queryProvider.ValidateArgument(nameof(queryProvider));
             _queryProvider = new Lazy<ICachedSqlQueryProvider>(() => queryProvider.CreateSubCachedProvider(x => x.OnBuilderCreated(OnBuilderCreated).WithExpressionCompileOptions(_queryOptions)), true);
             _queryNameFormat = $"{GetType().GetDisplayName()}.{{0}}";
+
+#if DEBUG
+            _queryOptions &= ExpressionCompileOptions.Format;
+#endif
 
             _logger = logger;
         }

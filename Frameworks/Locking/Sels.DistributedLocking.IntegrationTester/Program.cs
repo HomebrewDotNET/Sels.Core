@@ -16,6 +16,7 @@ using Sels.Core.Components.Scope;
 using System.Diagnostics;
 using Sels.DistributedLocking.IntegrationTester.Tests;
 using Sels.Core.Cli;
+using Sels.Core.Models;
 
 static IEnumerable<(TestProvider, ISetupProvider)> GetProviders(IServiceProvider serviceProvider, TestProvider testProviders)
 {
@@ -27,7 +28,7 @@ static IEnumerable<(TestProvider, ISetupProvider)> GetProviders(IServiceProvider
 static IEnumerable<(TestType, ITester)> GetTesters(IServiceProvider serviceProvider, TestType types)
 {
     if (types.HasFlag(TestType.Functional)) yield return (TestType.Functional, serviceProvider.GetRequiredService<AssertionTester>());    
-    //if (types.HasFlag(TestType.Concurrency)) yield return (TestType.Concurrency, serviceProvider.GetRequiredService<MySqlSetupProvider>());
+    if (types.HasFlag(TestType.Concurrency)) yield return (TestType.Concurrency, serviceProvider.GetRequiredService<ConcurrencyTester>());
     //if (types.HasFlag(TestType.Benchmark)) yield return (TestType.Benchmark, serviceProvider.GetRequiredService<MariaDbSetupProvider>());
 }
 
@@ -58,22 +59,29 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                    s.AddSingleton(s);
 
                    // Setup logging
-                   if (!a.Quiet)
+                   s.AddLogging(x =>
                    {
-                       s.AddLogging(x =>
+                       var logLevel = a.LogLevel;
+                       x.ClearProviders();
+                       x.AddConsole(c =>
                        {
-                           x.SetMinimumLevel(a.Debug ? LogLevel.Trace : a.Verbose ? LogLevel.Information : LogLevel.Warning)
-                           .AddConsole(c =>
-                           {
-                               c.LogToStandardErrorThreshold = LogLevel.Trace;
-                           })
-                           .AddSimpleConsole(c =>
-                           {
-                               //c.SingleLine = true;
-                           });
+                           c.LogToStandardErrorThreshold = LogLevel.Trace;
+                       })
+                       .AddSimpleConsole(c =>
+                       {
+                           c.SingleLine = true;
                        });
-                   }
-                   
+                       if (a.ExcludeProviderLogging)
+                       {
+                           x.SetMinimumLevel(LogLevel.None);
+                           x.AddFilter("Sels.DistributedLocking.IntegrationTester", logLevel);
+                       }
+                       else
+                       {
+                           x.SetMinimumLevel(logLevel);
+                       }
+                   });
+
                    // Providers
                    s.AddScoped<MemorySetupProvider>();
                    s.AddScoped<MySqlSetupProvider>();
@@ -85,6 +93,12 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                    s.AddValidationProfile<AssertionTesterOptionsValidationProfile, string>();
                    s.AddOptionProfileValidator<AssertionTesterOptions, AssertionTesterOptionsValidationProfile>();
                    s.BindOptionsFromConfig<AssertionTesterOptions>();
+
+                   s.AddScoped<ConcurrencyTester>();
+                   s.AddOptions<ConcurrencyTesterOptions>();
+                   s.AddValidationProfile<ConcurrencyTesterOptionsValidationProfile, string>();
+                   s.AddOptionProfileValidator<ConcurrencyTesterOptions, ConcurrencyTesterOptionsValidationProfile>();
+                   s.BindOptionsFromConfig<ConcurrencyTesterOptions>();
                })
                .Execute(async (p, a, t) =>
                {
@@ -97,56 +111,62 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                    List<Exception> exceptions = new List<Exception>();
                    var anyTestFailed = false;
 
-                   foreach (var (type, tester) in GetTesters(p, testType))
+                   Ref<TimeSpan> duration;
+                   using (Helper.Time.CaptureDuration(out duration))
                    {
-                       foreach (var (providerKey, testProvider) in GetProviders(p, provider))
+                       foreach (var (type, tester) in GetTesters(p, testType))
                        {
-                           t.ThrowIfCancellationRequested();
-                           try
+                           foreach (var (providerKey, testProvider) in GetProviders(p, provider))
                            {
-                               logger.Log($"Setting up provider <{providerKey}> for next test run");
-
-                               var providerServices = new ServiceCollection();
-                               foreach (var service in services)
-                               {
-                                   providerServices.Add(service);
-                               }
-                               AsyncWrapper<ILockingProvider> setupProvider = null;
+                               t.ThrowIfCancellationRequested();
                                try
                                {
-                                   setupProvider = (await testProvider.SetupProvider(providerServices, t)) ?? throw new InvalidOperationException($"Provider <{nameof(providerKey)}> did not return a locking provider");
-                               }
-                               catch (Exception ex)
-                               {
-                                   logger.Log($"Could not setup provider <{providerKey}>", ex);
-                                   exceptions.Add(ex);
-                                   continue;
-                               }
+                                   logger.Log($"Setting up provider <{providerKey}> for next test run");
 
-                               try
-                               {
-                                   await using (setupProvider)
+                                   var providerServices = new ServiceCollection();
+                                   foreach (var service in services)
                                    {
-                                       logger.Log($"Executing test <{testType}> for provider <{providerKey}>");
-                                       var success = await tester.RunTests(providerKey, setupProvider.Value, t);
-                                       if(!success) anyTestFailed = true;
+                                       providerServices.Add(service);
+                                   }
+                                   AsyncWrapper<ILockingProvider> setupProvider = null;
+                                   try
+                                   {
+                                       setupProvider = (await testProvider.SetupProvider(providerServices, t)) ?? throw new InvalidOperationException($"Provider <{nameof(providerKey)}> did not return a locking provider");
+                                   }
+                                   catch (Exception ex)
+                                   {
+                                       logger.Log($"Could not setup provider <{providerKey}>", ex);
+                                       exceptions.Add(ex);
+                                       continue;
+                                   }
+
+                                   try
+                                   {
+                                       await using (setupProvider)
+                                       {
+                                           logger.Log($"Executing test <{testType}> for provider <{providerKey}>");
+                                           var success = await tester.RunTests(providerKey, setupProvider.Value, t);
+                                           if (!success) anyTestFailed = true;
+                                       }
+                                   }
+                                   catch (Exception ex)
+                                   {
+                                       logger.Log($"Could not execute test <{testType}> for provider <{providerKey}>", ex);
+                                       exceptions.Add(ex);
                                    }
                                }
                                catch (Exception ex)
                                {
-                                   logger.Log($"Could not execute test <{testType}> for provider <{providerKey}>", ex);
+                                   logger.Log($"Unhandled error occured for tester <{type}> for provider <{providerKey}>", ex);
                                    exceptions.Add(ex);
                                }
                            }
-                           catch(Exception ex)
-                           {
-                               logger.Log($"Unhandled error occured for tester <{type}> for provider <{providerKey}>", ex);
-                               exceptions.Add(ex);
-                           }                           
                        }
                    }
 
-                   
+
+                   logger.Log($"Finished executing in <{duration.Value}>");
+
                    if (exceptions.HasValue()) throw new AggregateException(exceptions);
                    if (anyTestFailed) throw new CommandLineException(2, "Not all tests executed successfully");
 

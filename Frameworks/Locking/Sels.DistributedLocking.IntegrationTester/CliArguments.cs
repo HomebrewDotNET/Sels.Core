@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Sels.Core.Extensions;
 using System;
@@ -30,20 +31,15 @@ namespace Sels.DistributedLocking.IntegrationTester
         [Option('c', Required = false)]
         public IEnumerable<string> ConfigDirectories { get; set; }
         /// <summary>
-        /// Log more about what the runner is doing.
+        /// Selects the log level for the tracing. Set to <see cref="LogLevel.None"/> to disable logging.
         /// </summary>
         [Option('v')]
-        public bool Verbose { get; set; }
+        public LogLevel LogLevel { get; set; } = LogLevel.None;
         /// <summary>
-        /// If warnings/errors shouldn't be logged.
+        /// If logging for the providers should be disabled.
         /// </summary>
-        [Option('q')]
-        public bool Quiet { get; set; }
-        /// <summary>
-        /// Logs more for debugging.
-        /// </summary>
-        [Option('d')]
-        public bool Debug { get; set; }
+        [Option('e')]
+        public bool ExcludeProviderLogging { get; set; }
 
         /// <summary>
         /// Takes settings from <paramref name="other"/> if they aren't set in the current builder.
@@ -55,9 +51,8 @@ namespace Sels.DistributedLocking.IntegrationTester
 
             Provider ??= other.Provider;
             Type ??= other.Type;
-            if (!Verbose) Verbose = other.Verbose;
-            if (!Debug) Debug = other.Debug;
-            if (!Quiet) Quiet = other.Quiet;
+            if (LogLevel == LogLevel.None) LogLevel = other.LogLevel;
+            if (!ExcludeProviderLogging) ExcludeProviderLogging = other.ExcludeProviderLogging;
         }
     }
 }
