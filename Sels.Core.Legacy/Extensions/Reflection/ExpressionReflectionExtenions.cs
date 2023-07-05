@@ -190,6 +190,10 @@ namespace Sels.Core.Extensions.Reflection
             {
                 return callExpression.Method;
             }
+            else if (expression is UnaryExpression unaryExpression)
+            {
+                return unaryExpression.Operand.ExtractMethodOrDefault();
+            }
 
             return null;
         }

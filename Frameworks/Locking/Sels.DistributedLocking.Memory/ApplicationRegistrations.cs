@@ -38,7 +38,10 @@ namespace Microsoft.Extensions.DependencyInjection
             if(configurator != null) services.Configure(configurator);
 
             // Add provider
-            services.TryAddSingleton<ILockingProvider, MemoryLockingProvider>();
+            services.New<ILockingProvider, MemoryLockingProvider>()
+                    .HandleDisposed()
+                    .AsSingleton()
+                    .TryRegister();
 
             return services;
         }

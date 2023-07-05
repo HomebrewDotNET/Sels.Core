@@ -104,8 +104,8 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
 
             // Get pending requests
             yield return (nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState), GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState);
-            yield return (nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectStateReturnsEmptyArrayWhenThereAreNoPendingRequests), GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectStateReturnsEmptyArrayWhenThereAreNoPendingRequests);
-            yield return (nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectStateReturnsEmptyArrayWhenNoLocksExistForTheResource), GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectStateReturnsEmptyArrayWhenNoLocksExistForTheResource);
+            yield return (nameof(GetPendingRequests_ReturnsEmptyArrayWhenThereAreNoPendingRequests), GetPendingRequests_ReturnsEmptyArrayWhenThereAreNoPendingRequests);
+            yield return (nameof(GetPendingRequests_ReturnsEmptyArrayWhenNoLocksExistForTheResource), GetPendingRequests_ReturnsEmptyArrayWhenNoLocksExistForTheResource);
 
             // Force unlock
             yield return (nameof(ForceUnlock_RemovesLock), ForceUnlock_RemovesLock);
@@ -553,23 +553,23 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             }
         }
 
-        private async Task GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectStateReturnsEmptyArrayWhenThereAreNoPendingRequests(ILockingProvider lockingProvider, CancellationToken token)
+        private async Task GetPendingRequests_ReturnsEmptyArrayWhenThereAreNoPendingRequests(ILockingProvider lockingProvider, CancellationToken token)
         {
             // Lock
-            _ = await lockingProvider.LockAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectStateReturnsEmptyArrayWhenThereAreNoPendingRequests), nameof(AssertionTester), token: token);
+            _ = await lockingProvider.LockAsync(nameof(GetPendingRequests_ReturnsEmptyArrayWhenThereAreNoPendingRequests), nameof(AssertionTester), token: token);
 
             // Get
-            var pendingRequests = await lockingProvider.GetPendingRequestsAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectStateReturnsEmptyArrayWhenThereAreNoPendingRequests), token: token);
+            var pendingRequests = await lockingProvider.GetPendingRequestsAsync(nameof(GetPendingRequests_ReturnsEmptyArrayWhenThereAreNoPendingRequests), token: token);
 
             // Assert
             Assert.IsNotNull(pendingRequests);
             Assert.That(pendingRequests.Length, Is.EqualTo(0));
         }
 
-        private async Task GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectStateReturnsEmptyArrayWhenNoLocksExistForTheResource(ILockingProvider lockingProvider, CancellationToken token)
+        private async Task GetPendingRequests_ReturnsEmptyArrayWhenNoLocksExistForTheResource(ILockingProvider lockingProvider, CancellationToken token)
         {
             // Get
-            var pendingRequests = await lockingProvider.GetPendingRequestsAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectStateReturnsEmptyArrayWhenNoLocksExistForTheResource), token: token);
+            var pendingRequests = await lockingProvider.GetPendingRequestsAsync(nameof(GetPendingRequests_ReturnsEmptyArrayWhenNoLocksExistForTheResource), token: token);
 
             // Assert
             Assert.IsNotNull(pendingRequests);

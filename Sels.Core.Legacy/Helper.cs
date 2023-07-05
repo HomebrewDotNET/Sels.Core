@@ -23,6 +23,7 @@ using Sels.Core.Extensions.Object;
 using Sels.Core.Components.Scope;
 using Sels.Core.Models;
 using Sels.Core.Components.Scope.Actions;
+using System.Linq.Expressions;
 
 namespace Sels.Core
 {
@@ -801,6 +802,48 @@ namespace Sels.Core
         public static class Expression
         {
             /// <summary>
+            /// Returns the method info extracted from <paramref name="methodExpression"/>
+            /// </summary>
+            /// <typeparam name="T">Type to select the method from</typeparam>
+            /// <param name="methodExpression">The expression that selects the method</param>
+            /// <returns>The MethodInfo in <paramref name="methodExpression"/></returns>
+            public static MethodInfo GetMethod<T>(Expression<Func<T, object>> methodExpression)
+            {
+                methodExpression.ValidateArgument(nameof(methodExpression));
+
+                if (!methodExpression.TryExtractMethod(out var method)) throw new InvalidOperationException($"{nameof(methodExpression)} does not point to a method");
+                return method;
+            }
+
+            /// <summary>
+            /// Returns the method info extracted from <paramref name="methodExpression"/>
+            /// </summary>
+            /// <typeparam name="T">Type to select the method from</typeparam>
+            /// <param name="methodExpression">The expression that selects the method</param>
+            /// <returns>The MethodInfo in <paramref name="methodExpression"/></returns>
+            public static MethodInfo GetMethod<T>(Expression<Action<T>> methodExpression)
+            {
+                methodExpression.ValidateArgument(nameof(methodExpression));
+
+                if (!methodExpression.TryExtractMethod(out var method)) throw new InvalidOperationException($"{nameof(methodExpression)} does not point to a method");
+                return method;
+            }
+
+            /// <summary>
+            /// Returns the method info extracted from <paramref name="propertyExpression"/>
+            /// </summary>
+            /// <typeparam name="T">Type to select the method from</typeparam>
+            /// <param name="propertyExpression">The expression that selects the method</param>
+            /// <returns>The MethodInfo in <paramref name="propertyExpression"/></returns>
+            public static PropertyInfo GetProperty<T>(Expression<Func<T, object>> propertyExpression)
+            {
+                propertyExpression.ValidateArgument(nameof(propertyExpression));
+
+                if (!propertyExpression.TryExtractProperty(out var property)) throw new InvalidOperationException($"{nameof(propertyExpression)} does not point to a property");
+                return property;
+            }
+
+            /// <summary>
             /// Static helper methods for working with expression resolving around properties.
             /// </summary>
             public static class Property
@@ -831,8 +874,6 @@ namespace Sels.Core
                         currentProperty = property;
                     }
                 }
-
-
             }
         }
         #endregion

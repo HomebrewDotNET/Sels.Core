@@ -53,6 +53,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+	  <ProjectReference Include="..\..\..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
 	  <ProjectReference Include="..\..\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
 	  <ProjectReference Include="..\Sels.DistributedLocking.Abstractions\Sels.DistributedLocking.Abstractions.csproj" />
 	</ItemGroup>

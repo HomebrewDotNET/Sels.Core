@@ -42,6 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // Add provider as self for interception
             services.New<SqlLockingProvider>()
                     .Trace(x => x.Duration.OfAll)
+                    .HandleDisposed()
                     .AsSingleton()
                     .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
                     .Register();

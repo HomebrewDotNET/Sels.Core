@@ -2,8 +2,10 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Conversion.Converters;
+using Sels.Core.Dispose;
 using Sels.Core.Extensions;
 using Sels.Core.ServiceBuilder;
+using Sels.Core.ServiceBuilder.Components.Interceptors;
 using Sels.Core.ServiceBuilder.Contracts.Interceptors.Caching;
 using Sels.Core.ServiceBuilder.Interceptors;
 using Sels.Core.ServiceBuilder.Interceptors.Caching;
@@ -123,6 +125,22 @@ namespace Microsoft.Extensions.DependencyInjection
             where T : class
         {
             return CacheDistributed<T, TImpl, UTF8Encoding>(builder, interceptorBuilder);
+        }
+        #endregion
+
+        #region Dispose
+        /// <summary>
+        /// Adds an interceptor that throws an <see cref="ObjectDisposedException"/> when the target is disposing/is disposed.
+        /// </summary>
+        /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
+        /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+        /// <param name="builder">Builder to add the interceptor to</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static IServiceBuilder<T, TImpl> HandleDisposed<T, TImpl>(this IServiceBuilder<T, TImpl> builder)
+            where TImpl : class, T, IDisposableState
+            where T : class
+        {
+            return builder.InterceptedBy(x => new DisposableInterceptor(x.GetService<ILogger<DisposableInterceptor>>()));
         }
         #endregion
     }
