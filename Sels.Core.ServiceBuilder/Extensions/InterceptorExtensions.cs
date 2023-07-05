@@ -22,14 +22,15 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         #region Tracing
         /// <summary>
-        /// Addds an interceptor for tracing method duration and / or exceptions.
+        /// Adds an interceptor for tracing method duration and / or exceptions.
         /// </summary>
         /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
         /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
+        /// <param name="useFactory">If a <see cref="ILoggerFactory"/> can be used to create a logger with the same category as the target instance, otherwise a <see cref="ILogger{TCategoryName}"/> will be used using the interceptor category</param>
         /// <returns>Current builder for method chaining</returns>
-        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, object> interceptorBuilder)
+        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, object> interceptorBuilder, bool useFactory = true)
             where TImpl : class, T
             where T : class
         {
@@ -38,32 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder.InterceptedBy(x =>
             {
-                var factory = x.GetService<ILoggerFactory>();
-                var interceptor = new TracingInterceptor(factory);
-                interceptorBuilder(interceptor);
-                return interceptor;
-            });
-        }
-
-        /// <summary>
-        /// Addds an interceptor for tracing method duration and / or exceptions.
-        /// </summary>
-        /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
-        /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
-        /// <param name="builder">Builder to add the interceptor to</param>
-        /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
-        /// <param name="loggers">The loggers to use for tracing</param>
-        /// <returns>Current builder for method chaining</returns>
-        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, object> interceptorBuilder, IEnumerable<ILogger> loggers)
-            where TImpl : class, T
-            where T : class
-        {
-            builder.ValidateArgument(nameof(builder));
-            interceptorBuilder.ValidateArgument(nameof(interceptorBuilder));
-
-            return builder.InterceptedBy(x =>
-            {
-                var interceptor = new TracingInterceptor(loggers);
+                var interceptor = useFactory ? new TracingInterceptor(x.GetService<ILoggerFactory>()) :  new TracingInterceptor(x.GetService<ILogger<TracingInterceptor>>());
                 interceptorBuilder(interceptor);
                 return interceptor;
             });

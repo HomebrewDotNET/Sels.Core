@@ -20,17 +20,17 @@ namespace Sels.Core.ServiceBuilder.Interceptors
     {
         // Fields
         private readonly ILoggerFactory _factory;
-        private readonly IEnumerable<ILogger> _loggers;
+        private readonly ILogger _logger;
 
         // State
         private MethodTracer _methodTracer;
         private ExceptionTracer _exceptionTracer;
 
         /// <inheritdoc cref="TracingInterceptor"/>
-        /// <param name="loggers">Static loggers to use for tracing</param>
-        public TracingInterceptor(IEnumerable<ILogger> loggers)
+        /// <param name="logger">Optional logger for tracing</param>
+        public TracingInterceptor(ILogger<TracingInterceptor> logger = null)
         {
-            _loggers = loggers != null ? loggers.Where(x => x != null) : null;
+            _logger = logger;
         }
 
         /// <inheritdoc cref="TracingInterceptor"/>
@@ -51,7 +51,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         /// <inheritdoc/>
         protected override async Task InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed)
         {
-            var loggers = GetLoggersFor(invocation);
+            var loggers = GetLoggerFor(invocation);
 
             try
             {
@@ -72,14 +72,14 @@ namespace Sels.Core.ServiceBuilder.Interceptors
  
         }
 
-        private IEnumerable<ILogger> GetLoggersFor(IInvocation invocation)
+        private ILogger GetLoggerFor(IInvocation invocation)
         {
             if (_factory != null)
             {
-                return _factory.CreateLogger(invocation.TargetType).AsEnumerable();
+                return _factory.CreateLogger(invocation.TargetType);
             }
 
-            return _loggers;
+            return _logger;
         }
 
         #region Helper classes
@@ -88,7 +88,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
             // Fields
             private List<Predicate<Exception>> _conditions = new List<Predicate<Exception>>();
             private Func<Exception, LogLevel?> _logLevelSelector;
-            private Action<IInvocation, IEnumerable<ILogger>, LogLevel, Exception> _logger;
+            private Action<IInvocation, ILogger, LogLevel, Exception> _logger;
 
             // Properties
             /// <inheritdoc/>
@@ -98,7 +98,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
             {
             }
 
-            public void Trace(IInvocation invocation, IEnumerable<ILogger> loggers, Exception exception)
+            public void Trace(IInvocation invocation, ILogger loggers, Exception exception)
             {
                 if (_conditions.Count == 0 || _conditions.Any(x => x(exception)))
                 {
@@ -108,7 +108,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
                 } 
             }
 
-            public IExceptionTracingInterceptorBuilder Using(Action<IInvocation, IEnumerable<ILogger>, LogLevel, Exception> logger)
+            public IExceptionTracingInterceptorBuilder Using(Action<IInvocation, ILogger, LogLevel, Exception> logger)
             {
                _logger = logger.ValidateArgument(nameof(logger));
                 return this;
