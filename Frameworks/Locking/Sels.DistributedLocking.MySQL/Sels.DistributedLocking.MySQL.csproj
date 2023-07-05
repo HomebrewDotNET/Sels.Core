@@ -48,11 +48,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="MySqlConnector" Version="2.2.6" />
+		<PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\Sels.Core.Data.FluentMigrationTool\Sels.Core.Data.FluentMigrationTool.csproj" />
 		<ProjectReference Include="..\..\..\Sels.Core.Data.MySQL\Sels.Core.Data.MySQL.csproj" />
+		<ProjectReference Include="..\..\..\Sels.Core.ServiceBuilder.Polly\Sels.Core.ServiceBuilder.Polly.csproj" />
 		<ProjectReference Include="..\..\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
 		<ProjectReference Include="..\Sels.DistributedLocking.SQL\Sels.DistributedLocking.SQL.csproj" />
 	</ItemGroup>

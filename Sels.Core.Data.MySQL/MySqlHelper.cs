@@ -77,7 +77,8 @@ namespace Sels.Core.Data.MySQL
                 /// <param name="loggers">Optional logger for tracing</param>
                 /// <param name="cancellationToken">Optional token to cancel the request</param>
                 /// <returns>Object that can be disposed to unlock the resource with name <paramref name="key"/></returns>
-                public async static Task<IAsyncDisposable> LockAsync(string connectionString, string key, string requester, int expireAfter = 30, IEnumerable<ILogger>? loggers = null, CancellationToken cancellationToken = default)
+                [Obsolete("Use Sels.DistributedLocking.MySQL package")]
+                public async static Task<IAsyncDisposable> LockAsync(string connectionString, string key, string requester, int expireAfter = 30, IEnumerable<ILogger> loggers = null, CancellationToken cancellationToken = default)
                 {
                     using (loggers.TraceMethod(typeof(Database), nameof(LockAsync)))
                     {

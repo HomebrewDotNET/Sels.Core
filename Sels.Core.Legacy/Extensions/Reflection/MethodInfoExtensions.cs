@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sels.Core.Extensions.Reflection
 {
@@ -126,6 +127,18 @@ namespace Sels.Core.Extensions.Reflection
             builder.Append(')');
 
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// Checks if <paramref name="method"/> can run async.
+        /// </summary>
+        /// <param name="method">The method to check</param>
+        /// <returns>True if <paramref name="method"/> can run async, otherwise false</returns>
+        public static bool CanRunAsync(this MethodInfo method)
+        {
+            method.ValidateArgument(nameof(method));
+
+            return method.ReturnType.IsAssignableTo<Task>() || method.ReturnType.IsAssignableTo<ValueTask>();
         }
     }
 }

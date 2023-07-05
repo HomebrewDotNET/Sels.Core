@@ -19,6 +19,12 @@ using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.MySQL;
 using Microsoft.Extensions.Caching.Memory;
 using Sels.SQL.QueryBuilder.Builder;
+using Polly;
+using MySqlConnector;
+using Polly.Contrib.WaitAndRetry;
+using Sels.Core.Data.MySQL.Extensions;
+using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -56,7 +62,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptionProfileValidator<SqlLockingProviderOptions, MySqlLockRepositoryDeploymentOptionsValidationProfile>();
 
             // Configure deployment options
-            if(registrationOptions.DeploymentConfigurator != null) services.Configure(registrationOptions.DeploymentConfigurator);
+            if (registrationOptions.DeploymentConfigurator != null) services.Configure(registrationOptions.DeploymentConfigurator);
 
             // Add Sql Locking provider
             services.AddSqlLockingProvider(registrationOptions.ProviderConfigurator, overwrite);
@@ -65,40 +71,57 @@ namespace Microsoft.Extensions.DependencyInjection
             // Add repository
             if (registrationOptions.UseMariaDbRepository)
             {
-                services.New<ISqlLockRepository, MariaDbLockRepository>()
-                        .ConstructWith(p =>
-                        {
-                            var connectionString = registrationOptions.ConnectionStringFactory(p);
-                            return new MariaDbLockRepository(connectionString,
-                                                            p.GetRequiredService<IOptions<MySqlLockRepositoryDeploymentOptions>>(),
-                                                            p.GetRequiredService<ICachedSqlQueryProvider>(),
-                                                            p.GetRequiredService<IMigrationToolFactory>(),
-                                                            p.GetService<ILogger<MariaDbLockRepository>>());
-                        })
-                        .Trace(x => x.Duration.OfAll)
-                        .AsSingleton()
-                        .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
-                        .Register();
+                services.RegisterRepository<MariaDbLockRepository>(p =>
+                {
+                    var connectionString = registrationOptions.ConnectionStringFactory(p);
+                    return new MariaDbLockRepository(connectionString,
+                                                    p.GetRequiredService<IOptions<MySqlLockRepositoryDeploymentOptions>>(),
+                                                    p.GetRequiredService<ICachedSqlQueryProvider>(),
+                                                    p.GetRequiredService<IMigrationToolFactory>(),
+                                                    p.GetService<ILogger<MariaDbLockRepository>>());
+                }, overwrite);
             }
             else
             {
-                services.New<ISqlLockRepository, MySqlLockRepository>()
-                        .ConstructWith(p =>
-                        {
-                            var connectionString = registrationOptions.ConnectionStringFactory(p);
-                            return new MySqlLockRepository(connectionString,
-                                                            p.GetRequiredService<IOptions<MySqlLockRepositoryDeploymentOptions>>(),
-                                                            p.GetRequiredService<ICachedSqlQueryProvider>(),
-                                                            p.GetRequiredService<IMigrationToolFactory>(),
-                                                            p.GetService<ILogger<MySqlLockRepository>>());
-                        })
-                        .Trace(x => x.Duration.OfAll)
-                        .AsSingleton()
-                        .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
-                        .Register();
+                services.RegisterRepository<MySqlLockRepository>(p =>
+                {
+                    var connectionString = registrationOptions.ConnectionStringFactory(p);
+                    return new MySqlLockRepository(connectionString,
+                                                    p.GetRequiredService<IOptions<MySqlLockRepositoryDeploymentOptions>>(),
+                                                    p.GetRequiredService<ICachedSqlQueryProvider>(),
+                                                    p.GetRequiredService<IMigrationToolFactory>(),
+                                                    p.GetService<ILogger<MySqlLockRepository>>());
+                }, overwrite);
             }
 
             return services;
+        }
+
+        private static void RegisterRepository<T>(this IServiceCollection services, Func<IServiceProvider, T> factory, bool overwrite = true) where T : class, ISqlLockRepository
+        {
+            const int maxRetryCount = 10;
+            services.ValidateArgument(nameof(services));
+
+            services.New<ISqlLockRepository, T>()
+                        .ConstructWith(factory)
+                        .Trace(x => x.Duration.OfAll)
+                        .ExecuteWithPolly((p, b) =>
+                        {
+                            var logger = p.GetService<ILogger<T>>();
+                            var displayName = typeof(T).GetDisplayName();
+                            var duplicateKeyPolicy = Policy.Handle<MySqlException>(x => x.ErrorCode == MySqlErrorCode.DuplicateKeyEntry)
+                               .WaitAndRetryForeverAsync(x => TimeSpan.FromMilliseconds(x),
+                                                        (e, r, t) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}>. Will retry forever. Running for <{t}>", e));
+                            var transientPolicy = Policy.Handle<MySqlException>(x => x.IsTransient)
+                                                       .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), maxRetryCount, fastFirst: true),
+                                                       (e, t, r, c) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}/{maxRetryCount}> Running for <{t}>", e));
+
+                            return b.ForAsync(x => x.TryAssignLockToAsync(default, default, default, default, default)).ExecuteWith(duplicateKeyPolicy)
+                                                .ForAllAsync.ExecuteWith(transientPolicy, 1);
+                        })
+                        .AsSingleton()
+                        .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
+                        .Register();
         }
 
         private class RegistrationOptions : IMySqlLockingProviderRegistrationOptions

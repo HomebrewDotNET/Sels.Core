@@ -71,7 +71,7 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                        {
                            c.SingleLine = true;
                        });
-                       if (a.ExcludeProviderLogging)
+                       if (a.OnlyTesterLogging)
                        {
                            x.SetMinimumLevel(LogLevel.None);
                            x.AddFilter("Sels.DistributedLocking.IntegrationTester", logLevel);

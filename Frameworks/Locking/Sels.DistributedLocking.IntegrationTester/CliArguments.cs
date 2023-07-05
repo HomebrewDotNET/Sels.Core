@@ -36,10 +36,10 @@ namespace Sels.DistributedLocking.IntegrationTester
         [Option('v')]
         public LogLevel LogLevel { get; set; } = LogLevel.None;
         /// <summary>
-        /// If logging for the providers should be disabled.
+        /// If only logging for the tester should be enabled.
         /// </summary>
-        [Option('e')]
-        public bool ExcludeProviderLogging { get; set; }
+        [Option('l')]
+        public bool OnlyTesterLogging { get; set; }
 
         /// <summary>
         /// Takes settings from <paramref name="other"/> if they aren't set in the current builder.
@@ -52,7 +52,7 @@ namespace Sels.DistributedLocking.IntegrationTester
             Provider ??= other.Provider;
             Type ??= other.Type;
             if (LogLevel == LogLevel.None) LogLevel = other.LogLevel;
-            if (!ExcludeProviderLogging) ExcludeProviderLogging = other.ExcludeProviderLogging;
+            if (!OnlyTesterLogging) OnlyTesterLogging = other.OnlyTesterLogging;
         }
     }
 }

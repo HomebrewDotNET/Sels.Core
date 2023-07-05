@@ -6,25 +6,23 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
-		<Product>Service builder Library</Product>
+		<Product>Service builder Polly interceptors</Product>
 		<Description>
-			For building services that can be injected as dependencies using the microsoft DI framework.
-			Fluent builder syntax and wrapper around Caste.Core interceptors.
+			Contains Castle.Core interceptors that use Polly to execute methods.
 			Used by projects maintained here: https://github.com/Jenssels1998
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 		<Copyright>Jens Sels</Copyright>
-		<PackageTags>Sels;FluentBuilder;DependencyInjection;Decorator;Interceptor;Tracing;Caching;Dispose</PackageTags>
+		<PackageTags>Sels;FluentBuilder;DependencyInjection;Decorator;Interceptor;Polly;AutomaticRetry;ExceptionHandler</PackageTags>
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 		<!--For NuGet package-->
-		<VersionPrefix>2.0.0</VersionPrefix>
+		<VersionPrefix>1.0.0</VersionPrefix>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
 		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
 		<DocumentationFile>bin/$(Configuration)/$(TargetFramework)/$(MSBuildProjectName).xml</DocumentationFile>
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 	</PropertyGroup>
-
 	<!--Exclude pdb files from release build-->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<DebugType>None</DebugType>
@@ -46,13 +44,11 @@
 	</Target>
 
 	<ItemGroup>
-		<PackageReference Include="Castle.Core.AsyncInterceptor" Version="2.1.0" />
-		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Polly" Version="7.2.4" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
+		<ProjectReference Include="..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
 	</ItemGroup>
-
 
 </Project>

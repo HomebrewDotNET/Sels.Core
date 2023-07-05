@@ -111,7 +111,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.FluentMigrat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.MySQL", "Frameworks\Locking\Sels.DistributedLocking.MySQL\Sels.DistributedLocking.MySQL.csproj", "{9D9F5453-F6C1-427B-86AC-A0FFE597CBD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sels.DistributedLocking.IntegrationTester", "Frameworks\Locking\Sels.DistributedLocking.IntegrationTester\Sels.DistributedLocking.IntegrationTester.csproj", "{9CC04183-427C-441B-8605-99BCBAAB8D3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.IntegrationTester", "Frameworks\Locking\Sels.DistributedLocking.IntegrationTester\Sels.DistributedLocking.IntegrationTester.csproj", "{9CC04183-427C-441B-8605-99BCBAAB8D3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sels.Core.ServiceBuilder.Polly", "Sels.Core.ServiceBuilder.Polly\Sels.Core.ServiceBuilder.Polly.csproj", "{E3059CBE-F226-4996-BEDA-9EE08CCF8A7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -279,6 +281,10 @@ Global
 		{9CC04183-427C-441B-8605-99BCBAAB8D3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CC04183-427C-441B-8605-99BCBAAB8D3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CC04183-427C-441B-8605-99BCBAAB8D3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3059CBE-F226-4996-BEDA-9EE08CCF8A7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3059CBE-F226-4996-BEDA-9EE08CCF8A7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3059CBE-F226-4996-BEDA-9EE08CCF8A7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3059CBE-F226-4996-BEDA-9EE08CCF8A7D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -331,6 +337,7 @@ Global
 		{3E672A33-9CCE-4354-A1E2-5E6C20C39BCE} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
 		{9D9F5453-F6C1-427B-86AC-A0FFE597CBD3} = {389A7C36-3F9E-4731-8342-8F9DDBCA2236}
 		{9CC04183-427C-441B-8605-99BCBAAB8D3D} = {389A7C36-3F9E-4731-8342-8F9DDBCA2236}
+		{E3059CBE-F226-4996-BEDA-9EE08CCF8A7D} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9510E55C-920C-4EDB-9F77-D83C4E047361}

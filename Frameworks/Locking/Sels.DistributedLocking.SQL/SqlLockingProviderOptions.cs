@@ -15,7 +15,7 @@ namespace Sels.DistributedLocking.SQL
 
         // Properties
         /// <summary>
-        /// The interval that will be used by <see cref="SqlLockingProvider"/> to database maintenance.
+        /// The interval that will be used by <see cref="SqlLockingProvider"/> to do database maintenance.
         /// </summary>
         public TimeSpan MaintenanceInterval { get; set; } = new TimeSpan(0, 15, 0);
         /// <summary>
