@@ -39,6 +39,10 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         /// How many workers will be used to test for concurrency.
         /// </summary>
         public int Workers { get; set; } = Environment.ProcessorCount * 2;
+        /// <summary>
+        /// Defines the ratio when running mixed tests. Used to determine to lock using TryLockAsync or LockAsync.
+        /// </summary>
+        public double TryLockToLockRatio { get; set; } = 0.75;
     }
     /// <summary>
     /// Contains the validation rules for <see cref="ConcurrencyTesterOptions"/>.
@@ -61,7 +65,10 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 .ForProperty(x => x.MinSleepTime)
                     .MustBeLargerOrEqualTo(0)
                 .ForProperty(x => x.CollisionDeviation)
-                    .MustBeLargerOrEqualTo(0);
+                    .MustBeLargerOrEqualTo(0)
+                .ForProperty(x => x.TryLockToLockRatio)
+                    .MustBeLargerOrEqualTo(0.01)
+                    .MustBeSmallerOrEqualTo(1.0);
         }
     }
 }
