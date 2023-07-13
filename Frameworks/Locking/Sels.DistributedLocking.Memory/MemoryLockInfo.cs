@@ -29,6 +29,7 @@ namespace Sels.DistributedLocking.Memory
             LastLockDate = copy.LastLockDate;
             ExpiryDate = copy.ExpiryDate;
             Requests = copy.Requests;
+            SyncRoot = copy.SyncRoot;
         }
 
         /// <inheritdoc/>
@@ -41,6 +42,10 @@ namespace Sels.DistributedLocking.Memory
         public DateTime? LastLockDate { get; internal set; }
         /// <inheritdoc/>
         public DateTime? ExpiryDate { get; internal set; }
+        /// <summary>
+        /// The object used to synchronize access to the lock.
+        /// </summary>
+        public object SyncRoot { get; } = new object();
         /// <summary>
         /// Pending locking requests for the current lock.
         /// </summary>

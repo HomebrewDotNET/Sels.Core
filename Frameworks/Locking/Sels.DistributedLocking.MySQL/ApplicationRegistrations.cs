@@ -113,7 +113,7 @@ namespace Microsoft.Extensions.DependencyInjection
                                .WaitAndRetryForeverAsync(x => TimeSpan.FromMilliseconds(x),
                                                         (e, r, t) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}>. Will retry forever. Running for <{t}>", e));
                             var transientPolicy = Policy.Handle<MySqlException>(x => x.IsTransient)
-                                                       .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromSeconds(1), maxRetryCount, fastFirst: true),
+                                                       .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromMilliseconds(100), maxRetryCount, fastFirst: true),
                                                        (e, t, r, c) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}/{maxRetryCount}> Running for <{t}>", e));
 
                             return b.ForAsync(x => x.TryAssignLockToAsync(default, default, default, default, default)).ExecuteWith(duplicateKeyPolicy)

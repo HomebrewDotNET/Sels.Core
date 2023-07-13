@@ -16,7 +16,6 @@ namespace Sels.DistributedLocking.Memory
     internal class MemoryLock : MemoryLockInfo, ILock
     {
         // Fields
-        private readonly object _threadLock = new object();
         private readonly MemoryLockingProvider _provider;
         private bool _unlockCalled = false;
         private CancellationTokenSource _cancellationTokenSource;
@@ -25,26 +24,18 @@ namespace Sels.DistributedLocking.Memory
         private TimeSpan _extendTime;
         private ILogger _logger;
 
-        // Properties
-
         /// <inheritdoc cref="MemoryLock"/>
         /// <param name="provider">The provider creating the lock</param>
         /// <param name="memoryLock">Information about the lock being placed</param>
         /// <param name="keepAlive">If the lock needs to be kept alive when an expiry date is set</param>
         /// <param name="extendTime">By how much time to extend the expiry date when <paramref name="keepAlive"/> is enabled</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public MemoryLock(MemoryLockingProvider provider, MemoryLockInfo memoryLock, bool keepAlive, TimeSpan extendTime, ILogger logger) : base(memoryLock?.Resource)
+        public MemoryLock(MemoryLockingProvider provider, MemoryLockInfo memoryLock, bool keepAlive, TimeSpan extendTime, ILogger logger) : base(memoryLock)
         {
             _provider = provider;
             _keepAlive = keepAlive;
             _extendTime = extendTime;
             _logger = logger;
-
-            // Copy over properties
-            LockedBy = memoryLock.LockedBy;
-            LockedAt = memoryLock.LockedAt;
-            LastLockDate = memoryLock.LastLockDate;
-            ExpiryDate = memoryLock.ExpiryDate;
 
             TryStartExpiryTask();
         }
@@ -82,7 +73,7 @@ namespace Sels.DistributedLocking.Memory
                     }
                 }
 
-                lock (_threadLock)
+                lock (SyncRoot)
                 {
                     if (_provider.TryExtend(Resource, LockedBy, extendTime, out var memoryLock))
                     {
@@ -144,7 +135,7 @@ namespace Sels.DistributedLocking.Memory
         {
             using (_logger.TraceMethod(this))
             {
-                lock (_threadLock)
+                lock (SyncRoot)
                 {
                     if (!ExpiryDate.HasValue)
                     {
@@ -227,36 +218,45 @@ namespace Sels.DistributedLocking.Memory
         {
             using (_logger.TraceMethod(this))
             {
-                _logger.Log($"Disposing lock <{Resource}> held by <{LockedBy}>");
-                // Stop expiry task
-                _cancellationTokenSource?.Cancel();
-
                 try
                 {
-                    if (_expiryTask != null) await _expiryTask;
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log($"Error occured while trying to stop expiry task", ex);
-                }
+                    _logger.Log($"Disposing lock <{Resource}> held by <{LockedBy}>");
+                    // Stop expiry task
+                    _cancellationTokenSource?.Cancel();
 
-
-                // Unlock lock
-                try
-                {
-                    if (!_unlockCalled)
+                    try
                     {
-                        await UnlockAsync().ConfigureAwait(false);
+                        _logger.Debug($"Waiting on expiry task to finish for lock <{Resource}> held by <{LockedBy}>");
+                        if (_expiryTask != null) await _expiryTask;
                     }
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log($"Error occured while unlocking task during dispose", ex);
-                    throw;
+                    catch (Exception ex)
+                    {
+                        _logger.Log($"Error occured while trying to stop expiry task", ex);
+                    }
+
+
+                    // Unlock lock
+                    try
+                    {
+                        if (!_unlockCalled)
+                        {
+                            _logger.Debug($"Unlocking <{Resource}> held by <{LockedBy}> in dispose");
+                            await UnlockAsync().ConfigureAwait(false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Log($"Error occured while unlocking task during dispose", ex);
+                        throw;
+                    }
+                    finally
+                    {
+                        _cancellationTokenSource?.Dispose();
+                    }
                 }
                 finally
                 {
-                    _cancellationTokenSource?.Dispose();
+                    _logger.Log($"Disposed lock <{Resource}> held by <{LockedBy}>");
                 }
             }
         }

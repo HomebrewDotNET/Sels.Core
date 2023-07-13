@@ -14,7 +14,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
     public class ConcurrencyTesterOptions
     {
         /// <summary>
-        /// How long each concurrency test runs for.
+        /// The maximum allowed run time for each test.
         /// </summary>
         public TimeSpan RunTime { get; set; } = TimeSpan.FromMinutes(1);
         /// <summary>

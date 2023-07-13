@@ -89,21 +89,33 @@ namespace Sels.DistributedLocking.Memory
                 resource.ValidateArgumentNotNullOrWhitespace(nameof(resource));
                 requester.ValidateArgumentNotNullOrWhitespace(nameof(requester));
 
+                return Task.FromResult(TryLock(resource, requester, expiryTime, keepAlive, token));
+            }
+        }
+
+        /// <inheritdoc/>
+        public virtual ILockResult TryLock(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, CancellationToken token = default)
+        {
+            using (_logger.TraceMethod(this))
+            {
+                resource.ValidateArgumentNotNullOrWhitespace(nameof(resource));
+                requester.ValidateArgumentNotNullOrWhitespace(nameof(requester));
+
                 _logger.Log($"Attempting to lock resource <{resource}> requested by <{requester}>");
 
-                var memoryLockInfo = GetLockOrSet(resource);
-                lock (memoryLockInfo)
+                var memoryLock = GetLockOrSet(resource);
+                lock (memoryLock.SyncRoot)
                 {
                     // Check if we can lock
                     var canLock = false;
-                    if(memoryLockInfo.LockedBy == null)
+                    if (memoryLock.LockedBy == null)
                     {
                         _logger.Debug($"Resource <{resource}> is not locked by anyone. Lock can be acquired by <{requester}>");
                         canLock = true;
                     }
-                    else if (memoryLockInfo.ExpiryDate.HasValue && memoryLockInfo.ExpiryDate.Value < DateTime.Now)
+                    else if (memoryLock.ExpiryDate.HasValue && memoryLock.ExpiryDate.Value < DateTime.Now)
                     {
-                        _logger.Debug($"Resource <{resource}> is currently held by <{memoryLockInfo.LockedBy}> but expired at <{memoryLockInfo.ExpiryDate}>. Lock will be transfered to <{requester}>");
+                        _logger.Debug($"Resource <{resource}> is currently held by <{memoryLock.LockedBy}> but expired at <{memoryLock.ExpiryDate}>. Lock will be transfered to <{requester}>");
                         canLock = true;
                     }
 
@@ -113,11 +125,11 @@ namespace Sels.DistributedLocking.Memory
                         _logger.Debug($"Checking if there are pending requests on resource <{resource}>");
                         if (TryAssignPendingRequest(resource))
                         {
-                            _logger.Log($"Resource was not locked but had pending requests. Lock is now assigned to <{memoryLockInfo.LockedBy}>");
-                            return Task.FromResult<ILockResult>(new LockResult(memoryLockInfo));
+                            _logger.Log($"Resource was not locked but had pending requests. Lock is now assigned to <{memoryLock.LockedBy}>");
+                            return new LockResult(memoryLock);
                         }
                     }
-                    else if (memoryLockInfo.LockedBy.Equals(requester, StringComparison.OrdinalIgnoreCase))
+                    else if (memoryLock.LockedBy.Equals(requester, StringComparison.OrdinalIgnoreCase))
                     {
                         _logger.Debug($"Resource <{resource}> is already locked by requester <{requester}>. Lock will be updated");
                         canLock = true;
@@ -126,20 +138,21 @@ namespace Sels.DistributedLocking.Memory
                     // Create lock
                     if (canLock)
                     {
-                        memoryLockInfo.LockedBy = requester;
-                        memoryLockInfo.ExpiryDate = expiryTime.HasValue ? DateTime.Now.Add(expiryTime.Value) : (DateTime?)null;
-                        memoryLockInfo.LastLockDate = DateTime.Now;
-                        memoryLockInfo.LockedAt = DateTime.Now;
+                        memoryLock.LockedBy = requester;
+                        memoryLock.ExpiryDate = expiryTime.HasValue ? DateTime.Now.Add(expiryTime.Value) : (DateTime?)null;
+                        memoryLock.LastLockDate = DateTime.Now;
+                        memoryLock.LockedAt = DateTime.Now;
                         _logger.Log($"Resource <{resource}> is now held by <{requester}>");
-                        var lockObject = new MemoryLock(this, memoryLockInfo, keepAlive, expiryTime ?? TimeSpan.Zero, _logger);
-                        return Task.FromResult<ILockResult>(new LockResult(lockObject));
+                        var lockObject = new MemoryLock(this, memoryLock, keepAlive, expiryTime ?? TimeSpan.Zero, _logger);
+                        return new LockResult(lockObject);
                     }
 
-                    _logger.Log($"Lock on resource <{resource}> could not be acquired by <{requester}>. Currently held by <{memoryLockInfo.LockedBy}>");
-                    return Task.FromResult<ILockResult>(new LockResult(memoryLockInfo));
+                    _logger.Log($"Lock on resource <{resource}> could not be acquired by <{requester}>. Currently held by <{memoryLock.LockedBy}>");
+                    return new LockResult(memoryLock);
                 }
             }
         }
+
         /// <inheritdoc/>
         public virtual Task<ILock> LockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, TimeSpan? timeout = null, CancellationToken token = default)
         {
@@ -150,16 +163,16 @@ namespace Sels.DistributedLocking.Memory
 
                 _logger.Log($"Waiting for resource <{resource}> to be locked by <{requester}>");
                 var memoryLock = GetLockOrSet(resource);
-                lock (memoryLock)
+                Task<ILock> lockTask = null;
+                lock (memoryLock.SyncRoot)
                 {
-                    var lockResult = TryLockAsync(resource, requester, expiryTime, keepAlive).Result;
-                    // Method will always run sync so we can just use .Result
+                    var lockResult = TryLock(resource, requester, expiryTime, keepAlive);
                     if (!lockResult.Success)
                     {
                         _logger.Log($"Resource <{resource}> is already locked. Creating lock request for <{requester}>");
 
                         // Create and store request
-                        var request = new MemoryLockRequest(requester, memoryLock, timeout, token)
+                        var request = new MemoryLockRequest(requester, memoryLock, timeout, _logger, token)
                         {
                             ExpiryTime = expiryTime,
                             KeepAlive = keepAlive
@@ -167,12 +180,15 @@ namespace Sels.DistributedLocking.Memory
                         memoryLock.Requests.Enqueue(request);
 
                         _logger.Log($"Lock request created for requester <{requester}> on resource <{resource}>");
-                        return request.CallbackTask;
+                        lockTask = request.CallbackTask;
                     }
-
-                    _logger.Log($"Resource <{resource}> was not locked and is now held by <{requester}>");
-                    return Task.FromResult(lockResult.AcquiredLock);
+                    else
+                    {
+                        _logger.Log($"Resource <{resource}> was not locked and is now held by <{requester}>");
+                        lockTask = Task.FromResult(lockResult.AcquiredLock);
+                    }
                 }
+                return lockTask;
             }
         }
         /// <inheritdoc/>
@@ -182,7 +198,7 @@ namespace Sels.DistributedLocking.Memory
             {
                 _logger.Log($"Returning lock on <{resource}>");
                 var memoryLock = GetLockOrSet(resource);
-                lock (memoryLock)
+                lock (memoryLock.SyncRoot)
                 {
                     return Task.FromResult(new MemoryLockInfo(memoryLock).CastTo<ILockInfo>());
                 }
@@ -198,7 +214,7 @@ namespace Sels.DistributedLocking.Memory
                 _logger.Log($"Returning pending requests on resource <{resource}>");
 
                 var memoryLock = GetLockOrSet(resource);
-                lock (memoryLock)
+                lock (memoryLock.SyncRoot)
                 {
                     return Task.FromResult(memoryLock.Requests.OrderBy(x => x.CreatedAt).Cast<ILockRequest>().ToArray());
                 }
@@ -237,9 +253,10 @@ namespace Sels.DistributedLocking.Memory
                 // Return result
                 var result = enumerator.Select(x =>
                 {
-                    lock (x)
+                    var memoryLock = x.CastTo<MemoryLockInfo>();
+                    lock (memoryLock.SyncRoot)
                     {
-                        return new MemoryLockInfo(x.CastTo<MemoryLockInfo>());
+                        return new MemoryLockInfo(memoryLock);
                     }
                 }).Cast<ILockInfo>().ToArray();
 
@@ -257,7 +274,7 @@ namespace Sels.DistributedLocking.Memory
                 _logger.Warning($"Forcefully unlocking resource <{resource}>");
 
                 var memoryLock = GetLockOrSet(resource);
-                lock (memoryLock)
+                lock (memoryLock.SyncRoot)
                 {
                     token.ThrowIfCancellationRequested();
                     // Remove any pending locks
@@ -297,7 +314,7 @@ namespace Sels.DistributedLocking.Memory
                 requester.ValidateArgumentNotNullOrWhitespace(nameof(requester));
 
                 var memoryLock = GetLockOrSet(resource);
-                lock (memoryLock)
+                lock (memoryLock.SyncRoot)
                 {
                     var hasLock = memoryLock.HasLock(requester);
                     _logger.Debug($"Lock <{resource}> is {(hasLock ? "locked" : "not locked")} by <{requester}>");
@@ -323,7 +340,7 @@ namespace Sels.DistributedLocking.Memory
                 _logger.Log($"Trying to extend expiry date on lock <{resource}> requested by <{requester}>");
                 var memoryLock = GetLockOrSet(resource);
                 lockInfo = memoryLock;
-                lock (memoryLock)
+                lock (memoryLock.SyncRoot)
                 {
                     // Check if lock is being held
                     if(!ValidateLock(requester, memoryLock))
@@ -355,28 +372,33 @@ namespace Sels.DistributedLocking.Memory
 
                 _logger.Log($"Trying to unlock resource <{resource}> requested by <{requester}>");
 
+                var wasUnlocked = false;
                 var memoryLock = GetLockOrSet(resource);
-                lock (memoryLock)
+                lock (memoryLock.SyncRoot)
                 {
-                    var wasUnlocked = false;
-                    // Check if lock is being held
-                    if (!ValidateLock(requester, memoryLock))
+                    try
                     {
-                        _logger.Warning($"Lock <{memoryLock.Resource}> is not held anymore by <{requester}>. Can't unlock");
-                        wasUnlocked = false;
+                        // Check if lock is being held
+                        if (!ValidateLock(requester, memoryLock))
+                        {
+                            _logger.Warning($"Lock <{memoryLock.Resource}> is not held anymore by <{requester}>. Can't unlock");
+                            wasUnlocked = false;
+                        }
+                        else
+                        {
+                            // Release the lock
+                            memoryLock.LockedBy = null;
+                            memoryLock.LockedAt = null;
+                            memoryLock.ExpiryDate = null;
+
+                            _logger.Log($"Lock <{resource}> was unlocked by <{requester}>");
+                            wasUnlocked = true;
+                        }
                     }
-                    else
+                    finally
                     {
-                        // Release the lock
-                        memoryLock.LockedBy = null;
-                        memoryLock.LockedAt = null;
-                        memoryLock.ExpiryDate = null;
-
-                        _logger.Log($"Lock <{resource}> was unlocked by <{requester}>");
-                        wasUnlocked = true;
+                        TryAssignPendingRequest(resource);
                     }
-
-                    TryAssignPendingRequest(resource);
                     
                     return wasUnlocked;
                 }
@@ -396,10 +418,14 @@ namespace Sels.DistributedLocking.Memory
                 var memoryLock = GetLockOrSet(resource);
                 var tasks = new List<Task>();
 
-                lock (memoryLock)
+                lock (memoryLock.SyncRoot)
                 {
-                    if (!memoryLock.CanbeLocked()) return false;
+                    if (!memoryLock.CanbeLocked()) {
+                        _logger.Debug($"Can't assign requests on resource <{resource}> because lock can't be locked");
+                        return false;
+                    }
 
+                    _logger.Debug($"Checking if there are pending lock requests on resource <{resource}> to assign");
                     var currentHolder = memoryLock.LockedBy;
                     var currentExpiryDate = memoryLock.ExpiryDate;
                     var currentLastLockDate = memoryLock.LastLockDate;
@@ -410,10 +436,13 @@ namespace Sels.DistributedLocking.Memory
                     {
                         using (request)
                         {
-                            // Skip finished requests
-                            if (request.IsCompleted) continue;
-
                             _logger.Debug($"Got pending lock request on resource <{resource}> requested by <{request.Requester}> created at <{request.CreatedAt}>");
+                            // Skip finished requests
+                            if (request.IsCompleted) {
+                                _logger.Warning($"Pending lock request on resource <{resource}> requested by <{request.Requester}> created at <{request.CreatedAt}> already completed. Skipping");
+                                continue;
+                            }
+
                             memoryLock.LockedBy = request.Requester;
                             memoryLock.ExpiryDate = request.ExpiryTime.HasValue ? DateTime.Now.Add(request.ExpiryTime.Value) : (DateTime?)null;
                             memoryLock.LastLockDate = DateTime.Now;
@@ -440,6 +469,7 @@ namespace Sels.DistributedLocking.Memory
                         }
                     }
                 }
+                _logger.Debug($"No pending lock requests assigned for resource <{resource}>");
                 return false;    
             }
         }
@@ -455,8 +485,8 @@ namespace Sels.DistributedLocking.Memory
                 resource.ValidateArgumentNotNullOrWhitespace(nameof(resource));
                 _logger.Log($"Lock on resource <{resource}> expired. Trying to assign request if any are pending");
 
-                var @lock = GetLockOrSet(resource);
-                lock (@lock)
+                var memoryLock = GetLockOrSet(resource);
+                lock (memoryLock.SyncRoot)
                 {
                     if (TryAssignPendingRequest(resource))
                     {
@@ -466,13 +496,22 @@ namespace Sels.DistributedLocking.Memory
             }
         }
 
-        private MemoryLockInfo GetLockOrSet(string resource)
+        private MemoryLockInfo GetLockOrSet(string resource, [CallerMemberName] string caller = null)
         {
             resource.ValidateArgumentNotNullOrWhitespace(nameof(resource));
 
+            _logger.Debug($"Trying to get lock info for resource <{resource}> for caller <{caller}>");
+
             lock (_locks)
             {
-                return _locks.TryGetOrSet(resource, () => new MemoryLockInfo(resource));
+                var lockInfo = _locks.TryGetOrSet(resource, () =>
+                {
+                    _logger.Debug($"Created new lock info for resource <{resource}> for caller <{caller}>");
+                    return new MemoryLockInfo(resource);
+                });
+
+                _logger.Debug($"Got lock info for resource <{lockInfo.Resource}> with <{lockInfo.PendingRequests}> pending requests for caller <{caller}>");
+                return lockInfo;
             }
         }
 
@@ -481,7 +520,7 @@ namespace Sels.DistributedLocking.Memory
             requester.ValidateArgumentNotNullOrWhitespace(nameof(requester));
             memoryLock.ValidateArgument(nameof(memoryLock));
 
-            lock (memoryLock)
+            lock (memoryLock.SyncRoot)
             {
                 var hasLock = HasLock(memoryLock.Resource, requester);
                 if (!hasLock && OptionsMonitor.CurrentValue.ThrowOnStaleLock)
@@ -584,7 +623,7 @@ namespace Sels.DistributedLocking.Memory
                                             return;
                                         }
 
-                                        var couldLock = Helper.Lock.TryLockAndExecute(@lock, () =>
+                                        var couldLock = Helper.Lock.TryLockAndExecute(@lock.SyncRoot, () =>
                                         {
                                             // Check if lock itself can be removed
                                             if (@lock.LockedBy != null || !canCleanupPredicate(@lock))
@@ -662,7 +701,7 @@ namespace Sels.DistributedLocking.Memory
                     {
                         foreach (var @lock in _locks.Values.Where(x => !x.Requests.IsEmpty))
                         {
-                            lock (@lock)
+                            lock (@lock.SyncRoot)
                             {
                                 foreach (var request in @lock.Requests)
                                 {
@@ -680,7 +719,6 @@ namespace Sels.DistributedLocking.Memory
                                         exceptions.Add(ex);
                                         _logger.Log($"Could not properly cancel locking request made by <{request.Requester}> on resource <{request.Resource}>", ex);
                                     }
-
                                 }
                             }
                         }

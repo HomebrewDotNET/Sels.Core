@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
 using Castle.Core.Resource;
 using System.Resources;
+using Sels.Core.Cli.ArgumentParsing;
 
 namespace Sels.DistributedLocking.IntegrationTester.Tests
 {
@@ -63,16 +64,20 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 }
             }
 
-            var resultBuilder = new StringBuilder();
-            resultBuilder.AppendLine($"Assertion results for {provider}:");
+            
+            Helper.Console.WriteLine(ConsoleColor.DarkGray, $"Assertion results for {provider}:");
             foreach (var (name, result) in _assertionResults)
             {
-                resultBuilder.Append('[').Append(result != null ? "X" : "V").Append(']').AppendSpace().Append(name);
-                if (result != null) resultBuilder.Append(':').AppendSpace().Append(result.GetType().Name).Append('(').Append(result.Message.GetWithoutNewLine()).AppendLine(")");
-                else resultBuilder.AppendLine();
+                var failed = result != null;
+                Helper.Console.Write(failed ? ConsoleColor.Red : ConsoleColor.Green, $"[{(failed ? "X" : "V")}] {name}");
+                if (failed)
+                {
+                    Helper.Console.Write(ConsoleColor.Red, ": ");
+                    Console.WriteLine($"{result.GetType().Name}({result.Message.GetWithoutNewLine()})");
+                }
+                else Console.WriteLine();
             }
-            Console.WriteLine(resultBuilder);
-
+            Console.WriteLine();
             return !_assertionResults.Any(x => x.Value != null);
         }
 

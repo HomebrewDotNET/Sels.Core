@@ -42,22 +42,31 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         public async Task<bool> RunTests(TestProvider provider, ILockingProvider lockingProvider, CancellationToken token)
         {
             _logger.Log($"Running concurrency tests");
-            List<LockResult> results = new List<LockResult>();
+            HashSet<LockResult> results = new HashSet<LockResult>();
+
+            Helper.Console.WriteLine(ConsoleColor.DarkGray, $"Concurrency settings:");
+            Console.WriteLine($"Workers: {_options.Workers}");
+            Console.WriteLine($"Max runtime: {_options.RunTime}");
+            Console.WriteLine($"Max allowed attempts per worker: {_options.MaximumAttempts}");
+            Console.WriteLine($"Sleep time after acquiring lock min/max: {_options.MinSleepTime}ms/{_options.MaxSleepTime}ms");
+            Console.WriteLine($"Collision deviation: {_options.CollisionDeviation}ms");
+            Console.WriteLine($"TryLock to Lock ratio: {_options.TryLockToLockRatio}");
+            Console.WriteLine();
 
             _logger.Log($"Executing concurrency test {TryLockType}");
             var lockResults = await RunTryLockTests(lockingProvider, token);
             PrintResults(provider, TryLockType, lockResults, token);
-            results.AddRange(lockResults);
+            results.IntersectWith(lockResults);
 
             _logger.Log($"Executing concurrency test {LockType}");
             lockResults = await RunLockTests(lockingProvider, token);
             PrintResults(provider, LockType, lockResults, token);
-            results.AddRange(lockResults);
+            results.IntersectWith(lockResults);
 
             _logger.Log($"Executing concurrency test {MixedType}");
             lockResults = await RunMixedTests(lockingProvider, token);
             PrintResults(provider, MixedType, lockResults, token);
-            results.AddRange(lockResults);
+            results.IntersectWith(lockResults);
 
             return !results.Any(x => x.Exception != null);
         }
@@ -67,20 +76,16 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             type.ValidateArgumentNotNullOrWhitespace(nameof(type));
             results.ValidateArgumentNotNullOrEmpty(nameof(results));
 
-            Console.WriteLine($"Concurrency test {type} result for {provider}:");
-            Console.WriteLine($"Max runtime: {_options.RunTime}");
-            Console.WriteLine($"Max allowed attempts per worker: {_options.MaximumAttempts}");
-            Console.WriteLine($"Workers: {_options.Workers}");
+            Helper.Console.WriteLine(ConsoleColor.DarkGray, $"Concurrency test {type} result for {provider}:");
             ThreadPool.GetMaxThreads(out int maxWorkers, out _);
             Console.WriteLine($"Thread pool current/maximum: {ThreadPool.ThreadCount}/{maxWorkers}");
-            Console.WriteLine($"Collision deviation: {_options.CollisionDeviation}ms");
             Console.WriteLine($"Lock attempts: {results.Count()}");
             Console.WriteLine($"Locks acquired: {results.Where(x => x.Acquired).Count()}");
             Console.WriteLine($"Assertions:");
             var errored = results.Where(x => x.Exception != null).ToArray();
             if (errored.HasValue())
             {
-                Console.WriteLine($"[X] {errored.Length} errors:");
+                Helper.Console.WriteLine(ConsoleColor.Red, $"[X] {errored.Length} errors:");
                 foreach (var error in errored)
                 {
                     Console.WriteLine($"({error.FinishedDate.Value.ToString("dd/MM/yyyy HH:mm:ss.fff")}) {error.WorkerId}: {error.Exception.Message.GetWithoutNewLine()}");
@@ -88,12 +93,12 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             }
             else
             {
-                Console.WriteLine("[V] No errors");
+                Helper.Console.WriteLine(ConsoleColor.Green, "[V] No errors");
             }
             var collisions = GetCollisionAmount(results, token);
             if (collisions.HasValue())
             {
-                Console.WriteLine($"[X] {collisions.Length} collisions detected:");
+                Helper.Console.WriteLine(ConsoleColor.Red, $"[X] {collisions.Length} collisions detected:");
                 foreach (var (Left, Right) in collisions)
                 {
                     Console.WriteLine($"Collision between {Left.WorkerId} and {Right.WorkerId} at timeframes ({Left.AcquiredDate.Value.ToString("dd/MM/yyyy HH:mm:ss.fff")}<->{Left.FinishedDate.Value.ToString("dd/MM/yyyy HH:mm:ss.fff")}) and ({Right.AcquiredDate.Value.ToString("dd/MM/yyyy HH:mm:ss.fff")}<->{Right.FinishedDate.Value.ToString("dd/MM/yyyy HH:mm:ss.fff")})");
@@ -101,16 +106,16 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             }
             else
             {
-                Console.WriteLine("[V] No collisions");
+                Helper.Console.WriteLine(ConsoleColor.Green, "[V] No collisions");
             }
             Console.WriteLine();
         }
 
-        private async Task<LockResult[]> RunTryLockTests(ILockingProvider lockingProvider, CancellationToken token)
+        private async Task<HashSet<LockResult>> RunTryLockTests(ILockingProvider lockingProvider, CancellationToken token)
         {
             const string resource = nameof(RunTryLockTests);
             CancellationTokenSource runTimeSource = new CancellationTokenSource();
-            List<Task<LockResult[]>> workerTasks = new List<Task<LockResult[]>>();
+            List<Task<HashSet<LockResult>>> workerTasks = new List<Task<HashSet<LockResult>>>();
 
             _logger.Log($"Testing the concurrency of TryLockAsync with <{_options.Workers}> workers for <{_options.RunTime}>");
 
@@ -118,7 +123,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             {
                 var workerTask = Task.Run(async () =>
                 {
-                    List<LockResult> results = new List<LockResult>();
+                    HashSet<LockResult> results = new HashSet<LockResult>();
                     _logger.Log($"{workerId} starting to test TryLockAsync");
 
                     while (!runTimeSource.IsCancellationRequested && results.Count < _options.MaximumAttempts)
@@ -131,7 +136,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                     }
 
                     _logger.Log($"{workerId} finished testing TryLockAsync. Locked for a total of <{results.Count}> times");
-                    return results.ToArray();
+                    return results;
                 }, token);
                 workerTasks.Add(workerTask);
             }
@@ -140,14 +145,14 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             runTimeSource.CancelAfter(_options.RunTime);
             _logger.Log($"Waiting for <{_options.Workers}> workers to run for <{_options.RunTime}>");
             var taskResults = await Task.WhenAll(workerTasks);
-            return taskResults.SelectMany(x => x).ToArray();
+            return taskResults.SelectMany(x => x).ToHashSet();
         }
 
-        private async Task<LockResult[]> RunLockTests(ILockingProvider lockingProvider, CancellationToken token)
+        private async Task<HashSet<LockResult>> RunLockTests(ILockingProvider lockingProvider, CancellationToken token)
         {
             const string resource = nameof(RunLockTests);
             CancellationTokenSource runTimeSource = new CancellationTokenSource();
-            List<Task<LockResult[]>> workerTasks = new List<Task<LockResult[]>>();
+            List<Task<HashSet<LockResult>>> workerTasks = new List<Task<HashSet<LockResult>>>();
 
             _logger.Log($"Testing the concurrency of LockAsync with <{_options.Workers}> workers for <{_options.RunTime}>");
 
@@ -155,7 +160,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             {
                 var workerTask = Task.Run(async () =>
                 {
-                    List<LockResult> results = new List<LockResult>();
+                    HashSet<LockResult> results = new HashSet<LockResult>();
                     _logger.Log($"{workerId} starting to test LockAsync");
 
                     while (!runTimeSource.IsCancellationRequested && results.Count < _options.MaximumAttempts)
@@ -168,7 +173,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                     }
 
                     _logger.Log($"{workerId} finished testing LockAsync. Locked for a total of <{results.Count}> times");
-                    return results.ToArray();
+                    return results;
                 }, token);
                 workerTasks.Add(workerTask);
             }
@@ -177,14 +182,14 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             runTimeSource.CancelAfter(_options.RunTime);
             _logger.Log($"Waiting for <{_options.Workers}> workers to run for <{_options.RunTime}>");
             var taskResults = await Task.WhenAll(workerTasks);
-            return taskResults.SelectMany(x => x).ToArray();
+            return taskResults.SelectMany(x => x).ToHashSet();
         }
 
-        private async Task<LockResult[]> RunMixedTests(ILockingProvider lockingProvider, CancellationToken token)
+        private async Task<HashSet<LockResult>> RunMixedTests(ILockingProvider lockingProvider, CancellationToken token)
         {
             const string resource = nameof(RunMixedTests);
             CancellationTokenSource runTimeSource = new CancellationTokenSource();
-            List<Task<LockResult[]>> workerTasks = new List<Task<LockResult[]>>();
+            List<Task<HashSet<LockResult>>> workerTasks = new List<Task<HashSet<LockResult>>>();
 
             _logger.Log($"Testing the concurrency of mixed TryLockAsync and LockAsync with <{_options.Workers}> workers for <{_options.RunTime}>");
 
@@ -192,7 +197,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             {
                 var workerTask = Task.Run(async () =>
                 {
-                    List<LockResult> results = new List<LockResult>();
+                    HashSet<LockResult> results = new HashSet<LockResult>();
                     _logger.Log($"{workerId} starting to test mixed TryLockAsync and LockAsync");
 
                     while (!runTimeSource.IsCancellationRequested && results.Count < _options.MaximumAttempts)
@@ -215,7 +220,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                     }
 
                     _logger.Log($"{workerId} finished testing LockAsync. Locked for a total of <{results.Count}> times");
-                    return results.ToArray();
+                    return results;
                 }, token);
                 workerTasks.Add(workerTask);
             }
@@ -224,7 +229,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             runTimeSource.CancelAfter(_options.RunTime);
             _logger.Log($"Waiting for <{_options.Workers}> workers to run for <{_options.RunTime}>");
             var taskResults = await Task.WhenAll(workerTasks);
-            return taskResults.SelectMany(x => x).ToArray();
+            return taskResults.SelectMany(x => x).ToHashSet();
         }
 
         private async Task<LockResult> ExecuteTryLock(string resource, string workerId, ILockingProvider lockingProvider, CancellationToken token)

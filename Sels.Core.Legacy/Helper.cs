@@ -740,6 +740,34 @@ namespace Sels.Core
                 WriteLine(foregroundColor, _defaultBackgroundColor, message);
             }
 
+            /// <summary>
+            /// Writes <paramref name="message"/> to the console using <paramref name="foregroundColor"/> as the text color and <paramref name="backgroundColor"/> as the background color.
+            /// </summary>
+            /// <param name="foregroundColor">The foreground color to use</param>
+            /// <param name="backgroundColor">The background color to use</param>
+            /// <param name="message">The message to write to the console</param>
+            public static void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string message)
+            {
+                lock (_threadlock)
+                {
+                    SystemConsole.ForegroundColor = foregroundColor;
+                    SystemConsole.BackgroundColor = backgroundColor;
+
+                    SystemConsole.Write(message);
+
+                    ResetColors();
+                }
+            }
+            /// <summary>
+            /// Writes <paramref name="message"/> to the console using <paramref name="foregroundColor"/> as the text color.
+            /// </summary>
+            /// <param name="foregroundColor">The foreground color to use</param>
+            /// <param name="message">The message to write to the console</param>
+            public static void Write(ConsoleColor foregroundColor, string message)
+            {
+                Write(foregroundColor, _defaultBackgroundColor, message);
+            }
+
             private static void ResetColors()
             {
                 SystemConsole.ForegroundColor = _defaultForegroundColor;
@@ -948,7 +976,7 @@ namespace Sels.Core
         }
         #endregion
 
-        #region Task
+        #region Async
         /// <summary>
         /// Contains static helper methods when coding asynchronously.
         /// </summary>
@@ -1006,12 +1034,17 @@ namespace Sels.Core
                     return;
                 }
 
-                var taskSource = new TaskCompletionSource<object>();
+                var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var cancellationSource = new CancellationTokenSource();
 
-                // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
-                using(token.Register(() => cancellationSource.Cancel()))
+                // Use caller token to cancel our token. This should make the task throw TaskCanceledException instead of the timeout
+                using(token.Register(() =>
                 {
+                    cancellationSource.Cancel();
+                    taskSource.SetCanceled();
+                }))
+                {
+                    if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
                     // Run continuation to complete callback task
                     var completionTask = task.ContinueWith(x =>
                     {
@@ -1066,12 +1099,16 @@ namespace Sels.Core
                     return await task.ConfigureAwait(false);
                 }
 
-                var taskSource = new TaskCompletionSource<T>();
+                var taskSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var cancellationSource = new CancellationTokenSource();
 
                 // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
-                using (token.Register(() => cancellationSource.Cancel()))
+                using (token.Register(() => {
+                    cancellationSource.Cancel();
+                    taskSource.SetCanceled();
+                }))
                 {
+                    if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
                     // Run continuation to complete callback task
                     var completionTask = task.ContinueWith(x =>
                     {
@@ -1135,8 +1172,10 @@ namespace Sels.Core
                 var cancellationSource = new CancellationTokenSource();
 
                 // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
-                using (token.Register(() => cancellationSource.Cancel()))
+                using (token.Register(() => { cancellationSource.Cancel(); taskSource.SetCanceled(); }))
                 {
+                    if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
+
                     // Run continuation to complete callback task
                     var completionTask = task.ContinueWith(x =>
                     {
@@ -1169,12 +1208,12 @@ namespace Sels.Core
                     // Wait for callback
                     var sleepTime = TimeSpan.FromTicks(maxWaitTime.Ticks / 4);
                     if (sleepTime.TotalMilliseconds > maxSleepTimeMs) sleepTime = TimeSpan.FromMilliseconds(maxSleepTimeMs);
-                    while (!task.IsCompleted)
+                    while (!taskSource.Task.IsCompleted)
                     {
                         Thread.Sleep(sleepTime);
                     }
 
-                    task.GetAwaiter().GetResult();
+                    taskSource.Task.GetAwaiter().GetResult();
                     return;
                 }
             }
@@ -1199,12 +1238,13 @@ namespace Sels.Core
                     return task.GetAwaiter().GetResult();
                 }
 
-                var taskSource = new TaskCompletionSource<T>();
+                var taskSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var cancellationSource = new CancellationTokenSource();
 
                 // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
-                using (token.Register(() => cancellationSource.Cancel()))
+                using (token.Register(() => { cancellationSource.Cancel(); taskSource.SetCanceled(); }))
                 {
+                    if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
                     // Run continuation to complete callback task
                     var completionTask = task.ContinueWith(x =>
                     {
@@ -1236,12 +1276,12 @@ namespace Sels.Core
                     // Wait for callback
                     var sleepTime = TimeSpan.FromTicks(maxWaitTime.Ticks / 4);
                     if (sleepTime.TotalMilliseconds > maxSleepTimeMs) sleepTime = TimeSpan.FromMilliseconds(maxSleepTimeMs);
-                    while (!task.IsCompleted)
+                    while (!taskSource.Task.IsCompleted)
                     {
                         Thread.Sleep(sleepTime);
                     }
 
-                    return task.GetAwaiter().GetResult();
+                    return taskSource.Task.GetAwaiter().GetResult();
                 }
             }
         }

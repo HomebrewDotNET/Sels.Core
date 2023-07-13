@@ -29,7 +29,7 @@ static IEnumerable<(TestType, ITester)> GetTesters(IServiceProvider serviceProvi
 {
     if (types.HasFlag(TestType.Functional)) yield return (TestType.Functional, serviceProvider.GetRequiredService<AssertionTester>());    
     if (types.HasFlag(TestType.Concurrency)) yield return (TestType.Concurrency, serviceProvider.GetRequiredService<ConcurrencyTester>());
-    //if (types.HasFlag(TestType.Benchmark)) yield return (TestType.Benchmark, serviceProvider.GetRequiredService<MariaDbSetupProvider>());
+    if (types.HasFlag(TestType.Benchmark)) yield return (TestType.Benchmark, serviceProvider.GetRequiredService<BenchmarkTester>());
 }
 
 var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
@@ -99,6 +99,12 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                    s.AddValidationProfile<ConcurrencyTesterOptionsValidationProfile, string>();
                    s.AddOptionProfileValidator<ConcurrencyTesterOptions, ConcurrencyTesterOptionsValidationProfile>();
                    s.BindOptionsFromConfig<ConcurrencyTesterOptions>();
+
+                   s.AddScoped<BenchmarkTester>();
+                   s.AddOptions<BenchmarkTesterOptions>();
+                   s.AddValidationProfile<BenchmarkTesterOptionsValidationProfile, string>();
+                   s.AddOptionProfileValidator<BenchmarkTesterOptions, BenchmarkTesterOptionsValidationProfile>();
+                   s.BindOptionsFromConfig<BenchmarkTesterOptions>();
                })
                .Execute(async (p, a, t) =>
                {

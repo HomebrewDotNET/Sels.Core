@@ -226,5 +226,52 @@ namespace Sels.Core.Extensions.Conversion
             return source.GroupAsDictionary(keySelector, x => x);
         }
         #endregion
+
+        #region DivideInto
+        /// <summary>
+        /// Divides <paramref name="source"/> into <paramref name="amount"/> lists.
+        /// </summary>
+        /// <typeparam name="T">The type of elements to divide</typeparam>
+        /// <param name="source">The elements to divide</param>
+        /// <param name="amount">How many lists to divide <paramref name="source"/> into</param>
+        /// <returns><paramref name="source"/> divided into lists</returns>
+        public static List<T>[] DivideInto<T>(this IEnumerable<T> source, int amount)
+        {
+            source.ValidateArgument(nameof(source));
+            amount.ValidateArgumentLargerOrEqual(nameof(amount), 1);
+
+            var divided = new Queue<List<T>>(Enumerable.Range(0, amount).Select(x => new List<T>()));
+
+            foreach(var element in source)
+            {
+                var smallest = divided.Dequeue();
+                smallest.Add(element);
+                divided.Enqueue(smallest);
+            }
+            return divided.ToArray();
+        }
+        /// <summary>
+        /// Divides <paramref name="source"/> into <paramref name="amount"/> hash sets.
+        /// </summary>
+        /// <typeparam name="T">The type of elements to divide</typeparam>
+        /// <param name="source">The elements to divide</param>
+        /// <param name="amount">How many hash sets to divide <paramref name="source"/> into</param>
+        /// <returns><paramref name="source"/> divided into hash sets</returns>
+        public static HashSet<T>[] DivideIntoHashSet<T>(this IEnumerable<T> source, int amount)
+        {
+            source.ValidateArgument(nameof(source));
+            amount.ValidateArgumentLargerOrEqual(nameof(amount), 1);
+
+            var divided = new Queue<HashSet<T>>(Enumerable.Range(0, amount).Select(x => new HashSet<T>()));
+
+            foreach (var element in source)
+            {
+                var smallest = divided.Dequeue();
+                smallest.Add(element);
+                divided.Enqueue(smallest);
+            }
+            return divided.ToArray();
+        }
+        #endregion
     }
 }

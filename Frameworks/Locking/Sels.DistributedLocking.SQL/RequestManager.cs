@@ -311,7 +311,7 @@ namespace Sels.DistributedLocking.SQL
         private class PendingLockRequest : IDisposable
         {
             // Fields
-            private readonly TaskCompletionSource<ILock> _taskSource = new TaskCompletionSource<ILock>();
+            private readonly TaskCompletionSource<ILock> _taskSource = new TaskCompletionSource<ILock>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             // Properties
             public SqlLockRequest Request { get; }
