@@ -45,6 +45,10 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         /// </summary>
         public int ResourcePoolSize { get; set; } = Environment.ProcessorCount;
         /// <summary>
+        /// The size of the result set to return when benchmarking query performance.
+        /// </summary>
+        public int QueryResultSetSize { get; set; } = 1000;
+        /// <summary>
         /// Defines the ratio when running mixed tests. Used to determine to lock using TryLockAsync or LockAsync.
         /// </summary>
         public double TryLockToLockRatio { get; set; } = 0.75;
@@ -80,7 +84,9 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                     .MustBeLargerOrEqualTo(0.01)
                     .MustBeSmallerOrEqualTo(1.0)
                 .ForProperty(x => x.ResourcePoolSize)
-                    .MustBeLargerOrEqualTo(0);
+                    .MustBeLargerOrEqualTo(1)
+                .ForProperty(x => x.QueryResultSetSize)
+                    .MustBeLargerOrEqualTo(1); ;
         }
     }
 }

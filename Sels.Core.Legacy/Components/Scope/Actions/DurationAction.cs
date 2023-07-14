@@ -8,7 +8,7 @@ using System.Text;
 namespace Sels.Core.Components.Scope.Actions
 {
     /// <summary>
-    /// Captures the duraction of the scope.
+    /// Captures the duration of the scope.
     /// </summary>
     public class DurationAction : IDisposable
     {

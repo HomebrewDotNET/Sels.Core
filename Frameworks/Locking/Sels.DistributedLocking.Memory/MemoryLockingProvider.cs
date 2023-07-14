@@ -6,6 +6,7 @@ using Sels.Core.Components.Scope.Actions;
 using Sels.Core.Dispose;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Reflection;
 using Sels.DistributedLocking.Abstractions.Extensions;
@@ -240,19 +241,19 @@ namespace Sels.DistributedLocking.Memory
 
                 var querySearchCriteria = new MemoryQuerySearchCriteria(searchCriteria);
                 _logger.Log($"Querying locks");
-                HashSet<MemoryLockInfo> locks = null;
+                Dictionary<string, MemoryLockInfo>.ValueCollection locks = null;
 
                 lock (_locks)
                 {
-                    locks = _locks.Select(x => x.Value).ToHashSet();
+                    locks = _locks.Values;
                 }
 
                 // Apply filter
-                locks = querySearchCriteria.ApplyFilter(locks).ToHashSet();
+                var filtered = querySearchCriteria.ApplyFilter(locks).ToArray();
 
-                var total = locks.Count;
+                var total = filtered.Length;
                 // Apply sorting
-                var enumerator = querySearchCriteria.ApplySorting(locks);
+                var enumerator = querySearchCriteria.ApplySorting(filtered);
 
                 // Apply pagination
                 if (querySearchCriteria.Pagination.HasValue)

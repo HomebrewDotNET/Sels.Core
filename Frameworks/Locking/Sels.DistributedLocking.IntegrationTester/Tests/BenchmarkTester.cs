@@ -54,6 +54,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             Console.WriteLine($"Max runtime: {_options.RunTime}");
             Console.WriteLine($"Max allowed attempts per worker: {_options.MaximumAttempts}");
             Console.WriteLine($"Lock resource pool size: {_options.ResourcePoolSize}");
+            Console.WriteLine($"Query result set size: {_options.QueryResultSetSize}");
             Console.WriteLine($"TryLock to Lock ratio: {_options.TryLockToLockRatio}");
             Console.WriteLine();
 
@@ -86,6 +87,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 if (!failed) failed = lockBenchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(TryLockNoPool, provider, duration.Value, lockBenchmarkResults);
+            token.ThrowIfCancellationRequested();
 
             // Try lock pool
             string TryLockPool = $"TryLockAsync - Pool of {_options.ResourcePoolSize}";
@@ -95,6 +97,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 if (!failed) failed = lockBenchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(TryLockPool, provider, duration.Value, lockBenchmarkResults);
+            token.ThrowIfCancellationRequested();
 
             // Lock no pool
             const string LockNoPool = "LockAsync - No pool";
@@ -104,6 +107,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 if (!failed) failed = lockBenchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(LockNoPool, provider, duration.Value, lockBenchmarkResults);
+            token.ThrowIfCancellationRequested();
 
             // Lock pool
             string LockPool = $"LockAsync - Pool of {_options.ResourcePoolSize}";
@@ -113,6 +117,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 if (!failed) failed = lockBenchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(LockPool, provider, duration.Value, lockBenchmarkResults);
+            token.ThrowIfCancellationRequested();
 
             // Mixed lock no pool
             const string MixedLockNoPool = "TryLockAsync/LockAsync - No pool";
@@ -122,6 +127,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 if (!failed) failed = lockBenchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(MixedLockNoPool, provider, duration.Value, lockBenchmarkResults);
+            token.ThrowIfCancellationRequested();
 
             // Mixed lock pool
             string MixedLockPool = $"TryLockAsync/LockAsync - Pool of {_options.ResourcePoolSize}";
@@ -131,6 +137,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 if (!failed) failed = lockBenchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(MixedLockPool, provider, duration.Value, lockBenchmarkResults);
+            token.ThrowIfCancellationRequested();
 
             // Get
             HashSet<BenchmarkResult> benchmarkResults = null;
@@ -141,6 +148,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(Get, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
 
             // GetPending
             const string GetPending = "GetPendingRequestsAsync";
@@ -150,6 +158,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(GetPending, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
 
             // ForceUnlock
             const string ForceUnlock = "ForceUnlockAsync";
@@ -159,6 +168,187 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(ForceUnlock, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query filter on resource
+            const string QueryFilterResource = "QueryAsync - Filter on resource";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.WithFilterOnResource(nameof(BenchmarkQuery)), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryFilterResource, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query filter on locked by
+            const string QueryFilterLockedBy = "QueryAsync - Filter on locked by";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.WithFilterOnLockedBy("Tester"), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryFilterLockedBy, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query filter on equal to locked by
+            const string QueryFilterEqualToLockedBy = "QueryAsync - Filter on equal to locked by";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.WithLockedByEqualTo(nameof(BenchmarkTester)), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryFilterEqualToLockedBy, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query with pending requests
+            const string QueryWithPendingRequests = "QueryAsync - With pending requests";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.WithPendingRequestsLargerThan(0), (false, null, true));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryWithPendingRequests, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query only expired
+            const string QueryOnlyExpired = "QueryAsync - Only expired";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.WithOnlyExpired(), (false, true, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOnlyExpired, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query only not expired
+            const string QueryOnlyNotExpired = "QueryAsync - Only not expired";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.WithOnlyNotExpired(), (false, false, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOnlyNotExpired, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query only locked
+            const string QueryOnlyLocked = "QueryAsync - Only locked";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.WithOnlyLocked(), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOnlyLocked, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query only noy locked
+            const string QueryOnlyNotLocked = "QueryAsync - Only not locked";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.WithOnlyNotLocked(), (true, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOnlyNotLocked, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query order by resource
+            const string QueryOrderByResource = "QueryAsync - Order by resource";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.OrderByResource(), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOrderByResource, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query order by resource desc
+            const string QueryOrderByResourceDesc = "QueryAsync - Order by resource desc";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.OrderByResource(true), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOrderByResourceDesc, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query order by locked by
+            const string QueryOrderByLockedBy = "QueryAsync - Order by locked by";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.OrderByLockedBy(), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOrderByLockedBy, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query order by locked by desc
+            const string QueryOrderByLockedByDesc = "QueryAsync - Order by locked by desc";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.OrderByLockedBy(true), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOrderByLockedByDesc, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query order by last lock date
+            const string QueryOrderByLastLockDate = "QueryAsync - Order by last lock date";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.OrderByLastLockDate(), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOrderByLastLockDate, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query order by last lock date desc
+            const string QueryOrderByLastLockDateDesc = "QueryAsync - Order by last lock date desc";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.OrderByLastLockDate(true), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOrderByLastLockDateDesc, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query order by locked at
+            const string QueryOrderByLockedAt = "QueryAsync - Order by locked at";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.OrderByLockedAt(), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOrderByLockedAt, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query order by locked at desc
+            const string QueryOrderByLockedAtDesc = "QueryAsync - Order by locked at desc";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.OrderByLockedAt(true), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOrderByLockedAtDesc, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query order by expiry date
+            const string QueryOrderByExpiryDate = "QueryAsync - Order by expiry date";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.OrderByExpiryDate(), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOrderByExpiryDate, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
+
+            // Query order by locked at desc
+            const string QueryOrderByExpiryDateDesc = "QueryAsync - Order by expiry date desc";
+            using (Helper.Time.CaptureDuration(out duration))
+            {
+                benchmarkResults = await BenchmarkQuery(workers, lockingProvider, token, x => x.OrderByExpiryDate(true), (false, null, false));
+                if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
+            }
+            PrintResults(QueryOrderByExpiryDateDesc, provider, duration.Value, benchmarkResults);
+            token.ThrowIfCancellationRequested();
 
             return failed;
         }
@@ -508,6 +698,87 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             return taskResults.SelectMany(x => x).ToHashSet();
         }
 
+        private async Task<HashSet<BenchmarkResult>> BenchmarkQuery(int workerAmount, ILockingProvider lockingProvider, CancellationToken token, Func<ILockQueryCriteria, ILockQueryCriteria> criteria, (bool Unlock, bool? Expire, bool CreateRequest) seedSettings)
+        {
+            CancellationTokenSource runTimeSource = new CancellationTokenSource();
+            List<Task<HashSet<BenchmarkResult>>> workerTasks = new List<Task<HashSet<BenchmarkResult>>>();
+
+            // Get pool of locks
+            var querySize = _options.QueryResultSetSize;
+            var queryResult = await lockingProvider.QueryAsync(x => criteria(x).WithPagination(1, querySize), token);
+            var currentSize = queryResult.Results.Length;
+            while (currentSize < querySize)
+            {
+                _logger.Log($"Resources to benchmark is under the pool size of <{querySize}>. Creating additional locks");
+                var resource = $"{nameof(BenchmarkQuery)}.{currentSize}";
+                var lockResult = await lockingProvider.TryLockAsync(resource, nameof(BenchmarkTester), seedSettings.Expire.HasValue ? seedSettings.Expire.Value ? TimeSpan.Zero : TimeSpan.FromDays(365) : null, token: token);
+
+                if (seedSettings.CreateRequest)
+                {
+                    _ = lockingProvider.LockAsync(resource, $"{nameof(BenchmarkTester)}.{currentSize}", token: token);
+                }
+
+                if(lockResult.Success && seedSettings.Unlock)
+                {
+                    await lockResult.AcquiredLock.DisposeAsync();
+                }
+
+                currentSize++;
+            }
+
+            // Run benchmark
+            _logger.Log($"Benchmarking QueryAsync");
+            foreach (var workerNumber in Enumerable.Range(1, workerAmount))
+            {
+                var workerTask = Task.Run(async () =>
+                {
+                    var workerId = $"Worker {workerNumber}";
+                    HashSet<BenchmarkResult> results = new HashSet<BenchmarkResult>();
+                    _logger.Log($"{workerId} starting to benchmark QueryAsync");
+
+                    while (!runTimeSource.IsCancellationRequested && results.Count < _options.MaximumAttempts)
+                    {
+                        token.ThrowIfCancellationRequested();
+
+                        var result = new BenchmarkResult()
+                        {
+                            StartedDate = DateTime.Now
+                        };
+
+                        try
+                        {
+                            // Get lock
+                            Ref<TimeSpan> duration;
+                            using (Helper.Time.CaptureDuration(out duration))
+                            {
+                                _ = await lockingProvider.QueryAsync(x => criteria(x).WithPagination(1, querySize), token);
+                            }
+                            result.FinishedDate = DateTime.Now;
+                            result.Duration = duration.Value;
+                        }
+                        catch (Exception ex)
+                        {
+                            result.Exception = ex;
+                            result.FinishedDate = DateTime.Now;
+                            _logger.Warning($"{workerId} encountered error while querying locks", ex);
+                        }
+
+                        results.Add(result);
+                    }
+
+                    _logger.Log($"{workerId} finished benchmarking QueryAsync. Queried for a total of <{results.Count}> times");
+                    return results;
+                }, token);
+                workerTasks.Add(workerTask);
+            }
+
+            // Wait for workers to finish
+            runTimeSource.CancelAfter(_options.RunTime);
+            _logger.Log($"Waiting for <{_options.Workers}> workers to run for <{_options.RunTime}>");
+            var taskResults = await Task.WhenAll(workerTasks);
+            return taskResults.SelectMany(x => x).ToHashSet();
+        }
+
         private async Task<LockBenchmarkResult> ExecuteTryLock(string resource, string workerId, ILockingProvider lockingProvider, CancellationToken token)
         {
             _logger.Debug($"{workerId} trying to lock resource <{resource}>");
@@ -669,6 +940,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             {
                 foreach (var number in x)
                 {
+                    token.ThrowIfCancellationRequested();
                     var resource = $"PersistedLock.{number}";
                     _logger.Debug($"Persisting lock <{resource}>");
                     var hasExpiry = Helper.Random.GetRandomDouble(0, 1) <= _options.ExpiryRatio;
