@@ -30,7 +30,7 @@ namespace Sels.DistributedLocking.Provider
         /// <summary>
         /// Returns all locks with more than <paramref name="amount"/> pending locks.
         /// </summary>
-        /// <param name="amount">The thresshold of pending requests above which to return the locks</param>
+        /// <param name="amount">The threshold of pending requests above which to return the locks</param>
         /// <returns>Current criteria for method chaining</returns>
         ILockQueryCriteria WithPendingRequestsLargerThan(int amount);
         /// <summary>

@@ -180,12 +180,11 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                })
                .RunAsync(args);
 
-if(Debugger.IsAttached && Environment.UserInteractive)
+if (Debugger.IsAttached && Environment.UserInteractive)
 {
     Console.WriteLine($"Exit code is {exitCode}");
     Console.WriteLine($"Press any key to close");
     Console.ReadLine();
 }
-
 return exitCode;
 

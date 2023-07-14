@@ -41,7 +41,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         /// </summary>
         public int Workers { get; set; } = Environment.ProcessorCount * 2;
         /// <summary>
-        /// The pool of resources that will be shared by workers when benchmarking locking with collision between workers.
+        /// The pool of resources that will be shared by workers when benchmarking collision between workers.
         /// </summary>
         public int ResourcePoolSize { get; set; } = Environment.ProcessorCount;
         /// <summary>

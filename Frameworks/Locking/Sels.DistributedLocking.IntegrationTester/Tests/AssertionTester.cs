@@ -751,7 +751,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 await lockingProvider.LockAsync($"{nameof(Query_FilterOnPendingRequestsIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", Guid.NewGuid().ToString(), token: token);
                 for (int y = 0; y < i; y++)
                 {
-                    _ = lockingProvider.LockAsync($"{nameof(Query_FilterOnPendingRequestsIsAppliedAndCorrectNumberOfResultsAreReturned)}.{y}", $"{nameof(AssertionTester)},{nameof(y)}", token: token);
+                    _ = lockingProvider.LockAsync($"{nameof(Query_FilterOnPendingRequestsIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", $"{nameof(AssertionTester)}.{y}", token: token);
                 }
             }
             await Helper.Async.Sleep(TimeSpan.FromSeconds(1));

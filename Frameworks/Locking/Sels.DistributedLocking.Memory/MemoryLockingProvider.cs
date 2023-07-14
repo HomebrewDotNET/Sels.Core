@@ -171,16 +171,27 @@ namespace Sels.DistributedLocking.Memory
                     {
                         _logger.Log($"Resource <{resource}> is already locked. Creating lock request for <{requester}>");
 
-                        // Create and store request
-                        var request = new MemoryLockRequest(requester, memoryLock, timeout, _logger, token)
-                        {
-                            ExpiryTime = expiryTime,
-                            KeepAlive = keepAlive
-                        };
-                        memoryLock.Requests.Enqueue(request);
+                        var existing = memoryLock.Requests.FirstOrDefault(x => x.Requester.Equals(requester));
 
-                        _logger.Log($"Lock request created for requester <{requester}> on resource <{resource}>");
-                        lockTask = request.CallbackTask;
+                        if(existing == null)
+                        {
+                            // Create and store request
+                            var request = new MemoryLockRequest(requester, memoryLock, timeout, _logger, token)
+                            {
+                                ExpiryTime = expiryTime,
+                                KeepAlive = keepAlive
+                            };
+                            memoryLock.Requests.Enqueue(request);
+
+                            _logger.Log($"Lock request created for requester <{requester}> on resource <{resource}>");
+                            lockTask = request.CallbackTask;
+                        }
+                        else
+                        {
+                            // Request already exists so no need to create another one
+                            _logger.Warning($"A request on resource <{resource}> was already placed by <{requester}>. Not creating a new request");
+                            lockTask = existing.CallbackTask;
+                        }
                     }
                     else
                     {

@@ -13,6 +13,7 @@ using Sels.DistributedLocking.Abstractions.Extensions;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Object;
 using Newtonsoft.Json.Linq;
+using Sels.Core.Extensions.Conversion;
 
 namespace Sels.DistributedLocking.SQL
 {
@@ -78,14 +79,37 @@ namespace Sels.DistributedLocking.SQL
             sqlLockRequest.ValidateArgument(nameof(sqlLockRequest));
 
             _watcherTokenSource.Token.ThrowIfCancellationRequested();
-            var pendingRequest = new PendingLockRequest(sqlLockRequest, timeout, cancellationToken);
+            PendingLockRequest pendingRequest = null;
             
             await using (await _asyncLock.LockAsync(cancellationToken))
             {
-                lock (_threadLock)
+                // Check if request already exists
+                var existingRequest = _pendingRequests.FirstOrDefault(x => x.Request.Requester.Equals(sqlLockRequest.Requester));
+
+                if (existingRequest != null)
                 {
-                    _pendingRequests.Add(pendingRequest);
+                    _logger.Warning($"Request <{existingRequest.Request.Id}> already exists for requester <{existingRequest.Request.Requester}> on Resource <{Resource}>. Removing request <{sqlLockRequest.Id}>");
+
+                    await using(var transaction = await _repository.CreateTransactionAsync(cancellationToken))
+                    {
+                        await _repository.DeleteAllRequestsById(transaction, sqlLockRequest.Id.AsArray(), cancellationToken);
+                        await transaction.CommitAsync(cancellationToken);
+                    }
+
+                    _logger.Warning($"Removed request <{sqlLockRequest.Id}> for requester <{existingRequest.Request.Requester}> on Resource <{Resource}>. Returning existing request <{existingRequest.Request.Id}>");
+                    pendingRequest = existingRequest;
                 }
+                // No request exists create new
+                else
+                {
+                    lock (_threadLock)
+                    {
+                        pendingRequest = new PendingLockRequest(sqlLockRequest, timeout, cancellationToken);
+                        _logger.Log($"Tracking request <{sqlLockRequest.Id}> on resource <{Resource}> placed by <{sqlLockRequest.Requester}>");
+                        _pendingRequests.Add(pendingRequest);
+                    }
+                }
+
 
                 // Restart watcher if needed
                 if (_watcherTask == null || _watcherTask.IsCompleted) _watcherTask = Task.Run(WatchRequests);
@@ -152,12 +176,19 @@ namespace Sels.DistributedLocking.SQL
                     var sqlLock = await _repository.GetLockByResourceAsync(transaction, Resource, false, true, token).ConfigureAwait(false);
 
                     var matchingRequests = orderedRequests.Where(x => x.Request.Requester.Equals(sqlLock?.LockedBy, StringComparison.OrdinalIgnoreCase)).ToArray();
+                    
+                    requestsToDelete.AddRange(matchingRequests);
+
+                    // Check if requests have been removed
+                    var requestIds = orderedRequests.Select(x => x.Request.Id).ToArray();
+                    var deletedIds = await _repository.GetDeletedRequestIds(transaction, requestIds, token).ConfigureAwait(false);
+                    var deletedRequests = orderedRequests.Where(x => !matchingRequests.Contains(x) && deletedIds.Contains(x.Request.Id)).ToArray();
 
                     // No matching requests so we attempt to lock
                     if (!matchingRequests.HasValue())
                     {
-                        var request = orderedRequests.First();
-                        if (sqlLock.CanLock(request.Request.Requester))
+                        var request = orderedRequests.Where(x => !x.In(deletedRequests)).FirstOrDefault();
+                        if (request != null && (sqlLock == null || sqlLock.CanLock(request.Request.Requester)))
                         {
                             _logger.Log($"Lock on resource <{Resource}> can be acquired by {request.Request.Requester}. Attempting to lock");
 
@@ -165,15 +196,7 @@ namespace Sels.DistributedLocking.SQL
 
                             matchingRequests = orderedRequests.Where(x => x.Request.Requester.Equals(sqlLock?.LockedBy, StringComparison.OrdinalIgnoreCase)).ToArray();
                         }
-
                     }
-
-                    requestsToDelete.AddRange(matchingRequests);
-
-                    // Check if requests have been removed
-                    var requestIds = orderedRequests.Select(x => x.Request.Id).ToArray();
-                    var deletedIds = await _repository.GetDeletedRequestIds(transaction, requestIds, token).ConfigureAwait(false);
-                    var deletedRequests = orderedRequests.Where(x => !matchingRequests.Contains(x) && deletedIds.Contains(x.Request.Id)).ToArray();
 
                     // Get requests that have timed out
                     var timedoutRequests = orderedRequests.Where(x => !matchingRequests.Contains(x) && x.Request.Timeout.HasValue && DateTime.Now > x.Request.Timeout.Value).ToArray();

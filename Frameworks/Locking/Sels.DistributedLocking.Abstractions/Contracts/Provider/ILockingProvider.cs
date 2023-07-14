@@ -60,8 +60,8 @@ namespace Sels.DistributedLocking.Provider
         Task<ILockQueryResult> QueryAsync(Action<ILockQueryCriteria> searchCriteria, CancellationToken token = default);
 
         /// <summary>
-        /// Forces an unlock of the lock held on resource <paramref name="resource"/>.
-        /// Should be used with caution as this could lead to concurrency issues depending on the implementation.
+        /// Forces an unlock of the lock held on <paramref name="resource"/>.
+        /// Should be used with caution as this could lead to concurrency issues depending on how lock usage is implemented.
         /// </summary>
         /// <param name="resource">The resource to unlock</param>
         /// <param name="removePendingRequests">If any pending requests should be removed as well</param>
