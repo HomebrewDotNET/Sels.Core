@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Conversion.Attributes.Serialization;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.Conversion.Serialization.Filters;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Conversion.Components.Serialization.Profile
 {

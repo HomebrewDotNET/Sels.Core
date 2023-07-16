@@ -2,6 +2,7 @@
 using Sels.Core.Command.Linux.Templates;
 using Sels.Core.Command.Linux.Attributes;
 using Sels.Core.Command.Linux.Contracts;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Command.Linux.Commands.Core
 {

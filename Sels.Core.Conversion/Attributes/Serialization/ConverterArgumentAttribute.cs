@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Sels.Core.Conversion.Converters;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Conversion.Attributes.Serialization
 {

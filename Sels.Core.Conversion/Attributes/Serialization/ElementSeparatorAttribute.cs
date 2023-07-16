@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Text;
 using System;
 using System.Collections.Generic;
 

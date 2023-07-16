@@ -5,6 +5,7 @@ using Sels.Core.Command.Linux.Templates;
 using Sels.Core.Command.Contracts.Commands;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.FileSystem.Templates.FileSizes;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Command.Linux.Commands.FileSystem
 {

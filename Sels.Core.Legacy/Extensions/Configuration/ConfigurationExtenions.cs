@@ -2,7 +2,7 @@
 using Sels.Core.Extensions;
 using System.IO;
 
-namespace Sels.Core.Contracts.Configuration
+namespace Sels.Core.Configuration
 {
     /// <summary>
     /// Contains extension methods for reading configuration.

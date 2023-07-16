@@ -1,8 +1,9 @@
 ﻿
+using Microsoft.Extensions.DependencyInjection;
 using Sels.Core.Extensions;
 using System;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Sels.Core.Extensions.DependencyInjection
 {
     /// <summary>
     /// Contains extension methods for <see cref="IServiceCollection"/>

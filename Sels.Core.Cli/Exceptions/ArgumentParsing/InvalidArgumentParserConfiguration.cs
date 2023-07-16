@@ -1,4 +1,6 @@
-﻿namespace Sels.Core.Cli.ArgumentParsing
+﻿using Sels.Core.Extensions.Text;
+
+namespace Sels.Core.Cli.ArgumentParsing
 {
     /// <summary>
     /// Thrown when an argument parser has invalid configuration.

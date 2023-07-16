@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.SQL.QueryBuilder.Expressions
 {

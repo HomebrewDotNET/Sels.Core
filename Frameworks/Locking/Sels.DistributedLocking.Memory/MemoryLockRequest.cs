@@ -2,14 +2,14 @@
 using Sels.Core;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Extensions.Object;
+using Sels.Core.Extensions;
 using Sels.DistributedLocking.Provider;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Sels.Core.Extensions.Logging.Advanced;
-using Sels.Core.Extensions.Reflection;
 using Sels.Core.Extensions.Logging;
+using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.Exceptions;
 
 namespace Sels.DistributedLocking.Memory
 {

@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Reflection;
 using Sels.ObjectValidationFramework.Rules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Sels.Core.Components.Scope;
+using Sels.Core.Scope;
 using System.Linq.Expressions;
 using Sels.Core.Extensions.Logging;
 using System.Threading.Tasks;

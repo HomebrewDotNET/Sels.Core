@@ -7,6 +7,8 @@ using Sels.Core.ServiceBuilder.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.DependencyInjection;
 
 namespace Sels.Core.ServiceBuilder
 {

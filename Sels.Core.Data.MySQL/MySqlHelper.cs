@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;
-using Sels.Core.Components.Scope;
+using Sels.Core.Scope;
 using Sels.Core.Data.Contracts.Repository;
 using Sels.Core.Data.MySQL.Models;
 using Sels.Core.Data.MySQL.Models.Repository;
@@ -18,7 +18,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
@@ -26,6 +25,9 @@ using System.Linq;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Data.SQL;
 using Sels.SQL.QueryBuilder.MySQL;
+using Sels.Core.Extensions.Text;
+using Sels.Core.Extensions.DateTimes;
+using Sels.Core.Extensions.Collections;
 
 namespace Sels.Core.Data.MySQL
 {

@@ -1,8 +1,11 @@
 ﻿using Sels.Core.Extensions;
 using System.Diagnostics;
+using System.IO;
+using System;
 using System.Threading.Tasks;
+using SystemProcess = System.Diagnostics.Process;
 
-namespace System.IO
+namespace Sels.Core.Extensions.IO
 {
     /// <summary>
     /// Contains extension methods for working with <see cref="FileInfo"/>.
@@ -62,7 +65,7 @@ namespace System.IO
         {
             if (file != null && file.Exists)
             {
-                Process.Start("explorer.exe", file.FullName);
+                SystemProcess.Start("explorer.exe", file.FullName);
             }
 
         }

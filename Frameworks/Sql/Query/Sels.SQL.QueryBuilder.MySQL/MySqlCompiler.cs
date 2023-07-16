@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Text;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;

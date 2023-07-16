@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Sels.Core.Contracts.Reflection.Searching
+namespace Sels.Core.Reflection.Searching
 {
     /// <summary>
     /// Searches through an objects hierarchy and returns all objects matching the defined conditions.

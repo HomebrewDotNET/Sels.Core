@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Sels.Core.Contracts.Validation
+namespace Sels.Core.Validation
 {
     /// <summary>
     /// Validator that can validate objects of type <typeparamref name="TEntity"/> and returns validation errors of type <typeparamref name="TError"/>.

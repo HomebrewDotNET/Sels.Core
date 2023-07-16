@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Sels.Core.Contracts.Validation;
+using Sels.Core.Validation;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.ObjectValidationFramework.Addons;
@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Sels.Core.Extensions.DependencyInjection;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

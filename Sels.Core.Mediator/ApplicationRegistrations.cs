@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sels.Core;
+using Sels.Core.Extensions.DependencyInjection;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Mediator;
 using Sels.Core.Mediator.Event;

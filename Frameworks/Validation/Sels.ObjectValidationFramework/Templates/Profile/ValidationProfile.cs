@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Components.Scope;
+using Sels.Core.Scope;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.Validation;
 using Sels.ObjectValidationFramework.Configurators;
@@ -16,6 +16,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Sels.Core.Extensions.Collections;
+using Sels.Core.Extensions.DateTimes;
 
 namespace Sels.ObjectValidationFramework.Profile
 {

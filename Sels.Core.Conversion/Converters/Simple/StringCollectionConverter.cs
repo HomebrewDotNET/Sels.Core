@@ -8,6 +8,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using Sels.Core.Extensions.Collections;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Conversion.Converters.Simple
 {

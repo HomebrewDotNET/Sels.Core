@@ -8,8 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Sels.Core.Extensions.Reflection;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Collections;
 
 namespace Sels.Core.Data.SQL.SearchCriteria
 {

@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Text;
 using Sels.ObjectValidationFramework.Configurators;
 using Sels.ObjectValidationFramework.Rules;
 using System;

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Sels.Core.Extensions.Text;
+using System.Runtime.CompilerServices;
 
 namespace Sels.Core.Web.Blazor.Exceptions
 {

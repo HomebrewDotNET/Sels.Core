@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Bytes;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 using System;

@@ -14,7 +14,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 
 namespace Sels.Core.ServiceBuilder.Polly
 {

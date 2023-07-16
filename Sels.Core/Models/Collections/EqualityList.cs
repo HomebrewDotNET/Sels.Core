@@ -1,6 +1,7 @@
 ﻿using Sels.Core.Display;
 using Sels.Core.Equality;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 

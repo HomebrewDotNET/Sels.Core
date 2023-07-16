@@ -1,6 +1,7 @@
 ﻿using Sels.Core.Conversion.Converters.Simple;
 using Sels.Core.Conversion.Templates;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;

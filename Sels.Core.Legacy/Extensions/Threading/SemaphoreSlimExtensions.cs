@@ -1,11 +1,11 @@
-﻿using Sels.Core.Components.Scope.AsyncActions;
+﻿using Sels.Core.Scope.AsyncActions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Extensions.Object
+namespace Sels.Core.Extensions.Threading
 {
     /// <summary>
     /// Contains static extension methods for <see cref="SemaphoreSlim"/>.

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Command.Linux.Templates.Commands.Screen;
 using Sels.Core.Command.Linux.Contracts;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Command.Linux.Commands.Screen
 {

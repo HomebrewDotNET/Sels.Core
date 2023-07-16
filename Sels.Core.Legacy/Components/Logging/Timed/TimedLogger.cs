@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Sels.Core.Components.Logging
+namespace Sels.Core.Logging
 {
     /// <summary>
     /// Logger that keeps track of the elapsed time since it was started. Allows for logging how long certain actions took to execute.

@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Sels.Core.Components.Logging;
+using Sels.Core.Logging;
 using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Extensions.Logging
 {

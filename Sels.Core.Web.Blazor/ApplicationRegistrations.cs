@@ -1,7 +1,8 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
-using Sels.Core.Contracts.Configuration;
+using Sels.Core.Configuration;
+using Sels.Core.Extensions.Bytes;
 using Sels.Core.Web.Blazor;
 using Sels.Core.Web.Blazor.Authentication;
 using Sels.Core.Web.Blazor.Authentication.Token;

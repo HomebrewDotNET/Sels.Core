@@ -2,6 +2,7 @@
 using System.Text;
 using Sels.Core.Attributes.Enumeration.Value;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {

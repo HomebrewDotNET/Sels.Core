@@ -5,15 +5,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Sels.Core.Extensions
+namespace Sels.Core.Extensions.Collections
 {
     /// <summary>
     /// Contains extension methods for working with the various .NET collections.
     /// </summary>
     public static class CollectionExtensions
     {
-        private static Random _random = new Random();
-
         #region IEnumerable
         /// <summary>
         /// Yield return any object in <paramref name="source"/>.
@@ -179,7 +177,7 @@ namespace Sels.Core.Extensions
             collection.ValidateArgument(nameof(collection));
 
             var count = collection.GetCount();
-            return count > 0 ? _random.Next(0, count) : -1;
+            return count > 0 ? Helper.Random.Instance.Next(0, count) : -1;
         }
         /// <summary>
         /// Gets a random element in <paramref name="collection"/>.
@@ -196,6 +194,59 @@ namespace Sels.Core.Extensions
             return collection.GetAtIndex(randomIndex);
         }
         #endregion
+        #endregion
+
+        #region Grid
+        /// <summary>
+        /// Gets an array from all the elements in row <paramref name="rowIndex"/> in grid <paramref name="grid"/>.
+        /// </summary>
+        /// <param name="grid">The grid to get the row from</param>
+        /// <param name="rowIndex">The index of the row to get</param>
+        /// <returns>The columns of row at index <paramref name="rowIndex"/></returns>
+        public static string[] GetRow(this string[,] grid, int rowIndex = 0)
+        {
+            grid.ValidateArgument(nameof(grid));
+            rowIndex.ValidateArgumentLargerOrEqual(nameof(rowIndex), 0);
+
+            var columnLength = grid.GetLength(1);
+
+            var columns = new string[columnLength];
+
+            for (int i = 0; i < columnLength; i++)
+            {
+                columns[i] = grid[rowIndex, i];
+            }
+
+            return columns;
+        }
+        #endregion
+
+        #region List
+        /// <summary>
+        /// Inserts <paramref name="value"/> in <paramref name="list"/> before the first item matching <paramref name="predicate"/>. If no matching item is found it added to <paramref name="list"/>. 
+        /// </summary>
+        /// <typeparam name="T">Element type of list</typeparam>
+        /// <param name="list">List to add element in</param>
+        /// <param name="predicate">Predicate for finding object to insert before</param>
+        /// <param name="value">Object to insert</param>
+        public static void InsertBefore<T>(this IList<T> list, Predicate<T> predicate, T value)
+        {
+            list.ValidateArgument(nameof(list));
+            predicate.ValidateArgument(nameof(predicate));
+
+            var index = 0;
+            foreach (var item in list)
+            {
+                if (predicate(item))
+                {
+                    list.Insert(index, value);
+                    return;
+                }
+                index++;
+            }
+
+            list.Add(value);
+        }
         #endregion
 
         #region Dictionary

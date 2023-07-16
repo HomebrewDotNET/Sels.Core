@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions.DateTimes;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Sels.Core.Extensions.Logging.Advanced
+namespace Sels.Core.Extensions.Logging
 {
     /// <summary>
     /// Exposes some more advanced logging methods.

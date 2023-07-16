@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Sels.Core.Delegates.Async;
 
-namespace Sels.Core.Components.Scope
+namespace Sels.Core.Scope
 {
     /// <summary>
     /// Class that wraps an object and executes actions when starting and disposing the object.

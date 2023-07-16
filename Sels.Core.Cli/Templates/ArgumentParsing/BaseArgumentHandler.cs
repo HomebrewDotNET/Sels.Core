@@ -4,6 +4,7 @@ using Sels.Core.Conversion.Converters;
 using System.Linq.Expressions;
 using System.Reflection;
 using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Cli.Templates.ArgumentParsing
 {

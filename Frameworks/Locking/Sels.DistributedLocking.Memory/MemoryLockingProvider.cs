@@ -2,12 +2,12 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using Sels.Core;
-using Sels.Core.Components.Scope.Actions;
+using Sels.Core.Scope.Actions;
 using Sels.Core.Dispose;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Reflection;
 using Sels.DistributedLocking.Abstractions.Extensions;
 using Sels.DistributedLocking.Abstractions.Models;
@@ -20,6 +20,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Sels.Core.Extensions.Collections;
 
 namespace Sels.DistributedLocking.Memory
 {

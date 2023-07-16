@@ -1,13 +1,15 @@
 ﻿using Sels.Core.Deployment.Parsing.Environment;
 using Sels.Core.Extensions.Reflection;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using System.Reflection;
 using SystemEnvironment = System.Environment;
-using Sels.Core.Components.Scope;
+using Sels.Core.Scope;
 using Sels.Core.Conversion.Converters;
 using System.Text.RegularExpressions;
 using Sels.Core.Conversion.Attributes.Serialization;
 using System.Linq.Expressions;
+using Sels.Core.Extensions.Collections;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Deployment
 {

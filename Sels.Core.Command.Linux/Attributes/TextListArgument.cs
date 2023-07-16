@@ -3,6 +3,7 @@ using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
 using System.Collections;
 using Sels.Core.Attributes.Enumeration.Value;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Command.Linux.Attributes
 {

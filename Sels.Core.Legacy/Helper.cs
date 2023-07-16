@@ -19,11 +19,15 @@ using Newtonsoft.Json.Linq;
 using Sels.Core.Process;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Extensions.Linq;
-using Sels.Core.Extensions.Object;
-using Sels.Core.Components.Scope;
+using Sels.Core.Extensions;
+using Sels.Core.Scope;
 using Sels.Core.Models;
-using Sels.Core.Components.Scope.Actions;
+using Sels.Core.Scope.Actions;
 using System.Linq.Expressions;
+using Sels.Core.Extensions.IO;
+using Sels.Core.Extensions.Threading;
+using Sels.Core.Extensions.DateTimes;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core
 {

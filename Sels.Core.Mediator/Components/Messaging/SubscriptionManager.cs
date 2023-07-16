@@ -1,4 +1,6 @@
-﻿namespace Sels.Core.Mediator.Messaging
+﻿using Sels.Core.Extensions.Collections;
+
+namespace Sels.Core.Mediator.Messaging
 {
     /// <summary>
     /// Thread safe singleton message subscriber that keeps a list of subscribers.

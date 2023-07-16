@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Sels.Core.Extensions.Text;
 using System;
 
 namespace Sels.Core.Test.Extensions.Object

@@ -4,6 +4,7 @@ using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using System;
 using System.Text;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.SQL.QueryBuilder.MySQL.Expressions
 {

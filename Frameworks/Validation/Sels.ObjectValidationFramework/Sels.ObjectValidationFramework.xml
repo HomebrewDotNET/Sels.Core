@@ -32,7 +32,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddValidatorWithContext``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error to return</typeparam>
@@ -44,7 +44,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddValidator``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error to return</typeparam>
@@ -55,7 +55,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddValidatorWithContext``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Sels.ObjectValidationFramework.Profile.ValidationProfile{``1}}},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error to return</typeparam>
@@ -67,7 +67,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddValidator``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Sels.ObjectValidationFramework.Profile.ValidationProfile{``1}}},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error to return</typeparam>
@@ -78,7 +78,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddValidatorWithContext``5(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Sels.ObjectValidationFramework.Profile.ValidationError{``1},``2},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error returned by the profiles</typeparam>
@@ -92,7 +92,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddValidator``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Sels.ObjectValidationFramework.Profile.ValidationError{``1},``2},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error returned by the profiles</typeparam>
@@ -105,7 +105,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddValidatorWithContext``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Sels.ObjectValidationFramework.Profile.ValidationError{``1},``2},System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Sels.ObjectValidationFramework.Profile.ValidationProfile{``1}}},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error returned by the profiles</typeparam>
@@ -119,7 +119,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddValidator``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Sels.ObjectValidationFramework.Profile.ValidationError{``1},``2},System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Sels.ObjectValidationFramework.Profile.ValidationProfile{``1}}},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error returned by the profiles</typeparam>
@@ -132,7 +132,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddAsyncValidatorWithContext``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error to return</typeparam>
@@ -144,7 +144,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddAsyncValidator``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error to return</typeparam>
@@ -155,7 +155,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddAsyncValidatorWithContext``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Sels.ObjectValidationFramework.Profile.ValidationProfile{``1}}},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error to return</typeparam>
@@ -167,7 +167,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddAsyncValidator``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Sels.ObjectValidationFramework.Profile.ValidationProfile{``1}}},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error to return</typeparam>
@@ -178,7 +178,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddAsyncValidatorWithContext``5(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Sels.ObjectValidationFramework.Profile.ValidationError{``1},``2},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error returned by the profiles</typeparam>
@@ -192,7 +192,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddAsyncValidator``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Sels.ObjectValidationFramework.Profile.ValidationError{``1},``2},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error returned by the profiles</typeparam>
@@ -205,7 +205,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddAsyncValidatorWithContext``4(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Sels.ObjectValidationFramework.Profile.ValidationError{``1},``2},System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Sels.ObjectValidationFramework.Profile.ValidationProfile{``1}}},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error returned by the profiles</typeparam>
@@ -219,7 +219,7 @@
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.ApplicationRegistrations.AddAsyncValidator``3(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{Sels.ObjectValidationFramework.Profile.ValidationError{``1},``2},System.Func{System.IServiceProvider,System.Collections.Generic.IEnumerable{Sels.ObjectValidationFramework.Profile.ValidationProfile{``1}}},System.Boolean)">
             <summary>
-            Registers a new <see cref="T:Sels.Core.Contracts.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
+            Registers a new <see cref="T:Sels.Core.Validation.IAsyncValidator`3"/> that uses the provided profiles to validate entities of type <typeparamref name="TEntity"/>.
             </summary>
             <typeparam name="TEntity">Type of entity to validate</typeparam>
             <typeparam name="TError">Type of validation error returned by the profiles</typeparam>

@@ -1,9 +1,9 @@
-﻿using Sels.Core.Contracts.Factory;
+﻿using Sels.Core.Factory;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
 using System;
 
-namespace Sels.Core.Components.Factory
+namespace Sels.Core.Factory
 {
     /// <summary>
     /// Factory that creates new instances by calling the right constructor based on supplied arguments.

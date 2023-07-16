@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using Sels.Core.Extensions.Linq;
 using Sels.SQL.QueryBuilder.Expressions;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {

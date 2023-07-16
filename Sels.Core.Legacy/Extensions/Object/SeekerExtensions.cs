@@ -1,6 +1,6 @@
 ﻿using Sels.Core.Extensions;
 
-namespace Sels.Core.Components.Reflection.Searching
+namespace Sels.Core.Reflection.Searching
 {
     /// <summary>
     /// Contains extension methods for <see cref="Seeker{T}"/>.

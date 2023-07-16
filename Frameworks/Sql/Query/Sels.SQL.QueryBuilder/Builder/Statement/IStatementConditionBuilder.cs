@@ -9,6 +9,7 @@ using Sels.Core;
 using System.Linq;
 using System.Collections;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Collections;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {

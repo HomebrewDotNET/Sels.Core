@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Sels.Core.Extensions.Text;
+using System.Text;
 
 namespace Sels.Core.Cli.ArgumentParsing
 {

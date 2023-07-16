@@ -1,13 +1,15 @@
-﻿using Sels.Core.Components.Parameters.Parameters;
-using Sels.Core.Components.Properties;
+﻿using Sels.Core.Parameters.Parameters;
+using Sels.Core.Properties;
 using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using Sels.Core.Extensions.Collections;
+using Sels.Core.Extensions.Text;
 
-namespace Sels.Core.Components.Parameters
+namespace Sels.Core.Parameters
 {
     /// <summary>
     /// Service that replaces text parameters in a string using parameters who can perform custom code when resolving a parameter value.

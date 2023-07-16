@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Runtime.CompilerServices;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Collections;
 
 namespace Sels.Core.Web.Blazor.Pages
 {

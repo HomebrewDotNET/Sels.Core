@@ -1,12 +1,13 @@
-﻿using Sels.Core.Components.Parameters.Parameters;
-using Sels.Core.Components.Properties;
+﻿using Sels.Core.Parameters.Parameters;
+using Sels.Core.Properties;
 using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Sels.Core.Extensions.Collections;
 
-namespace Sels.Core.Components.Parameters
+namespace Sels.Core.Parameters
 {
     /// <summary>
     /// User to modify the default values used by <see cref="Parameterizer"/>.

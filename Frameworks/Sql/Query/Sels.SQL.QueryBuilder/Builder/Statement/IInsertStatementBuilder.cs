@@ -9,6 +9,7 @@ using System;
 using Sels.Core.Extensions.Reflection;
 using Sels.SQL.QueryBuilder.Expressions;
 using Sels.Core.Models;
+using Sels.Core.Extensions.Collections;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {

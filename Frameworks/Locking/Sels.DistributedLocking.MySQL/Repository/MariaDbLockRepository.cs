@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.MySQL;
 using Dapper;
@@ -27,6 +27,7 @@ using System.Collections;
 using System.Linq;
 using Sels.SQL.QueryBuilder.Expressions;
 using Sels.SQL.QueryBuilder.MySQL.MariaDb;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.DistributedLocking.MySQL.Repository
 {
