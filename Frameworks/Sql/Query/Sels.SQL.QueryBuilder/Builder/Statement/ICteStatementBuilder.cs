@@ -1,6 +1,9 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
 using System.Linq.Expressions;
 using System.Text;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -26,7 +29,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="expressionBuilder">Delegate that adds the cte to the builder</param>
         /// <returns>Current builder for defining more cte's or selecting the query to execute with the cte's</returns>
-        ICteOrSelectStatementBuilder Expression(Action<StringBuilder> expressionBuilder) => Expression(new DelegateExpression(expressionBuilder.ValidateArgument(nameof(expressionBuilder))));
+        ICteOrSelectStatementBuilder Expression(Action<StringBuilder, ExpressionCompileOptions> expressionBuilder) => Expression(new DelegateExpression(expressionBuilder.ValidateArgument(nameof(expressionBuilder))));
 
         #region Cte
         /// <summary>
@@ -58,21 +61,21 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <summary>
         /// Defines the select query to execute with the common table expressions.
         /// </summary>
-        /// <param name="query">Delegate that returns the sub query</param>
+        /// <param name="query">Delegate that adds the query to the supplied builder</param>
         /// <returns>Query builder for converting the current builder into a query</returns>
-        IQueryBuilder Execute(Func<ExpressionCompileOptions, string> query);
+        IQueryBuilder Execute(Action<StringBuilder, ExpressionCompileOptions> query);
         /// <summary>
         /// Defines the select query to execute with the common table expressions.
         /// </summary>
         /// <param name="query">The sub query</param>
         /// <returns>Query builder for converting the current builder into a query</returns>
-        IQueryBuilder Execute(string query) => Execute(x => query);
+        IQueryBuilder Execute(string query) => Execute((b, o) => b.Append(query.ValidateArgumentNotNullOrWhitespace(nameof(query))));
         /// <summary>
         /// Defines the select query to execute with the common table expressions.
         /// </summary>
         /// <param name="builder">Builder that creates the sub query</param>
         /// <returns>Query builder for converting the current builder into a query</returns>
-        IQueryBuilder Execute(IQueryBuilder builder) => Execute(x => builder.ValidateArgument(nameof(builder)).Build(x));
+        IQueryBuilder Execute(IQueryBuilder builder) => Execute((b, o) => builder.ValidateArgument(nameof(builder)).Build(b, o));
     }
     /// <summary>
     /// Builder for creating a cte expression.
@@ -93,34 +96,34 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Current builder for method chaining</returns>
-        ICteExpressionBuilder<TEntity> Column<T>(Expression<Func<T, object?>> property) => Column(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        ICteExpressionBuilder<TEntity> Column<T>(Expression<Func<T, object>> property) => Column(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Defines a column for the current cte where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Current builder for method chaining</returns>
-        ICteExpressionBuilder<TEntity> Column(Expression<Func<TEntity, object?>> property) => Column<TEntity>(property);
+        ICteExpressionBuilder<TEntity> Column(Expression<Func<TEntity, object>> property) => Column<TEntity>(property);
         #endregion
 
         #region Using
         /// <summary>
         /// Defines the query for the cte.
         /// </summary>
-        /// <param name="query">Delegate that returns the sub query</param>
+        /// <param name="query">Delegate that adds the query to the supplied builder</param>
         /// <returns>Current builder for defining more cte's or selecting the query to execute with the cte's</returns>
-        ICteOrSelectStatementBuilder Using(Func<ExpressionCompileOptions, string> query);
+        ICteOrSelectStatementBuilder As(Action<StringBuilder, ExpressionCompileOptions> query);
         /// <summary>
         /// Defines the query for the cte.
         /// </summary>
         /// <param name="query">The sub query</param>
         /// <returns>Current builder for defining more cte's or selecting the query to execute with the cte's</returns>
-        ICteOrSelectStatementBuilder Using(string query) => Using(x => query);
+        ICteOrSelectStatementBuilder As(string query) => As((b, o) => b.Append(query.ValidateArgumentNotNullOrWhitespace(nameof(query))));
         /// <summary>
         /// Defines the query for the cte.
         /// </summary>
         /// <param name="builder">Builder that creates the sub query</param>
         /// <returns>Current builder for defining more cte's or selecting the query to execute with the cte's</returns>
-        ICteOrSelectStatementBuilder Using(IQueryBuilder builder) => Using(x => builder.ValidateArgument(nameof(builder)).Build(x));
+        ICteOrSelectStatementBuilder As(IQueryBuilder builder) => As((b, o) => builder.ValidateArgument(nameof(builder)).Build(b, o));
         #endregion
     }
 }

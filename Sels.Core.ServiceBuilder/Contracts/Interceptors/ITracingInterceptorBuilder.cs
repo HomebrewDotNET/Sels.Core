@@ -2,6 +2,10 @@
 using System.Reflection;
 using Sels.Core.Extensions.Reflection;
 using Microsoft.Extensions.Logging;
+using System;
+using Sels.Core.Extensions;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Sels.Core.ServiceBuilder.Interceptors
 {
@@ -138,6 +142,6 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         /// </summary>
         /// <param name="logger">Delegate that logs the exceptions using the provided loggers</param>
         /// <returns>Current builder for method chaining</returns>
-        IExceptionTracingInterceptorBuilder Using(Action<IInvocation, IEnumerable<ILogger>, LogLevel, Exception> logger);
+        IExceptionTracingInterceptorBuilder Using(Action<IInvocation, ILogger, LogLevel, Exception> logger);
     }
 }

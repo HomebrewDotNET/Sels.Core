@@ -1,8 +1,14 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Sels.Core.Attributes.Enumeration.Value;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
 using Sels.SQL.QueryBuilder.Builder.Statement;
+using Sels.SQL.QueryBuilder.Expressions.Condition;
 
-namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
+namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
     /// <summary>
     /// Expression that represents a sql join.
@@ -10,7 +16,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
     /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
     /// <typeparam name="TDerived">The builder that created the expression</typeparam>
     public class JoinExpression<TEntity, TDerived> : BaseExpressionContainer,
-        IStatementJoinTableBuilder<TEntity, TDerived>,
+        IStatementJoinResultSetBuilder<TEntity, TDerived>,
         IStatementJoinOnBuilder<TEntity, TDerived>,
         IStatementJoinConditionBuilder<TEntity>,
         IComparisonExpressionBuilder<TEntity, IStatementJoinFinalConditionBuilder<TEntity>>,
@@ -19,7 +25,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
     {
         // Fields
         private readonly TDerived _derived;
-        private readonly List<JoinCondition> _conditions = new List<JoinCondition>();
+        private readonly List<ConditionExpression> _conditions = new List<ConditionExpression>();
 
         // Properties
         /// <summary>
@@ -27,9 +33,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
         /// </summary>
         public Joins JoinType { get; }
         /// <summary>
-        /// The table to join.
+        /// Expression that contains the result set to join.
         /// </summary>
-        public TableExpression TableExpression { get; private set; }
+        public IExpression ResultSetExpression { get; private set; }
         /// <summary>
         /// Array of expressions to join on.
         /// </summary>
@@ -53,9 +59,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
             var expression = OnExpressions;
             if(!expression.HasValue()) throw new InvalidOperationException($"{nameof(OnExpressions)} is empty");
 
-            // Table
+            // Result set to join
             builder.Append(JoinType.GetStringValue()).AppendSpace();
-            subBuilder(builder, TableExpression);
+            subBuilder(builder, ResultSetExpression);
 
             // Columns
             builder.AppendSpace().Append(Sql.On).AppendSpace();
@@ -68,15 +74,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
             
         }
 
-        /// <inheritdoc/>
-        public IStatementJoinOnBuilder<TEntity, TDerived> Table(string table, object? datasetAlias = null, string? database = null, string? schema = null)
-        {
-            table.ValidateArgument(nameof(table));
-
-            TableExpression = new TableExpression(database, schema, table, datasetAlias);
-
-            return this;
-        }
         /// <inheritdoc/>
         public TDerived On(Action<IStatementJoinConditionBuilder<TEntity>> builder)
         {
@@ -92,7 +89,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
         {
             expression.ValidateArgument(nameof(expression));
 
-            _conditions.Add(new JoinCondition() { LeftExpression = expression });
+            _conditions.Add(new ConditionExpression() { LeftExpression = expression });
 
             return this;
         }
@@ -121,33 +118,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Join
 
             return this;
         }
-
-        private class JoinCondition : BaseExpressionContainer
+        /// <inheritdoc/>
+        IStatementJoinOnBuilder<TEntity, TDerived> IStatementJoinResultSetBuilder<TEntity, TDerived>.Expression(IExpression expression)
         {
-            public IExpression LeftExpression { get; set; }
-            public IExpression OperatorExpression { get; set; }
-            public IExpression RightExpression { get; set; }
-            public LogicOperators? LogicOperator { get; set; }
-
-            public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
-            {
-                builder.ValidateArgument(nameof(builder));
-                subBuilder.ValidateArgument(nameof(subBuilder));
-
-                if (LeftExpression == null) throw new InvalidOperationException($"{nameof(LeftExpression)} is not set");
-                if (OperatorExpression == null) throw new InvalidOperationException($"{nameof(OperatorExpression)} is not set");
-                if (RightExpression == null) throw new InvalidOperationException($"{nameof(RightExpression)} is not set");
-
-                var expressions = Helper.Collection.Enumerate(LeftExpression, OperatorExpression, RightExpression).ToArray();
-
-                expressions.Execute((i, x) =>
-                {
-                    subBuilder(builder, x);
-                    if (i != expressions.Length - 1) builder.AppendSpace();
-                });
-
-                if (LogicOperator.HasValue) builder.AppendSpace().Append(LogicOperator.Value);
-            }
+            ResultSetExpression = expression.ValidateArgument(nameof(expression));
+            return this;
         }
     }
 }

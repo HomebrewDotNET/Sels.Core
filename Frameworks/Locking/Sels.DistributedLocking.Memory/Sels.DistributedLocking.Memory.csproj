@@ -1,19 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFramework>netstandard2.1</TargetFramework>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
-		<Product>Core memory Locking Library</Product>
+		<Product>Distributed Memeory Locking Library</Product>
 		<Description>
-			Implements abtractions in Sels.DistributedLocking using memory for inner process distributed locks.
-			Used by projects maintained here: https://github.com/Jenssels1998
+			Locking provider using an in-memory store for inner process distributed locks.
+
+			Provider can be added to the service container using the IServiceCollection.AddMemoryLockingProvider() extension method.
+			Inject Sels.DistributedLocking.Provider.ILockingProvider to start placing distributed locks.
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 		<Copyright>Jens Sels</Copyright>
-		<PackageTags>Sels</PackageTags>
+		<PackageTags>Sels;Locking;Locks;DistributedLock;Memory</PackageTags>
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 		<!--For NuGet package-->
 		<VersionPrefix>1.0.0</VersionPrefix>
@@ -31,6 +33,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+		<PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
 	</ItemGroup>
 
 	<!--Include non-NuGet package projects in NuGet package-->
@@ -50,6 +53,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+	  <ProjectReference Include="..\..\..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
 	  <ProjectReference Include="..\..\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
 	  <ProjectReference Include="..\Sels.DistributedLocking.Abstractions\Sels.DistributedLocking.Abstractions.csproj" />
 	</ItemGroup>

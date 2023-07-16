@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Sels.Core.Attributes.Enumeration.Value;
+using Sels.Core.Extensions;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
@@ -27,7 +29,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? columnConverter = null, bool includeAlias = true, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, Func<string, string> columnConverter = null, bool includeAlias = true, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             datasetConverterer.ValidateArgument(nameof(datasetConverterer));

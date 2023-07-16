@@ -1,6 +1,10 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Statement;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Statement;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
+namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
     /// <summary>
     /// Template for creating a new <see cref="IStatementConditionExpressionBuilder{TEntity}"/>.
@@ -13,19 +17,21 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
 
         // State
         private bool _nextConditionIsNot = false;
-        private ComparisonConditionExpression? _lastExpression;
+        private ComparisonConditionExpression _lastExpression;
 
         // Properties
         /// <summary>
         /// The currently configured condition expressions.
         /// </summary>
         public IConditionExpression[] Expressions => _expressions.ToArray();
+        /// <inheritdoc/>
+        public IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> LastBuilder => _expressions.HasValue() ? this : null;
 
         /// <inheritdoc cref=" BaseConditionExpression{TEntity}"/>
         /// <param name="builder">Delegate for configuring the current builder</param>
         /// <param name="throwOnEmpty">If a <see cref="InvalidOperationException"/> should be thrown when <paramref name="builder"/> created no expressions</param>
         /// <exception cref="InvalidOperationException"></exception>
-        public BaseConditionExpression(Action<IStatementConditionExpressionBuilder<TEntity>> builder, bool throwOnEmpty = true)
+        public BaseConditionExpression(Func<IStatementConditionExpressionBuilder<TEntity>, object> builder, bool throwOnEmpty = true)
         {
             builder.ValidateArgument(nameof(builder));
             builder(this);
@@ -39,7 +45,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
             return this;
         }
         /// <inheritdoc/>
-        public IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Action<IStatementConditionExpressionBuilder<TEntity>> builder)
+        public IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder)
         {
             builder.ValidateArgument(nameof(builder));
 

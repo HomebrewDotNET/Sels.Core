@@ -1,7 +1,7 @@
 ﻿using Sels.Core.Testing.Models;
 using System;
 
-namespace Sels.Core.Data.MySQL.Test
+namespace Sels.SQL.QueryBuilder.MySQL.Test
 {
     public class MySql_Insert
     {
@@ -61,7 +61,7 @@ namespace Sels.Core.Data.MySQL.Test
             var expected = "INSERT INTO `Person` (`Id`, `Name`, `SurName`) VALUES (1, 'Jens', 'Sels') RETURNING *".GetWithoutWhitespace().ToLower();
             var builder = MySql.Insert<Person>().Into().Column(x => x.Id).Column(x => x.Name).Column(x => x.SurName)
                             .Values(1, "Jens", "Sels")
-                            .Return(x => x.All());
+                            .Returning(x => x.All());
 
             // Act
             var query = builder.Build();
@@ -95,7 +95,7 @@ namespace Sels.Core.Data.MySQL.Test
             var expected = "INSERT INTO `Person` (`Id`, `Name`, `SurName`) VALUES (1, 'Jens', 'Sels') ON DUPLICATE KEY UPDATE `Name`=VALUES(`Name`), `SurName`='Sels'".GetWithoutWhitespace().ToLower();
             var builder = MySql.Insert<Person>().Into().Column(x => x.Id).Column(x => x.Name).Column(x => x.SurName)
                             .Values(1, "Jens", "Sels")
-                            .OnDuplicateKeyUpdate(x => x.Set(x => x.Name).To.Values(x => x.Name).And.Set(x => x.SurName).To.Value("Sels"));
+                            .OnDuplicateKeyUpdate(x => x.Set.Column(x => x.Name).To.Values(x => x.Name).And.Set.Column(x => x.SurName).To.Value("Sels"));
 
             // Act
             var query = builder.Build();

@@ -1,9 +1,13 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+using Sels.SQL.QueryBuilder.Expressions;
+using System;
 using System.Linq.Expressions;
 using System.Text;
 using SqlConstantExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ConstantExpression;
 using SqlParameterExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ParameterExpression;
-
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Reflection;
+using Sels.Core.Models;
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
     /// <summary>
@@ -31,7 +35,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="sqlExpression">Delegate that adds the sql expression to the provided string builder</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Expression(Action<StringBuilder> sqlExpression) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))));
+        TReturn Expression(Action<StringBuilder, ExpressionCompileOptions> sqlExpression) => Expression(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))));
         #endregion
 
         #region Column
@@ -41,7 +45,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Optional dataset alias to select <paramref name="column"/> from</param>
         /// <param name="column">The column to create the condition for</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Column(object? dataset, string column) => Expression(new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column))));
+        TReturn Column(object dataset, string column) => Expression(new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column))));
         /// <summary>
         /// Adds a column expression.
         /// </summary>
@@ -55,30 +59,35 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Column<T>(object? dataset, Expression<Func<T, object?>> property) => Column(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        TReturn Column<T>(object dataset, Expression<Func<T, object>> property) => Column(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Adds a column expression where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Column<T>(Expression<Func<T, object?>> property) => Column<T>(typeof(T), property);
+        TReturn Column<T>(Expression<Func<T, object>> property) => Column<T>(typeof(T), property);
         /// <summary>
         /// Adds a column expression where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Column(Expression<Func<TEntity, object?>> property) => Column<TEntity>(property);
+        TReturn Column(Expression<Func<TEntity, object>> property) => Column<TEntity>(property);
         /// <summary>
         /// Adds a column expression where the column name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Column(object? dataset, Expression<Func<TEntity, object?>> property) => Column<TEntity>(dataset, property);
+        TReturn Column(object dataset, Expression<Func<TEntity, object>> property) => Column<TEntity>(dataset, property);
         #endregion
 
         #region Value
+        /// <summary>
+        /// Adds a SQL null value.
+        /// </summary>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Null() => Value(DBNull.Value);
         /// <summary>
         /// Adds a constant sql value expression.
         /// </summary>
@@ -100,140 +109,172 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Parameter<T>(Expression<Func<T, object?>> property) => Parameter(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        TReturn Parameter<T>(Expression<Func<T, object>> property) => Parameter(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Adds a sql parameter expression where the parameter name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Parameter(Expression<Func<TEntity, object?>> property) => Parameter<TEntity>(property);
+        TReturn Parameter(Expression<Func<TEntity, object>> property) => Parameter<TEntity>(property);
+        #endregion
+
+        #region Variable
+        /// <summary>
+        /// Adds a sql variable expression.
+        /// </summary>
+        /// <param name="variable">The name of the sql variable</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Variable(string variable) => Expression(new VariableExpression(variable.ValidateArgumentNotNullOrWhitespace(nameof(variable))));
+        /// <summary>
+        /// Adds a sql variable expression where the variable name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type to select the property from</typeparam>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Variable<T>(Expression<Func<T, object>> property) => Variable(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        /// <summary>
+        /// Adds a sql variable expression where the variable name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Variable(Expression<Func<TEntity, object>> property) => Variable<TEntity>(property);
+        #endregion
+
+        #region VariableAssignment
+        /// <summary>
+        /// Assigns a new value to a SQL variable.
+        /// </summary>
+        /// <param name="variable">The name of the sql variable</param>
+        /// <param name="constant">The constant value to assign to the variable</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn AssignVariable(string variable, object constant) => AssignVariable(variable, e => e.Value(constant));
+        /// <summary>
+        /// Assigns a new value to a SQL variable.
+        /// </summary>
+        /// <typeparam name="T">The main entity for build the query for</typeparam>
+        /// <param name="variable">The name of the sql variable</param>
+        /// <param name="builder">Builder to select the value to assign</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn AssignVariable<T>(string variable, Action<ISharedExpressionBuilder<T, Null>> builder) => Expression(new VariableInlineAssignmentExpression(new VariableExpression(variable.ValidateArgumentNotNullOrWhitespace(nameof(variable))), new ExpressionBuilder<T>(builder)));
+        /// <summary>
+        /// Assigns a new value to a SQL variable.
+        /// </summary>
+        /// <param name="variable">The name of the sql variable</param>
+        /// <param name="builder">Builder to select the value to assign</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn AssignVariable(string variable, Action<ISharedExpressionBuilder<TEntity, Null>> builder) => AssignVariable<TEntity>(variable, builder);
+        /// <summary>
+        /// Assigns a new value to a SQL variable where the variable name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The main entity for build the query for</typeparam>
+        /// <param name="property">The expression that points to the property to use</param>
+        ///  <param name="builder">Builder to select the value to assign</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn AssignVariable<T>(Expression<Func<T, object>> property, Action<ISharedExpressionBuilder<T, Null>> builder) => AssignVariable(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, builder);
+        /// <summary>
+        /// Assigns a new value to a SQL variable where the variable name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="builder">Builder to select the value to assign</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn AssignVariable(Expression<Func<TEntity, object>> property, Action<ISharedExpressionBuilder<TEntity, Null>> builder) => AssignVariable<TEntity>(property, builder);
         #endregion
 
         #region Query
         /// <summary>
         /// Adds a sub query expression.
         /// </summary>
-        /// <param name="query">Delegate that returns the query string</param>
+        /// <param name="query">Delegate that adds the query to the supplied builder</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Query(Func<ExpressionCompileOptions, string> query) => Expression(new SubQueryExpression(null, query.ValidateArgument(nameof(query))));
+        TReturn Query(Action<StringBuilder, ExpressionCompileOptions> query) => Expression(new SubQueryExpression(null, query.ValidateArgument(nameof(query))));
         /// <summary>
         /// Adds a sub query expression.
         /// </summary>
         /// <param name="query">The query string</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Query(string query) => Query(x => query.ValidateArgumentNotNullOrWhitespace(nameof(query)));
+        TReturn Query(string query) => Query((b, o) => b.Append(query.ValidateArgumentNotNullOrWhitespace(nameof(query))));
         /// <summary>
         /// Adds a sub query expression.
         /// </summary>
         /// <param name="builder">Builder for creating the sub query</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Query(IQueryBuilder builder) => Query(x => builder.ValidateArgument(nameof(builder)).Build(x));
-        #endregion
-    }
-
-    /// <summary>
-    /// Builder that adds comparison operators.
-    /// </summary>
-    /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
-    /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
-    public interface IComparisonExpressionBuilder<TEntity, out TReturn>
-    {
-        #region Expression
-        /// <summary>
-        /// Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
-        /// </summary>
-        /// <param name="sqlExpression">The sql expression containing the operator</param>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn CompareTo(IExpression sqlExpression);
-        /// <summary>
-        /// Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
-        /// </summary>
-        /// <param name="sqlExpression">String containing the sql operator</param>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn CompareTo(string sqlExpression) => CompareTo(new RawExpression(sqlExpression.ValidateArgumentNotNullOrEmpty(nameof(sqlExpression))));
-        /// <summary>
-        /// Compares 2 expressions using the operator defined in <paramref name="sqlExpression"/>.
-        /// </summary>
-        /// <param name="sqlExpression">Delegate that adds the sql operator to compare to the provided string builder</param>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn CompareTo(Action<StringBuilder> sqlExpression) => CompareTo(new DelegateExpression(sqlExpression.ValidateArgument(nameof(sqlExpression))));
+        TReturn Query(IQueryBuilder builder) => Expression(new SubQueryExpression(null, builder.ValidateArgument(nameof(builder))));
         #endregion
 
-        #region Operators
+        #region Case
         /// <summary>
-        /// The expressions should be equal.
+        /// Adds a case expression.
         /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn EqualTo => CompareTo(new EnumExpression<Operators>(Operators.Equal));
+        /// <param name="caseBuilder">Delegate that configures the case expression</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Case(Action<ICaseExpressionRootBuilder<TEntity>> caseBuilder) => Case<TEntity>(caseBuilder);
         /// <summary>
-        /// The expressions should not be equal.
+        /// Adds a case expression.
         /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn NotEqualTo => CompareTo(new EnumExpression<Operators>(Operators.NotEqual));
+        /// <typeparam name="T">The main type to create the case expression with</typeparam>
+        /// <param name="caseBuilder">Delegate that configures the case expression</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn Case<T>(Action<ICaseExpressionRootBuilder<T>> caseBuilder) => Expression(new WrappedExpression(new CaseExpression<T>(caseBuilder)));
+        #endregion
+
+        #region Date
         /// <summary>
-        /// First expression should be greater than second expression.
+        /// Adds an expression that returns the current date.
         /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn GreaterThan => CompareTo(new EnumExpression<Operators>(Operators.Greater));
+        /// <param name="type">Determines which date is returned</param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn CurrentDate(DateType type = DateType.Utc) => Expression(new CurrentDateExpression(type));
+
         /// <summary>
-        /// First expression should be lesser than second expression.
+        /// Adds an expression where a date is modified.
         /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn LesserThan => CompareTo(new EnumExpression<Operators>(Operators.Less));
+        /// <param name="date">String that contains the date to modify</param>
+        /// <param name="amount">The amount to add/substract to/from the date</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate(string date, double amount, DateInterval interval = DateInterval.Millisecond) => Expression(new ModifyDateExpression(new SqlConstantExpression(date.ValidateArgumentNotNullOrWhitespace(nameof(date))), new SqlConstantExpression(amount), interval));
         /// <summary>
-        /// First expression should be greater or equal to second expression.
+        /// Adds an expression where a date is modified.
         /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn GreaterOrEqualTo => CompareTo(new EnumExpression<Operators>(Operators.GreaterOrEqual));
+        /// <param name="date">The date to modify</param>
+        /// <param name="amount">The amount to add/substract to/from the date</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate(DateTimeOffset date, double amount, DateInterval interval = DateInterval.Millisecond) => Expression(new ModifyDateExpression(new SqlConstantExpression(date), new SqlConstantExpression(amount), interval));
         /// <summary>
-        /// First expression should be lesser or equal to second expression.
+        /// Adds an expression where a date is modified.
         /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn LesserOrEqualTo => CompareTo(new EnumExpression<Operators>(Operators.LessOrEqual));
+        /// <typeparam name="T">The main entity to build the expression for</typeparam>
+        /// <param name="dateExpressionBuilder">Delegate that selects the date expression to modify</param>
+        /// <param name="amount">The amount to add/substract to/from the date</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate<T>(Action<ISharedExpressionBuilder<T, Null>> dateExpressionBuilder, double amount, DateInterval interval = DateInterval.Millisecond) => Expression(new ModifyDateExpression(new ExpressionBuilder<T>(dateExpressionBuilder.ValidateArgument(nameof(dateExpressionBuilder))), new SqlConstantExpression(amount), interval));
         /// <summary>
-        /// First expression should be like the pattern defined in the second expression.
+        /// Adds an expression where a date is modified.
         /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn Like => CompareTo(new EnumExpression<Operators>(Operators.Like));
+        /// <param name="dateExpressionBuilder">Delegate that selects the date expression to modify</param>
+        /// <param name="amount">The amount to add/substract to/from the date</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate(Action<ISharedExpressionBuilder<TEntity, Null>> dateExpressionBuilder, double amount, DateInterval interval = DateInterval.Millisecond) => ModifyDate<TEntity>(dateExpressionBuilder, amount, interval);
         /// <summary>
-        /// First expression should not be like the pattern defined in the second expression.
+        /// Adds an expression where a date is modified.
         /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn NotLike => CompareTo(new EnumExpression<Operators>(Operators.NotLike));
+        /// <typeparam name="T">The main entity to build the expression for</typeparam>
+        /// <param name="dateExpressionBuilder">Delegate that selects the date expression to modify</param>
+        /// <param name="amountExpressionBuilder">Delegate that selects the value expression</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate<T>(Action<ISharedExpressionBuilder<T, Null>> dateExpressionBuilder, Action<ISharedExpressionBuilder<T, Null>> amountExpressionBuilder, DateInterval interval = DateInterval.Millisecond) => Expression(new ModifyDateExpression(new ExpressionBuilder<T>(dateExpressionBuilder.ValidateArgument(nameof(dateExpressionBuilder))), new ExpressionBuilder<T>(amountExpressionBuilder.ValidateArgument(nameof(amountExpressionBuilder))), interval));
         /// <summary>
-        /// First expression should exist in a list of values defined by the second expression.
+        /// Adds an expression where a date is modified.
         /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn In => CompareTo(new EnumExpression<Operators>(Operators.In));
-        /// <summary>
-        /// First expression should not exist in a list of values defined by the second expression.
-        /// </summary>
-        /// <returns>Builder for selecting what to compare to the first expression</returns>
-        TReturn NotIn => CompareTo(new EnumExpression<Operators>(Operators.NotIn));
-        #endregion       
-    }
-    /// <summary>
-    /// Builder for chaining other builder using and/or.
-    /// </summary>
-    /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
-    /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
-    public interface IChainedBuilder<TEntity, out TReturn>
-    {
-        /// <summary>
-        /// Sets the logic operator on how to join the current condition and the condition created after calling this method.
-        /// </summary>
-        /// <param name="logicOperator">The logic operator to use</param>
-        /// <returns>Current builder for method chaining</returns>
-        TReturn AndOr(LogicOperators logicOperator = LogicOperators.And);
-        /// <summary>
-        /// Current condition and the condition created after calling this method either need to result in true.
-        /// </summary>
-        /// <returns>Current builder for method chaining</returns>
-        TReturn Or => AndOr(LogicOperators.Or);
-        /// <summary>
-        /// Current condition and the condition created after calling this method both need to result in true.
-        /// </summary>
-        /// <returns>Current builder for method chaining</returns>
-        TReturn And => AndOr(LogicOperators.And);
+        /// <param name="dateExpressionBuilder">Delegate that selects the date expression to modify</param>
+        /// <param name="amountExpressionBuilder">Delegate that selects the value expression</param>
+        /// <param name="interval"><inheritdoc cref="DateInterval"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        TReturn ModifyDate(Action<ISharedExpressionBuilder<TEntity, Null>> dateExpressionBuilder, Action<ISharedExpressionBuilder<TEntity, Null>> amountExpressionBuilder, DateInterval interval = DateInterval.Millisecond) => ModifyDate<TEntity>(dateExpressionBuilder, amountExpressionBuilder, interval);
+        #endregion
     }
 }

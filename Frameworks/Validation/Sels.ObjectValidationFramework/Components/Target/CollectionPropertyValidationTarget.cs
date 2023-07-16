@@ -89,6 +89,8 @@ namespace Sels.ObjectValidationFramework.Target
         {
             error.Property = _property;
         }
+        /// <inheritdoc/>
+        protected override string GetDisplayNameFor(ValidationRuleContext<TEntity, CollectionPropertyValidationInfo, TTargetContext, TValue> context, bool includeParents) => context.GetFullDisplayName(includeParents);
     }
 
     /// <summary>

@@ -1,5 +1,9 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Statement;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Statement;
+using System;
+using System.Collections.Generic;
 using System.Text;
+using Sels.Core.Extensions.Linq;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
@@ -47,7 +51,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             return this;
         }
         /// <inheritdoc/>
-        public ICteOrSelectStatementBuilder Using(Func<ExpressionCompileOptions, string> query)
+        public ICteOrSelectStatementBuilder As(Action<StringBuilder, ExpressionCompileOptions> query)
         {
             query.ValidateArgument(nameof(query));
             if (Builder == null) throw new InvalidOperationException("Builder is not set");

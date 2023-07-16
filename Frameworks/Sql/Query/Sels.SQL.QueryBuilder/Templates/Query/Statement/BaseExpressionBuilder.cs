@@ -1,5 +1,8 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Compilation;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
@@ -7,7 +10,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// <summary>
     /// Base builder that wraps an expression that gets compiled into sql using a compiler.
     /// </summary>
-    public abstract class BaseExpressionBuilder : IQueryBuilder
+    public abstract class BaseExpressionBuilder : BaseQueryBuilder
     {
         // Fields
         private readonly IExpressionCompiler _compiler;
@@ -20,19 +23,12 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         }
 
         /// <inheritdoc/>
-        public string Build(ExpressionCompileOptions options = ExpressionCompileOptions.None)
-        {
-            return _compiler.Compile(Expression, options);
-        }
-        /// <inheritdoc/>
-        public StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override StringBuilder Build(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
-            return _compiler.Compile(builder, Expression, options);
+            return _compiler.Compile(builder, Expression, x => x.OnCompiling(OnCompiling), options);
         }
 
-        /// <inheritdoc/>
-        public abstract IExpression[] InnerExpressions { get; }
         /// <summary>
         /// The expression to compile.
         /// </summary>

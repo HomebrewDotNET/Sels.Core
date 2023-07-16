@@ -1,31 +1,35 @@
-﻿using System.Text;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
     /// <summary>
-    /// Expression that wraps another expression using strings.
+    /// Expression that wraps another expression using prefixes and/or suffixes.
     /// </summary>
     public class WrapperExpression : BaseExpressionContainer
     {
         // Properties
         /// <summary>
-        /// Optional strings to add in front of <see cref="Expression"/>.
+        /// Optional values to add in front of <see cref="Expression"/>.
         /// </summary>
-        public IEnumerable<string>? Prefixes { get; }
+        public IEnumerable<object> Prefixes { get; }
         /// <summary>
         /// The wrapped expression.
         /// </summary>
         public IExpression Expression { get; }
         /// <summary>
-        /// Optional strings to add after <see cref="Expression"/>
+        /// Optional values to add after <see cref="Expression"/>
         /// </summary>
-        public IEnumerable<string>? Suffixes { get; }
+        public IEnumerable<object> Suffixes { get; }
 
         /// <inheritdoc cref="WrapperExpression"/>
         /// <param name="prefixes"><inheritdoc cref="Prefixes"/></param>
         /// <param name="expression"><inheritdoc cref="Expression"/></param>
         /// <param name="suffixes"><inheritdoc cref="Suffixes"/></param>
-        public WrapperExpression(IEnumerable<string>? prefixes, IExpression expression, IEnumerable<string>? suffixes)
+        public WrapperExpression(IEnumerable<object> prefixes, IExpression expression, IEnumerable<object> suffixes)
         {
             Prefixes = prefixes;
             Expression = expression.ValidateArgument(nameof(expression));

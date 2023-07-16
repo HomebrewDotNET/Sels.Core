@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,14 +21,19 @@ namespace Sels.Core.Extensions.Linq
         {
             source.ValidateArgument(nameof(source));
 
-            if(source is IReadOnlyCollection<T> collection)
-            {
-                return collection.Count;
-            }
-
             if (source is T[] array)
             {
                 return array.Length;
+            }
+
+            if (source is IList<T> list)
+            {
+                return list.Count;
+            }
+
+            if (source is IReadOnlyCollection<T> collection)
+            {
+                return collection.Count;
             }
 
             return source.Count();

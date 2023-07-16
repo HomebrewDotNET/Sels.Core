@@ -1,4 +1,8 @@
-﻿using System.Globalization;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Reflection;
+using System;
+using System.Globalization;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
@@ -34,9 +38,19 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             {
                 builder.Append(options.HasFlag(ExpressionCompileOptions.EnumAsString) ? Value : Value.ChangeType<int>());
             }
+            else if (type.Is<DateTimeOffset>())
+            {
+                var castedDate = Value.CastTo<DateTimeOffset>();
+                if (options.HasFlag(ExpressionCompileOptions.DateAsUtc)) castedDate = castedDate.UtcDateTime;
+
+                builder.Append('\'').Append(castedDate.ToString("yyyy-MM-dd HH:mm:ss")).Append('\'');
+            }
             else if (type.Is<DateTime>())
             {
-                builder.Append('\'').Append(Value.CastTo<DateTime>().ToString("yyyy-MM-dd HH:mm:ss")).Append('\'');
+                var castedDate = Value.CastTo<DateTime>();
+                if(options.HasFlag(ExpressionCompileOptions.DateAsUtc)) castedDate = castedDate.ToUniversalTime();
+
+                builder.Append('\'').Append(castedDate.ToString("yyyy-MM-dd HH:mm:ss")).Append('\'');
             }
             else if (type.Is<double>())
             {
@@ -45,6 +59,10 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             else if (type.Is<decimal>())
             {
                 builder.Append(Value.CastTo<decimal>().ToString(CultureInfo.InvariantCulture));
+            }
+            else if (type.Is<float>())
+            {
+                builder.Append(Value.CastTo<float>().ToString(CultureInfo.InvariantCulture));
             }
             else if (type.IsNumeric())
             {

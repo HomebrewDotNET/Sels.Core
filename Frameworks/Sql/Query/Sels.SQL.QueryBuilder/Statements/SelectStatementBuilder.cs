@@ -1,8 +1,10 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Compilation;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Condition;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Join;
+using System.Collections.Generic;
 using System.Text;
+using Sels.Core.Extensions.Linq;
+using Sels.Core.Extensions.Conversion;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -23,15 +25,14 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         }
 
         /// <inheritdoc cref="SelectStatementBuilder{TEntity}"/>
-        /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
-        /// <param name="expressions">The expressions for the current query</param>
-        public SelectStatementBuilder(IQueryCompiler<SelectExpressionPositions> compiler, Dictionary<SelectExpressionPositions, List<IExpression>> expressions) : base(compiler, expressions)
+        /// <param name="other">The builder to copy settings from</param>
+        public SelectStatementBuilder(SelectStatementBuilder<TEntity> other) : base(other)
         {
         }
 
         #region Expressions        
         /// <inheritdoc/>
-        public ISelectStatementBuilder<TEntity> Columns(object? dataset, IEnumerable<string> columns)
+        public ISelectStatementBuilder<TEntity> Columns(object dataset, IEnumerable<string> columns)
         {
             columns.ValidateArgumentNotNullOrEmpty(nameof(columns));
 
@@ -39,7 +40,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             return this;
         }
         /// <inheritdoc/>
-        public ISelectStatementBuilder<TEntity> ColumnsOf<T>(object? dataset, params string[] excludedProperties)
+        public ISelectStatementBuilder<TEntity> ColumnsOf<T>(object dataset, params string[] excludedProperties)
         {
             foreach(var property in GetColumnPropertiesFrom<T>(excludedProperties))
             {
@@ -61,9 +62,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             return SelectExpressionPositions.Where;
         }
         /// <inheritdoc/>
-        protected override ISelectStatementBuilder<TEntity> Clone(IQueryCompiler<SelectExpressionPositions> compiler, Dictionary<SelectExpressionPositions, List<IExpression>> expressions)
+        public override ISelectStatementBuilder<TEntity> Clone()
         {
-            return new SelectStatementBuilder<TEntity>(compiler, expressions);
+            return new SelectStatementBuilder<TEntity>(this);
         }
 
         /// <inheritdoc/>

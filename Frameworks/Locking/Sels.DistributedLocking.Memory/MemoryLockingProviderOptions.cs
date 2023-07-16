@@ -13,14 +13,14 @@ namespace Sels.DistributedLocking.Memory
     public class MemoryLockingProviderOptions
     {
         // Fields
-        private MemoryLockCleanupMethod _cleanupMethod;
+        private MemoryLockCleanupMethod _cleanupMethod = MemoryLockCleanupMethod.ProcessMemory;
         private long? _cleanupAmount;
 
         // Properties
         /// <summary>
         /// The interval that will be used by <see cref="MemoryLockingProvider"/> to perform cleanup of the in-memeory locks to free up memory. When set to <see cref="TimeSpan.Zero"/> no locks will be cleaned up.
         /// </summary>
-        public TimeSpan CleanupInterval { get; set; } = new TimeSpan(0, 1, 0);
+        public TimeSpan CleanupInterval { get; set; } = TimeSpan.FromMinutes(1);
         /// <summary>
         /// If cleanup of locks is enabled.
         /// </summary>
@@ -34,11 +34,17 @@ namespace Sels.DistributedLocking.Memory
         /// <summary>
         /// Dictates how stale locks are handled. If set to true a <see cref="StaleLockException"/> or <see cref="ResourceAlreadyLockedException"/> will be thrown when actions are performed on a stale lock. When set to false the action will fail silently.
         /// </summary>
-        public bool ThrowOnStaleLock { get; set; } = false;
+        public bool ThrowOnStaleLock { get; set; } = true;
         /// <summary>
-        /// How many milliseconds before a lock expires to extend the expiry date. Is also used as offset when to notify that a lock expired.
+        /// How many milliseconds before a lock expires to extend the expiry date.
         /// </summary>
         public int ExpiryOffset { get; set; } = 1000;
+
+        /// <inheritdoc/>
+        public MemoryLockingProviderOptions()
+        {
+            SetDefaultAmount();
+        }
 
         private void SetDefaultAmount()
         {
@@ -67,7 +73,7 @@ namespace Sels.DistributedLocking.Memory
     }
 
     /// <summary>
-    /// Defines what memory locks are eligible to be removed when cleanup is performed. 
+    /// Defines when memory locks should be removed from memory. 
     /// </summary>
     public enum MemoryLockCleanupMethod
     {
@@ -76,7 +82,7 @@ namespace Sels.DistributedLocking.Memory
         /// </summary>
         Time = 0,
         /// <summary>
-        /// When the total amount of active locks exceeds the configured amount, the oldest inactive locks will be removed until the total amount of locks is below or equal to the configured amount.
+        /// When the total amount of active locks exceeds the configured amount, all inactive locks will be removed.
         /// </summary>
         Amount = 1,
         /// <summary>

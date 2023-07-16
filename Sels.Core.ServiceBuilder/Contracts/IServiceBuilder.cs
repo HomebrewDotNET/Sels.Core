@@ -1,8 +1,11 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
-
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.ServiceBuilder.Events;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Sels.Core.ServiceBuilder
 {
@@ -178,13 +181,13 @@ namespace Sels.Core.ServiceBuilder
         /// </summary>
         /// <param name="action">The delegate to execute</param>
         /// <returns>Current builder for method chaining</returns>
-        IServiceBuilder<T, TImpl> OnCreated(Action<TImpl> action) => OnCreated((p, i) => Guard.IsNotNull(action)(i));
+        IServiceBuilder<T, TImpl> OnCreated(Action<TImpl> action) => OnCreated((p, i) => action.ValidateArgument(nameof(action))(i));
         /// <summary>
         /// Registers a handler that is trigger each time an instance of type <typeparamref name="TImpl"/> is created using the current builder.
         /// </summary>
         /// <param name="handler">The handler to register</param>
         /// <returns>Current builder for method chaining</returns>
-        IServiceBuilder<T, TImpl> OnCreated(IOnCreatedHandler<TImpl> handler) => OnCreated((p, i) => Guard.IsNotNull(handler).Handle(p, i));
+        IServiceBuilder<T, TImpl> OnCreated(IOnCreatedHandler<TImpl> handler) => OnCreated((p, i) => handler.ValidateArgument(nameof(handler)).Handle(p, i));
         /// <summary>
         /// Registers a handler of type <typeparamref name="THandler"/> that is trigger each time an instance of type <typeparamref name="TImpl"/> is created using the current builder.
         /// </summary>

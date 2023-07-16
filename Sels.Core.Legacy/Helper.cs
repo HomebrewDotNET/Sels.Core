@@ -19,6 +19,11 @@ using Newtonsoft.Json.Linq;
 using Sels.Core.Process;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Extensions.Linq;
+using Sels.Core.Extensions.Object;
+using Sels.Core.Components.Scope;
+using Sels.Core.Models;
+using Sels.Core.Components.Scope.Actions;
+using System.Linq.Expressions;
 
 namespace Sels.Core
 {
@@ -112,31 +117,58 @@ namespace Sels.Core
             }
 
             /// <summary>
-            /// Creates configuration from all json files in <paramref name="directory"/>.
+            /// Creates configuration from all json files in <paramref name="directory"/> and optionally <paramref name="additionalDirectories"/>.
             /// </summary>
             /// <param name="directory">The directory to scan for json files</param>
             /// <param name="filter">Optional filter for defining which json files to include in the configuration</param>
             /// <param name="reloadOnChange">Whether the configuration needs to be reloaded when the file changes</param>
+            /// <param name="additionalDirectories">Additional directories to scan</param>
             /// <returns>Configuration created from all json files in <paramref name="directory"/></returns>
-            public static IConfiguration BuildConfigurationFromDirectory(DirectoryInfo directory, Predicate<FileInfo> filter = null, bool reloadOnChange = true)
+            public static IConfiguration BuildConfigurationFromDirectory(DirectoryInfo directory, Predicate<FileInfo> filter = null, bool reloadOnChange = true, params DirectoryInfo[] additionalDirectories)
             {
-                directory.ValidateArgumentExists(nameof(directory));
+                directory.ValidateArgument(nameof(directory));
                 filter = filter != null ? filter : new Predicate<FileInfo>(x => true);
 
                 var builder = new ConfigurationBuilder();
-                directory.GetFiles().Where(x => x.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) && filter(x)).Execute(x => builder.AddJsonFile(x.FullName, false, reloadOnChange));
+                Helper.Collection.Enumerate(directory, additionalDirectories).Where(x => x != null && x.Exists)
+                                 .SelectMany(x => x.GetFiles())
+                                 .Where(x => x.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) && filter(x))
+                                 .Execute(x => builder.AddJsonFile(x.FullName, false, reloadOnChange));
+
                 return builder.Build();
             }
 
             /// <summary>
-            /// Creates configuration from all json files in <see cref="AppContext.BaseDirectory"/>.
+            /// Creates configuration from all json files in <see cref="AppContext.BaseDirectory"/> and optionally <paramref name="additionalDirectories"/>.
             /// </summary>
             /// <param name="filter">Optional filter for defining which json files to include in the configuration</param>
             /// <param name="reloadOnChange">Whether the configuration needs to be reloaded when the file changes</param>
+            /// <param name="additionalDirectories">Additional directories to scan</param>
             /// <returns>Configuration created from all json files in <see cref="AppContext.BaseDirectory"/></returns>
-            public static IConfiguration BuildConfigurationFromDirectory(Predicate<FileInfo> filter = null, bool reloadOnChange = true)
+            public static IConfiguration BuildConfigurationFromDirectory(Predicate<FileInfo> filter = null, bool reloadOnChange = true, params DirectoryInfo[] additionalDirectories)
             {
-                return BuildConfigurationFromDirectory(new DirectoryInfo(AppContext.BaseDirectory), filter, reloadOnChange);
+                return BuildConfigurationFromDirectory(new DirectoryInfo(AppContext.BaseDirectory), filter, reloadOnChange, additionalDirectories);
+            }
+
+            /// <summary>
+            /// Creates configuration from all json files in <paramref name="directories"/>.
+            /// </summary>
+            /// <param name="directories">The directories to scan for json files</param>
+            /// <param name="filter">Optional filter for defining which json files to include in the configuration</param>
+            /// <param name="reloadOnChange">Whether the configuration needs to be reloaded when the file changes</param>
+            /// <returns>Configuration created from all json files in <paramref name="directories"/></returns>
+            public static IConfiguration BuildConfigurationFromDirectories(IEnumerable<DirectoryInfo> directories, Predicate<FileInfo> filter = null, bool reloadOnChange = true)
+            {
+                directories.ValidateArgument(nameof(directories));
+                filter = filter != null ? filter : new Predicate<FileInfo>(x => true);
+
+                var builder = new ConfigurationBuilder();
+                directories.Where(x => x != null && x.Exists)
+                                 .SelectMany(x => x.GetFiles())
+                                 .Where(x => x.Extension.Equals(".json", StringComparison.OrdinalIgnoreCase) && filter(x))
+                                 .Execute(x => builder.AddJsonFile(x.FullName, false, reloadOnChange));
+
+                return builder.Build();
             }
         }
         #endregion
@@ -147,6 +179,28 @@ namespace Sels.Core
         /// </summary>
         public static class App
         {
+            private static CancellationTokenSource _applicationTokenSource = CreateApplicationTokenSource();
+            /// <summary>
+            /// Cancellation token that will be cancelled when the current application is requested to exit.
+            /// </summary>
+            public static CancellationToken ApplicationToken => _applicationTokenSource.Token;
+
+            private static CancellationTokenSource CreateApplicationTokenSource()
+            {
+                var source = new CancellationTokenSource();
+                OnExit((s, a) =>
+                {
+                    source.Cancel();
+                });
+                OnCancel((s, a) =>
+                {
+                    source.Cancel();
+                    a.Cancel = true;
+                });
+
+                return source;
+            }
+
             /// <summary>
             /// Registers the <paramref name="action"/> delegate that will be executed when the application closes.
             /// </summary>
@@ -166,6 +220,28 @@ namespace Sels.Core
                 action.ValidateArgument(nameof(action));
 
                 AppDomain.CurrentDomain.ProcessExit += (x, y) => action(x, y);
+            }
+
+            /// <summary>
+            /// Registers the <paramref name="action"/> delegate that will be executed when the application is requested to cancel.
+            /// </summary>
+            /// <param name="action">The delegate to execute when the application is requested to cancel</param>
+            public static void OnCancel(Action<object, ConsoleCancelEventArgs> action)
+            {
+                action.ValidateArgument(nameof(action));
+
+                SystemConsole.CancelKeyPress += (x, y) => action(x,y);
+            }
+
+            /// <summary>
+            /// Registers the <paramref name="action"/> delegate that will be executed when the application is requested to cancel.
+            /// </summary>
+            /// <param name="action">The delegate to execute when the application is requested to cancel</param>
+            public static void OnCancel(Action action)
+            {
+                action.ValidateArgument(nameof(action));
+
+                OnCancel((x, y) => action());
             }
 
             /// <summary>
@@ -664,6 +740,34 @@ namespace Sels.Core
                 WriteLine(foregroundColor, _defaultBackgroundColor, message);
             }
 
+            /// <summary>
+            /// Writes <paramref name="message"/> to the console using <paramref name="foregroundColor"/> as the text color and <paramref name="backgroundColor"/> as the background color.
+            /// </summary>
+            /// <param name="foregroundColor">The foreground color to use</param>
+            /// <param name="backgroundColor">The background color to use</param>
+            /// <param name="message">The message to write to the console</param>
+            public static void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string message)
+            {
+                lock (_threadlock)
+                {
+                    SystemConsole.ForegroundColor = foregroundColor;
+                    SystemConsole.BackgroundColor = backgroundColor;
+
+                    SystemConsole.Write(message);
+
+                    ResetColors();
+                }
+            }
+            /// <summary>
+            /// Writes <paramref name="message"/> to the console using <paramref name="foregroundColor"/> as the text color.
+            /// </summary>
+            /// <param name="foregroundColor">The foreground color to use</param>
+            /// <param name="message">The message to write to the console</param>
+            public static void Write(ConsoleColor foregroundColor, string message)
+            {
+                Write(foregroundColor, _defaultBackgroundColor, message);
+            }
+
             private static void ResetColors()
             {
                 SystemConsole.ForegroundColor = _defaultForegroundColor;
@@ -678,7 +782,19 @@ namespace Sels.Core
         /// </summary>
         public static class Random
         {
-            private static SystemRandom _random = new SystemRandom();
+            private static int _threadSeed = 0;
+            private static object _threadLock = new object();
+            private static ThreadLocal<SystemRandom> ThreadInstance => new ThreadLocal<SystemRandom>(() =>
+            {
+                lock(_threadLock)
+                {
+                    return new SystemRandom(++_threadSeed);
+                }
+            });
+            /// <summary>
+            /// The local random instance for the calling thread.
+            /// </summary>
+            public static SystemRandom Instance => ThreadInstance.Value;
 
             /// <summary>
             /// Returns a random int larger or equal to <paramref name="min"/> and smaller or equal to <paramref name="max"/>.
@@ -690,7 +806,7 @@ namespace Sels.Core
             {
                 max.ValidateArgumentLarger(nameof(max), min);
 
-                return _random.Next(min, max+1);
+                return Instance.Next(min, max+1);
             }
             /// <summary>
             /// Returns a random double larger or equal to <paramref name="min"/> and smaller or equal to <paramref name="max"/>.
@@ -702,7 +818,7 @@ namespace Sels.Core
             {
                 max.ValidateArgumentLarger(nameof(max), min);
 
-                return _random.NextDouble() * (max - min) + min;
+                return Instance.NextDouble() * (max - min) + min;
             }
         }
         #endregion
@@ -713,6 +829,48 @@ namespace Sels.Core
         /// </summary>
         public static class Expression
         {
+            /// <summary>
+            /// Returns the method info extracted from <paramref name="methodExpression"/>
+            /// </summary>
+            /// <typeparam name="T">Type to select the method from</typeparam>
+            /// <param name="methodExpression">The expression that selects the method</param>
+            /// <returns>The MethodInfo in <paramref name="methodExpression"/></returns>
+            public static MethodInfo GetMethod<T>(Expression<Func<T, object>> methodExpression)
+            {
+                methodExpression.ValidateArgument(nameof(methodExpression));
+
+                if (!methodExpression.TryExtractMethod(out var method)) throw new InvalidOperationException($"{nameof(methodExpression)} does not point to a method");
+                return method;
+            }
+
+            /// <summary>
+            /// Returns the method info extracted from <paramref name="methodExpression"/>
+            /// </summary>
+            /// <typeparam name="T">Type to select the method from</typeparam>
+            /// <param name="methodExpression">The expression that selects the method</param>
+            /// <returns>The MethodInfo in <paramref name="methodExpression"/></returns>
+            public static MethodInfo GetMethod<T>(Expression<Action<T>> methodExpression)
+            {
+                methodExpression.ValidateArgument(nameof(methodExpression));
+
+                if (!methodExpression.TryExtractMethod(out var method)) throw new InvalidOperationException($"{nameof(methodExpression)} does not point to a method");
+                return method;
+            }
+
+            /// <summary>
+            /// Returns the method info extracted from <paramref name="propertyExpression"/>
+            /// </summary>
+            /// <typeparam name="T">Type to select the method from</typeparam>
+            /// <param name="propertyExpression">The expression that selects the method</param>
+            /// <returns>The MethodInfo in <paramref name="propertyExpression"/></returns>
+            public static PropertyInfo GetProperty<T>(Expression<Func<T, object>> propertyExpression)
+            {
+                propertyExpression.ValidateArgument(nameof(propertyExpression));
+
+                if (!propertyExpression.TryExtractProperty(out var property)) throw new InvalidOperationException($"{nameof(propertyExpression)} does not point to a property");
+                return property;
+            }
+
             /// <summary>
             /// Static helper methods for working with expression resolving around properties.
             /// </summary>
@@ -744,8 +902,6 @@ namespace Sels.Core
                         currentProperty = property;
                     }
                 }
-
-
             }
         }
         #endregion
@@ -822,7 +978,7 @@ namespace Sels.Core
 
         #region Async
         /// <summary>
-        /// Contains static helper methods when coding asynchronous.
+        /// Contains static helper methods when coding asynchronously.
         /// </summary>
         public static class Async
         {
@@ -840,6 +996,293 @@ namespace Sels.Core
                     await Task.Delay(waitTime, token);
                 }
                 catch (TaskCanceledException) { }
+            }
+
+            /// <summary>
+            /// Sleeps for <paramref name="waitTime"/> asynchronously. When <paramref name="token"/> is cancelled no <see cref="TaskCanceledException"/> will be thrown.
+            /// </summary>
+            /// <param name="waitTime">How long to sleep</param>
+            /// <param name="token">Optional token to cancel the sleeping</param>
+            public static async Task Sleep(TimeSpan waitTime, CancellationToken token = default)
+            {
+                if (waitTime.TotalMilliseconds <= 0) return;
+
+                try
+                {
+                    await Task.Delay(waitTime, token).ConfigureAwait(false);
+                }
+                catch (TaskCanceledException) { }
+            }
+
+            /// <summary>
+            /// Waits for the completion of <paramref name="task"/> for a maximum of <paramref name="maxWaitTime"/>.
+            /// </summary>
+            /// <param name="task">The task to wait on</param>
+            /// <param name="maxWaitTime">How long to wait for <paramref name="task"/> to complete</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <returns>Task that gets completed when either <paramref name="task"/> finishes within <paramref name="maxWaitTime"/>, when execution exceeds <paramref name="maxWaitTime"/> or when <paramref name="token"/> gets cancelled</returns>
+            /// <exception cref="TaskCanceledException"></exception>
+            /// <exception cref="TimeoutException"></exception>
+            public static async Task WaitOn(Task task, TimeSpan maxWaitTime, CancellationToken token = default)
+            {
+                _ = task.ValidateArgument(nameof(task));
+
+                // No need to wait here
+                if(maxWaitTime == TimeSpan.Zero)
+                {
+                    await task.ConfigureAwait(false);
+                    return;
+                }
+
+                var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var cancellationSource = new CancellationTokenSource();
+
+                // Use caller token to cancel our token. This should make the task throw TaskCanceledException instead of the timeout
+                using(token.Register(() =>
+                {
+                    cancellationSource.Cancel();
+                    taskSource.SetCanceled();
+                }))
+                {
+                    if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
+                    // Run continuation to complete callback task
+                    var completionTask = task.ContinueWith(x =>
+                    {
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x); 
+                        }
+                    }, cancellationSource.Token);
+
+                    // Check if task is completed before starting the timeout task
+                    if (task.IsCompleted)
+                    {
+                        await task.ConfigureAwait(false);
+                        return;
+                    }
+
+                    // Start task to cancel our callback task
+                    var timeoutTask = Task.Run(async () =>
+                    {
+                        await Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
+                        if (cancellationSource.Token.IsCancellationRequested) return;
+
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>")); 
+                        }
+                    }, cancellationSource.Token);
+
+
+                    // Wait for callback
+                    await taskSource.Task.ConfigureAwait(false);
+                    return;
+                }
+            }
+
+            /// <summary>
+            /// Waits for the completion of <paramref name="task"/> for a maximum of <paramref name="maxWaitTime"/>.
+            /// </summary>
+            /// <param name="task">The task to wait on</param>
+            /// <param name="maxWaitTime">How long to wait for <paramref name="task"/> to complete</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <returns>Task that gets completed when either <paramref name="task"/> finishes within <paramref name="maxWaitTime"/>, when execution exceeds <paramref name="maxWaitTime"/> or when <paramref name="token"/> gets cancelled</returns>
+            /// <exception cref="TaskCanceledException"></exception>
+            /// <exception cref="TimeoutException"></exception>
+            public static async Task<T> WaitOn<T>(Task<T> task, TimeSpan maxWaitTime, CancellationToken token = default)
+            {
+                _ = task.ValidateArgument(nameof(task));
+
+                // No need to wait here
+                if (maxWaitTime == TimeSpan.Zero)
+                {
+                    return await task.ConfigureAwait(false);
+                }
+
+                var taskSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var cancellationSource = new CancellationTokenSource();
+
+                // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
+                using (token.Register(() => {
+                    cancellationSource.Cancel();
+                    taskSource.SetCanceled();
+                }))
+                {
+                    if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
+                    // Run continuation to complete callback task
+                    var completionTask = task.ContinueWith(x =>
+                    {
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x); 
+                        }
+                    }, cancellationSource.Token);
+
+                    // Check if task is completed before starting the timeout task
+                    if (task.IsCompleted)
+                    {
+                        return await task.ConfigureAwait(false);
+                    }
+
+                    // Start task to cancel our callback task
+                    var timeoutTask = Task.Run(async () =>
+                    {
+                        await Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
+                        if (cancellationSource.Token.IsCancellationRequested) return;
+
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>")); 
+                        }
+                    }, cancellationSource.Token);
+
+
+                    // Wait for callback
+                    return await taskSource.Task.ConfigureAwait(false);
+                }
+            }
+        }
+        /// <summary>
+        /// Contains static helper methods when coding with tasks synchronously.
+        /// </summary>
+        public static class Sync
+        {
+            /// <summary>
+            /// Waits for the completion of <paramref name="task"/> for a maximum of <paramref name="maxWaitTime"/>.
+            /// </summary>
+            /// <param name="task">The task to wait on</param>
+            /// <param name="maxWaitTime">How long to wait for <paramref name="task"/> to complete</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <returns>Task that gets completed when either <paramref name="task"/> finishes within <paramref name="maxWaitTime"/>, when execution exceeds <paramref name="maxWaitTime"/> or when <paramref name="token"/> gets cancelled</returns>
+            /// <exception cref="TaskCanceledException"></exception>
+            /// <exception cref="TimeoutException"></exception>
+            public static void WaitOn(Task task, TimeSpan maxWaitTime, CancellationToken token = default)
+            {
+                const double maxSleepTimeMs = 250;
+                _ = task.ValidateArgument(nameof(task));
+
+                // No need to wait here
+                if (maxWaitTime == TimeSpan.Zero)
+                {
+                    task.GetAwaiter().GetResult();
+                    return;
+                }
+
+                var taskSource = new TaskCompletionSource<object>();
+                var cancellationSource = new CancellationTokenSource();
+
+                // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
+                using (token.Register(() => { cancellationSource.Cancel(); taskSource.SetCanceled(); }))
+                {
+                    if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
+
+                    // Run continuation to complete callback task
+                    var completionTask = task.ContinueWith(x =>
+                    {
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x);
+                        }
+                    }, cancellationSource.Token);
+
+                    // Check if task is completed before starting the timeout task
+                    if (task.IsCompleted)
+                    {
+                        task.GetAwaiter().GetResult();
+                        return;
+                    }
+
+                    // Start task to cancel our callback task
+                    var timeoutTask = Task.Run(async () =>
+                    {
+                        await Helper.Async.Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
+                        if (cancellationSource.Token.IsCancellationRequested) return;
+
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>"));
+                        }
+                    }, cancellationSource.Token);
+
+
+                    // Wait for callback
+                    var sleepTime = TimeSpan.FromTicks(maxWaitTime.Ticks / 4);
+                    if (sleepTime.TotalMilliseconds > maxSleepTimeMs) sleepTime = TimeSpan.FromMilliseconds(maxSleepTimeMs);
+                    while (!taskSource.Task.IsCompleted)
+                    {
+                        Thread.Sleep(sleepTime);
+                    }
+
+                    taskSource.Task.GetAwaiter().GetResult();
+                    return;
+                }
+            }
+
+            /// <summary>
+            /// Waits for the completion of <paramref name="task"/> for a maximum of <paramref name="maxWaitTime"/>.
+            /// </summary>
+            /// <param name="task">The task to wait on</param>
+            /// <param name="maxWaitTime">How long to wait for <paramref name="task"/> to complete</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <returns>Task that gets completed when either <paramref name="task"/> finishes within <paramref name="maxWaitTime"/>, when execution exceeds <paramref name="maxWaitTime"/> or when <paramref name="token"/> gets cancelled</returns>
+            /// <exception cref="TaskCanceledException"></exception>
+            /// <exception cref="TimeoutException"></exception>
+            public static T WaitOn<T>(Task<T> task, TimeSpan maxWaitTime, CancellationToken token = default)
+            {
+                const double maxSleepTimeMs = 250;
+                _ = task.ValidateArgument(nameof(task));
+
+                // No need to wait here
+                if (maxWaitTime == TimeSpan.Zero)
+                {
+                    return task.GetAwaiter().GetResult();
+                }
+
+                var taskSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var cancellationSource = new CancellationTokenSource();
+
+                // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
+                using (token.Register(() => { cancellationSource.Cancel(); taskSource.SetCanceled(); }))
+                {
+                    if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
+                    // Run continuation to complete callback task
+                    var completionTask = task.ContinueWith(x =>
+                    {
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x);
+                        }
+                    }, cancellationSource.Token);
+
+                    // Check if task is completed before starting the timeout task
+                    if (task.IsCompleted)
+                    {
+                        return task.GetAwaiter().GetResult();
+                    }
+
+                    // Start task to cancel our callback task
+                    var timeoutTask = Task.Run(async () =>
+                    {
+                        await Helper.Async.Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
+                        if (cancellationSource.Token.IsCancellationRequested) return;
+
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>"));
+                        }
+                    }, cancellationSource.Token);
+
+
+                    // Wait for callback
+                    var sleepTime = TimeSpan.FromTicks(maxWaitTime.Ticks / 4);
+                    if (sleepTime.TotalMilliseconds > maxSleepTimeMs) sleepTime = TimeSpan.FromMilliseconds(maxSleepTimeMs);
+                    while (!taskSource.Task.IsCompleted)
+                    {
+                        Thread.Sleep(sleepTime);
+                    }
+
+                    return taskSource.Task.GetAwaiter().GetResult();
+                }
             }
         }
         #endregion
@@ -874,6 +1317,27 @@ namespace Sels.Core
                     }
                 }
                 return false;
+            }
+        }
+        #endregion
+
+        #region Time
+        /// <summary>
+        /// Contains helper methods related to dates/time.
+        /// </summary>
+        public static class Time
+        {
+            /// <summary>
+            /// Captures the duration of the action executed within the scope. 
+            /// Disposing the returned object will stop the stopwatch and output the duration to <paramref name="duration"/>.
+            /// </summary>
+            /// <param name="duration">Object where the duration will be outputted to</param>
+            /// <returns>Disposable to define the scope to capture the duraction for</returns>
+            public static IDisposable CaptureDuration(out Ref<TimeSpan> duration)
+            {
+                duration = new Ref<TimeSpan>();
+
+                return new DurationAction(duration);
             }
         }
         #endregion

@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Sels.Core.Extensions;
+using System;
+using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
@@ -14,7 +16,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             datasetConverterer.ValidateArgument(nameof(datasetConverterer));

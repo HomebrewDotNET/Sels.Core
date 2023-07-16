@@ -1,7 +1,7 @@
 ﻿using Sels.Core.Testing.Models;
 using System;
 
-namespace Sels.Core.Data.MySQL.Test
+namespace Sels.SQL.QueryBuilder.MySQL.Test
 {
     public class MySql_Delete
     {
@@ -74,7 +74,7 @@ namespace Sels.Core.Data.MySQL.Test
             // Arrange
             var expected = "DELETE P FROM `Person` P RETURNING P.`Id`".GetWithoutWhitespace().ToLower();
             var builder = MySql.Delete<Person>().From()
-                                .Return(x => x.Column(c => c.Id));
+                                .Returning(x => x.Column(c => c.Id));
 
             // Act
             var query = builder.Build();

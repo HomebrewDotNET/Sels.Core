@@ -1,4 +1,5 @@
 ﻿using Sels.Core;
+using Sels.Core.Extensions;
 using Sels.Core.ServiceBuilder.Events;
 using Sels.Core.ServiceBuilder.Injection;
 using System;
@@ -21,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns><paramref name="services"/> for method chaining</returns>
         public static IServiceCollection AddServiceInjector(this IServiceCollection services)
         {
-            Guard.IsNotNull(services);
+            services.ValidateArgument(nameof(services));
 
             services.New<ServiceInjector>()
                     .AsSingleton()
@@ -43,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns><paramref name="services"/> for method chaining</returns>
         public static IServiceCollection AddServiceInjector<TImpl>(this IServiceCollection services)
         {
-            Guard.IsNotNull(services);
+            services.ValidateArgument(nameof(services));
 
             services.New<ServiceInjector<TImpl>>()
                     .AsSingleton()

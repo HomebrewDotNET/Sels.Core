@@ -1,6 +1,15 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.Extensions;
+using Sels.SQL.QueryBuilder.MySQL.Builder.Statement;
+using Sels.SQL.QueryBuilder.MySQL.Expressions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Sels.Core.Extensions.Linq;
+using Sels.Core;
 
 namespace Sels.SQL.QueryBuilder.MySQL
 {
@@ -20,7 +29,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         {
             builder.ValidateArgument(nameof(builder));
 
-            return builder.InnerExpressions.Any(x => x is ForUpdateExpression) ? builder.Instance : builder.Expression(ForUpdateExpression.Instance, SelectExpressionPositions.After);
+            return builder.InnerExpressions.Any(x => x is ForUpdateExpression) ? builder.Instance : builder.Expression(ForUpdateExpression.Instance, SelectExpressionPositions.After, 1);
         }
 
         #region OnDuplicateKeyUpdate
@@ -55,9 +64,9 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         /// <typeparam name="TEntity">The main entity to insert</typeparam>
         /// <param name="builder">The builder to add the expression to</param>
-        /// <param name="primaryKeyColumnIndexes">The indexes of the columns containing the primary keys, they will be omitted from the update expressions.</param>
+        /// <param name="primaryKeyColumnIndexes">The indexes of the columns containing the primary keys, they will be omitted from the update expressions</param>
         /// <returns>Current builder for method chaining</returns>
-        public static TDerived OnDuplicateKeyUpdate<TEntity, TDerived>(this IInsertStatementBuilder<TEntity, TDerived> builder, params int[]? primaryKeyColumnIndexes)
+        public static TDerived OnDuplicateKeyUpdate<TEntity, TDerived>(this IInsertStatementBuilder<TEntity, TDerived> builder, params int[] primaryKeyColumnIndexes)
         {
             builder.ValidateArgument(nameof(builder));
 
@@ -68,11 +77,11 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
                 for(int i = 0; i < insertColumns.Value.Length; i++)
                 {
-                    var column = insertColumns.Value[i];
+                    var column = insertColumns.Value[i].Expression;
                     // Skip primary key columns
                     if(primaryKeyColumnIndexes.Contains(i)) continue;
 
-                    b = b.SetExpression(column).To.Values(column).And;
+                    b = b.Set.Expression(column).To.Values(column).And;
                 }
             });
         }
@@ -103,7 +112,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <param name="offset">Optional offset containing the amount of rows to skip</param>
         /// <param name="limit">Object containing the amount of rows to limit by</param>
         /// <returns>Current builder for method chaining</returns>
-        public static TDerived Limit<TEntity, TDerived>(this ISelectStatementBuilder<TEntity, TDerived> builder, object? offset, object limit)
+        public static TDerived Limit<TEntity, TDerived>(this ISelectStatementBuilder<TEntity, TDerived> builder, object offset, object limit)
         {
             builder.ValidateArgument(nameof(builder));
             limit.ValidateArgument(nameof(limit));
@@ -123,7 +132,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             // Add new expression
             else
             {
-                return builder.Expression(new LimitOffsetExpression(limitExpression, offsetExprresion), SelectExpressionPositions.After);
+                return builder.Expression(new LimitOffsetExpression(limitExpression, offsetExprresion), SelectExpressionPositions.After, 0);
             }
         }
         #endregion
@@ -164,7 +173,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             return Concat(builder, Helper.Collection.EnumerateAll(firstValue.AsArray(), secondValue.AsArray(), additionalValues));
         }
         /// <summary>
-        /// Creates a comparison where an expression is compared to the value of a sql parameter concatenated with wildcards.
+        /// Creates a comparison where an expression is compared to the value of a sql parameter concatenated with wildcards. (e.g. CONCAT('%', MyExpression, '%'))
         /// </summary>
         /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
         /// <param name="builder">The builder to add the expressions to</param>
@@ -212,5 +221,20 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <returns>Builder for creating the cte expression</returns>
         public static ICteExpressionBuilder<object> RecursiveCte(this ICteStatementBuilder builder, string name) => RecursiveCte<object>(builder, name);
         #endregion
+
+        /// <summary>
+        /// Selects the last inserted id.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to select</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="alias">Optional column alias</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived LastInsertedId<TEntity, TDerived>(this ISelectStatementBuilder<TEntity, TDerived> builder, string alias = null)
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            return builder.Expression(b => b.Expression((sb, o) => sb.Append(MySql.Functions.LastInsertId).Append("()")), alias);
+        }
     }
 }

@@ -90,8 +90,8 @@ namespace Sels.ObjectValidationFramework.Target
                                             ElementIndex = elementIndex,
                                             Message = error,
                                             Parents = parents,
-                                            DisplayName = validationContext.GetFullDisplayNameDynamically(false),
-                                            FullDisplayName = validationContext.GetFullDisplayNameDynamically(true)
+                                            DisplayName = GetDisplayNameFor(validationContext, false),
+                                            FullDisplayName = GetDisplayNameFor(validationContext, true)
                                         };
                                         errors.Add(validationError);
                                     }

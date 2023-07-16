@@ -1,4 +1,6 @@
 ﻿using Castle.DynamicProxy;
+using System.Threading;
+using System.Threading.Tasks;
 using static Sels.Core.Delegates.Async;
 
 namespace Sels.Core.ServiceBuilder.Interceptors.Caching
@@ -12,7 +14,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// <summary>
         /// Creates a new options object that the current instance accepts.
         /// </summary>
-        /// <returns>New options that can be used with <see cref="GetOrSetAsync{T}(IInvocation, string, TOptions?, AsyncFunc{CancellationToken, T}, CancellationToken)"/></returns>
+        /// <returns>New options that can be used with <see cref="GetOrSetAsync{T}(IInvocation, string, TOptions, AsyncFunc{CancellationToken, T}, CancellationToken)"/></returns>
         TOptions CreateNewOptions();
 
         /// <summary>
@@ -25,6 +27,6 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// <param name="cacheGetter">Delegate that returns the object to cache and it's caching options if it is not present in the cache</param>
         /// <param name="token">Optional token to cancel the operation</param>
         /// <returns>The cached object or the object returned by <paramref name="cacheGetter"/> if it was not present in the cache</returns>
-        Task<T> GetOrSetAsync<T>(IInvocation target, string key, TOptions? options, AsyncFunc<CancellationToken, T> cacheGetter, CancellationToken token = default);
+        Task<T> GetOrSetAsync<T>(IInvocation target, string key, TOptions options, AsyncFunc<CancellationToken, T> cacheGetter, CancellationToken token = default);
     }
 }

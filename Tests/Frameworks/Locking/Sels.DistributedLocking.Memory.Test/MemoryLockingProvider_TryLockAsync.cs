@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using NuGet.Frameworks;
+using Sels.Core.Extensions.Conversion;
+using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,15 +24,15 @@ namespace Sels.DistributedLocking.Memory.Test
             await using  var provider = new MemoryLockingProvider(options);
 
             // Act
-            var wasLocked = await provider.TryLockAsync("Resource", requester, out var @lock);
+            var lockResult = await provider.TryLockAsync("Resource", requester);
 
             // Assert
-            Assert.IsTrue(wasLocked);
+            Assert.IsTrue(lockResult.Success);
             Assert.IsNotNull(requester);
-            Assert.IsNotNull(@lock);
-            Assert.That(@lock.Resource, Is.EqualTo("Resource"));
-            Assert.That(@lock.LockedBy, Is.EqualTo(requester));
-            Assert.That(@lock.ExpiryDate, Is.Null);
+            Assert.IsNotNull(lockResult.AcquiredLock);
+            Assert.That(lockResult.AcquiredLock.Resource, Is.EqualTo("Resource"));
+            Assert.That(lockResult.AcquiredLock.LockedBy, Is.EqualTo(requester));
+            Assert.That(lockResult.AcquiredLock.ExpiryDate, Is.Null);
         }
 
         [Test]
@@ -41,14 +43,14 @@ namespace Sels.DistributedLocking.Memory.Test
             await using  var provider = new MemoryLockingProvider(options);
 
             // Act
-            var wasLockedOne = await provider.TryLockAsync("Resource", "Requester.1", out var lockOne);
-            var wasLockedTwo = await provider.TryLockAsync("Resource", "Requester.2", out var lockTwo);
+            var lockResult = await provider.TryLockAsync("Resource", "Requester.1");
+            var lockResultTwo = await provider.TryLockAsync("Resource", "Requester.2");
 
             // Assert
-            Assert.IsTrue(wasLockedOne);
-            Assert.IsNotNull(lockOne);
-            Assert.IsFalse(wasLockedTwo);
-            Assert.IsNull(lockTwo);
+            Assert.IsTrue(lockResult.Success);
+            Assert.IsNotNull(lockResult.AcquiredLock);
+            Assert.IsFalse(lockResultTwo.Success);
+            Assert.IsNull(lockResultTwo.AcquiredLock);
         }
 
         [Test]
@@ -64,7 +66,7 @@ namespace Sels.DistributedLocking.Memory.Test
             for(int i = 0; i < threads; i++)
             {
                 var currentI = i;
-                _tasks.Add(Task.Run(() => provider.TryLockAsync("Resource", $"Thread.{currentI}", out _)));
+                _tasks.Add(Task.Run(async () => (await provider.TryLockAsync("Resource", $"Thread.{currentI}")).Success));
             }
             var results = await Task.WhenAll(_tasks);
 
@@ -81,14 +83,14 @@ namespace Sels.DistributedLocking.Memory.Test
             await using var provider = new MemoryLockingProvider(options);
 
             // Act
-            var wasLockedOne = await provider.TryLockAsync("Resource", "Requester.1", out var lockOne);
-            var wasLockedTwo = await provider.TryLockAsync("Resource", "Requester.1", out var lockTwo);
+            var lockResult = await provider.TryLockAsync("Resource", "Requester.1");
+            var lockResultTwo = await provider.TryLockAsync("Resource", "Requester.1");
 
             // Assert
-            Assert.IsTrue(wasLockedOne);
-            Assert.IsNotNull(lockOne);
-            Assert.IsTrue(wasLockedTwo);
-            Assert.IsNotNull(lockTwo);
+            Assert.IsTrue(lockResult.Success);
+            Assert.IsNotNull(lockResult.AcquiredLock);
+            Assert.IsTrue(lockResultTwo.Success);
+            Assert.IsNotNull(lockResultTwo.AcquiredLock);
         }
 
         [Test]
@@ -99,21 +101,21 @@ namespace Sels.DistributedLocking.Memory.Test
             await using  var provider = new MemoryLockingProvider(options);
 
             // Act
-            var wasLockedOne = await provider.TryLockAsync("Resource", "Requester.1", out var lockOne);
-            await lockOne.UnlockAsync();
-            var wasLockedTwo = await provider.TryLockAsync("Resource", "Requester.2", out var lockTwo);
+            var lockResult = await provider.TryLockAsync("Resource", "Requester.1");
+            await lockResult.AcquiredLock.UnlockAsync();
+            var lockResultTwo = await provider.TryLockAsync("Resource", "Requester.2");
 
             // Assert
-            Assert.IsTrue(wasLockedOne);
-            Assert.IsNotNull(lockOne);
-            Assert.That(lockOne.LockedBy, Is.EqualTo("Requester.1"));
-            Assert.That(lockOne.Resource, Is.EqualTo("Resource"));
-            Assert.That(lockOne.ExpiryDate, Is.Null);
-            Assert.IsTrue(wasLockedTwo);
-            Assert.IsNotNull(lockTwo);
-            Assert.That(lockTwo.LockedBy, Is.EqualTo("Requester.2"));
-            Assert.That(lockTwo.Resource, Is.EqualTo("Resource"));
-            Assert.That(lockTwo.ExpiryDate, Is.Null);
+            Assert.IsTrue(lockResult.Success);
+            Assert.IsNotNull(lockResult.AcquiredLock);
+            Assert.That(lockResult.AcquiredLock.LockedBy, Is.EqualTo("Requester.1"));
+            Assert.That(lockResult.AcquiredLock.Resource, Is.EqualTo("Resource"));
+            Assert.That(lockResult.AcquiredLock.ExpiryDate, Is.Null);
+            Assert.IsTrue(lockResultTwo.Success);
+            Assert.IsNotNull(lockResultTwo.AcquiredLock);
+            Assert.That(lockResultTwo.AcquiredLock.LockedBy, Is.EqualTo("Requester.2"));
+            Assert.That(lockResultTwo.AcquiredLock.Resource, Is.EqualTo("Resource"));
+            Assert.That(lockResultTwo.AcquiredLock.ExpiryDate, Is.Null);
         }
 
         [Test]
@@ -125,17 +127,17 @@ namespace Sels.DistributedLocking.Memory.Test
             var expiryTime = 500;
 
             // Act
-            var wasLockedOne = await provider.TryLockAsync("Resource", "Requester.1", out var lockOne, TimeSpan.FromMilliseconds(expiryTime));
+            var lockResult = await provider.TryLockAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(expiryTime));
             await Helper.Async.Sleep(expiryTime * 2);
-            var wasLockedTwo = await provider.TryLockAsync("Resource", "Requester.2", out var lockTwo);
+            var lockResultTwo = await provider.TryLockAsync("Resource", "Requester.2");
 
             // Assert
-            Assert.IsTrue(wasLockedOne);
-            Assert.IsNotNull(lockOne);
-            Assert.That(lockOne.LockedBy, Is.EqualTo("Requester.1"));
-            Assert.IsTrue(wasLockedTwo);
-            Assert.IsNotNull(lockTwo);
-            Assert.That(lockTwo.LockedBy, Is.EqualTo("Requester.2"));
+            Assert.IsTrue(lockResult.Success);
+            Assert.IsNotNull(lockResult.AcquiredLock);
+            Assert.That(lockResult.AcquiredLock.LockedBy, Is.EqualTo("Requester.1"));
+            Assert.IsTrue(lockResultTwo.Success);
+            Assert.IsNotNull(lockResultTwo.AcquiredLock);
+            Assert.That(lockResultTwo.AcquiredLock.LockedBy, Is.EqualTo("Requester.2"));
         }
 
         [Test]
@@ -147,10 +149,10 @@ namespace Sels.DistributedLocking.Memory.Test
             var expiryTime = 100;
 
             // Act
-            _ = await provider.TryLockAsync("Resource", "Requester.1", out var @lock, TimeSpan.FromMilliseconds(expiryTime), true);
-            var initialExpiry = @lock.ExpiryDate;
+            var lockResult = await provider.TryLockAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(expiryTime), true);
+            var initialExpiry = lockResult.AcquiredLock.ExpiryDate;
             await Helper.Async.Sleep(expiryTime * 2);
-            var currentExpiry = @lock.ExpiryDate;
+            var currentExpiry = lockResult.AcquiredLock.ExpiryDate;
 
             // Assert
             Assert.That(initialExpiry, Is.Not.EqualTo(currentExpiry));
@@ -163,12 +165,13 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock(x => x.ExpiryOffset = 10000000);
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            var resultOne = await provider.TryLockAsync("Resource", "Requester.1", out _, TimeSpan.FromMilliseconds(100), false);
-            var lockResultTask = provider.LockAsync("Resource", "Requester.2");
+            var resultOne = (await lockingProvider.TryLockAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(100), false)).Success;
+            var lockResultTask = lockingProvider.LockAndWaitAsync("Resource", "Requester.2");
             await Helper.Async.Sleep(100 * 2);
-            var resultTwo = await provider.TryLockAsync("Resource", "Requester.3", out _);
+            var resultTwo = (await lockingProvider.TryLockAsync("Resource", "Requester.3")).Success;
 
             // Assert
             Assert.IsTrue(resultOne);

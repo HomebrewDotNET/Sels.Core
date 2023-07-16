@@ -1,6 +1,14 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
 using System.Linq.Expressions;
 using SqlParameterExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ParameterExpression;
+using Sels.Core.Extensions;
+using System.Collections.Generic;
+using Sels.Core;
+using System.Linq;
+using System;
+using Sels.Core.Extensions.Reflection;
+using Sels.SQL.QueryBuilder.Expressions;
+using Sels.Core.Models;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -19,7 +27,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <param name="table">The name of the table to insert into</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Into(string table, string? database = null, string? schema = null) => Expression(new TableExpression(database, schema, table.ValidateArgumentNotNullOrWhitespace(nameof(table)), null), InsertExpressionPositions.Into);
+        TDerived Into(string table, string database = null, string schema = null) => Expression(new TableExpression(database, schema, table.ValidateArgumentNotNullOrWhitespace(nameof(table)), null), InsertExpressionPositions.Into);
         /// <summary>
         /// Defines the table to insert into where the table name is taken from <typeparamref name="T"/>.
         /// </summary>
@@ -27,14 +35,14 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="database">Optional database to select the table from</param>
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Into<T>(string? database = null, string? schema = null) => Into(typeof(T).Name, database, schema);
+        TDerived Into<T>(string database = null, string schema = null) => Expression(new TableExpression(database, schema, typeof(T).Name, typeof(T)), InsertExpressionPositions.Into);
         /// <summary>
         /// Defines the table to insert into where the table name is taken from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="database">Optional database to select the table from</param>
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Into(string? database = null, string? schema = null) => Into(typeof(TEntity).Name, database, schema);
+        TDerived Into(string database = null, string schema = null) => Into<TEntity>(database, schema);
         #endregion
 
         #region Columns
@@ -51,13 +59,13 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Column<T>(Expression<Func<T, object?>> property) => Column(property.ExtractProperty(nameof(property)).Name);
+        TDerived Column<T>(Expression<Func<T, object>> property) => Column(property.ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Specifies a column to insert into by using the name of the property selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Column(Expression<Func<TEntity, object?>> property) => Column<TEntity>(property);
+        TDerived Column(Expression<Func<TEntity, object>> property) => Column<TEntity>(property);
         #endregion
         #region Columns
         /// <summary>
@@ -73,6 +81,21 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="columns">Additional columns to insert into</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived Columns(string column, params string[] columns) => Columns(Helper.Collection.Enumerate(column, columns));
+        /// <summary>
+        /// Specifies the columns to insert into by using the name of the property selected by the expressionsfrom <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type to select the property from</typeparam>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="properties">Additional expressions that point to the properties to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Columns<T>(Expression<Func<T, object>> property, params Expression<Func<T, object>>[] properties) => Columns(Helper.Collection.Enumerate(property, properties).Select(x => x.ExtractProperty(nameof(property)).Name));
+        /// <summary>
+        /// Specifies the columns to insert into by using the name of the property selected by the expressionsfrom <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="properties">Additional expressions that point to the properties to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Columns(Expression<Func<TEntity, object>> property, params Expression<Func<TEntity, object>>[] properties) => Columns<TEntity>(property, properties);
         #endregion
         #region ColumnsOf
         /// <summary>
@@ -99,6 +122,13 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="values">List of values to insert</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived Values(IEnumerable<object> values);
+        /// <summary>
+        /// Defines the constant values to insert.
+        /// </summary>
+        /// <param name="values">List of values to insert</param>
+        /// <typeparam name="T">The type of the elements</typeparam>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Values<T>(T[] values) => Values(values.ValidateArgument(nameof(values)).Enumerate());
         /// <summary>
         /// Defines the constant values to insert.
         /// </summary>
@@ -143,6 +173,25 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="excludedProperties">Optional names of properties to exclude</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived ParametersFrom(int? suffix = null, params string[] excludedProperties) => ParametersFrom<TEntity>(suffix, excludedProperties);
+        #endregion
+
+        #region Expression
+        /// <summary>
+        /// Defines the values to insert by selecting the expression using the builder delegates.
+        /// </summary>
+        /// <typeparam name="T">The main type to create the builder for</typeparam>
+        /// <param name="expression">Delegate that selects the expression to insert</param>
+        /// <param name="expressions">Optional additional expressions to insert</param>
+        /// <returns></returns>
+        TDerived Values<T>(Action<ISharedExpressionBuilder<T, Null>> expression, params Action<ISharedExpressionBuilder<T, Null>>[] expressions) => Values(Helper.Collection.Enumerate(expression.ValidateArgument(nameof(expression)), expressions).Select(x => new ExpressionBuilder<T>(x)));
+        /// <summary>
+        /// Defines the values to insert by selecting the expression using the builder delegates.
+        /// </summary>
+        /// <param name="expression">Delegate that selects the expression to insert</param>
+        /// <param name="expressions">Optional additional expressions to insert</param>
+        /// <returns></returns>
+        TDerived Values(Action<ISharedExpressionBuilder<TEntity, Null>> expression, params Action<ISharedExpressionBuilder<TEntity, Null>>[] expressions) => Values<TEntity>(expression, expressions);
+
         #endregion
         #endregion
     }

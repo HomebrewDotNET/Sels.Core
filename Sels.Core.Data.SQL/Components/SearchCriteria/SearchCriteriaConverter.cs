@@ -1,8 +1,15 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Conversion;
 
 namespace Sels.Core.Data.SQL.SearchCriteria
 {
@@ -12,12 +19,12 @@ namespace Sels.Core.Data.SQL.SearchCriteria
         // Fields
         private readonly List<ExplicitConverter> _explicitConverters = new List<ExplicitConverter>();
         private readonly List<string> _excludedProperties = new List<string>();
-        private readonly ILogger? _logger;
+        private readonly ILogger _logger;
 
-        private Func<PropertyInfo, object?>? _aliasSelector;
-        private Func<PropertyInfo, string?>? _nameSelector;
-        private Func<PropertyInfo, IStatementConditionOperatorExpressionBuilder<T>, IStatementConditionRightExpressionBuilder<T>?>? _operatorSelector;
-        private Func<PropertyInfo, object, DynamicParameters?, IStatementConditionRightExpressionBuilder<T>, IChainedBuilder<T, IStatementConditionExpressionBuilder<T>>?>? _valueSelector;
+        private Func<PropertyInfo, object> _aliasSelector;
+        private Func<PropertyInfo, string> _nameSelector;
+        private Func<PropertyInfo, IStatementConditionOperatorExpressionBuilder<T>, IStatementConditionRightExpressionBuilder<T>> _operatorSelector;
+        private Func<PropertyInfo, object, DynamicParameters?, IStatementConditionRightExpressionBuilder<T>, IChainedBuilder<T, IStatementConditionExpressionBuilder<T>>> _valueSelector;
 
         /// <inheritdoc cref="SearchCriteriaConverter{T, TSearchCriteria}"/>
         /// <param name="configurator">Optional delegate for configuring the current instance</param>
@@ -29,13 +36,13 @@ namespace Sels.Core.Data.SQL.SearchCriteria
         }
 
         /// <inheritdoc/>
-        public IChainedBuilder<T, IStatementConditionExpressionBuilder<T>>? Build(IStatementConditionExpressionBuilder<T> builder, TSearchCriteria searchCriteria, DynamicParameters? parameters = null)
+        public IChainedBuilder<T, IStatementConditionExpressionBuilder<T>> Build(IStatementConditionExpressionBuilder<T> builder, TSearchCriteria searchCriteria, DynamicParameters? parameters = null)
         {
             using var logger = _logger.TraceMethod(this);
-            Guard.IsNotNull(builder);
-            Guard.IsNotNull(searchCriteria);
+            builder.ValidateArgument(nameof(builder));
+            searchCriteria.ValidateArgument(nameof(searchCriteria));
 
-            IChainedBuilder<T, IStatementConditionExpressionBuilder<T>>? lastBuilder = null;
+            IChainedBuilder<T, IStatementConditionExpressionBuilder<T>> lastBuilder = null;
 
             _logger.Debug($"Converting <{searchCriteria}> to SQL conditions");
 
@@ -70,15 +77,15 @@ namespace Sels.Core.Data.SQL.SearchCriteria
 
         object GetAlias(PropertyInfo property)
         {
-            Guard.IsNotNull(property);
+            property.ValidateArgument(nameof(property));
 
             return _aliasSelector?.Invoke(property) ?? property.ReflectedType;
         }
 
         IStatementConditionOperatorExpressionBuilder<T> SetObject(PropertyInfo property, IStatementConditionExpressionBuilder<T> builder)
         {
-            Guard.IsNotNull(property);
-            Guard.IsNotNull(builder);
+            property.ValidateArgument(nameof(property));
+            builder.ValidateArgument(nameof(builder));
 
             var name = _nameSelector?.Invoke(property);
             if (!name.HasValue()) name = property.Name;
@@ -88,8 +95,8 @@ namespace Sels.Core.Data.SQL.SearchCriteria
 
         IStatementConditionRightExpressionBuilder<T> SetOperator(PropertyInfo property, IStatementConditionOperatorExpressionBuilder<T> builder)
         {
-            Guard.IsNotNull(property);
-            Guard.IsNotNull(builder);
+            property.ValidateArgument(nameof(property));
+            builder.ValidateArgument(nameof(builder));
 
             var rightExpressionBuilder = _operatorSelector?.Invoke(property, builder);
 
@@ -111,8 +118,8 @@ namespace Sels.Core.Data.SQL.SearchCriteria
 
         IChainedBuilder<T, IStatementConditionExpressionBuilder<T>> SetValue(PropertyInfo property, object? value, IStatementConditionRightExpressionBuilder<T> builder, DynamicParameters? parameters)
         {
-            Guard.IsNotNull(property);
-            Guard.IsNotNull(builder);
+            property.ValidateArgument(nameof(property));
+            builder.ValidateArgument(nameof(builder));
 
             var chainedBuilder = _valueSelector?.Invoke(property, value, parameters, builder);
             if (chainedBuilder != null) return chainedBuilder;
@@ -121,7 +128,7 @@ namespace Sels.Core.Data.SQL.SearchCriteria
             {
                 if (value == null) return builder.Values(Array.Empty<object>());
 
-                return builder.Parameters(value.CastTo<IEnumerable>().Enumerate().Select((int i, object x) => {
+                return builder.Parameters(value.CastTo<IEnumerable>().Enumerate().Select((x,i) => {
                     var name = $"{property.Name}[{i}]";
                     parameters?.Add(name, x);
                     return name;
@@ -139,7 +146,7 @@ namespace Sels.Core.Data.SQL.SearchCriteria
         /// <inheritdoc/>
         public ISearchCriteriaConverterBuilder<T, TSearchCriteria> Excluding(string name, params string[] additionalNames)
         {
-            Guard.IsNotNullOrWhitespace(name);
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
 
             _excludedProperties.AddRange(Helper.Collection.Enumerate(name, additionalNames).Where(x => x.HasValue()));
             return this;
@@ -147,7 +154,7 @@ namespace Sels.Core.Data.SQL.SearchCriteria
         /// <inheritdoc/>
         public ISearchCriteriaConverterPropertyBuilder<T, TSearchCriteria, TValue> With<TValue>(System.Linq.Expressions.Expression<Func<TSearchCriteria, TValue>> property, bool allowNull = false)
         {
-            Guard.IsNotNull(property);
+            property.ValidateArgument(nameof(property));
 
             var converter = new ExplicitConverter<TValue>(this, property.ExtractProperty(nameof(property)), allowNull);
             _explicitConverters.Add(converter);
@@ -156,25 +163,25 @@ namespace Sels.Core.Data.SQL.SearchCriteria
         /// <inheritdoc/>
         public ISearchCriteriaConverterBuilder<T, TSearchCriteria> WithDefaultAlias(Func<PropertyInfo, object?> aliasSelector)
         {
-            _aliasSelector = Guard.IsNotNull(aliasSelector);
+            _aliasSelector = aliasSelector.ValidateArgument(nameof(aliasSelector));
             return this;
         }
         /// <inheritdoc/>
         public ISearchCriteriaConverterBuilder<T, TSearchCriteria> WithDefaultColumnName(Func<PropertyInfo, string?> nameSelector)
         {
-            _nameSelector = Guard.IsNotNull(nameSelector);
+            _nameSelector = nameSelector.ValidateArgument(nameof(nameSelector));
             return this;
         }
         /// <inheritdoc/>
         public ISearchCriteriaConverterBuilder<T, TSearchCriteria> WithDefaultOperator(Func<PropertyInfo, IStatementConditionOperatorExpressionBuilder<T>, IStatementConditionRightExpressionBuilder<T>?> operatorSelector)
         {
-            _operatorSelector = Guard.IsNotNull(operatorSelector);
+            _operatorSelector = operatorSelector.ValidateArgument(nameof(operatorSelector));
             return this;
         }
         /// <inheritdoc/>
         public ISearchCriteriaConverterBuilder<T, TSearchCriteria> WithDefaultValue(Func<PropertyInfo, object, DynamicParameters?, IStatementConditionRightExpressionBuilder<T>, IChainedBuilder<T, IStatementConditionExpressionBuilder<T>>?> valueSelector)
         {
-            _valueSelector = Guard.IsNotNull(valueSelector);
+            _valueSelector = valueSelector.ValidateArgument(nameof(valueSelector));
             return this;
         }
         #endregion
@@ -194,8 +201,8 @@ namespace Sels.Core.Data.SQL.SearchCriteria
 
             public ExplicitConverter(ISearchCriteriaConverterBuilder<T, TSearchCriteria> parent, PropertyInfo property, bool allowNull)
             {
-                _parent = Guard.IsNotNull(parent);
-                Property = Guard.IsNotNull(property);
+                _parent = parent.ValidateArgument(nameof(parent));
+                Property = property.ValidateArgument(nameof(property));
                 AllowNull = allowNull;
             }
 
@@ -234,24 +241,24 @@ namespace Sels.Core.Data.SQL.SearchCriteria
 
             public IStatementConditionOperatorExpressionBuilder<T>? As(PropertyInfo property, IStatementConditionExpressionBuilder<T> builder)
             {
-                Guard.IsNotNull(property);
-                Guard.IsNotNull(builder);
+                property.ValidateArgument(nameof(property));
+                builder.ValidateArgument(nameof(builder));
 
                 return _objectSelector?.Invoke(property, builder);
             }
 
             public IStatementConditionRightExpressionBuilder<T>? CompareUsing(PropertyInfo property, IStatementConditionOperatorExpressionBuilder<T> builder)
             {
-                Guard.IsNotNull(property);
-                Guard.IsNotNull(builder);
+                property.ValidateArgument(nameof(property));
+                builder.ValidateArgument(nameof(builder));
 
                 return _operatorSelector?.Invoke(property, builder);
             }
 
             public IChainedBuilder<T, IStatementConditionExpressionBuilder<T>>? ValueAs(PropertyInfo property, object? value, DynamicParameters? parameters, IStatementConditionRightExpressionBuilder<T> builder)
             {
-                Guard.IsNotNull(property);
-                Guard.IsNotNull(builder);
+                property.ValidateArgument(nameof(property));
+                builder.ValidateArgument(nameof(builder));
 
                 return _valueSelector?.Invoke(property, value, parameters, builder);
             }
@@ -266,19 +273,19 @@ namespace Sels.Core.Data.SQL.SearchCriteria
             /// <inheritdoc/>
             public ISearchCriteriaConverterPropertyBuilder<T, TSearchCriteria, TValue> As(Func<PropertyInfo, IStatementConditionExpressionBuilder<T>, IStatementConditionOperatorExpressionBuilder<T>> objectSelector)
             {
-                _objectSelector = Guard.IsNotNull(objectSelector);
+                _objectSelector = objectSelector.ValidateArgument(nameof(objectSelector));
                 return this;
             }
             /// <inheritdoc/>
             public ISearchCriteriaConverterPropertyBuilder<T, TSearchCriteria, TValue> CompareUsing(Func<PropertyInfo, IStatementConditionOperatorExpressionBuilder<T>, IStatementConditionRightExpressionBuilder<T>> operatorSelector)
             {
-                _operatorSelector = Guard.IsNotNull(operatorSelector);
+                _operatorSelector = operatorSelector.ValidateArgument(nameof(operatorSelector));
                 return this;
             }
             /// <inheritdoc/>
             public ISearchCriteriaConverterPropertyBuilder<T, TSearchCriteria, TValue> ValueAs(Func<PropertyInfo, TValue, DynamicParameters?, IStatementConditionRightExpressionBuilder<T>, IChainedBuilder<T, IStatementConditionExpressionBuilder<T>>> valueSelector)
             {
-                Guard.IsNotNull(valueSelector);
+                valueSelector.ValidateArgument(nameof(valueSelector));
 
                 _valueSelector = (p, v, param, b) => valueSelector?.Invoke(p, v.CastToOrDefault<TValue>(), param, b);
                 return this;

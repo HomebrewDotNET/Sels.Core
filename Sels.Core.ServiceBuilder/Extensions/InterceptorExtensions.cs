@@ -2,10 +2,15 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Conversion.Converters;
+using Sels.Core.Dispose;
+using Sels.Core.Extensions;
 using Sels.Core.ServiceBuilder;
+using Sels.Core.ServiceBuilder.Components.Interceptors;
 using Sels.Core.ServiceBuilder.Contracts.Interceptors.Caching;
 using Sels.Core.ServiceBuilder.Interceptors;
 using Sels.Core.ServiceBuilder.Interceptors.Caching;
+using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -17,14 +22,15 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         #region Tracing
         /// <summary>
-        /// Addds an interceptor for tracing method duration and / or exceptions.
+        /// Adds an interceptor for tracing method duration and / or exceptions.
         /// </summary>
         /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
         /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
+        /// <param name="useFactory">If a <see cref="ILoggerFactory"/> can be used to create a logger with the same category as the target instance, otherwise a <see cref="ILogger{TCategoryName}"/> will be used using the interceptor category</param>
         /// <returns>Current builder for method chaining</returns>
-        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, object> interceptorBuilder)
+        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, object> interceptorBuilder, bool useFactory = true)
             where TImpl : class, T
             where T : class
         {
@@ -33,32 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return builder.InterceptedBy(x =>
             {
-                var factory = x.GetService<ILoggerFactory>();
-                var interceptor = new TracingInterceptor(factory);
-                interceptorBuilder(interceptor);
-                return interceptor;
-            });
-        }
-
-        /// <summary>
-        /// Addds an interceptor for tracing method duration and / or exceptions.
-        /// </summary>
-        /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
-        /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
-        /// <param name="builder">Builder to add the interceptor to</param>
-        /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
-        /// <param name="loggers">The loggers to use for tracing</param>
-        /// <returns>Current builder for method chaining</returns>
-        public static IServiceBuilder<T, TImpl> Trace<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<ITracingInterceptorBuilder, object> interceptorBuilder, IEnumerable<ILogger?>? loggers)
-            where TImpl : class, T
-            where T : class
-        {
-            builder.ValidateArgument(nameof(builder));
-            interceptorBuilder.ValidateArgument(nameof(interceptorBuilder));
-
-            return builder.InterceptedBy(x =>
-            {
-                var interceptor = new TracingInterceptor(loggers);
+                var interceptor = useFactory ? new TracingInterceptor(x.GetService<ILoggerFactory>()) :  new TracingInterceptor(x.GetService<ILogger<TracingInterceptor>>());
                 interceptorBuilder(interceptor);
                 return interceptor;
             });
@@ -120,6 +101,22 @@ namespace Microsoft.Extensions.DependencyInjection
             where T : class
         {
             return CacheDistributed<T, TImpl, UTF8Encoding>(builder, interceptorBuilder);
+        }
+        #endregion
+
+        #region Dispose
+        /// <summary>
+        /// Adds an interceptor that throws an <see cref="ObjectDisposedException"/> when the target is disposing/is disposed.
+        /// </summary>
+        /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
+        /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+        /// <param name="builder">Builder to add the interceptor to</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static IServiceBuilder<T, TImpl> HandleDisposed<T, TImpl>(this IServiceBuilder<T, TImpl> builder)
+            where TImpl : class, T, IDisposableState
+            where T : class
+        {
+            return builder.InterceptedBy(x => new DisposableInterceptor(x.GetService<ILogger<DisposableInterceptor>>()));
         }
         #endregion
     }

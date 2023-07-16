@@ -1,5 +1,9 @@
-﻿using Sels.SQL.QueryBuilder.Builder;
+﻿using Sels.Core;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
+using Sels.SQL.QueryBuilder.Builder;
 using System.Text;
+using System;
 
 namespace Sels.SQL.QueryBuilder
 {
@@ -30,6 +34,18 @@ namespace Sels.SQL.QueryBuilder
             /// The sql statement for deleting data.
             /// </summary>
             public const string Delete = "DELETE";
+            /// <summary>
+            /// The sql statement for defining a condition that must be evaluated to true before executing other statements.
+            /// </summary>
+            public const string If = "IF";
+            /// <summary>
+            /// The sql statement for defining additional conditions after <see cref="If"/>.
+            /// </summary>
+            public const string ElseIf = "ELSE IF";
+            /// <summary>
+            /// The sql satement for defining the statements to execute when the previous <see cref="If"/> and <see cref="ElseIf"/> statements evaluated to false.
+            /// </summary>
+            public const string Else = "ELSE";
         }
 
         /// <summary>
@@ -205,7 +221,7 @@ namespace Sels.SQL.QueryBuilder
             /// <summary>
             /// Expression should not be equal to a contant value.
             /// </summary>
-            public const string IsNot = Not + Constants.Strings.Space + Is;
+            public const string IsNot = Is + Constants.Strings.Space + Not;
         }
         /// <summary>
         /// Contains the sql logic operators for comparing conditions.
@@ -247,9 +263,41 @@ namespace Sels.SQL.QueryBuilder
         /// </summary>
         public const string Not = "NOT";
         /// <summary>
+        /// Expression for starting a Sql CASE expression.
+        /// </summary>
+        public const string Case = "CASE";
+        /// <summary>
+        /// Expression for defining a condition in a CASE expression.
+        /// </summary>
+        public const string When = "WHEN";
+        /// <summary>
+        /// Expression for defining the value to return after a CASE WHEN expression.
+        /// </summary>
+        public const string Then = "THEN";
+        /// <summary>
+        /// Expression for defining the value to return when the other conditions fail in a CASE expression.
+        /// </summary>
+        public const string Else = "ELSE";
+        /// <summary>
+        /// Expression to close a statement (e.g. IF, CASE, ...)
+        /// </summary>
+        public const string End = "END";
+        /// <summary>
         /// The prefix to place in front of parameter names.
         /// </summary>
         public const char ParameterPrefix = '@';
+        /// <summary>
+        /// The default prefix for defining variables.
+        /// </summary>
+        public const char VariablePrefix = '@';
+        /// <summary>
+        /// The default operator used to assign object a new value in SQL.
+        /// </summary>
+        public const char AssignmentOperator = '=';
+        /// <summary>
+        /// The command used to set something to a new value.
+        /// </summary>
+        public const string Set = "SET";
         #endregion
 
         #region Helpers

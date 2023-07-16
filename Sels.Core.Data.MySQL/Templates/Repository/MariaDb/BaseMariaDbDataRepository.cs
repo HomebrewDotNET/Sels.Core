@@ -10,6 +10,18 @@ using LinqExpression = System.Linq.Expressions.Expression;
 using System.Data;
 using Sels.Core.ServiceBuilder.Injection;
 using Sels.SQL.QueryBuilder.Extensions;
+using Sels.SQL.QueryBuilder.MySQL;
+using Sels.Core.Extensions;
+using System.Threading;
+using System.Threading.Tasks;
+using System;
+using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using Sels.SQL.QueryBuilder.MySQL.MariaDb;
 
 namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
 {
@@ -91,7 +103,7 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
                 // Create query
                 var query = MySql.Insert<TEntity>().Into().ColumnsOf(excludedProperties)
                                     .ParametersFrom(excludedProperties: excludedProperties)
-                                    .Return(x => x.All())
+                                    .Returning(x => x.All())
                                     .Build(ExpressionCompileOptions.Format);
                 _logger.Trace($"Inserting <{typeof(TEntity)}> using query: {query}");
 
@@ -123,7 +135,7 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
                                         parameters.AddParametersUsing(e, x => $"{x.Name}{i}", excludedProperties);
                                         return b.ParametersFrom(i, excludedProperties);
                                     })
-                                    .Return(x => x.All())
+                                    .Returning(x => x.All())
                                     .Build(ExpressionCompileOptions.Format);
                 _logger.Trace($"Inserting <{typeof(TEntity)}> using query: {query}");
 
@@ -278,7 +290,7 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
                 // Create query
                 var query = MySql.Delete<TEntity>().From()
                                     .Where(w => w.Column(typeof(TEntity), idName).EqualTo.Parameter(idName))
-                                    .Return(x => x.All())
+                                    .Returning(x => x.All())
                                     .AliasFor<TEntity>(string.Empty).Build(ExpressionCompileOptions.Format);
                 _logger.Trace($"Deleting <{typeof(TEntity)}> with id <{id}> using query: {query}");
 
@@ -306,7 +318,7 @@ namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
                 // Create query
                 var query = MySql.Delete<TEntity>().From()
                                     .Where(w => w.Column(typeof(TEntity), idName).In.Values(ids.Select<TId, object>((x, i) => $"{idName}{i}".AsParameterExpression())))
-                                    .Return(x => x.All())
+                                    .Returning(x => x.All())
                                     .Build(ExpressionCompileOptions.Format);
                 _logger.Trace($"Deleting <{idCount}> <{typeof(TEntity)}> using query: {query}");
 

@@ -1,6 +1,11 @@
-﻿using Sels.SQL.QueryBuilder.Builder;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Sels.Core.Extensions.Linq;
 
 namespace Sels.SQL.QueryBuilder.MySQL.Expressions
 {

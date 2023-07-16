@@ -1,7 +1,10 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Compilation;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Condition;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Join;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
@@ -19,9 +22,8 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         }
 
         /// <inheritdoc cref="InsertStatementBuilder{TEntity}"/>
-        /// <param name="compiler">>Compiler to create the query using the expressions defined in the current builder</param>
-        /// <param name="expressions">The expressions for the current query</param>
-        public InsertStatementBuilder(IQueryCompiler<InsertExpressionPositions> compiler, Dictionary<InsertExpressionPositions, List<IExpression>> expressions) : base(compiler, expressions)
+        /// <param name="other">The builder to copy settings from</param>
+        public InsertStatementBuilder(InsertStatementBuilder<TEntity> other) : base(other)
         {
         }
 
@@ -29,9 +31,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <inheritdoc/>
         public override IInsertStatementBuilder<TEntity> Instance => this;
         /// <inheritdoc/>
-        protected override IInsertStatementBuilder<TEntity> Clone(IQueryCompiler<InsertExpressionPositions> compiler, Dictionary<InsertExpressionPositions, List<IExpression>> expressions)
+        public override IInsertStatementBuilder<TEntity> Clone()
         {
-            return new InsertStatementBuilder<TEntity>(compiler, expressions);
+            return new InsertStatementBuilder<TEntity>(this);
         }
 
         /// <inheritdoc/>
@@ -96,7 +98,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             if (typeof(TEntity) == typeof(object)) options |= ExpressionCompileOptions.NoImplitExpressions;
 
             // Add implicit expressions
-            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(InsertExpressionPositions.Into) || !Expressions[InsertExpressionPositions.Into].HasValue())) this.CastTo<IInsertStatementBuilder<TEntity>>().Into();
+            if (!options.HasFlag(ExpressionCompileOptions.NoImplitExpressions) && (!Expressions.ContainsKey(InsertExpressionPositions.Into) || !Expressions[InsertExpressionPositions.Into].HasValue())) this.CastTo<IInsertStatementBuilder<TEntity>>().Into<TEntity>();
 
             return base.Build(builder, options);
         }

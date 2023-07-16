@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Sels.Core.Extensions;
+using System;
+using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
@@ -10,11 +12,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// <summary>
         /// Object containing the dataset to select everything from.
         /// </summary>
-        public object? DataSet { get; }
+        public object DataSet { get; }
 
         /// <inheritdoc cref="AllColumnsExpression"/>
         /// <param name="dataset"><inheritdoc cref="DataSet"/></param>
-        public AllColumnsExpression(object? dataset = null)
+        public AllColumnsExpression(object dataset = null)
         {
             DataSet = dataset;
         }
@@ -26,7 +28,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             ToSql(builder, x => x.ToString(), options);
         }
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             datasetConverterer.ValidateArgument(nameof(datasetConverterer));

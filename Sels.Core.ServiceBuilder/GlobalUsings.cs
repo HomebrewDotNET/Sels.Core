@@ -1,1 +1,0 @@
-﻿global using Sels.Core.Extensions;

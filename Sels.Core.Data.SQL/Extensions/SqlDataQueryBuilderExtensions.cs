@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.Core.Data.SQL.SearchCriteria;
+using System;
+using Sels.Core.Extensions;
 
 namespace Sels.Core.Data.SQL
 {
@@ -25,8 +27,8 @@ namespace Sels.Core.Data.SQL
         /// <returns>The final builder after the creating the conditions or null if no conditions were created</returns>
         public static IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>? FromSearchCriteria<TEntity, TSearchCriteria>(this IStatementConditionExpressionBuilder<TEntity> builder, TSearchCriteria searchCriteria, Action<ISearchCriteriaConverterBuilder<TEntity, TSearchCriteria>>? configurator = null, DynamicParameters? parameters = null, ILogger? logger = null)
         {
-            Guard.IsNotNull(builder);
-            Guard.IsNotNull(searchCriteria);
+            builder.ValidateArgument(nameof(builder));
+            searchCriteria.ValidateArgument(nameof(searchCriteria));
 
             var converter = new SearchCriteriaConverter<TEntity, TSearchCriteria>(configurator, logger);
             return converter.Build(builder, searchCriteria, parameters);
@@ -44,10 +46,10 @@ namespace Sels.Core.Data.SQL
         /// <param name="parameters">Optional parameter bag that can be provided. Implicit conditions that use parameters will automatically add the values to the bag</param>
         /// <param name="logger">Optional logger for debugging</param>
         /// <returns>Current builder for method chaining</returns>
-        public static TDerived FromSearchCriteria<TEntity, TDerived, TSearchCriteria>(this IStatementConditionBuilder<TEntity, TDerived> builder, TSearchCriteria searchCriteria, Action<ISearchCriteriaConverterBuilder<TEntity, TSearchCriteria>>? configurator = null, DynamicParameters? parameters = null, ILogger? logger = null)
+        public static TDerived FromSearchCriteria<TEntity, TDerived, TSearchCriteria>(this IStatementConditionBuilder<TEntity, TDerived> builder, TSearchCriteria searchCriteria, Action<ISearchCriteriaConverterBuilder<TEntity, TSearchCriteria>> configurator = null, DynamicParameters parameters = null, ILogger? logger = null)
         {
-            Guard.IsNotNull(builder);
-            Guard.IsNotNull(searchCriteria);
+            builder.ValidateArgument(nameof(builder));
+            searchCriteria.ValidateArgument(nameof(searchCriteria));
 
             return builder.Where(x => x.FromSearchCriteria(searchCriteria, configurator, parameters, logger));
         }

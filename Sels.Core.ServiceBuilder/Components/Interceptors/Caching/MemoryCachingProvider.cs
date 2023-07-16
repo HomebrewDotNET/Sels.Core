@@ -1,10 +1,15 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.ServiceBuilder.Contracts.Interceptors.Caching;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sels.Core.ServiceBuilder.Interceptors.Caching
 {
@@ -13,24 +18,24 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
     {
         // Fields
         private readonly IMemoryCache _cache;
-        private readonly ILogger<MemoryCachingProvider>? _logger;
+        private readonly ILogger<MemoryCachingProvider> _logger;
 
         /// <inheritdoc cref="MemoryCachingProvider"/>
         /// <param name="cache">The cache to use</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public MemoryCachingProvider(IMemoryCache cache, ILogger<MemoryCachingProvider>? logger = null)
+        public MemoryCachingProvider(IMemoryCache cache, ILogger<MemoryCachingProvider> logger = null)
         {
-            this._cache = Guard.IsNotNull(cache);
+            this._cache = cache.ValidateArgument(nameof(cache));
             this._logger = logger;
         }
         /// <inheritdoc/>
         public IMemoryCacheOptions CreateNewOptions() => new MemoryCacheOptions();
 
         /// <inheritdoc/>
-        public async Task<T> GetOrSetAsync<T>(IInvocation target, string key, IMemoryCacheOptions? options, Delegates.Async.AsyncFunc<CancellationToken, T> cacheGetter, CancellationToken token = default)
+        public async Task<T> GetOrSetAsync<T>(IInvocation target, string key, IMemoryCacheOptions options, Delegates.Async.AsyncFunc<CancellationToken, T> cacheGetter, CancellationToken token = default)
         {
-            Guard.IsNotNullOrWhitespace(key);
-            Guard.IsNotNull(cacheGetter);
+            key.ValidateArgumentNotNullOrWhitespace(nameof(key));
+            cacheGetter.ValidateArgument(nameof(cacheGetter));
 
             _logger.Debug($"Checking memory cache if an object with key <{key}> is cached");
 
@@ -75,7 +80,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// <inheritdoc/>
         public IMemoryCacheOptions WithOptions(Action<IInvocation, MemoryCacheEntryOptions> optionBuilder)
         {
-            Guard.IsNotNull(optionBuilder);
+            optionBuilder.ValidateArgument(nameof(optionBuilder));
             _optionBuilders.Add(optionBuilder);
             return this;
         }
@@ -85,7 +90,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
         /// </summary>
         /// <param name="invocation">The target to cache for</param>
         /// <returns>The cache options for <paramref name="invocation"/></returns>
-        public MemoryCacheEntryOptions? Build(IInvocation invocation)
+        public MemoryCacheEntryOptions Build(IInvocation invocation)
         {
             if (_optionBuilders.HasValue())
             {

@@ -1,6 +1,11 @@
-﻿using System.Text;
+﻿using Sels.Core;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
+using System;
+using System.Linq;
+using System.Text;
 
-namespace Sels.SQL.QueryBuilder.Builder.Expressions.Condition
+namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
     /// <summary>
     /// Expression that represents a condition where 2 expressions are compared using a operator expression

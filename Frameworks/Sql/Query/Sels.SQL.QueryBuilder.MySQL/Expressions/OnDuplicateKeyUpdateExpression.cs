@@ -1,7 +1,12 @@
-﻿using Sels.SQL.QueryBuilder.Builder;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
+using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Update;
 using Sels.SQL.QueryBuilder.Builder.Statement;
+using Sels.SQL.QueryBuilder.MySQL.Builder.Statement;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.MySQL.Expressions
@@ -10,7 +15,11 @@ namespace Sels.SQL.QueryBuilder.MySQL.Expressions
     /// Expressions that represents the ON DUPLICATE KEY UPDATE expression for updating values during an insert if a record matching the primary key already exists.
     /// </summary>
     /// <typeparam name="TEntity">The main entity to build the expression for</typeparam>
-    public class OnDuplicateKeyUpdateExpression<TEntity> : BaseExpressionContainer, IOnDuplicateKeyUpdateBuilder<TEntity>, IStatementSetToBuilder<TEntity, IOnDuplicateKeyUpdateValueBuilder<TEntity>>, IOnDuplicateKeyUpdateValueBuilder<TEntity>, IOnDuplicateKeyUpdateChainedBuilder<TEntity>
+    public class OnDuplicateKeyUpdateExpression<TEntity> : BaseExpressionContainer, 
+        IOnDuplicateKeyUpdateBuilder<TEntity>, 
+        IStatementSetToBuilder<TEntity, IOnDuplicateKeyUpdateValueBuilder<TEntity>>, 
+        IOnDuplicateKeyUpdateValueBuilder<TEntity>, IOnDuplicateKeyUpdateChainedBuilder<TEntity>,
+        ISharedExpressionBuilder<TEntity, IStatementSetToBuilder<TEntity, IOnDuplicateKeyUpdateValueBuilder<TEntity>>>
     {
         // Constants
         /// <summary>
@@ -31,6 +40,8 @@ namespace Sels.SQL.QueryBuilder.MySQL.Expressions
         public IOnDuplicateKeyUpdateBuilder<TEntity> And => this;
         /// <inheritdoc/>
         public IOnDuplicateKeyUpdateValueBuilder<TEntity> To => this;
+        /// <inheritdoc/>
+        public ISharedExpressionBuilder<TEntity, IStatementSetToBuilder<TEntity, IOnDuplicateKeyUpdateValueBuilder<TEntity>>> Set => this;
 
         /// <inheritdoc cref="OnDuplicateKeyUpdateExpression{TEntity}"/>
         /// <param name="builder">Delegate that build the current instance</param>
@@ -75,11 +86,11 @@ namespace Sels.SQL.QueryBuilder.MySQL.Expressions
             });
         }
         /// <inheritdoc/>
-        IStatementSetToBuilder<TEntity, IOnDuplicateKeyUpdateValueBuilder<TEntity>> IStatementSetBuilder<TEntity, IOnDuplicateKeyUpdateValueBuilder<TEntity>>.SetExpression(IExpression sqlExpression)
+        IStatementSetToBuilder<TEntity, IOnDuplicateKeyUpdateValueBuilder<TEntity>> ISharedExpressionBuilder<TEntity, IStatementSetToBuilder<TEntity, IOnDuplicateKeyUpdateValueBuilder<TEntity>>>.Expression(IExpression expression)
         {
-            sqlExpression.ValidateArgument(nameof(sqlExpression));
+            expression.ValidateArgument(nameof(expression));
 
-            var setExpression = new SetExpression<TEntity, IOnDuplicateKeyUpdateChainedBuilder<TEntity>>(this, sqlExpression);
+            var setExpression = new SetExpression<TEntity, IOnDuplicateKeyUpdateChainedBuilder<TEntity>>(this, expression);
             _expressions.Add(setExpression);
             return this;
         }

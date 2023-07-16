@@ -1,8 +1,8 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Compilation;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using Sels.SQL.QueryBuilder.Builder.Compilation;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Condition;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Join;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Update;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
@@ -11,7 +11,9 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// Builds an update query.
     /// </summary>
     /// <typeparam name="TEntity">The main entity to create the query for</typeparam>
-    public class UpdateStatementBuilder<TEntity> : BaseStatementBuilder<TEntity, UpdateExpressionPositions, IUpdateStatementBuilder<TEntity>>, IUpdateStatementBuilder<TEntity>
+    public class UpdateStatementBuilder<TEntity> : BaseStatementBuilder<TEntity, UpdateExpressionPositions, IUpdateStatementBuilder<TEntity>>, 
+        IUpdateStatementBuilder<TEntity>,
+        ISharedExpressionBuilder<TEntity, IStatementSetToBuilder<TEntity, ISharedExpressionBuilder<TEntity, IUpdateStatementBuilder<TEntity>>>>
     {
         /// <inheritdoc cref="UpdateStatementBuilder{TEntity}"/>
         /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
@@ -20,10 +22,10 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         }
 
         /// <inheritdoc cref="UpdateStatementBuilder{TEntity}"/>
-        /// <param name="compiler">Compiler to create the query using the expressions defined in the current builder</param>
-        /// <param name="expressions">The expressions for the current query</param>
-        public UpdateStatementBuilder(IQueryCompiler<UpdateExpressionPositions> compiler, Dictionary<UpdateExpressionPositions, List<IExpression>> expressions) : base(compiler, expressions)
+        /// <param name="other">The builder to copy settings from</param>
+        public UpdateStatementBuilder(UpdateStatementBuilder<TEntity> other) : base(other)
         {
+
         }
 
         #region Base builder
@@ -41,42 +43,44 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             return UpdateExpressionPositions.Join;
         }
         /// <inheritdoc/>
-        protected override IUpdateStatementBuilder<TEntity> Clone(IQueryCompiler<UpdateExpressionPositions> compiler, Dictionary<UpdateExpressionPositions, List<IExpression>> expressions)
+        public override IUpdateStatementBuilder<TEntity> Clone()
         {
-            return new UpdateStatementBuilder<TEntity>(compiler, expressions);
+            return new UpdateStatementBuilder<TEntity>(this);
         }
         #endregion
 
         #region Builder
         /// <inheritdoc/>
-        public IStatementSetToBuilder<TEntity, ISharedExpressionBuilder<TEntity, IUpdateStatementBuilder<TEntity>>> SetExpression(IExpression sqlExpression)
+        public ISharedExpressionBuilder<TEntity, IStatementSetToBuilder<TEntity, ISharedExpressionBuilder<TEntity, IUpdateStatementBuilder<TEntity>>>> Set => this;
+        /// <inheritdoc/>
+        public IStatementSetToBuilder<TEntity, ISharedExpressionBuilder<TEntity, IUpdateStatementBuilder<TEntity>>> Expression(IExpression expression)
         {
-            sqlExpression.ValidateArgument(nameof(sqlExpression));
+            expression.ValidateArgument(nameof(expression));
 
-            var fullExpression = new SetExpression<TEntity, IUpdateStatementBuilder<TEntity>>(this, sqlExpression);
+            var fullExpression = new SetExpression<TEntity, IUpdateStatementBuilder<TEntity>>(this, expression);
             Expression(fullExpression, UpdateExpressionPositions.Set);
             return fullExpression;
         }
         /// <inheritdoc/>
-        public IUpdateStatementBuilder<TEntity> SetFrom<T>(object? dataset = null, params string[] excludedProperties)
+        public IUpdateStatementBuilder<TEntity> SetFrom<T>(object dataset = null, params string[] excludedProperties)
         {
             var builder = this.CastTo<IUpdateStatementBuilder<TEntity>>();
             foreach(var property in GetColumnPropertiesFrom<T>(excludedProperties))
             {
-                builder.Set(dataset ?? typeof(T), property.Name).To.Parameter(property.Name);
+                builder.Set.Column(dataset ?? typeof(T), property.Name).To.Parameter(property.Name);
             }
 
             return this;
         }
         /// <inheritdoc/>
-        public IUpdateStatementBuilder<TEntity> SetUsing<T>(T valueObject, object? dataset = null, params string[] excludedProperties)
+        public IUpdateStatementBuilder<TEntity> SetUsing<T>(T valueObject, object dataset = null, params string[] excludedProperties)
         {
             valueObject.ValidateArgument(nameof(valueObject));
 
             var builder = this.CastTo<IUpdateStatementBuilder<TEntity>>();
             foreach (var property in GetColumnPropertiesFrom<T>(excludedProperties))
             {
-                builder.Set(dataset ?? typeof(T), property.Name).To.Value(property.GetValue(valueObject));
+                builder.Set.Column(dataset ?? typeof(T), property.Name).To.Value(property.GetValue(valueObject));
             }
 
             return this;

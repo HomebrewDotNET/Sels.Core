@@ -1,7 +1,9 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Statement;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Statement;
+using System;
 using System.Text;
 
-namespace Sels.SQL.QueryBuilder.Builder.Expressions.Update
+namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
     /// <summary>
     /// Expression that represents a set expression in an update query where a sql object is updated to a new value.
@@ -52,7 +54,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions.Update
             if (RightExpression == null) throw new InvalidOperationException($"{nameof(RightExpression)} is not set");
 
             subBuilder(builder, LeftExpression);
-            builder.AppendSpace().Append('=').AppendSpace();
+            builder.AppendSpace().Append(Sql.AssignmentOperator).AppendSpace();
             subBuilder(builder, RightExpression);
         }
     }

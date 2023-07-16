@@ -6,13 +6,26 @@ using Sels.Core.Data.Contracts.Repository;
 using Sels.Core.Data.MySQL.Models;
 using Sels.Core.Data.MySQL.Models.Repository;
 using Sels.Core.Data.SQL.Extensions.Dapper;
+using Sels.Core.Extensions;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.Extensions;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Reflection;
+using System.Linq;
+using Sels.Core.Extensions.Linq;
+using Sels.Core.Data.SQL;
+using Sels.SQL.QueryBuilder.MySQL;
 
 namespace Sels.Core.Data.MySQL
 {
@@ -64,7 +77,8 @@ namespace Sels.Core.Data.MySQL
                 /// <param name="loggers">Optional logger for tracing</param>
                 /// <param name="cancellationToken">Optional token to cancel the request</param>
                 /// <returns>Object that can be disposed to unlock the resource with name <paramref name="key"/></returns>
-                public async static Task<IAsyncDisposable> LockAsync(string connectionString, string key, string requester, int expireAfter = 30, IEnumerable<ILogger>? loggers = null, CancellationToken cancellationToken = default)
+                [Obsolete("Use Sels.DistributedLocking.MySQL package")]
+                public async static Task<IAsyncDisposable> LockAsync(string connectionString, string key, string requester, int expireAfter = 30, IEnumerable<ILogger> loggers = null, CancellationToken cancellationToken = default)
                 {
                     using (loggers.TraceMethod(typeof(Database), nameof(LockAsync)))
                     {
@@ -134,20 +148,14 @@ namespace Sels.Core.Data.MySQL
                 }
 
                 #region Lock helpers
-                private async static Task CreateLockTableAsync(IDataRepositoryConnection connection, IEnumerable<ILogger>? loggers, CancellationToken cancellationToken)
+                private async static Task CreateLockTableAsync(IDataRepositoryConnection connection, IEnumerable<ILogger> loggers, CancellationToken cancellationToken)
                 {
                     using (loggers.TraceMethod(typeof(Database), nameof(CreateLockTableAsync)))
                     {
                         connection.ValidateArgument(nameof(connection));
 
                         loggers.Log($"Creating table {nameof(DatabaseLock)} if does not exist");
-                        const string query = $@"
-                            CREATE TABLE IF NOT EXISTS {nameof(DatabaseLock)} (
-                                {nameof(DatabaseLock.Name)} VARCHAR(100) PRIMARY KEY,
-                                {nameof(DatabaseLock.LockedBy)} VARCHAR(100) NULL,
-                                {nameof(DatabaseLock.LockedAt)} DATETIME NOT NULL,
-                                {nameof(DatabaseLock.ExpiryDate)} DATETIME NOT NULL
-                            )";
+                        string query = $"CREATE TABLE IF NOT EXISTS {nameof(DatabaseLock)} ({nameof(DatabaseLock.Name)} VARCHAR(100) PRIMARY KEY,{nameof(DatabaseLock.LockedBy)} VARCHAR(100) NULL, {nameof(DatabaseLock.LockedAt)} DATETIME NOT NULL, {nameof(DatabaseLock.ExpiryDate)} DATETIME NOT NULL)";
 
                         loggers.Trace($"Creating table {nameof(DatabaseLock)} with query: {Environment.NewLine + query}");
                         _ = await connection.Connection.ExecuteAsync(new CommandDefinition(query, transaction: connection.Transaction, cancellationToken: cancellationToken)).ConfigureAwait(false);
@@ -188,7 +196,7 @@ namespace Sels.Core.Data.MySQL
 
                     return queryBuilder.ToString();
                 }, true);
-                private async static Task<DatabaseLock> TryLockAsync(IDataRepositoryConnection connection, string key, string requester, int expireAfter, IEnumerable<ILogger>? loggers, CancellationToken cancellationToken)
+                private async static Task<DatabaseLock> TryLockAsync(IDataRepositoryConnection connection, string key, string requester, int expireAfter, IEnumerable<ILogger> loggers, CancellationToken cancellationToken)
                 {
                     using (loggers.TraceMethod(typeof(Database), nameof(TryLockAsync)))
                     {
@@ -243,7 +251,7 @@ namespace Sels.Core.Data.MySQL
                     var queryBuilder = new StringBuilder();
                     // Update record
                     MySql.Update<DatabaseLock>().Table()
-                                        .Set(x => x.LockedBy).To.Null()
+                                        .Set.Column(x => x.LockedBy).To.Null()
                                         .Where(x =>
                                             x.Column(c => c.Name).EqualTo.Parameter(p => p.Name).And
                                             .Column(c => c.LockedBy).EqualTo.Parameter(p => p.LockedBy)
@@ -380,7 +388,7 @@ namespace Sels.Core.Data.MySQL
                     {
                         parameters.AddParameter($"{property.Name}[{i}]", values[i]);
                     }
-                    return builder.Column(dataSet, property.Name.TrimEnd('s')).In.Values(LinqExtensions.Select(values, (i, x) => new ParameterExpression($"{property.Name}[{i}]")));
+                    return builder.Column(dataSet, property.Name.TrimEnd('s')).In.Values(LinqExtensions.Select(values, (x, i) => new ParameterExpression($"{property.Name}[{i}]")));
                 }
                 else
                 {

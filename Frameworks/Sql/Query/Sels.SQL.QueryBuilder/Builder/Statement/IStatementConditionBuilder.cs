@@ -1,8 +1,14 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
-using Sels.SQL.QueryBuilder.Builder.Expressions.Condition;
+using System;
 using System.Text;
 using SqlConstantExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ConstantExpression;
 using SqlParameterExpression = Sels.SQL.QueryBuilder.Builder.Expressions.ParameterExpression;
+using Sels.Core.Extensions;
+using System.Collections.Generic;
+using Sels.Core;
+using System.Linq;
+using System.Collections;
+using Sels.Core.Extensions.Conversion;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -18,7 +24,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="builder">Builder for adding conditions</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Where(Action<IStatementConditionExpressionBuilder<TEntity>> builder);
+        TDerived Where(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder);
     }
 
     /// <summary>
@@ -27,6 +33,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
     public interface IStatementConditionExpressionBuilder<TEntity> : ISharedExpressionBuilder<TEntity, IStatementConditionOperatorExpressionBuilder<TEntity>>
     {
+        /// <summary>
+        /// The last builder used to create expression. Useful for reflection.
+        /// </summary>
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> LastBuilder { get; }
+
         /// <summary>
         /// Inverts the result of the next condition by using the NOT keyword.
         /// </summary>
@@ -37,7 +48,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="builder">The builder to create the conditions within the codition group</param>
         /// <returns>Current builder for creating more conditions</returns>
-        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Action<IStatementConditionExpressionBuilder<TEntity>> builder);
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> WhereGroup(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder);
 
         #region FullExpression
         /// <summary>
@@ -63,16 +74,16 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="expression">String containing the sql expression</param>
         /// <returns>Current builder for creating more conditions</returns>
-        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> FullExpression(Action<StringBuilder> expression) => FullExpression(new DelegateExpression(expression.ValidateArgument(nameof(expression))));
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> FullExpression(Action<StringBuilder, ExpressionCompileOptions> expression) => FullExpression(new DelegateExpression(expression.ValidateArgument(nameof(expression))));
         #endregion
 
         #region Exists
         /// <summary>
         /// Condition is true when any rows are returned by the sub query.
         /// </summary>
-        /// <param name="query">Delegate that returns the query string</param>
+        /// <param name="query">Delegate that adds the query to the supplied builder</param>
         /// <returns>Builder for creating the sub query expression</returns>
-        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> ExistsIn(Func<ExpressionCompileOptions, string> query) => Expression(NullExpression.Value).CompareTo(new EnumExpression<Operators>(Operators.Exists)).Query(query.ValidateArgument(nameof(query)));
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> ExistsIn(Action<StringBuilder, ExpressionCompileOptions> query) => Expression(NullExpression.Value).CompareTo(new EnumExpression<Operators>(Operators.Exists)).Query(query.ValidateArgument(nameof(query)));
         /// <summary>
         /// Condition is true when any rows are returned by the sub query.
         /// </summary>
@@ -104,8 +115,15 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <summary>
         /// Compares an expression to a list of values.
         /// </summary>
+        /// <param name="values">Any additional values to compare to</param>
+        /// <typeparam name="T">The type of the elements</typeparam>
+        /// <returns>Current builder for creating more conditions</returns>
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> Values<T>(T[] values) => Values(values.ValidateArgument(nameof(values)).Enumerate());
+        /// <summary>
+        /// Compares an expression to a list of values.
+        /// </summary>
         /// <param name="value">The first value in the list of values to compare to</param>
-        /// <param name="values">Any additional values to conpare to</param>
+        /// <param name="values">Any additional values to compare to</param>
         /// <returns>Current builder for creating more conditions</returns>
         IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> Values(object value, params object[] values) => Values(Helper.Collection.Enumerate(value, values));
         /// <summary>

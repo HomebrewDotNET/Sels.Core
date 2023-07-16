@@ -70,7 +70,7 @@ namespace Sels.Core.Cli
             return this;
         }
         /// <inheritdoc/>
-        public ICommandLineSyncToolBuilder<TArg> RegisterServices(Action<IServiceCollection, TArg?> action)
+        public ICommandLineSyncToolBuilder<TArg> ConfigureServices(Action<IServiceCollection, TArg?> action)
         {
             action.ValidateArgument(nameof(action));
 
@@ -78,7 +78,7 @@ namespace Sels.Core.Cli
             return this;
         }
         /// <inheritdoc/>
-        ICommandLineAsyncToolBuilder<TArg> ICommandLineToolBuilder<TArg, ICommandLineAsyncToolBuilder<TArg>>.RegisterServices(Action<IServiceCollection, TArg?> action)
+        ICommandLineAsyncToolBuilder<TArg> ICommandLineToolBuilder<TArg, ICommandLineAsyncToolBuilder<TArg>>.ConfigureServices(Action<IServiceCollection, TArg?> action)
         {
             action.ValidateArgument(nameof(action));
 
@@ -102,35 +102,43 @@ namespace Sels.Core.Cli
                 };
 
                 // Parse arguments
-                TArg arguments = default;
+                TArg arguments = new();
                 if (typeof(TArg).Is<string[]>()) arguments = args.CastToOrDefault<TArg>();
                 else if (args.HasValue()) arguments = _parser != null ? _parser(args) : CreateArguments(args);
 
                 // Create service provider
                 var collection = new ServiceCollection();
                 if (_serviceBuilder != null) _serviceBuilder(collection, arguments);
-                var provider = collection.BuildServiceProvider();
 
-                // Execute tool
-                try
+                using (var provider = collection.BuildServiceProvider())
                 {
-                    _syncExecutions.Execute(x => x(provider, arguments));
-                }
-                catch (CommandLineException cliEx)
-                {
-                    Console.Error.WriteLine(cliEx.Message);
-                    return cliEx.ExitCode;
-                }
-                catch (Exception ex)
-                {
-                    var handler = _exceptionHandlers.Where(x => ex.GetType().IsAssignableTo(x.Key)).Select(x => x.Value).FirstOrDefault();
-
-                    if(handler != null)
+                    foreach (var execution in _syncExecutions)
                     {
-                        return handler(ex);
+                        // Execute tool
+                        try
+                        {
+                            using(var scope = provider.CreateScope())
+                            {
+                                execution(scope.ServiceProvider, arguments);
+                            }
+                        }
+                        catch (CommandLineException cliEx)
+                        {
+                            Console.Error.WriteLine(cliEx.Message);
+                            return cliEx.ExitCode;
+                        }
+                        catch (Exception ex)
+                        {
+                            var handler = _exceptionHandlers.Where(x => ex.GetType().IsAssignableTo(x.Key)).Select(x => x.Value).FirstOrDefault();
+
+                            if (handler != null)
+                            {
+                                return handler(ex);
+                            }
+                            Console.Error.WriteLine($"Could not execute tool successfully: {ex.Message}");
+                            return CommandLine.ErrorExitCode;
+                        }  
                     }
-                    Console.Error.WriteLine($"Could not execute tool successfully: {ex.Message}");
-                    return CommandLine.ErrorExitCode;
                 }
             }
             catch (Exception ex)
@@ -158,38 +166,43 @@ namespace Sels.Core.Cli
                 };
 
                 // Parse arguments
-                TArg arguments = default;
+                TArg arguments = new();
                 if (typeof(TArg).Is<string[]>()) arguments = args.CastToOrDefault<TArg>();
                 else if (args.HasValue()) arguments = _parser != null ? _parser(args) : CreateArguments(args);
 
                 // Create service provider
                 var collection = new ServiceCollection();
                 if (_serviceBuilder != null) _serviceBuilder(collection, arguments);
-                var provider = collection.BuildServiceProvider();
 
-                // Execute tool
-                try
+                using (var provider = collection.BuildServiceProvider())
                 {
-                   foreach(var execution in _asyncExecutions)
+                    foreach (var execution in _asyncExecutions)
                     {
-                        await execution(provider, arguments, cancellationSource.Token);
-                    }
-                }
-                catch (CommandLineException cliEx)
-                {
-                    Console.Error.WriteLine(cliEx.Message);
-                    return cliEx.ExitCode;
-                }
-                catch (Exception ex)
-                {
-                    var handler = _exceptionHandlers.Where(x => ex.GetType().IsAssignableTo(x.Key)).Select(x => x.Value).FirstOrDefault();
+                        // Execute tool
+                        try
+                        {
+                            await using(var scope = provider.CreateAsyncScope())
+                            {
+                                await execution(scope.ServiceProvider, arguments, cancellationSource.Token);
+                            }
+                        }
+                        catch (CommandLineException cliEx)
+                        {
+                            Console.Error.WriteLine(cliEx.Message);
+                            return cliEx.ExitCode;
+                        }
+                        catch (Exception ex)
+                        {
+                            var handler = _exceptionHandlers.Where(x => ex.GetType().IsAssignableTo(x.Key)).Select(x => x.Value).FirstOrDefault();
 
-                    if (handler != null)
-                    {
-                        return handler(ex);
+                            if (handler != null)
+                            {
+                                return handler(ex);
+                            }
+                            Console.Error.WriteLine($"Could not execute tool successfully: {ex.Message}");
+                            return CommandLine.ErrorExitCode;
+                        }  
                     }
-                    Console.Error.WriteLine($"Could not execute tool successfully: {ex.Message}");
-                    return CommandLine.ErrorExitCode;
                 }
             }
             catch (Exception ex)
@@ -211,7 +224,7 @@ namespace Sels.Core.Cli
                 var builder = SentenceBuilder.Create();
                 throw new InvalidCommandLineArgumentsException(HelpText.RenderParsingErrorsTextAsLines(parsedResult, builder.FormatError, builder.FormatMutuallyExclusiveSetErrors, 1));
                 });
-            return result;
+            return result ?? new TArg();
         }
     }
 }

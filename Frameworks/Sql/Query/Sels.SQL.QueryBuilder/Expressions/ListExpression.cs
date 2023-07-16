@@ -1,11 +1,16 @@
-﻿using System.Text;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
     /// <summary>
     /// Expression that represents a list of constant values in an sql query.
     /// </summary>
-    public class ListExpression : BaseExpression, IExpression
+    public class ListExpression : BaseExpressionContainer, IExpression
     {
         /// <summary>
         /// Expressions that form the list of constant values.
@@ -20,15 +25,15 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
-
+            subBuilder.ValidateArgument(nameof(subBuilder));
             builder.Append('(');
 
             Expressions.Execute((i, e) =>
             {
-                e.ToSql(builder, options);
+                subBuilder(builder, e);
                 if (i != Expressions.Length - 1) builder.Append(',');
             });
 

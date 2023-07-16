@@ -1,4 +1,5 @@
 ﻿using Sels.SQL.QueryBuilder.Builder.Expressions;
+using Sels.Core.Extensions;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -18,7 +19,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="database">Optional database to select the table from</param>
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Table(string table, object? datasetAlias = null, string? database = null, string? schema = null) => Expression(new TableExpression(database, schema, table.ValidateArgumentNotNullOrWhitespace(nameof(table)), datasetAlias), UpdateExpressionPositions.Table);
+        TDerived Table(string table, object datasetAlias = null, string database = null, string schema = null) => Expression(new TableExpression(database, schema, table.ValidateArgumentNotNullOrWhitespace(nameof(table)), datasetAlias), UpdateExpressionPositions.Table);
         /// <summary>
         /// Defines the table to update by using the name of <typeparamref name="T"/>.
         /// </summary>
@@ -27,7 +28,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="database">Optional database to select the table from</param>
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Table<T>(object? datasetAlias = null, string? database = null, string? schema = null) => Table(typeof(T).Name, datasetAlias ?? typeof(T), database, schema);
+        TDerived Table<T>(object datasetAlias = null, string database = null, string schema = null) => Table(typeof(T).Name, datasetAlias ?? typeof(T), database, schema);
         /// <summary>
         /// Defines the table to update by using the name of <typeparamref name="TEntity"/>.
         /// </summary>
@@ -35,7 +36,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="database">Optional database to select the table from</param>
         /// <param name="schema">Optional schema where the table is defined in</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived Table(object? datasetAlias = null, string? database = null, string? schema = null) => Table<TEntity>(datasetAlias, database, schema);
+        TDerived Table(object datasetAlias = null, string database = null, string schema = null) => Table<TEntity>(datasetAlias, database, schema);
         #endregion
 
         #region Set        
@@ -48,7 +49,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="excludedProperties">Optional names of properties to exclude</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived SetUsing<T>(T valueObject, object? dataset = null, params string[] excludedProperties);
+        TDerived SetUsing<T>(T valueObject, object dataset = null, params string[] excludedProperties);
         /// <summary>
         /// Sets the columns to update using the public properties on <typeparamref name="T"/> as column names and parameter names.
         /// </summary>
@@ -56,14 +57,14 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="excludedProperties">Optional names of properties to exclude</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived SetFrom<T>(object? dataset = null, params string[] excludedProperties);
+        TDerived SetFrom<T>(object dataset = null, params string[] excludedProperties);
         /// <summary>
         /// Sets the columns to update using the public properties on <typeparamref name="TEntity"/> as column names and parameter names.
         /// </summary>
         /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="excludedProperties">Optional names of properties to exclude</param>
         /// <returns>Current builder for method chaining</returns>
-        TDerived SetFrom(object? dataset = null, params string[] excludedProperties) => SetFrom<TEntity>(dataset, excludedProperties);
+        TDerived SetFrom(object dataset = null, params string[] excludedProperties) => SetFrom<TEntity>(dataset, excludedProperties);
         #endregion
         #endregion
     }

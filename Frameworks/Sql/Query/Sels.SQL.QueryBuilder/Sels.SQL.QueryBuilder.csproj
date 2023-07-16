@@ -1,21 +1,35 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
+		<TargetFramework>netstandard2.1</TargetFramework>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
 		<Product>SQL Query Builder Framework</Product>
 		<Description>
-			Framework for creating sql queries using a fluent syntax and typed expressions.
-			Query compilers are provided in separate projects targeting a certain sql database.
+			Framework for creating sql queries using fluent builders.
+			Uses a (somewhat) easy to extend expression system that gets compiled into SQL using compilers.
+			Can be used for simple queries or more advanced queries (Joins, conditions (WHERE), sub queries, order by, group by, functions (MIN, AVG, ...), Union, case when then else, ...)
+
+			Supports the following sql statements:
+			- Insert
+			- Update
+			- Delete
+			- Select
+			- Common table expressions (CTE)
+			- If, else if, else
+			- Declare variable
+			- Set variable
+
+			Use IServiceCollection.AddSqlQueryProvider() or IServiceCollection.AddCachedSqlQueryProvider to inject ISqlQueryProvider or ICachedSqlQueryProvider to start building sql queries.
+
+			Official compilers:
+			- Sels.SQL.QueryBuilder.MySQL
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 		<Copyright>Jens Sels</Copyright>
-		<PackageTags>Sels;SQL;Query;QueryBuilder;Fluent;Expressions</PackageTags>
+		<PackageTags>Sels;SQL;Query;QueryBuilder;Fluent;Expression</PackageTags>
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 		<!--For NuGet package-->
 		<VersionPrefix>1.0.0</VersionPrefix>
@@ -45,9 +59,13 @@
 		<Exec Command="if exist C:\NuGet\$(PackageId) rmdir /s /q C:\NuGet\$(PackageId)" />
 		<Exec Command="C:\NuGet\nuget.exe add $(ProjectDir)bin\$(Configuration)\$(PackageId).$(PackageVersion).nupkg -Source C:\NuGet -Verbosity Detailed" />
 	</Target>
-
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\..\Sels.Core\Sels.Core.csproj" />
+	  <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+	  <ProjectReference Include="..\..\..\..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
 	</ItemGroup>
 
 </Project>

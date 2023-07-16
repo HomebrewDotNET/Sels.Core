@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Sels.Core.Extensions;
+using System;
+using System.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
@@ -10,12 +12,12 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// <inheritdoc cref="ObjectExpression"/>
         /// <param name="dataset"><inheritdoc cref="IDataSetExpression.DataSet"/></param>
         /// <param name="objectName"><inheritdoc cref="IObjectExpression.Object"/></param>
-        public ObjectExpression(object? dataset, string objectName) : base(dataset, objectName)
+        public ObjectExpression(object dataset, string objectName) : base(dataset, objectName)
         {
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, Func<string, string>? objectConverter, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, Func<string, string> objectConverter, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             builder.ValidateArgument(nameof(datasetConverterer));

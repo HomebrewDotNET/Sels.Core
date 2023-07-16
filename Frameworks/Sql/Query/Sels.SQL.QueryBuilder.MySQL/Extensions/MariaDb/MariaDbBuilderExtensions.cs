@@ -1,5 +1,7 @@
-﻿using Sels.SQL.QueryBuilder.Builder.Statement;
+﻿using Sels.Core.Extensions;
+using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.SQL.QueryBuilder.MySQL.Expressions.MariaDb;
+using System;
 
 namespace Sels.SQL.QueryBuilder.MySQL.MariaDb
 {
@@ -17,7 +19,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.MariaDb
         /// <param name="builder">The builder to add the expression to</param>
         /// <param name="configurator">Delegate used to configure what to return</param>
         /// <returns>Current builder for method chaining</returns>
-        public static TDerived Return<TEntity, TDerived>(this IDeleteStatementBuilder<TEntity, TDerived> builder, Action<IReturningExpressionBuilder<TEntity>> configurator)
+        public static TDerived Returning<TEntity, TDerived>(this IDeleteStatementBuilder<TEntity, TDerived> builder, Action<IReturningExpressionBuilder<TEntity>> configurator)
         {
             builder.ValidateArgument(nameof(builder));
             configurator.ValidateArgument(nameof(configurator));
@@ -32,7 +34,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.MariaDb
         /// <param name="builder">The builder to add the expression to</param>
         /// <param name="configurator">Delegate used to configure what to return</param>
         /// <returns>Current builder for method chaining</returns>
-        public static TDerived Return<TEntity, TDerived>(this IInsertStatementBuilder<TEntity, TDerived> builder, Action<IReturningExpressionBuilder<TEntity>> configurator)
+        public static TDerived Returning<TEntity, TDerived>(this IInsertStatementBuilder<TEntity, TDerived> builder, Action<IReturningExpressionBuilder<TEntity>> configurator)
         {
             builder.ValidateArgument(nameof(builder));
             configurator.ValidateArgument(nameof(configurator));

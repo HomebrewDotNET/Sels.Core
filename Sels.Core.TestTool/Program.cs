@@ -24,6 +24,11 @@ using Sels.DistributedLocking.Memory;
 using Sels.Core.Conversion.Extensions;
 using Sels.Core.Mediator.Event;
 using Sels.Core.Mediator;
+using Sels.SQL.QueryBuilder;
+using Sels.SQL.QueryBuilder.MySQL;
+using Sels.Core.TestTool.ExportEntities;
+using Sels.SQL.QueryBuilder.Extensions;
+using Sels.SQL.QueryBuilder.Builder;
 
 namespace Sels.Core.TestTool
 {
@@ -31,9 +36,10 @@ namespace Sels.Core.TestTool
     {
         static async Task Main(string[] args)
         {
-            await Helper.Console.RunAsync(async () =>
+            await Helper.Console.RunAsync(() =>
             {
-                await TestNotifier();
+                TestMySqlQueryProvider();
+                return Task.CompletedTask;
             });
         }
 
@@ -225,6 +231,49 @@ namespace Sels.Core.TestTool
             var memoryLockingProvider = provider.GetRequiredService<ILockingProvider>().CastTo<MemoryLockingProvider>();
             var options = memoryLockingProvider.OptionsMonitor.CurrentValue;
             Console.WriteLine(options.SerializeAsJson());
+        }
+
+        internal static void TestMySqlQueryProvider()
+        {
+            var provider = new ServiceCollection()
+                               .AddMySqlQueryProvider()
+                               .AddCachedMySqlQueryProvider()
+                               .AddMemoryCache()
+                               .AddLogging(l =>
+                               {
+                                   l.ClearProviders();
+                                   l.AddSimpleConsole(options =>
+                                   {
+                                       options.IncludeScopes = true;
+                                       options.SingleLine = true;
+                                       options.TimestampFormat = "hh:mm:ss ";
+                                   }).SetMinimumLevel(LogLevel.Trace);
+                               })
+                               .BuildServiceProvider();
+
+            var sqlQueryProvider = provider.GetRequiredService<ISqlQueryProvider>();
+            var cachedQueryProvider = provider.GetRequiredService<ICachedSqlQueryProvider>();
+            var logger = provider.GetService<ILogger<Program>>();
+            var selectQuery = sqlQueryProvider.Select<Person>()
+                                                    .Column(p => p.FirstName)
+                                                    .Column(p => p.LastName)
+                                              .Where(w => w.Column(p => p.JobId).EqualTo.Value(5))
+                                              .Build();
+            logger.Log(selectQuery);
+            var builderAction = new Func<ISqlQueryProvider, IQueryBuilder>(b =>
+            {
+                return b.With().Cte("Cte")
+                                .As(b.Select<Person>()
+                                        .OrderBy(p => p.LastName)
+                                        .Limit(5))
+                               .Execute(b.Update<Person>()
+                                         .Set.Column(p => p.JobId).To.Null()
+                                         .InnerJoin().Table("CTE", datasetAlias: "C").On(x => x.Column(p => p.LastName).EqualTo.Column("C", "LastName")));
+            });
+
+            var updateQuery = cachedQueryProvider.GetQuery("Person.Update", builderAction);
+            updateQuery = cachedQueryProvider.GetQuery("Person.Update", builderAction);
+            logger.Log(selectQuery);
         }
 
         internal static ILogger CreateLogger(LogLevel level = LogLevel.Trace)

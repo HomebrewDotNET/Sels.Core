@@ -1,27 +1,37 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>net7.0</TargetFramework>
-	  <ImplicitUsings>enable</ImplicitUsings>
-	  <Nullable>enable</Nullable>
+	  <TargetFramework>netstandard2.1</TargetFramework>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 	  <Authors>Jens Sels</Authors>
 	  <Company>Homebrew IT</Company>
 	  <Product>MySql/MariaDB query compiler</Product>
 	  <Description>
-		  Query compiler for MySql and MariaDB queries.
+		  MySQL compiler for Sels.SQL.QueryBuilder. Supports MySQL and MariaDB.
 
-		  Start creating queries using one of the following methods:
+		  Custom expressions:
+		  - SELECT FOR UPDATE
+		  - INSERT ON DUPLICATE KEY
+		  - SELECT LIMIT
+		  - RECURSIVE Cte
+		  - MariaDB RETURNING
+		  - NOW, UTC_TIMESTAMP, DATE_ADD, CONCACT functions
+
+		  Start creating queries using one of the following static helper methods:
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.Insert();
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.Update();
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.Delete();
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.Select();
 		  - Sels.SQL.QueryBuilder.MySQL.MySql.With();
+		  - Sels.SQL.QueryBuilder.MySQL.MySql.If();
+		  - Sels.SQL.QueryBuilder.MySQL.MySql.Set();
+
+		  Use IServiceCollection.AddMySqlQueryProvider() or IServiceCollection.AddCachedMySqlQueryProvider to inject ISqlQueryProvider or ICachedSqlQueryProvider to start building MySQL queries.
 	  </Description>
 	  <PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
 	  <Copyright>Jens Sels</Copyright>
-	  <PackageTags>Sels;SQL;Query;QueryBuilder;Fluent;Expressions;MySql;MariaDB</PackageTags>
+	  <PackageTags>Sels;SQL;Query;QueryBuilder;Fluent;Expression;MySql;MariaDB</PackageTags>
 	  <RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 	  <!--For NuGet package-->
 	  <VersionPrefix>1.0.0</VersionPrefix>
@@ -57,5 +67,10 @@
 	<ItemGroup>
     <ProjectReference Include="..\Sels.SQL.QueryBuilder\Sels.SQL.QueryBuilder.csproj" />
   </ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Statements\" />
+	</ItemGroup>
 
 </Project>

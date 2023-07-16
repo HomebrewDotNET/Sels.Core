@@ -1,6 +1,8 @@
 ﻿using Sels.Core;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.ServiceBuilder;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -49,7 +51,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TImpl : class, T
             where T : class
         {
-            Guard.IsNotNull(builder);
+            builder.ValidateArgument(nameof(builder));
 
             var existing = builder.Collection.FirstOrDefault(x => x.ServiceType.Is<TImpl>());
             return builder.ConstructWith(p => p.GetRequiredService<TImpl>()).WithLifetime(existing?.Lifetime ?? ServiceLifetime.Scoped);

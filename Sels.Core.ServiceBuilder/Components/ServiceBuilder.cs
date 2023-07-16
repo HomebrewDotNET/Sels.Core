@@ -1,9 +1,12 @@
 ﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.ServiceBuilder.Events;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Sels.Core.ServiceBuilder
 {
@@ -129,7 +132,18 @@ namespace Sels.Core.ServiceBuilder
                 RegisterServiceWithFactory(p =>
                 {
                     // Factory for the actual implementation
-                    var instanceFactory = _factory ?? new Func<IServiceProvider, TImpl>(prov => prov.GetService<TImpl>() ?? prov.CreateInstance<TImpl>());
+                    var instanceFactory = _factory ?? new Func<IServiceProvider, TImpl>(prov =>
+                    {
+                        // Only try service provider if we have an abstraction. Otherwise factory will call itself
+                        if (!IsAbstractionless)
+                        {
+                            return prov.GetService<TImpl>() ?? prov.CreateInstance<TImpl>();
+                        }
+                        else
+                        {
+                            return prov.CreateInstance<TImpl>();
+                        }
+                    });
                     var instance = instanceFactory(p);
 
                     // Create using defined factories
@@ -219,7 +233,7 @@ namespace Sels.Core.ServiceBuilder
         /// <inheritdoc/>
         public IServiceBuilder<T, TImpl> OnCreated(Action<IServiceProvider, TImpl> action)
         {
-            Guard.IsNotNull(action);
+            action.ValidateArgument(nameof(action));
             OnCreatedEvent += action;
             return this;
         }

@@ -61,6 +61,32 @@ namespace Sels.Core.Extensions.Fluent
 
             return source;
         }
+        /// <summary>
+        /// Executes <paramref name="action"/> when <paramref name="condition"/> is set to true.
+        /// </summary>
+        /// <typeparam name="T">Type of the fluent object</typeparam>
+        /// <typeparam name="TReturn">The type to return</typeparam>
+        /// <param name="source">The fluent object to perform the actions on</param>
+        /// <param name="condition">Boolean that indicates if we can execute <paramref name="action"/></param>
+        /// <param name="action">The action to execute with <paramref name="source"/> if <paramref name="condition"/> is set true</param>
+        /// <param name="elseAction">The action to execute with <paramref name="source"/> if <paramref name="condition"/> is set false</param>
+        /// <returns>The value returned from <paramref name="action"/> when <paramref name="condition"/> is true, otherwise the return from <paramref name="elseAction"/></returns>
+        public static TReturn When<T, TReturn>(this T source, bool condition, Func<T, TReturn> action, Func<T, TReturn> elseAction)
+        {
+            source.ValidateArgument(nameof(source));
+            action.ValidateArgument(nameof(action));
+            elseAction.ValidateArgument(nameof(elseAction));
+
+            if (condition)
+            {
+                return action(source);
+            }
+            else
+            {
+                return elseAction(source);
+            }
+
+        }
         #endregion
     }
 }

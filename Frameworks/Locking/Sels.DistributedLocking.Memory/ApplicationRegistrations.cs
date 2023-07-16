@@ -1,4 +1,5 @@
-﻿using Sels.Core.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using Sels.Core.Extensions;
 using Sels.DistributedLocking.Memory;
 using Sels.DistributedLocking.Provider;
 using System;
@@ -34,10 +35,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptionProfileValidator<MemoryLockingProviderOptions, ProviderOptionsValidationProfile>();
 
             // Add custom delegate
-            if(configurator != null) services.Configure<MemoryLockingProviderOptions>(configurator);
+            if(configurator != null) services.Configure(configurator);
 
             // Add provider
-            services.AddSingleton<ILockingProvider, MemoryLockingProvider>();
+            services.New<ILockingProvider, MemoryLockingProvider>()
+                    .HandleDisposed()
+                    .AsSingleton()
+                    .TryRegister();
 
             return services;
         }

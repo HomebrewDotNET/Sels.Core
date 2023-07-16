@@ -1,4 +1,6 @@
-﻿namespace Sels.SQL.QueryBuilder.Builder
+﻿using System;
+
+namespace Sels.SQL.QueryBuilder.Builder
 {
     /// <summary>
     /// Exposes extra settings when compiling expressions or query builders into sql.
@@ -25,6 +27,10 @@
         /// <summary>
         /// Disables any implicit expressions that get added by the builders themselves. Set automatically when TEntity is object.
         /// </summary>
-        NoImplitExpressions = 8
+        NoImplitExpressions = 8,
+        /// <summary>
+        /// Use the Utc time for dates.
+        /// </summary>
+        DateAsUtc = 16
     }
 }

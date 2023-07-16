@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
+using Sels.Core.Extensions;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
@@ -8,11 +10,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
     public abstract class BaseDataSetExpression : BaseExpression, IDataSetExpression
     {
         /// <inheritdoc/>
-        public object? DataSet { get; }
+        public object DataSet { get; }
 
         ///<inheritdoc cref="BaseDataSetExpression"/>
         /// <param name="dataset"><inheritdoc cref="DataSet"/></param>
-        public BaseDataSetExpression(object? dataset)
+        public BaseDataSetExpression(object dataset)
         {
             DataSet = dataset;
         }
@@ -24,6 +26,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         }
 
         /// <inheritdoc/>
-        public abstract void ToSql(StringBuilder builder, Func<object, string?> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None);
+        public abstract void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, ExpressionCompileOptions options = ExpressionCompileOptions.None);
     }
 }
