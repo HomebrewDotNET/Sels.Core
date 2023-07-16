@@ -30,6 +30,7 @@ namespace Sels.DistributedLocking.Memory
     {
         // Fields
         private readonly Dictionary<string, MemoryLockInfo> _locks = new Dictionary<string, MemoryLockInfo>(StringComparer.OrdinalIgnoreCase);
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<MemoryLockingProvider> _logger;
         private CancellationTokenSource _cancellationTokenSource;
         private Task _cleanupTask;
@@ -50,11 +51,13 @@ namespace Sels.DistributedLocking.Memory
 
         /// <inheritdoc cref="MemoryLockingProvider"/>
         /// <param name="options"><inheritdoc cref="Options"/></param>
+        /// <param name="loggerFactory">Optional factory used to create loggers for child instances</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public MemoryLockingProvider(IOptionsMonitor<MemoryLockingProviderOptions> options, ILogger<MemoryLockingProvider> logger = null)
+        public MemoryLockingProvider(IOptionsMonitor<MemoryLockingProviderOptions> options, ILoggerFactory loggerFactory = null, ILogger<MemoryLockingProvider> logger = null)
         {
             OptionsMonitor = options.ValidateArgument(nameof(options));
             _logger = logger;
+            _loggerFactory = loggerFactory;
 
             // Start cleanup task
             _cancellationTokenSource = new CancellationTokenSource();
@@ -144,7 +147,7 @@ namespace Sels.DistributedLocking.Memory
                         memoryLock.LastLockDate = DateTime.Now;
                         memoryLock.LockedAt = DateTime.Now;
                         _logger.Log($"Resource <{resource}> is now held by <{requester}>");
-                        var lockObject = new MemoryLock(this, memoryLock, keepAlive, expiryTime ?? TimeSpan.Zero, _logger);
+                        var lockObject = new MemoryLock(this, memoryLock, keepAlive, expiryTime ?? TimeSpan.Zero, _loggerFactory?.CreateLogger<MemoryLock>());
                         return new LockResult(lockObject);
                     }
 
@@ -155,7 +158,7 @@ namespace Sels.DistributedLocking.Memory
         }
 
         /// <inheritdoc/>
-        public virtual Task<ILock> LockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, TimeSpan? timeout = null, CancellationToken token = default)
+        public virtual Task<IPendingLockRequest> LockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, TimeSpan? timeout = null, CancellationToken token = default)
         {
             using (_logger.TraceMethod(this))
             {
@@ -164,7 +167,7 @@ namespace Sels.DistributedLocking.Memory
 
                 _logger.Log($"Waiting for resource <{resource}> to be locked by <{requester}>");
                 var memoryLock = GetLockOrSet(resource);
-                Task<ILock> lockTask = null;
+                IPendingLockRequest pendingRequest;
                 lock (memoryLock.SyncRoot)
                 {
                     var lockResult = TryLock(resource, requester, expiryTime, keepAlive);
@@ -177,7 +180,7 @@ namespace Sels.DistributedLocking.Memory
                         if(existing == null)
                         {
                             // Create and store request
-                            var request = new MemoryLockRequest(requester, memoryLock, timeout, _logger, token)
+                            var request = new MemoryLockRequest(requester, memoryLock, timeout, _loggerFactory?.CreateLogger<MemoryLockRequest>(), token)
                             {
                                 ExpiryTime = expiryTime,
                                 KeepAlive = keepAlive
@@ -185,22 +188,22 @@ namespace Sels.DistributedLocking.Memory
                             memoryLock.Requests.Enqueue(request);
 
                             _logger.Log($"Lock request created for requester <{requester}> on resource <{resource}>");
-                            lockTask = request.CallbackTask;
+                            pendingRequest = request;
                         }
                         else
                         {
                             // Request already exists so no need to create another one
                             _logger.Warning($"A request on resource <{resource}> was already placed by <{requester}>. Not creating a new request");
-                            lockTask = existing.CallbackTask;
+                            pendingRequest = existing;
                         }
                     }
                     else
                     {
                         _logger.Log($"Resource <{resource}> was not locked and is now held by <{requester}>");
-                        lockTask = Task.FromResult(lockResult.AcquiredLock);
+                        pendingRequest = new MemoryLockRequest(lockResult.AcquiredLock.CastTo<MemoryLock>(), timeout, _loggerFactory?.CreateLogger<MemoryLockRequest>());
                     }
                 }
-                return lockTask;
+                return Task.FromResult(pendingRequest);
             }
         }
         /// <inheritdoc/>
@@ -247,13 +250,28 @@ namespace Sels.DistributedLocking.Memory
                 {
                     locks = _locks.Values;
                 }
+                token.ThrowIfCancellationRequested();
 
                 // Apply filter
-                var filtered = querySearchCriteria.ApplyFilter(locks).ToArray();
+                IEnumerable<MemoryLockInfo> enumerator;
+                int total;
+                if (querySearchCriteria.Predicates.HasValue())
+                {
+                    var filtered = querySearchCriteria.ApplyFilter(locks).ToArray();
+                    enumerator = filtered;
+                    total = filtered.Length;
+                }
+                else
+                {
+                    enumerator = locks;
+                    total = locks.Count;
+                }
 
-                var total = filtered.Length;
+                token.ThrowIfCancellationRequested();
+
                 // Apply sorting
-                var enumerator = querySearchCriteria.ApplySorting(filtered);
+                enumerator = querySearchCriteria.ApplySorting(enumerator);
+                token.ThrowIfCancellationRequested();
 
                 // Apply pagination
                 if (querySearchCriteria.Pagination.HasValue)
@@ -261,14 +279,14 @@ namespace Sels.DistributedLocking.Memory
                     var (page, pageSize) = querySearchCriteria.Pagination.Value;
                     enumerator = enumerator.Skip((page - 1) * pageSize).Take(pageSize);
                 }
+                token.ThrowIfCancellationRequested();
 
                 // Return result
                 var result = enumerator.Select(x =>
                 {
-                    var memoryLock = x.CastTo<MemoryLockInfo>();
-                    lock (memoryLock.SyncRoot)
+                    lock (x.SyncRoot)
                     {
-                        return new MemoryLockInfo(memoryLock);
+                        return new MemoryLockInfo(x);
                     }
                 }).Cast<ILockInfo>().ToArray();
 

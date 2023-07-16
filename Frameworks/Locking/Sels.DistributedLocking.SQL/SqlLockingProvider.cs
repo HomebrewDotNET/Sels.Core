@@ -22,6 +22,7 @@ using System.Runtime.CompilerServices;
 using Sels.DistributedLocking.Abstractions.Models;
 using Sels.Core.Dispose;
 using Sels.Core.Components.Scope.Actions;
+using Castle.Core.Resource;
 
 namespace Sels.DistributedLocking.SQL
 {
@@ -31,8 +32,9 @@ namespace Sels.DistributedLocking.SQL
     public partial class SqlLockingProvider : ILockingProvider, IAsyncExposedDisposable
     {
         // Fields
-        private readonly HashSet<RequestManager> _requestManagers = new HashSet<RequestManager>();
+        private readonly List<RequestManager> _requestManagers = new List<RequestManager>();
         private readonly ISqlLockRepository _lockRepository;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
         private readonly CancellationTokenSource _maintenanceTokenSource = new CancellationTokenSource();
         private Task _maintenanceTask;
@@ -48,11 +50,13 @@ namespace Sels.DistributedLocking.SQL
         /// <inheritdoc cref="SqlLockingProvider"/>
         /// <param name="lockRepository">Used to manage lock state</param>
         /// <param name="options">The configuration for this instance</param>
+        /// <param name="loggerFactory">Optional factory used to create loggers for child instances</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public SqlLockingProvider(ISqlLockRepository lockRepository, IOptionsMonitor<SqlLockingProviderOptions> options, ILogger<SqlLockingProvider> logger = null)
+        public SqlLockingProvider(ISqlLockRepository lockRepository, IOptionsMonitor<SqlLockingProviderOptions> options, ILoggerFactory loggerFactory = null, ILogger<SqlLockingProvider> logger = null)
         {
             _lockRepository = lockRepository.ValidateArgument(nameof(lockRepository));
             _logger = logger;
+            _loggerFactory = loggerFactory;
             OptionsMonitor = options.ValidateArgument(nameof(options));
 
             _maintenanceTask = Task.Run(async () => await RunCleanupDuringLifetime(_maintenanceTokenSource.Token).ConfigureAwait(false));
@@ -132,14 +136,14 @@ namespace Sels.DistributedLocking.SQL
             }
         }
         /// <inheritdoc/>
-        public async virtual Task<ILock> LockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, TimeSpan? timeout = null, CancellationToken token = default)
+        public async virtual Task<IPendingLockRequest> LockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, TimeSpan? timeout = null, CancellationToken token = default)
         {
             resource.ValidateArgumentNotNullOrWhitespace(nameof(resource));
             requester.ValidateArgumentNotNullOrWhitespace(nameof(requester));
 
             _logger.Log($"Attempting to lock resource <{resource}> for <{requester}>");
 
-            Task<ILock> requestTask;
+            IPendingLockRequest request;
             await using (var transaction = await _lockRepository.CreateTransactionAsync(token).ConfigureAwait(false))
             {
                 var sqlLock = await _lockRepository.TryAssignLockToAsync(transaction, resource, requester, expiryTime.HasValue ? DateTime.Now.Add(expiryTime.Value) : (DateTime?)null, token).ConfigureAwait(false);
@@ -150,22 +154,22 @@ namespace Sels.DistributedLocking.SQL
                 {
                     _logger.Log($"Resource <{resource}> now locked by <{requester}>");
                     await transaction.CommitAsync(token).ConfigureAwait(false);
-                    return new AcquiredSqlLock(sqlLock, this, keepAlive, expiryTime.HasValue ? expiryTime.Value : TimeSpan.Zero, _logger);
+                    var @lock = new AcquiredSqlLock(sqlLock, this, keepAlive, expiryTime.HasValue ? expiryTime.Value : TimeSpan.Zero, _loggerFactory?.CreateLogger<AcquiredSqlLock>());
+                    request = new CompletedRequest(@lock) { Requester = requester, Resource = resource, ExpiryTime = expiryTime?.TotalSeconds, KeepAlive = keepAlive, Timeout = timeout.HasValue ? DateTime.Now.Add(timeout.Value) : (DateTime?)null, CreatedAt = DateTime.Now };
                 }
                 else
                 {
                     _logger.Log($"Could not assign lock on resource <{resource}> to <{requester}> because it is currently held by <{sqlLock.LockedBy}>. Creating lock request");
+                    var requestManager = GetRequestManagerFor(resource);
                     var sqlLockRequest = await _lockRepository.CreateRequestAsync(transaction, new SqlLockRequest() { Requester = requester, Resource = resource, ExpiryTime = expiryTime?.TotalSeconds, KeepAlive = keepAlive, Timeout = timeout.HasValue ? DateTime.Now.Add(timeout.Value) : (DateTime?)null, CreatedAt = DateTime.Now }, token).ConfigureAwait(false);
 
-                    await transaction.CommitAsync(token).ConfigureAwait(false);
-
                     _logger.Log($"Created lock request <{sqlLockRequest.Id}> for <{sqlLockRequest.Requester}> on resource <{sqlLockRequest.Resource}>");
-                    var manager = GetRequestManager(sqlLockRequest.Resource);
-                    requestTask = manager.TrackRequest(sqlLockRequest, timeout, token);
+                    request = requestManager.TrackRequest(sqlLockRequest, timeout, token);
+                    await transaction.CommitAsync(token).ConfigureAwait(false);
                 }
             }
 
-            return await requestTask.ConfigureAwait(false);
+            return request;
         }
         /// <inheritdoc/>
         public async virtual Task<ILockQueryResult> QueryAsync(Action<ILockQueryCriteria> searchCriteria, CancellationToken token = default)
@@ -286,22 +290,52 @@ namespace Sels.DistributedLocking.SQL
             return true;
         }
 
-        private RequestManager GetRequestManager(string resource)
+        private RequestManager GetRequestManagerFor(string resource)
         {
             resource.ValidateArgumentNotNullOrWhitespace(nameof(resource));
-
+            RequestManager requestManager = null;
             lock (_requestManagers)
             {
-                var requestManager = _requestManagers.FirstOrDefault(x => x.Resource.Equals(resource, StringComparison.OrdinalIgnoreCase));
+                if(_requestManagers.Count == 0)
+                {
+                    _logger.Debug($"No request managers have been started. Creating first");
+                    requestManager = CreateNewRequestManager();
+                }
+
+                _logger.Debug($"Searching for best request manager for resource <{resource}>");
+                if(requestManager != null) requestManager = _requestManagers.FirstOrDefault(x => x.PendingResources.Any(r => r.Equals(resource, StringComparison.OrdinalIgnoreCase)));
 
                 if (requestManager == null)
                 {
-                    _logger.Debug($"Creating request manager for resource <{resource}>");
-                    requestManager = new RequestManager(resource, OptionsMonitor, (l, r) => new AcquiredSqlLock(l, this, r.KeepAlive, r.ExpiryTime.HasValue ? TimeSpan.FromSeconds(r.ExpiryTime.Value) : TimeSpan.Zero, _logger), _lockRepository, _logger);
-                    _requestManagers.Add(requestManager);
-                }
+                    _logger.Debug($"No request manager is polling resource <{resource}>. Looking for best request manager to assign to");
+                    requestManager = _requestManagers.OrderBy(x => x.PendingResources.Length).ThenBy(x => x.Pending).First();
+                    if(requestManager.PendingResources.Length >= OptionsMonitor.CurrentValue.MaxWantedResourcePerManager && _requestManagers.Count < OptionsMonitor.CurrentValue.MaximumRequestManagers)
+                    {
+                        _logger.Debug($"Best request manager to assign to is already watching <{requestManager.PendingResources.Length}> resources. Starting new manager");
 
-                return requestManager;
+                        requestManager = CreateNewRequestManager();
+                    }
+                    else
+                    {
+                        _logger.Debug($"Assigning to request manager that is currently watching <{requestManager.PendingResources.Length}> resources with a total of <{requestManager.Pending}> pending requests");
+                    }                   
+                }
+                else
+                {
+                    _logger.Debug($"Found request manager already watching resource <{resource}>. Assigning");
+                }
+            }
+
+            return requestManager;
+        }
+
+        private RequestManager CreateNewRequestManager()
+        {
+            lock (_requestManagers)
+            {
+                var requestManager = new RequestManager(OptionsMonitor, (l, r) => new AcquiredSqlLock(l, this, r.KeepAlive, r.ExpiryTime.HasValue ? TimeSpan.FromSeconds(r.ExpiryTime.Value) : TimeSpan.Zero, _loggerFactory?.CreateLogger<AcquiredSqlLock>()), _lockRepository, _loggerFactory?.CreateLogger<RequestManager>());
+                _requestManagers.Add(requestManager);
+                return requestManager; 
             }
         }
 
@@ -309,14 +343,14 @@ namespace Sels.DistributedLocking.SQL
         {
             using (_logger.TraceMethod(this))
             {
-                var sleepTime = 1000;
+                TimeSpan sleepTime = TimeSpan.FromSeconds(1);
                 while (!token.IsCancellationRequested)
                 {
                     try
                     {
                         var options = OptionsMonitor.CurrentValue;
-                        sleepTime = options.MaintenanceInterval.TotalMilliseconds.ChangeType<int>();
-                        _logger.Debug($"Running maintenance in <{options.MaintenanceInterval}ms>");
+                        sleepTime = options.MaintenanceInterval;
+                        _logger.Debug($"Running maintenance in <{options.MaintenanceInterval}>");
                         await Helper.Async.Sleep(sleepTime, token).ConfigureAwait(false);
                         if (token.IsCancellationRequested)
                         {
@@ -325,9 +359,25 @@ namespace Sels.DistributedLocking.SQL
                         }
                         // Refresh options
                         options = OptionsMonitor.CurrentValue;
-                        _logger.Log($"Running maintenance on lock table");
 
-                        // Cleanup managers with no pending requests
+                        // Monitor request managers
+                        _logger.Log($"Monitoring request managers");
+                        RequestManager[] requestManagers;
+                        lock (_requestManagers)
+                        {
+                            requestManagers = _requestManagers.ToArray();
+                        }
+                        var totalManagers = requestManagers.Length;
+                        var runningManagers = requestManagers.Where(x => x.IsWatching).Count();
+                        var idleManagers = requestManagers.Where(x => !x.IsWatching).Count();
+                        var pending = requestManagers.Sum(x => x.Pending);
+                        var resources = requestManagers.Sum(x => x.PendingResources.Length);
+                        _logger.Debug($"There are currently <{totalManagers}({runningManagers}/{idleManagers})>(Running/Idle) request managers running for <{pending}> pending requests across <{resources}> resources");
+                        if (resources >= options.ActiveResourceMonitorWarningThreshold) _logger.Log(resources >= options.ActiveResourceMonitorErrorThreshold ? LogLevel.Error : LogLevel.Warning, $"There are currently <{resources}> resource being polled by <{requestManagers.Length}> request managers. Performance may be degraded");                       
+
+                        // Cleanup old locks
+                        if (!options.IsCleanupEnabled) continue;
+                        _logger.Log($"Running maintenance on lock table");
                         using (_logger.TraceAction(LogLevel.Debug, $"Lock cleanup"))
                         {
                             await using (var transaction = await _lockRepository.CreateTransactionAsync(token).ConfigureAwait(false))
@@ -364,7 +414,7 @@ namespace Sels.DistributedLocking.SQL
                                     return;
                                 }
 
-                                // Cleanup inaactive locks
+                                // Cleanup inactive locks
                                 if (inactiveTime.HasValue)
                                 {
                                     _logger.Log($"Locks that have been inactive for more than <{inactiveTime}ms> will be removed");
@@ -412,7 +462,7 @@ namespace Sels.DistributedLocking.SQL
                 try
                 {
                     // Wait for maintenance task
-                    if (_maintenanceTask != null) await _maintenanceTask;
+                    if (_maintenanceTask != null) await _maintenanceTask.ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -437,17 +487,27 @@ namespace Sels.DistributedLocking.SQL
                     try
                     {
                         await manager.DisposeAsync().ConfigureAwait(false);
-                        _logger.Debug($"Disposed manager for resource <{manager.Resource}>");
+                        _logger.Debug($"Disposed request manager");
                     }
                     catch (Exception ex)
                     {
-                        _logger.Log($"Could not dispose manager for resource <{manager.Resource}>", ex);
+                        _logger.Log($"Could not dispose request manager", ex);
                         exceptions.Add(ex);
                     }
                 }
 
                 if (exceptions.HasValue()) throw new AggregateException(exceptions); 
             }
+        }
+
+        private class CompletedRequest : SqlLockRequest, IPendingLockRequest
+        {
+            public CompletedRequest(AcquiredSqlLock @lock)
+            {
+                Callback = Task.FromResult<ILock>(@lock);
+            }
+
+            public Task<ILock> Callback { get; }
         }
     }
 }

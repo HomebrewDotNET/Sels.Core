@@ -1,4 +1,6 @@
-﻿using Sels.Core.Extensions.Linq;
+﻿using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Linq;
+using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,11 +75,12 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
             foreach (var requester in requesters)
             {
                 if(requester == null)
                 {
-                    var @lock = await provider.LockAsync(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+                    var @lock = await lockingProvider.LockAndWaitAsync(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
                     await @lock.DisposeAsync();
                 }
                 else
@@ -272,9 +275,10 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
             foreach (var i in Enumerable.Range(0, 100))
             {
-                await using(await provider.LockAsync(i.ToString(), "Random"))
+                await using(await lockingProvider.LockAndWaitAsync(i.ToString(), "Random"))
                 {
 
                 }
@@ -293,9 +297,10 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
             foreach (var i in Enumerable.Range(0, 100))
             {
-                _ = await provider.LockAsync(i.ToString(), "Random");
+                _ = await lockingProvider.LockAndWaitAsync(i.ToString(), "Random");
             }
 
             // Act
@@ -311,9 +316,10 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
             foreach (var i in Enumerable.Range(0, 100))
             {
-                _ = await provider.LockAsync(i.ToString(), "Random", TimeSpan.FromMilliseconds(10));
+                _ = await lockingProvider.LockAndWaitAsync(i.ToString(), "Random", TimeSpan.FromMilliseconds(10));
                 await Helper.Async.Sleep(TimeSpan.FromMilliseconds(5));
             }
 

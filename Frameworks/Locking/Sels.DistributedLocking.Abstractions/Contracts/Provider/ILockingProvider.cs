@@ -33,7 +33,19 @@ namespace Sels.DistributedLocking.Provider
         /// <param name="timeout">Optional timeout that can be set. If a lock could not be placed within <paramref name="timeout"/> a <see cref="LockTimeoutException"/> will be thrown</param>
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>The lock on <paramref name="resource"/> currently held by <paramref name="requester"/></returns>
-        Task<ILock> LockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, TimeSpan? timeout = null, CancellationToken token = default);
+        async Task<ILock> LockAndWaitAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, TimeSpan? timeout = null, CancellationToken token = default) => await (await LockAsync(resource, requester, expiryTime, keepAlive, timeout, token).ConfigureAwait(false)).Callback.ConfigureAwait(false);
+
+        /// <summary>
+        /// Tries to place a lock on <paramref name="resource"/> asynchrounsly. 
+        /// </summary>
+        /// <param name="resource">The name of the resource to lock</param>
+        /// <param name="requester">Who is requesting the lock</param>
+        /// <param name="expiryTime">Optional time when the lock will expire. If set to null the lock will not expire on it's own</param>
+        /// <param name="keepAlive">To keep the lock alive when <paramref name="expiryTime"/> is set. Will extend the expiry date by <paramref name="expiryTime"/> right before it expires</param>
+        /// <param name="timeout">Optional timeout that can be set. If a lock could not be placed within <paramref name="timeout"/> a <see cref="LockTimeoutException"/> will be thrown</param>
+        /// <param name="token">Optional token to cancel the request</param>
+        /// <returns>The state of the lock request placed on <paramref name="resource"/> placed by <paramref name="requester"/></returns>
+        Task<IPendingLockRequest> LockAsync(string resource, string requester, TimeSpan? expiryTime = null, bool keepAlive = false, TimeSpan? timeout = null, CancellationToken token = default);
 
         /// <summary>
         /// Fetches the current locking state on <paramref name="resource"/>.

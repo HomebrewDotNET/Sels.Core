@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using NuGet.Frameworks;
+using Sels.Core.Extensions.Conversion;
+using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -163,12 +165,13 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock(x => x.ExpiryOffset = 10000000);
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            var resultOne = (await provider.TryLockAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(100), false)).Success;
-            var lockResultTask = provider.LockAsync("Resource", "Requester.2");
+            var resultOne = (await lockingProvider.TryLockAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(100), false)).Success;
+            var lockResultTask = lockingProvider.LockAndWaitAsync("Resource", "Requester.2");
             await Helper.Async.Sleep(100 * 2);
-            var resultTwo = (await provider.TryLockAsync("Resource", "Requester.3")).Success;
+            var resultTwo = (await lockingProvider.TryLockAsync("Resource", "Requester.3")).Success;
 
             // Assert
             Assert.IsTrue(resultOne);

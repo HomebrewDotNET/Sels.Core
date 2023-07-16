@@ -10,14 +10,14 @@ namespace Sels.DistributedLocking.SQL
     public class SqlLockingProviderOptions
     {
         // Fields
-        private SqlLockCleanupMethod _cleanupMethod;
+        private SqlLockCleanupMethod _cleanupMethod = SqlLockCleanupMethod.Amount;
         private int? _cleanupAmount;
 
         // Properties
         /// <summary>
-        /// The interval that will be used by <see cref="SqlLockingProvider"/> to do database maintenance.
+        /// The interval that will be used by <see cref="SqlLockingProvider"/> to do self/database maintenance.
         /// </summary>
-        public TimeSpan MaintenanceInterval { get; set; } = new TimeSpan(0, 15, 0);
+        public TimeSpan MaintenanceInterval { get; set; } = TimeSpan.FromMinutes(3);
         /// <summary>
         /// If cleanup of locks is enabled.
         /// </summary>
@@ -40,9 +40,25 @@ namespace Sels.DistributedLocking.SQL
         public int ExpiryOffset { get; set; } = 1000;
 
         /// <summary>
-        /// How often to check pending requests in milliseconds if they were assigned. Each resource will have it's own poller. Requests are also timed out by the same poller so setting it too high will mean requests will get timed out way past the provided timeout.
+        /// How often to check pending requests in milliseconds if they were assigned. Requests are also timed out by the same poller so setting it too high will mean requests will get timed out way past the provided timeout.
         /// </summary>
         public int RequestPollingRate { get; set; } = 1000;
+        /// <summary>
+        /// The maximum amount of request managers that will be created. Used to avoid flooding the thread pool and using all the sql connections.
+        /// </summary>
+        public int MaximumRequestManagers { get; set; } = 25;
+        /// <summary>
+        /// The ideal maximum resources that each request manager should manage. Used to determine when to start a new request manager.
+        /// </summary>
+        public int MaxWantedResourcePerManager { get; set; } = 5;
+        /// <summary>
+        /// How many resources with pending requests there need to be before logging a warning.
+        /// </summary>
+        public int ActiveResourceMonitorWarningThreshold { get; set; } = 100;
+        /// <summary>
+        /// How many resources with pending requests there need to be before logging an error.
+        /// </summary>
+        public int ActiveResourceMonitorErrorThreshold { get; set; } = 150;
 
         /// <inheritdoc/>
         public SqlLockingProviderOptions()
@@ -60,7 +76,7 @@ namespace Sels.DistributedLocking.SQL
                         _cleanupAmount = 600000;
                         break;
                     case SqlLockCleanupMethod.Amount:
-                        _cleanupAmount = 1000;
+                        _cleanupAmount = 10000;
                         break;
                     case SqlLockCleanupMethod.Always:
                         _cleanupAmount = 0;

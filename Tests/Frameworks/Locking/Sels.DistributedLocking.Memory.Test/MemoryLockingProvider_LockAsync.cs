@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using NUnit.Framework.Internal;
+using Sels.Core.Extensions.Conversion;
+using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +23,10 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            var @lock = await provider.LockAsync("Resource", requester);
+            var @lock = await lockingProvider.LockAndWaitAsync("Resource", requester);
 
             // Assert
             Assert.IsNotNull(@lock);
@@ -42,9 +45,10 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            var lockOne = await provider.LockAsync("Resource", "Requester");
+            var lockOne = await lockingProvider.LockAndWaitAsync("Resource", "Requester");
             var lockTask = provider.LockAsync("Resource", requester);
             var pendingRequests = await provider.GetPendingRequestsAsync("Resource");
 
@@ -71,9 +75,10 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            var lockOne = await provider.LockAsync("Resource", "Requester.0");
+            var lockOne = await lockingProvider.LockAndWaitAsync("Resource", "Requester.0");
             _ = provider.LockAsync("Resource", "Requester.1");
             _ = provider.LockAsync("Resource", "Requester.2");
             _ = provider.LockAsync("Resource", "Requester.3");
@@ -103,11 +108,12 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            var lockOne = await provider.LockAsync("Resource", "Requester.1");
+            var lockOne = await lockingProvider.LockAndWaitAsync("Resource", "Requester.1");
             await lockOne.UnlockAsync();
-            var lockTwo = await provider.LockAsync("Resource", "Requester.2");
+            var lockTwo = await lockingProvider.LockAndWaitAsync("Resource", "Requester.2");
 
             // Assert
             Assert.IsNotNull(lockOne);
@@ -126,12 +132,13 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
             var expiryTime = 500;
 
             // Act
-            var lockOne = await provider.LockAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(expiryTime));
+            var lockOne = await lockingProvider.LockAndWaitAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(expiryTime));
             await Helper.Async.Sleep(expiryTime * 2);
-            var lockTwo = await provider.LockAsync("Resource", "Requester.2");
+            var lockTwo = await lockingProvider.LockAndWaitAsync("Resource", "Requester.2");
 
             // Assert
             Assert.IsNotNull(lockOne);
@@ -146,10 +153,11 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
             var expiryTime = 100;
 
             // Act
-            var @lock = await provider.LockAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(expiryTime), true);
+            var @lock = await lockingProvider.LockAndWaitAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(expiryTime), true);
             var initialExpiry = @lock.ExpiryDate;
             await Helper.Async.Sleep(expiryTime * 2);
             var currentExpiry = @lock.ExpiryDate;
@@ -165,12 +173,13 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock(x => x.ExpiryOffset = 10000000);
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            var lockOne = await provider.LockAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(100), false);
-            var lockResultTask = provider.LockAsync("Resource", "Requester.2");
+            var lockOne = await lockingProvider.LockAndWaitAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(100), false);
+            var lockResultTask = lockingProvider.LockAndWaitAsync("Resource", "Requester.2");
             await Helper.Async.Sleep(100 * 2);
-            var lockResultTaskTwo = provider.LockAsync("Resource", "Requester.3");
+            var lockResultTaskTwo = lockingProvider.LockAndWaitAsync("Resource", "Requester.3");
 
             // Assert
             Assert.IsNotNull(lockResultTask);
@@ -190,11 +199,12 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock();
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
             Exception exception = null;
 
             // Act
-            _ = await provider.LockAsync("Resource", "Requester.1");
-            var lockResultTask = provider.LockAsync("Resource", "Requester.2", timeout: TimeSpan.FromMilliseconds(100));
+            _ = await lockingProvider.LockAndWaitAsync("Resource", "Requester.1");
+            var lockResultTask = lockingProvider.LockAndWaitAsync("Resource", "Requester.2", timeout: TimeSpan.FromMilliseconds(100));
             await Helper.Async.Sleep(100 * 2);
             if (lockResultTask.IsCompleted)
             {
@@ -229,19 +239,15 @@ namespace Sels.DistributedLocking.Memory.Test
 
             // Act
             _ = await provider.LockAsync("Resource", "Requester.1");
-            var lockResultTask = provider.LockAsync("Resource", "Requester.2", token: tokenSource.Token);
+            var lockResultTask = await provider.LockAsync("Resource", "Requester.2", token: tokenSource.Token);
             tokenSource.Cancel();
-            await Helper.Async.Sleep(100);
-            if (lockResultTask.IsCompleted)
+            try
             {
-                try
-                {
-                    await lockResultTask;
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
-                }
+                await lockResultTask.Callback;
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
             }
 
             // Assert
@@ -255,10 +261,11 @@ namespace Sels.DistributedLocking.Memory.Test
             // Arrange
             var options = TestHelper.GetProviderOptionsMock(x => x.ExpiryOffset = 0);
             await using var provider = new MemoryLockingProvider(options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            _ = await provider.LockAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(100));
-            var lockResultTask = provider.LockAsync("Resource", "Requester.2");
+            _ = await lockingProvider.LockAndWaitAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(100));
+            var lockResultTask = lockingProvider.LockAndWaitAsync("Resource", "Requester.2");
             await Helper.Async.Sleep(100 * 2);
 
             // Assert

@@ -16,7 +16,7 @@ namespace Sels.DistributedLocking.Memory
     /// <summary>
     /// Represents an in-memory request on a lock.
     /// </summary>
-    internal class MemoryLockRequest : ILockRequest, IDisposable
+    internal class MemoryLockRequest : IPendingLockRequest, IDisposable
     {
         // Fields
         private readonly object _threadLock;
@@ -64,6 +64,26 @@ namespace Sels.DistributedLocking.Memory
                 });
             }
         }
+
+        /// <summary>
+        /// <inheritdoc cref="MemoryLockRequest"/>
+        /// Instantly completes the request with <paramref name="memoryLock"/>.
+        /// </summary>
+        /// <param name="memoryLock">The acquired lock</param>
+        /// <param name="timeout">When the current request times out. When set to null the request never times out</param>
+        /// <param name="logger">Optional logger for tracing</param>
+        public MemoryLockRequest(MemoryLock memoryLock, TimeSpan? timeout, ILogger logger)
+        {
+            _threadLock = memoryLock.SyncRoot;
+            memoryLock.ValidateArgument(nameof(memoryLock));
+            Requester = memoryLock.LockedBy;
+            Resource = memoryLock.ValidateArgument(nameof(memoryLock)).Resource;
+            Timeout = timeout.HasValue ? DateTime.Now.Add(timeout.Value) : (DateTime?)null;
+            _logger = logger;
+
+            AssignLock(memoryLock);
+        }
+
         /// <inheritdoc/>
         public string Resource { get; }
         /// <inheritdoc/>
@@ -79,11 +99,11 @@ namespace Sels.DistributedLocking.Memory
         /// <summary>
         /// The task returned to caller when they request a lock. 
         /// </summary>
-        public Task<ILock> CallbackTask => _taskSource.Task;
+        public Task<ILock> Callback => _taskSource.Task;
         /// <summary>
         /// Indicates that the current request has been completed.
         /// </summary>
-        public bool IsCompleted => CallbackTask.IsCompleted;
+        public bool IsCompleted => Callback.IsCompleted;
 
         /// <summary>
         /// Assigns the lock to the caller of the request.

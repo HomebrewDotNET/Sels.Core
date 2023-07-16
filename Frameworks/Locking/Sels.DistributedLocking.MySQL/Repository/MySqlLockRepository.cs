@@ -84,8 +84,16 @@ namespace Sels.DistributedLocking.MySQL.Repository
         public override async Task<IRepositoryTransaction> CreateTransactionAsync(CancellationToken token)
         {
             var connection = new MySqlRepositoryTransaction(_connectionString);
-            await connection.OpenAsync(token).ConfigureAwait(false);
-            return connection;
+            try
+            {
+                await connection.OpenAsync(token).ConfigureAwait(false);
+                return connection;
+            }
+            catch(Exception ex)
+            {
+                await connection.DisposeAsync();
+                throw;
+            }
         }
         /// <inheritdoc/>
         protected override (IDbConnection Connection, IDbTransaction Transaction) GetRepositoryTransactionInfo(IRepositoryTransaction transaction)

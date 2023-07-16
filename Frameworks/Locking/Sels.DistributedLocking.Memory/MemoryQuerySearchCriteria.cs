@@ -14,10 +14,13 @@ namespace Sels.DistributedLocking.Memory
     {
         // Fields
         private Dictionary<string, List<Predicate<ILockInfo>>> _predicates;
-        private List<(Expression<Func<ILockInfo, object>> PropertyToSortBy, bool SortDescending)> _sortExpressions;
+        private List<(Expression<Func<MemoryLockInfo, object>> PropertyToSortBy, bool SortDescending)> _sortExpressions;
 
         // Properties
-        private Dictionary<string, List<Predicate<ILockInfo>>> Predicates
+        /// <summary>
+        /// The predicates to limit which locks are returned.
+        /// </summary>
+        public Dictionary<string, List<Predicate<ILockInfo>>> Predicates
         {
             get
             {
@@ -25,11 +28,14 @@ namespace Sels.DistributedLocking.Memory
                 return _predicates;
             }
         }
-        private List<(Expression<Func<ILockInfo, object>> PropertyToSortBy, bool SortDescending)> SortExpressions
+        /// <summary>
+        /// Defines the sort order.
+        /// </summary>
+        public List<(Expression<Func<MemoryLockInfo, object>> PropertyToSortBy, bool SortDescending)> SortExpressions
         {
             get
             {
-                if (_sortExpressions == null) _sortExpressions = new List<(Expression<Func<ILockInfo, object>> PropertyToSortBy, bool SortDescending)>();
+                if (_sortExpressions == null) _sortExpressions = new List<(Expression<Func<MemoryLockInfo, object>> PropertyToSortBy, bool SortDescending)>();
                 return _sortExpressions;
             }
         }
@@ -54,13 +60,9 @@ namespace Sels.DistributedLocking.Memory
         {
             locks.ValidateArgument(nameof(locks));
 
-            foreach (var @lock in locks)
-            {
-                if (!_predicates.HasValue() || _predicates.All(x => x.Value.Any(v => v(@lock))))
-                {
-                    yield return @lock;
-                }
-            }
+            if (!_predicates.HasValue()) return locks;
+
+            return locks.Where(l => _predicates.All(p => p.Value.Any(v => v(l))));
         }
 
         /// <summary>
@@ -68,13 +70,13 @@ namespace Sels.DistributedLocking.Memory
         /// </summary>
         /// <param name="locks">The locks to sort</param>
         /// <returns><paramref name="locks"/> sorted by any configured sorting rules</returns>
-        public IEnumerable<ILockInfo> ApplySorting(IEnumerable<ILockInfo> locks)
+        public IEnumerable<MemoryLockInfo> ApplySorting(IEnumerable<MemoryLockInfo> locks)
         {
             locks.ValidateArgument(nameof(locks));
 
             if (_sortExpressions.HasValue())
             {
-                IOrderedEnumerable<ILockInfo> current = null;
+                IOrderedEnumerable<MemoryLockInfo> current = null;
 
                 foreach (var (expression, sortDescending) in _sortExpressions)
                 {
@@ -180,7 +182,7 @@ namespace Sels.DistributedLocking.Memory
         /// <inheritdoc/>
         ILockQueryCriteria ILockQueryCriteria.OrderByResource(bool sortDescending) => SortBy(x => x.Resource, sortDescending);
 
-        private ILockQueryCriteria SortBy(Expression<Func<ILockInfo, object>> sortExpression, bool sortDescending)
+        private ILockQueryCriteria SortBy(Expression<Func<MemoryLockInfo, object>> sortExpression, bool sortDescending)
         {
             sortExpression.ValidateArgument(nameof(sortExpression));
             SortExpressions.Add((sortExpression, sortDescending));

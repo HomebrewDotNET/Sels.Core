@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 using NUnit.Framework.Internal;
 using Sels.Core;
+using Sels.Core.Extensions.Conversion;
+using Sels.DistributedLocking.Provider;
 using Sels.DistributedLocking.SQL;
 using System;
 using System.Collections.Generic;
@@ -35,9 +37,10 @@ namespace Sels.DistributedLocking.Memory.Test
                 x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            var @lock = await provider.LockAsync(resource, requester);
+            var @lock = await lockingProvider.LockAndWaitAsync(resource, requester);
 
             // Assert
             Assert.IsNotNull(@lock);
@@ -77,9 +80,10 @@ namespace Sels.DistributedLocking.Memory.Test
                 x.Setup(x => x.CreateRequestAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<SqlLockRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlRequest);
             });
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            var lockTask = provider.LockAsync(resource, requester);
+            var lockTask = lockingProvider.LockAndWaitAsync(resource, requester);
 
             // Assert
             Assert.That(lockTask, Is.Not.Null);
@@ -120,10 +124,11 @@ namespace Sels.DistributedLocking.Memory.Test
                 x.Setup(x => x.DeleteAllRequestsById(It.IsAny<IRepositoryTransaction>(), It.IsAny<long[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
             });
             await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            var lockingProvider = provider.CastTo<ILockingProvider>();
             Exception exception = null;
 
             // Act
-            var lockResultTask = provider.LockAsync(resource, requester, timeout: TimeSpan.FromMilliseconds(0));
+            var lockResultTask = lockingProvider.LockAndWaitAsync(resource, requester, timeout: TimeSpan.FromMilliseconds(0));
             try
             {
                 await lockResultTask;
@@ -176,12 +181,13 @@ namespace Sels.DistributedLocking.Memory.Test
                 x.Setup(x => x.CreateRequestAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<SqlLockRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlRequest);
                 x.Setup(x => x.DeleteAllRequestsById(It.IsAny<IRepositoryTransaction>(), It.IsAny<long[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
             });
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options, TestHelper.GetDebugLogger<SqlLockingProvider>());
+            await using var provider = new SqlLockingProvider(repositoryMock.Object, options, null, TestHelper.GetDebugLogger<SqlLockingProvider>());
+            var lockingProvider = provider.CastTo<ILockingProvider>();
             Exception exception = null;
             var tokenSource = new CancellationTokenSource();
 
             // Act
-            var lockResultTask = provider.LockAsync(sqlRequest.Resource, sqlRequest.Requester, token: tokenSource.Token);
+            var lockResultTask = lockingProvider.LockAndWaitAsync(sqlRequest.Resource, sqlRequest.Requester, token: tokenSource.Token);
             tokenSource.Cancel();
             await Helper.Async.Sleep(100 * 2);
             if (lockResultTask.IsCompleted)

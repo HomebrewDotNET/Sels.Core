@@ -13,14 +13,14 @@ namespace Sels.DistributedLocking.Memory
     public class MemoryLockingProviderOptions
     {
         // Fields
-        private MemoryLockCleanupMethod _cleanupMethod;
+        private MemoryLockCleanupMethod _cleanupMethod = MemoryLockCleanupMethod.ProcessMemory;
         private long? _cleanupAmount;
 
         // Properties
         /// <summary>
         /// The interval that will be used by <see cref="MemoryLockingProvider"/> to perform cleanup of the in-memeory locks to free up memory. When set to <see cref="TimeSpan.Zero"/> no locks will be cleaned up.
         /// </summary>
-        public TimeSpan CleanupInterval { get; set; } = new TimeSpan(0, 1, 0);
+        public TimeSpan CleanupInterval { get; set; } = TimeSpan.FromMinutes(1);
         /// <summary>
         /// If cleanup of locks is enabled.
         /// </summary>

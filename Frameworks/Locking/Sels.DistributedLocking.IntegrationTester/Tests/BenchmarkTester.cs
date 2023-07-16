@@ -488,12 +488,21 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             // Get pool of locks
             var queryResult = await lockingProvider.QueryAsync(x => x.OrderByLastLockDate().WithPagination(1, poolSize), token);
             var resources = queryResult.Results.Select(x => x.Resource).ToList();
-            while(resources.Count < poolSize)
+            if (resources.Count < poolSize)
             {
-                _logger.Log($"Resources to benchmark is under the pool size of <{poolSize}>. Creating additional locks");
-                var resource = $"{nameof(BenchmarkGet)}.{resources.Count}";
-                _ = await lockingProvider.TryLockAsync(resource, nameof(BenchmarkTester), token: token);
-                resources.Add(resource);
+                await Task.WhenAll(Enumerable.Range(1, poolSize - resources.Count).DivideIntoHashSet(_options.Workers).Select(x => Task.Run(async () =>
+                {
+                    _logger.Log($"Resources to benchmark is under the pool size of <{poolSize}>. Creating additional locks");
+                    foreach (var number in x)
+                    {
+                        var resource = $"{nameof(BenchmarkGet)}.{number}";
+                        _ = await lockingProvider.TryLockAsync(resource, nameof(BenchmarkTester), token: token);
+                        lock (resources)
+                        {
+                            resources.Add(resource);
+                        }
+                    }
+                }, token)));
             }
 
             // Run benchmark
@@ -532,7 +541,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                         {
                             result.Exception = ex;
                             result.FinishedDate = DateTime.Now;
-                            _logger.Warning($"{workerId} encountered error while trying to fetch resource <{resource}>", ex);
+                            _logger.Log($"{workerId} encountered error while trying to fetch resource <{resource}>", ex);
                         }
 
                         results.Add(result);
@@ -559,19 +568,28 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             // Get pool of locks
             var queryResult = await lockingProvider.QueryAsync(x => x.OrderByLastLockDate().WithPendingRequestsLargerThan(0).WithPagination(1, poolSize), token);
             var resources = queryResult.Results.Select(x => x.Resource).ToList();
-            while (resources.Count < poolSize)
+            if (resources.Count < poolSize)
             {
-                _logger.Log($"Resources to benchmark is under the pool size of <{poolSize}>. Creating additional locks");
-                var resource = $"{nameof(BenchmarkGetPendingRequests)}.{resources.Count}";
-                await lockingProvider.TryLockAsync(resource, nameof(BenchmarkTester), token: token);
-
-                // Create requests
-                foreach(var number in Enumerable.Range(1, Helper.Random.GetRandomInt(1, poolSize)))
+                await Task.WhenAll(Enumerable.Range(1, poolSize - resources.Count).DivideIntoHashSet(_options.Workers).Select(x => Task.Run(async () =>
                 {
-                    _ = lockingProvider.LockAsync(resource, $"{nameof(BenchmarkTester)}.{number}", token: token);
-                }
+                    _logger.Log($"Resources to benchmark is under the pool size of <{poolSize}>. Creating additional locks");
+                    foreach (var number in x)
+                    {
+                        var resource = $"{nameof(BenchmarkGetPendingRequests)}.{number}";
+                        await lockingProvider.TryLockAsync(resource, nameof(BenchmarkTester), token: token);
 
-                resources.Add(resource);
+                        // Create requests
+                        foreach (var i in Enumerable.Range(1, Helper.Random.GetRandomInt(1, poolSize)))
+                        {
+                            _ = await lockingProvider.LockAsync(resource, $"{nameof(BenchmarkTester)}.{i}", token: runTimeSource.Token);
+                        }
+
+                        lock (resources)
+                        {
+                            resources.Add(resource);
+                        }
+                    }
+                }, token)));
             }
 
             // Run benchmark
@@ -609,7 +627,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                         {
                             result.Exception = ex;
                             result.FinishedDate = DateTime.Now;
-                            _logger.Warning($"{workerId} encountered error while trying to fetch resource <{resource}>", ex);
+                            _logger.Log($"{workerId} encountered error while trying to fetch resource <{resource}>", ex);
                         }
 
                         results.Add(result);
@@ -636,12 +654,22 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             // Get pool of locks
             var queryResult = await lockingProvider.QueryAsync(x => x.OrderByLockedAt(true).WithPagination(1, workerAmount* poolSize), token);
             var resources = queryResult.Results.Select(x => x.Resource).ToList();
-            while (resources.Count < poolSize)
+            if (resources.Count < poolSize)
             {
-                _logger.Log($"Resources to benchmark is under the pool size of <{poolSize}>. Creating additional locks");
-                var resource = $"{nameof(BenchmarkForceUnlock)}.{resources.Count}";
-                _ = await lockingProvider.TryLockAsync(resource, nameof(BenchmarkTester), token: token);
-                resources.Add(resource);
+                await Task.WhenAll(Enumerable.Range(1, poolSize - resources.Count).DivideIntoHashSet(_options.Workers).Select(x => Task.Run(async () =>
+                {
+                    _logger.Log($"Resources to benchmark is under the pool size of <{poolSize}>. Creating additional locks");
+                    foreach (var number in x)
+                    {
+                        var resource = $"{nameof(BenchmarkForceUnlock)}.{resources.Count}";
+                        _ = await lockingProvider.TryLockAsync(resource, nameof(BenchmarkTester), token: token);
+
+                        lock (resources)
+                        {
+                            resources.Add(resource);
+                        }
+                    }
+                }, token)));
             }
 
             // Run benchmark
@@ -679,7 +707,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                         {
                             result.Exception = ex;
                             result.FinishedDate = DateTime.Now;
-                            _logger.Warning($"{workerId} encountered error while trying to force unlock resource <{resource}>", ex);
+                            _logger.Log($"{workerId} encountered error while trying to force unlock resource <{resource}>", ex);
                         }
 
                         results.Add(result);
@@ -704,26 +732,32 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             List<Task<HashSet<BenchmarkResult>>> workerTasks = new List<Task<HashSet<BenchmarkResult>>>();
 
             // Get pool of locks
+            var guid = Guid.NewGuid();
             var querySize = _options.QueryResultSetSize;
             var queryResult = await lockingProvider.QueryAsync(x => criteria(x).WithPagination(1, querySize), token);
-            var currentSize = queryResult.Results.Length;
-            while (currentSize < querySize)
+            if(queryResult.Results.Length < querySize)
             {
-                _logger.Log($"Resources to benchmark is under the pool size of <{querySize}>. Creating additional locks");
-                var resource = $"{nameof(BenchmarkQuery)}.{currentSize}";
-                var lockResult = await lockingProvider.TryLockAsync(resource, nameof(BenchmarkTester), seedSettings.Expire.HasValue ? seedSettings.Expire.Value ? TimeSpan.Zero : TimeSpan.FromDays(365) : null, token: token);
-
-                if (seedSettings.CreateRequest)
+                await Task.WhenAll(Enumerable.Range(1, querySize - queryResult.Results.Length).DivideIntoHashSet(_options.Workers).Select(x => Task.Run(async () =>
                 {
-                    _ = lockingProvider.LockAsync(resource, $"{nameof(BenchmarkTester)}.{currentSize}", token: token);
-                }
+                    _logger.Log($"Resources to benchmark is under the pool size of <{querySize}>. Creating additional locks");
+                    foreach (var number in x)
+                    {
+                        var resource = $"{nameof(BenchmarkQuery)}.{guid}.{number}";
+                        var lockResult = await lockingProvider.TryLockAsync(resource, nameof(BenchmarkTester), seedSettings.Expire.HasValue ? seedSettings.Expire.Value ? TimeSpan.Zero : TimeSpan.FromDays(365) : null, token: token);
 
-                if(lockResult.Success && seedSettings.Unlock)
-                {
-                    await lockResult.AcquiredLock.DisposeAsync();
-                }
+                        if (seedSettings.CreateRequest)
+                        {
+                            _ = await lockingProvider.LockAsync(resource, $"{nameof(BenchmarkTester)}.{number}", token: runTimeSource.Token);
+                            // Wait for request to flush
+                            await Task.Delay(50, token);
+                        }
 
-                currentSize++;
+                        if (lockResult.Success && seedSettings.Unlock)
+                        {
+                            await lockResult.AcquiredLock.DisposeAsync();
+                        }
+                    }
+                }, token)));
             }
 
             // Run benchmark
@@ -760,7 +794,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                         {
                             result.Exception = ex;
                             result.FinishedDate = DateTime.Now;
-                            _logger.Warning($"{workerId} encountered error while querying locks", ex);
+                            _logger.Log($"{workerId} encountered error while querying locks", ex);
                         }
 
                         results.Add(result);
@@ -822,7 +856,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             {
                 result.Exception = ex;
                 result.FinishedDate = DateTime.Now;
-                _logger.Warning($"{workerId} encountered error while trying to lock resource <{resource}>", ex);
+                _logger.Log($"{workerId} encountered error while trying to lock resource <{resource}>", ex);
             }
             return result;
         }
@@ -841,7 +875,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 ILock lockResult;
                 using (Helper.Time.CaptureDuration(out duration))
                 {
-                    lockResult = await lockingProvider.LockAsync(resource, workerId, token: token);
+                    lockResult = await lockingProvider.LockAndWaitAsync(resource, workerId, token: token);
                 }
                 result.FinishedDate = DateTime.Now;
                 result.Duration = duration.Value;
@@ -863,7 +897,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             {
                 result.Exception = ex;
                 result.FinishedDate = DateTime.Now;
-                _logger.Warning($"{workerId} encountered error while trying to lock resource <{resource}>", ex);
+                _logger.Log($"{workerId} encountered error while trying to lock resource <{resource}>", ex);
             }
             return result;
         }

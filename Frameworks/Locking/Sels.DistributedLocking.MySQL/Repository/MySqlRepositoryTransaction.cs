@@ -49,14 +49,34 @@ namespace Sels.DistributedLocking.MySQL.Repository
         /// <inheritdoc/>
         public async ValueTask DisposeAsync()
         {
-            if (Transaction != null) await Transaction.DisposeAsync();
-            if (Connection != null) await Connection.DisposeAsync();
+            try
+            {
+                if (Transaction != null) await Transaction.DisposeAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                if (Connection != null) await Connection.DisposeAsync();
+            }
         }
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (Transaction != null) Transaction.Dispose();
-            if (Connection != null) Connection.Dispose();
+            try
+            {
+                if (Transaction != null) Transaction.Dispose();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                if (Connection != null) Connection.Dispose();
+            }
         }
     }
 }

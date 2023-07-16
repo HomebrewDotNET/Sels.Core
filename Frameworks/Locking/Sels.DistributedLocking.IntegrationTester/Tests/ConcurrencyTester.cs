@@ -284,7 +284,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             };
             try
             {
-                var lockResult = await lockingProvider.LockAsync(resource, workerId, token: token);
+                var lockResult = await lockingProvider.LockAndWaitAsync(resource, workerId, token: token);
                 result.AcquiredDate = DateTime.Now;
                 _logger.Log($"{workerId} acquired lock on resource <{resource}>");
                 await using (lockResult)

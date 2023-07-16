@@ -78,6 +78,9 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                        }
                        else
                        {
+                           x.AddFilter("Sels.Core", LogLevel.Error);
+                           x.AddFilter("Sels.SQL.QueryBuilder", LogLevel.Error);
+                           x.AddFilter("Sels.ObjectValidationFramework", LogLevel.Error);
                            x.SetMinimumLevel(logLevel);
                        }
                    });

@@ -25,6 +25,7 @@ using Polly.Contrib.WaitAndRetry;
 using Sels.Core.Data.MySQL.Extensions;
 using Sels.Core.Extensions.Logging.Advanced;
 using Sels.Core.Extensions.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -111,10 +112,10 @@ namespace Microsoft.Extensions.DependencyInjection
                             var displayName = typeof(T).GetDisplayName();
                             var duplicateKeyPolicy = Policy.Handle<MySqlException>(x => x.ErrorCode == MySqlErrorCode.DuplicateKeyEntry)
                                .WaitAndRetryForeverAsync(x => TimeSpan.FromMilliseconds(x),
-                                                        (e, r, t) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}>. Will retry forever. Running for <{t}>", e));
-                            var transientPolicy = Policy.Handle<MySqlException>(x => x.IsTransient)
+                                                        (e, r, t) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}>. Will retry forever.", e));
+                            var transientPolicy = Policy.Handle<MySqlException>(x => x.IsTransient && !(x.ErrorCode == MySqlErrorCode.UnableToConnectToHost && Regex.IsMatch(x.Message, "All pooled connections are in use")))
                                                        .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromMilliseconds(100), maxRetryCount, fastFirst: true),
-                                                       (e, t, r, c) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}/{maxRetryCount}> Running for <{t}>", e));
+                                                       (e, t, r, c) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}/{maxRetryCount}>", e));
 
                             return b.ForAsync(x => x.TryAssignLockToAsync(default, default, default, default, default)).ExecuteWith(duplicateKeyPolicy)
                                                 .ForAllAsync.ExecuteWith(transientPolicy, 1);

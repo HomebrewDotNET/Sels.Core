@@ -60,6 +60,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 }
                 catch (Exception ex)
                 {
+                    _logger.Log($"Test case <{name}> failed", ex);
                     _assertionResults.Add(name, ex);
                 }
             }
@@ -268,29 +269,24 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             Assert.IsTrue(lockResult.Success, "Expected lock to be placed but wasn't");
 
             // Log request
-            var lockRequest = lockingProvider.LockAsync(nameof(TryLock_RequestsTakePriorityOverDirectCalls), $"{nameof(AssertionTester)}.2", token: token);
-
-            // Wait a bit for the request to flush
-            await Helper.Async.Sleep(TimeSpan.FromSeconds(1), token);
+            var lockRequest = await lockingProvider.LockAsync(nameof(TryLock_RequestsTakePriorityOverDirectCalls), $"{nameof(AssertionTester)}.2", token: token);
 
             // Release lock
             await lockResult.AcquiredLock.UnlockAsync(token);
-
-            if (lockRequest.IsCompleted) requestResult = await lockRequest;
 
             // Try lock 
             var secondLockResult = await lockingProvider.TryLockAsync(nameof(TryLock_RequestsTakePriorityOverDirectCalls), $"{nameof(AssertionTester)}.3", token: token);
             Assert.IsFalse(secondLockResult.Success, "Expected direct lock to fail but succeeded");
 
             // Wait for request
-            requestResult = await Helper.Async.WaitOn(lockRequest, TimeSpan.FromSeconds(5), token);
+            requestResult = await Helper.Async.WaitOn(lockRequest.Callback, TimeSpan.FromSeconds(5), token);
             Assert.That(requestResult, Is.Not.Null, "Lock request returned null");
         }
 
         private async Task Lock_ResourceIsLockedWhenItIsFreeByExpectedRequester(ILockingProvider lockingProvider, CancellationToken token)
         {
             // Lock
-            var @lock = await lockingProvider.LockAsync(nameof(Lock_ResourceIsLockedWhenItIsFreeByExpectedRequester), nameof(AssertionTester), timeout: TimeSpan.FromSeconds(10), token: token);
+            var @lock = await lockingProvider.LockAndWaitAsync(nameof(Lock_ResourceIsLockedWhenItIsFreeByExpectedRequester), nameof(AssertionTester), timeout: TimeSpan.FromSeconds(10), token: token);
 
             Assert.IsNotNull(@lock);
             await using (@lock)
@@ -304,7 +300,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         private async Task Lock_RequestIsPlacedWhenResourceIsLocked(ILockingProvider lockingProvider, CancellationToken token)
         {
             // First place lock
-            var initialLock = await lockingProvider.LockAsync(nameof(Lock_RequestIsPlacedWhenResourceIsLocked), $"{nameof(AssertionTester)}.1", timeout: TimeSpan.FromSeconds(10), token: token);
+            var initialLock = await lockingProvider.LockAndWaitAsync(nameof(Lock_RequestIsPlacedWhenResourceIsLocked), $"{nameof(AssertionTester)}.1", timeout: TimeSpan.FromSeconds(10), token: token);
 
             Assert.IsNotNull(initialLock);
             Assert.That(initialLock.Resource, Is.EqualTo(nameof(Lock_RequestIsPlacedWhenResourceIsLocked)));
@@ -312,11 +308,8 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             Assert.That(initialLock.ExpiryDate, Is.Null);
 
             // Log request
-            var lockTask = lockingProvider.LockAsync(nameof(Lock_RequestIsPlacedWhenResourceIsLocked), $"{nameof(AssertionTester)}.2", token: token);
-            Assert.IsNotNull(lockTask);
-
-            // Wait for request to be created
-            await Helper.Async.Sleep(TimeSpan.FromSeconds(1));
+            var lockRequest = await lockingProvider.LockAsync(nameof(Lock_RequestIsPlacedWhenResourceIsLocked), $"{nameof(AssertionTester)}.2", token: token);
+            Assert.IsNotNull(lockRequest);
 
             // Check if pending request exists
             var pendingRequests = await lockingProvider.GetPendingRequestsAsync(nameof(Lock_RequestIsPlacedWhenResourceIsLocked), token: token);
@@ -334,20 +327,17 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             await initialLock.DisposeAsync();
 
             // Wait for second lock to get assigned and unlock
-            var @lock = await lockTask;
+            var @lock = await lockRequest.Callback;
             await @lock.DisposeAsync();
         }
 
         private async Task Lock_ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked(ILockingProvider lockingProvider, CancellationToken token)
         {
             // Place locks
-            var lockOne = await lockingProvider.LockAsync(nameof(Lock_ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked), $"{nameof(AssertionTester)}.0", token: token);
-            _ = lockingProvider.LockAsync(nameof(Lock_ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked), $"{nameof(AssertionTester)}.1", token: token);
-            await Helper.Async.Sleep(TimeSpan.FromMilliseconds(50));
-            _ = lockingProvider.LockAsync(nameof(Lock_ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked), $"{nameof(AssertionTester)}.2", token: token);
-            await Helper.Async.Sleep(TimeSpan.FromMilliseconds(50));
-            _ = lockingProvider.LockAsync(nameof(Lock_ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked), $"{nameof(AssertionTester)}.3", token: token);
-            await Helper.Async.Sleep(TimeSpan.FromMilliseconds(50));
+            var lockOne = await lockingProvider.LockAndWaitAsync(nameof(Lock_ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked), $"{nameof(AssertionTester)}.0", token: token);
+            _ = await lockingProvider.LockAsync(nameof(Lock_ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked), $"{nameof(AssertionTester)}.1", token: token);
+            _ = await lockingProvider.LockAsync(nameof(Lock_ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked), $"{nameof(AssertionTester)}.2", token: token);
+            _ = await lockingProvider.LockAsync(nameof(Lock_ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked), $"{nameof(AssertionTester)}.3", token: token);
 
             // Get pending requests
             var pendingRequests = await lockingProvider.GetPendingRequestsAsync(nameof(Lock_ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked), token: token);
@@ -375,7 +365,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             const int expiryTime = 100;
 
             // Place lock
-            await using (var @lock = await lockingProvider.LockAsync(nameof(Lock_LockExpiryDateIsExtendedWhenKeepAliveIsEnabled), nameof(AssertionTester), TimeSpan.FromMilliseconds(expiryTime), true, token: token))
+            await using (var @lock = await lockingProvider.LockAndWaitAsync(nameof(Lock_LockExpiryDateIsExtendedWhenKeepAliveIsEnabled), nameof(AssertionTester), TimeSpan.FromMilliseconds(expiryTime), true, token: token))
             {
                 var initialExpiry = @lock.ExpiryDate;
 
@@ -395,15 +385,15 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             const int WaitTime = 1;
 
             // Place intial lock
-            var initialLock = await lockingProvider.LockAsync(nameof(Lock_LockRequestIsProperlyTimedOut), $"{nameof(AssertionTester)}.1", timeout: TimeSpan.FromSeconds(10), token: token);
+            var initialLock = await lockingProvider.LockAndWaitAsync(nameof(Lock_LockRequestIsProperlyTimedOut), $"{nameof(AssertionTester)}.1", timeout: TimeSpan.FromSeconds(10), token: token);
 
             // Place second lock that should timeout
-            var lockResultTask = lockingProvider.LockAsync(nameof(Lock_LockRequestIsProperlyTimedOut), $"{nameof(AssertionTester)}.2", timeout: TimeSpan.FromSeconds(WaitTime), token: token);
+            var lockRequest = await lockingProvider.LockAsync(nameof(Lock_LockRequestIsProperlyTimedOut), $"{nameof(AssertionTester)}.2", timeout: TimeSpan.FromSeconds(WaitTime), token: token);
 
             try
             {
                 // Give time for lock to timeout
-                await Helper.Async.WaitOn(lockResultTask, TimeSpan.FromSeconds(5));
+                await Helper.Async.WaitOn(lockRequest.Callback, TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
@@ -430,18 +420,16 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             var tokenSource = new CancellationTokenSource();
 
             // Place intial lock
-            var initialLock = await lockingProvider.LockAsync(nameof(Lock_CancelingRequestThrowsOperationCanceledException), $"{nameof(AssertionTester)}.1", timeout: TimeSpan.FromSeconds(10), token: token);
+            var initialLock = await lockingProvider.LockAndWaitAsync(nameof(Lock_CancelingRequestThrowsOperationCanceledException), $"{nameof(AssertionTester)}.1", timeout: TimeSpan.FromSeconds(10), token: token);
 
             // Place second lock that should cancel
-            var lockResultTask = lockingProvider.LockAsync(nameof(Lock_CancelingRequestThrowsOperationCanceledException), $"{nameof(AssertionTester)}.2", token: tokenSource.Token);
+            var lockRequest = await lockingProvider.LockAsync(nameof(Lock_CancelingRequestThrowsOperationCanceledException), $"{nameof(AssertionTester)}.2", token: tokenSource.Token);
 
-            // Cancel request and wait for cancel to be acknowledged
-            await Helper.Async.Sleep(TimeSpan.FromSeconds(1));
             tokenSource.Cancel();
 
             try
             {
-                await Helper.Async.WaitOn(lockResultTask, TimeSpan.FromSeconds(5));
+                await Helper.Async.WaitOn(lockRequest.Callback, TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
@@ -456,17 +444,15 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         private async Task Lock_RequestGetsAssignedWhenLockExpiresWithCorrectSettings(ILockingProvider lockingProvider, CancellationToken token)
         {
             // Place intial lock with expiry
-            var initialLock = await lockingProvider.LockAsync(nameof(Lock_RequestGetsAssignedWhenLockExpiresWithCorrectSettings), $"{nameof(AssertionTester)}.1", expiryTime: TimeSpan.FromSeconds(1), token: token);
+            var initialLock = await lockingProvider.LockAndWaitAsync(nameof(Lock_RequestGetsAssignedWhenLockExpiresWithCorrectSettings), $"{nameof(AssertionTester)}.1", expiryTime: TimeSpan.FromSeconds(1), token: token);
 
             // Log second request
-            var lockResultTask = lockingProvider.LockAsync(nameof(Lock_RequestGetsAssignedWhenLockExpiresWithCorrectSettings), $"{nameof(AssertionTester)}.2", TimeSpan.FromMinutes(5), true, token: token);
+            var lockRequest = await lockingProvider.LockAsync(nameof(Lock_RequestGetsAssignedWhenLockExpiresWithCorrectSettings), $"{nameof(AssertionTester)}.2", TimeSpan.FromMinutes(5), true, token: token);
 
             // Give time for request to be assigned
-            var @lock = await Helper.Async.WaitOn(lockResultTask, TimeSpan.FromSeconds(5));
+            var @lock = await Helper.Async.WaitOn(lockRequest.Callback, TimeSpan.FromSeconds(5));
 
             // Assert
-            Assert.That(lockResultTask, Is.Not.Null);
-            Assert.That(lockResultTask.IsCompleted, Is.True);
             Assert.IsNotNull(@lock);
             Assert.That(@lock.Resource, Is.EqualTo(nameof(Lock_RequestGetsAssignedWhenLockExpiresWithCorrectSettings)));
             Assert.That(@lock.LockedBy, Is.EqualTo($"{nameof(AssertionTester)}.2"));
@@ -499,12 +485,9 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         {
             // Lock
             var lockResult = await lockingProvider.TryLockAsync(nameof(Get_CorrectAmountOfPendingRequestsIsReturned), nameof(AssertionTester), TimeSpan.FromMinutes(5), token: token);
-            _ = lockingProvider.LockAsync(nameof(Get_CorrectAmountOfPendingRequestsIsReturned), $"{nameof(AssertionTester)}.1", token: token);
-            await Helper.Async.Sleep(TimeSpan.FromMilliseconds(50));
-            _ = lockingProvider.LockAsync(nameof(Get_CorrectAmountOfPendingRequestsIsReturned), $"{nameof(AssertionTester)}.2", token: token);
-            await Helper.Async.Sleep(TimeSpan.FromMilliseconds(50));
-            _ = lockingProvider.LockAsync(nameof(Get_CorrectAmountOfPendingRequestsIsReturned), $"{nameof(AssertionTester)}.3", token: token);
-            await Helper.Async.Sleep(TimeSpan.FromMilliseconds(50));
+            _ = await lockingProvider.LockAsync(nameof(Get_CorrectAmountOfPendingRequestsIsReturned), $"{nameof(AssertionTester)}.1", token: token);
+            _ = await lockingProvider.LockAsync(nameof(Get_CorrectAmountOfPendingRequestsIsReturned), $"{nameof(AssertionTester)}.2", token: token);
+            _ = await lockingProvider.LockAsync(nameof(Get_CorrectAmountOfPendingRequestsIsReturned), $"{nameof(AssertionTester)}.3", token: token);
 
             // Get
             var result = await lockingProvider.GetAsync(nameof(Get_CorrectAmountOfPendingRequestsIsReturned), token: token);
@@ -533,13 +516,10 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         private async Task GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState(ILockingProvider lockingProvider, CancellationToken token)
         {
             // Place locks
-            var lockOne = await lockingProvider.LockAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState), $"{nameof(AssertionTester)}.0", token: token);
-            _ = lockingProvider.LockAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState), $"{nameof(AssertionTester)}.1", token: token);
-            await Helper.Async.Sleep(TimeSpan.FromMilliseconds(50));
-            _ = lockingProvider.LockAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState), $"{nameof(AssertionTester)}.2", token: token);
-            await Helper.Async.Sleep(TimeSpan.FromMilliseconds(50));
-            _ = lockingProvider.LockAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState), $"{nameof(AssertionTester)}.3", token: token);
-            await Helper.Async.Sleep(TimeSpan.FromMilliseconds(50));
+            var lockOne = await lockingProvider.LockAndWaitAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState), $"{nameof(AssertionTester)}.0", token: token);
+            _ = await lockingProvider.LockAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState), $"{nameof(AssertionTester)}.1", token: token);
+            _ = await lockingProvider.LockAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState), $"{nameof(AssertionTester)}.2", token: token);
+            _ = await lockingProvider.LockAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState), $"{nameof(AssertionTester)}.3", token: token);
 
             // Get requests
             var pendingRequests = await lockingProvider.GetPendingRequestsAsync(nameof(GetPendingRequests_ReturnsCorrectAmountOfPendingRequestsWithCorrectState), token: token);
@@ -561,7 +541,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         private async Task GetPendingRequests_ReturnsEmptyArrayWhenThereAreNoPendingRequests(ILockingProvider lockingProvider, CancellationToken token)
         {
             // Lock
-            _ = await lockingProvider.LockAsync(nameof(GetPendingRequests_ReturnsEmptyArrayWhenThereAreNoPendingRequests), nameof(AssertionTester), token: token);
+            _ = await lockingProvider.LockAndWaitAsync(nameof(GetPendingRequests_ReturnsEmptyArrayWhenThereAreNoPendingRequests), nameof(AssertionTester), token: token);
 
             // Get
             var pendingRequests = await lockingProvider.GetPendingRequestsAsync(nameof(GetPendingRequests_ReturnsEmptyArrayWhenThereAreNoPendingRequests), token: token);
@@ -584,7 +564,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         private async Task ForceUnlock_RemovesLock(ILockingProvider lockingProvider, CancellationToken token)
         {
             // Lock
-            var initialLock = await lockingProvider.LockAsync(nameof(ForceUnlock_RemovesLock), nameof(AssertionTester), token: token);
+            var initialLock = await lockingProvider.LockAndWaitAsync(nameof(ForceUnlock_RemovesLock), nameof(AssertionTester), token: token);
 
             // Force unlock
             await lockingProvider.ForceUnlockAsync(nameof(ForceUnlock_RemovesLock), false, token: token);
@@ -603,13 +583,10 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         private async Task ForceUnlock_RemovesPendingRequests(ILockingProvider lockingProvider, CancellationToken token)
         {
             // Lock
-            _ = lockingProvider.LockAsync(nameof(ForceUnlock_RemovesPendingRequests), $"{nameof(AssertionTester)}.0", token: token);
-            _ = lockingProvider.LockAsync(nameof(ForceUnlock_RemovesPendingRequests), $"{nameof(AssertionTester)}.1", token: token);
-            _ = lockingProvider.LockAsync(nameof(ForceUnlock_RemovesPendingRequests), $"{nameof(AssertionTester)}.2", token: token);
-            _ = lockingProvider.LockAsync(nameof(ForceUnlock_RemovesPendingRequests), $"{nameof(AssertionTester)}.3", token: token);
-
-            // Wait for flush
-            await Helper.Async.Sleep(TimeSpan.FromSeconds(1));
+            _ = await lockingProvider.LockAndWaitAsync(nameof(ForceUnlock_RemovesPendingRequests), $"{nameof(AssertionTester)}.0", token: token);
+            _ = await lockingProvider.LockAsync(nameof(ForceUnlock_RemovesPendingRequests), $"{nameof(AssertionTester)}.1", token: token);
+            _ = await lockingProvider.LockAsync(nameof(ForceUnlock_RemovesPendingRequests), $"{nameof(AssertionTester)}.2", token: token);
+            _ = await lockingProvider.LockAsync(nameof(ForceUnlock_RemovesPendingRequests), $"{nameof(AssertionTester)}.3", token: token);
 
             // Force unlock
             await lockingProvider.ForceUnlockAsync(nameof(ForceUnlock_RemovesPendingRequests), true, token: token);
@@ -635,7 +612,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                             .ToArray();
             foreach (var resource in resources)
             {
-                await lockingProvider.LockAsync(resource, nameof(AssertionTester), token: token);
+                await lockingProvider.LockAndWaitAsync(resource, nameof(AssertionTester), token: token);
             }
 
             // Query
@@ -658,7 +635,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
 
             foreach (var (requester, i) in requesters.Select((x, i) => (x, i)))
             {
-                await lockingProvider.LockAsync($"{nameof(Query_FilterOnLockedByIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", requester, token: token);
+                await lockingProvider.LockAndWaitAsync($"{nameof(Query_FilterOnLockedByIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", requester, token: token);
             }
 
             // Query
@@ -684,14 +661,14 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             {
                 if(requester == null)
                 {
-                    await using(await lockingProvider.LockAsync($"{nameof(Query_EqualToOnLockedByIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", Guid.NewGuid().ToString(), token: token))
+                    await using(await lockingProvider.LockAndWaitAsync($"{nameof(Query_EqualToOnLockedByIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", Guid.NewGuid().ToString(), token: token))
                     {
 
                     }
                 }
                 else
                 {
-                    await lockingProvider.LockAsync($"{nameof(Query_EqualToOnLockedByIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", requester, token: token);
+                    await lockingProvider.LockAndWaitAsync($"{nameof(Query_EqualToOnLockedByIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", requester, token: token);
                 }
             }
 
@@ -718,14 +695,14 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             {
                 if (requester == null)
                 {
-                    await using (await lockingProvider.LockAsync($"{nameof(Query_EqualToOnLockedByWhenSetToNullIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", Guid.NewGuid().ToString(), token: token))
+                    await using (await lockingProvider.LockAndWaitAsync($"{nameof(Query_EqualToOnLockedByWhenSetToNullIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", Guid.NewGuid().ToString(), token: token))
                     {
 
                     }
                 }
                 else
                 {
-                    await lockingProvider.LockAsync($"{nameof(Query_EqualToOnLockedByWhenSetToNullIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", requester, token: token);
+                    await lockingProvider.LockAndWaitAsync($"{nameof(Query_EqualToOnLockedByWhenSetToNullIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", requester, token: token);
                 }
             }
 
@@ -748,13 +725,12 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             // Create entries
             for (int i = 0; i < 10; i++)
             {
-                await lockingProvider.LockAsync($"{nameof(Query_FilterOnPendingRequestsIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", Guid.NewGuid().ToString(), token: token);
+                await lockingProvider.LockAndWaitAsync($"{nameof(Query_FilterOnPendingRequestsIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", Guid.NewGuid().ToString(), token: token);
                 for (int y = 0; y < i; y++)
                 {
-                    _ = lockingProvider.LockAsync($"{nameof(Query_FilterOnPendingRequestsIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", $"{nameof(AssertionTester)}.{y}", token: token);
+                    _ = await lockingProvider.LockAsync($"{nameof(Query_FilterOnPendingRequestsIsAppliedAndCorrectNumberOfResultsAreReturned)}.{i}", $"{nameof(AssertionTester)}.{y}", token: token);
                 }
             }
-            await Helper.Async.Sleep(TimeSpan.FromSeconds(1));
 
             // Query
             var result = await lockingProvider.QueryAsync(x => x.WithFilterOnResource(nameof(Query_FilterOnPendingRequestsIsAppliedAndCorrectNumberOfResultsAreReturned))
@@ -770,7 +746,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             // Create entries
             for (int i = 0; i < 100; i++)
             {
-                await lockingProvider.LockAsync($"{nameof(Query_CorrectNumberOfResultsAreReturnedWhenFilteringOnOnlyExpired)}.{i}", Guid.NewGuid().ToString(), i < 10 ? TimeSpan.Zero : TimeSpan.FromHours(24));
+                await lockingProvider.LockAndWaitAsync($"{nameof(Query_CorrectNumberOfResultsAreReturnedWhenFilteringOnOnlyExpired)}.{i}", Guid.NewGuid().ToString(), i < 10 ? TimeSpan.Zero : TimeSpan.FromHours(24));
             }
 
             // Query
@@ -787,7 +763,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             // Create entries
             for (int i = 0; i < 100; i++)
             {
-                await lockingProvider.LockAsync($"{nameof(Query_CorrectNumberOfResultsAreReturnedWhenFilteringOnOnlyNotExpired)}.{i}", Guid.NewGuid().ToString(), i < 10 ? TimeSpan.Zero : TimeSpan.FromHours(24), token: token);
+                await lockingProvider.LockAndWaitAsync($"{nameof(Query_CorrectNumberOfResultsAreReturnedWhenFilteringOnOnlyNotExpired)}.{i}", Guid.NewGuid().ToString(), i < 10 ? TimeSpan.Zero : TimeSpan.FromHours(24), token: token);
             }
 
             // Query
@@ -870,7 +846,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             // Create entries
             foreach (var i in Enumerable.Range(0, 100))
             {
-                await using (await lockingProvider.LockAsync($"{nameof(Query_CorrectSortingIsAppliedWhenSortingOnLastLockDate)}.{i}", nameof(AssertionTester), token: token))
+                await using (await lockingProvider.LockAndWaitAsync($"{nameof(Query_CorrectSortingIsAppliedWhenSortingOnLastLockDate)}.{i}", nameof(AssertionTester), token: token))
                 {
 
                 }
