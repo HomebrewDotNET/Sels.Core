@@ -1,4 +1,6 @@
-﻿namespace Sels.Core.Cli.ArgumentParsing
+﻿using Sels.Core.Extensions.Collections;
+
+namespace Sels.Core.Cli.ArgumentParsing
 {
     /// <inheritdoc cref="IParsedResult{T}"/>
     internal class ParsedResult<T> : IParsedResult<T>, IResultBuilder

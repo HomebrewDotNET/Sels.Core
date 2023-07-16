@@ -1,4 +1,4 @@
-﻿using Sels.Core.Extensions.Logging.Advanced;
+﻿using Sels.Core.Extensions.Logging;
 using Sels.Core.Processing.BackgroundJob;
 using System;
 using System.Collections.Generic;

@@ -1,7 +1,8 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
+using System.IO;
 
-namespace System.IO
+namespace Sels.Core.Extensions.IO
 {
     /// <summary>
     /// Contains extension methods for working with <see cref="DirectoryInfo"/>.

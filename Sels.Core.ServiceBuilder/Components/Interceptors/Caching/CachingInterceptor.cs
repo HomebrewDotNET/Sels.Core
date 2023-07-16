@@ -6,7 +6,7 @@ using Sels.Core.Extensions.Reflection;
 using Sels.Core.Extensions.Linq;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using System.Collections.Generic;
 using System;
 using Sels.Core.Extensions;

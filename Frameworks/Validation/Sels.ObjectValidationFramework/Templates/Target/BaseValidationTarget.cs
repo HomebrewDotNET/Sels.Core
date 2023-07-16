@@ -2,7 +2,7 @@
 using Sels.Core.Extensions;
 using System;
 using System.Collections.Generic;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.ObjectValidationFramework.Validators;
 using System.Linq.Expressions;
 using static Sels.Core.Delegates.Async;

@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
-using Sels.Core.Components.FileSizes.Bit;
-using Sels.Core.Components.FileSizes.Bit.Binary;
-using Sels.Core.Components.FileSizes.Byte;
-using Sels.Core.Components.FileSizes.Byte.Binary;
+using Sels.Core.FileSizes.Bit;
+using Sels.Core.FileSizes.Bit.Binary;
+using Sels.Core.FileSizes.Byte;
+using Sels.Core.FileSizes.Byte.Binary;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.FileSystem.Templates.FileSizes;
 using System;

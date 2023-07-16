@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 
-namespace Sels.Core.Components.Logging
+namespace Sels.Core.Logging
 {
     /// <summary>
     /// Static class that makes it easier to log in projects. Only required to be setup during startup.

@@ -2,7 +2,7 @@
 using Sels.Core.Extensions.Calculation;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
-using SingleByte = Sels.Core.Components.FileSizes.Byte.SingleByte;
+using SingleByte = Sels.Core.FileSizes.Byte.SingleByte;
 
 namespace Sels.Core.FileSystem.Templates.FileSizes
 {

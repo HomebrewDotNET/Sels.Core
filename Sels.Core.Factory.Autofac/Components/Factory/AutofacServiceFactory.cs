@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using Autofac.Core;
-using Sels.Core.Contracts.Factory;
+using Sels.Core.Factory;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using System;
@@ -11,6 +11,7 @@ using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.Collections;
 
 namespace Sels.Core.Factory.Autofac
 {

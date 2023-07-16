@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static Sels.Core.Delegates.Async;
 
-namespace Sels.Core.Components.Scope
+namespace Sels.Core.Scope
 {
     /// <summary>
     /// Executes an async action when this object gets created and an async action when this object gets disposed.

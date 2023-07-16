@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Sels.Core.Components.Logging
+namespace Sels.Core.Logging
 {
     /// <summary>
     /// Implements <see cref="TimedLogger"/> using a <see cref="Stopwatch"/>.

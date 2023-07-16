@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Conversion.Serializers.Table;
+using Sels.Core.Extensions.Text;
 using Sels.Core.Testing.Models;
 using System;
 using System.Collections.Generic;

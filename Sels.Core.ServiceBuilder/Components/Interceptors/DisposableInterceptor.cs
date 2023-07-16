@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Sels.Core.Extensions.Reflection;
 

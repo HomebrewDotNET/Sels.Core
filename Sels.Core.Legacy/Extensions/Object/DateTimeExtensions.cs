@@ -1,7 +1,7 @@
 ﻿using Sels.Core.Extensions.Conversion;
 using System;
 
-namespace Sels.Core.Extensions
+namespace Sels.Core.Extensions.DateTimes
 {
     /// <summary>
     /// Contains extension methods for working with <see cref="DateTime"/>.

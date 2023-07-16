@@ -1,6 +1,7 @@
 ﻿using Sels.Core.Extensions;
+using System;
 
-namespace System
+namespace Sels.Core.Extensions.Disposable
 {
     /// <summary>
     /// Contains extension methods for <see cref="IDisposable"/>.

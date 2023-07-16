@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace Sels.Core.Components.Scope.Actions
+namespace Sels.Core.Scope.Actions
 {
     /// <summary>
     /// Captures the duration of the scope.

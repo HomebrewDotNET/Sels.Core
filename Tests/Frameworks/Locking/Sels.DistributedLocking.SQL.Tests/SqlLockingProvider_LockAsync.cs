@@ -181,7 +181,7 @@ namespace Sels.DistributedLocking.Memory.Test
                 x.Setup(x => x.CreateRequestAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<SqlLockRequest>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlRequest);
                 x.Setup(x => x.DeleteAllRequestsById(It.IsAny<IRepositoryTransaction>(), It.IsAny<long[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
             });
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options, null, TestHelper.GetDebugLogger<SqlLockingProvider>());
+            await using var provider = new SqlLockingProvider(repositoryMock.Object, options, null);
             var lockingProvider = provider.CastTo<ILockingProvider>();
             Exception exception = null;
             var tokenSource = new CancellationTokenSource();

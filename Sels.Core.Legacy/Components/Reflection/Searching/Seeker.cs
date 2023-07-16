@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sels.Core.Contracts.Reflection.Searching;
+using Sels.Core.Reflection.Searching;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Sels.Core.Components.Reflection.Searching
+namespace Sels.Core.Reflection.Searching
 {
     /// <summary>
     /// Searches the properties of the supplied object to search for instances of <typeparamref name="T"/>.

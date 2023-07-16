@@ -1,7 +1,7 @@
 ﻿using Sels.Core.Extensions;
 using Sels.ObjectValidationFramework.TestTool.Objects;
 using Sels.ObjectValidationFramework.Profile;
-using Sels.Core.Components.Logging;
+using Sels.Core.Logging;
 using System.Linq;
 
 namespace Sels.ObjectValidationFramework.TestTool.ValidationProfiles

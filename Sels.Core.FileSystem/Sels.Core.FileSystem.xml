@@ -4,891 +4,891 @@
         <name>Sels.Core.FileSystem</name>
     </assembly>
     <members>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit">
+        <member name="T:Sels.Core.FileSizes.Bit.Binary.ExbiBit">
             <summary>
             Displays file size in exbibit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.Binary.ExbiBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.Binary.ExbiBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.ExbiBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.ExbiBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.ExbiBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.ExbiBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.ExbiBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.ExbiBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.Binary.ExbiBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.ExbiBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.ExbiBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.Binary.ExbiBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit">
+        <member name="T:Sels.Core.FileSizes.Bit.Binary.GibiBit">
             <summary>
             Displays file size in gibibit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit.Abbreviation"/>.
+        <member name="F:Sels.Core.FileSizes.Bit.Binary.GibiBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.Binary.GibiBit.Abbreviation"/>.
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.GibiBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.GibiBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.GibiBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.GibiBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.GibiBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.GibiBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.Binary.GibiBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.GibiBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.GibiBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.Binary.GibiBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit">
+        <member name="T:Sels.Core.FileSizes.Bit.Binary.KibiBit">
             <summary>
             Displays file size in kibibit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.Binary.KibiBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.Binary.KibiBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.KibiBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.KibiBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.KibiBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.KibiBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.KibiBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.KibiBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.Binary.KibiBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.KibiBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.KibiBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.Binary.KibiBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit">
+        <member name="T:Sels.Core.FileSizes.Bit.Binary.MebiBit">
             <summary>
             Displays file size in mebibit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.Binary.MebiBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.Binary.MebiBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.MebiBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.MebiBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.MebiBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.MebiBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.MebiBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.MebiBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.Binary.MebiBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.MebiBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.MebiBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.Binary.MebiBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit">
+        <member name="T:Sels.Core.FileSizes.Bit.Binary.PebiBit">
             <summary>
             Displays file size in pebibit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.Binary.PebiBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.Binary.PebiBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.PebiBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.PebiBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.PebiBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.PebiBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.PebiBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.PebiBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.Binary.PebiBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.PebiBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.PebiBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.Binary.PebiBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit">
+        <member name="T:Sels.Core.FileSizes.Bit.Binary.TebiBit">
             <summary>
             Displays file size in tebibit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.Binary.TebiBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.Binary.TebiBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.TebiBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.TebiBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.TebiBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.TebiBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.TebiBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.TebiBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.Binary.TebiBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.TebiBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.TebiBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.Binary.TebiBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit">
+        <member name="T:Sels.Core.FileSizes.Bit.Binary.YobiBit">
             <summary>
             Displays file size in yobibit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.Binary.YobiBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.Binary.YobiBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.YobiBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.YobiBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.YobiBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.YobiBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.YobiBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.YobiBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.Binary.YobiBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.YobiBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.YobiBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.Binary.YobiBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit">
+        <member name="T:Sels.Core.FileSizes.Bit.Binary.ZebiBit">
             <summary>
             Displays file size in zebibit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.Binary.ZebiBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.Binary.ZebiBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.ZebiBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.Binary.ZebiBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.ZebiBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.ZebiBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.ZebiBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.ZebiBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.Binary.ZebiBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.Binary.ZebiBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Binary.ZebiBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.Binary.ZebiBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.Bit">
+        <member name="T:Sels.Core.FileSizes.Bit.Bit">
             <summary>
             Displays file size in bit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.Bit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.Bit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.Bit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.Bit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Bit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.Bit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.Bit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.Bit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Bit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Bit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Bit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Bit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Bit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Bit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.Bit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Bit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.Bit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.Bit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.Bit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.Bit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.Bit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.Bit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.ExaBit">
+        <member name="T:Sels.Core.FileSizes.Bit.ExaBit">
             <summary>
             Displays file size in exabit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.ExaBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.ExaBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.ExaBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.ExaBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.ExaBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.ExaBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.ExaBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.ExaBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.ExaBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.ExaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.ExaBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.ExaBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.ExaBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.ExaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.ExaBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.ExaBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.ExaBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.ExaBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.ExaBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.ExaBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.ExaBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.ExaBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.GigaBit">
+        <member name="T:Sels.Core.FileSizes.Bit.GigaBit">
             <summary>
             Displays file size in gigabit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.GigaBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.GigaBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.GigaBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.GigaBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.GigaBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.GigaBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.GigaBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.GigaBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.GigaBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.GigaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.GigaBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.GigaBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.GigaBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.GigaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.GigaBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.GigaBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.GigaBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.GigaBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.GigaBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.GigaBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.GigaBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.GigaBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.KiloBit">
+        <member name="T:Sels.Core.FileSizes.Bit.KiloBit">
             <summary>
             Displays file size in kilobit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.KiloBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.KiloBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.KiloBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.KiloBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.KiloBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.KiloBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.KiloBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.KiloBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.KiloBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.KiloBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.KiloBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.KiloBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.KiloBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.KiloBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.KiloBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.KiloBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.KiloBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.KiloBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.KiloBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.KiloBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.KiloBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.KiloBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.MegaBit">
+        <member name="T:Sels.Core.FileSizes.Bit.MegaBit">
             <summary>
             Displays file size in megabit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.MegaBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.MegaBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.MegaBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.MegaBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.MegaBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.MegaBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.MegaBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.MegaBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.MegaBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.MegaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.MegaBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.MegaBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.MegaBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.MegaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.MegaBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.MegaBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.MegaBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.MegaBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.MegaBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.MegaBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.MegaBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.MegaBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.PetaBit">
+        <member name="T:Sels.Core.FileSizes.Bit.PetaBit">
             <summary>
             Displays file size in petabyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.PetaBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.PetaBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.PetaBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.PetaBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.PetaBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.PetaBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.PetaBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.PetaBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.PetaBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.PetaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.PetaBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.PetaBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.PetaBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.PetaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.PetaBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.PetaBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.PetaBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.PetaBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.PetaBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.PetaBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.PetaBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.PetaBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.TeraBit">
+        <member name="T:Sels.Core.FileSizes.Bit.TeraBit">
             <summary>
             Displays file size in terabit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.TeraBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.TeraBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.TeraBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.TeraBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.TeraBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.TeraBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.TeraBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.TeraBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.TeraBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.TeraBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.TeraBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.TeraBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.TeraBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.TeraBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.TeraBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.TeraBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.TeraBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.TeraBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.TeraBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.TeraBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.TeraBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.TeraBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.YottaBit">
+        <member name="T:Sels.Core.FileSizes.Bit.YottaBit">
             <summary>
             Displays file size in yottabit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.YottaBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.YottaBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.YottaBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.YottaBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.YottaBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.YottaBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.YottaBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.YottaBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.YottaBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.YottaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.YottaBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.YottaBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.YottaBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.YottaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.YottaBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.YottaBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.YottaBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.YottaBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.YottaBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.YottaBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.YottaBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.YottaBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Bit.ZettaBit">
+        <member name="T:Sels.Core.FileSizes.Bit.ZettaBit">
             <summary>
             Displays file size in zettabit.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Bit.ZettaBit.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Bit.ZettaBit.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Bit.ZettaBit.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Bit.ZettaBit.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.ZettaBit.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Bit.ZettaBit.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Bit.ZettaBit.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Bit.ZettaBit.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.ZettaBit.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.ZettaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.ZettaBit.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.ZettaBit"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.ZettaBit.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.ZettaBit"/>
+        <member name="M:Sels.Core.FileSizes.Bit.ZettaBit.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.ZettaBit"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Bit.ZettaBit.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Bit.ZettaBit"/>
-            <param name="size">The file size in <see cref="P:Sels.Core.Components.FileSizes.Bit.ZettaBit.Abbreviation"/></param>
+        <member name="M:Sels.Core.FileSizes.Bit.ZettaBit.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Bit.ZettaBit"/>
+            <param name="size">The file size in <see cref="P:Sels.Core.FileSizes.Bit.ZettaBit.Abbreviation"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte">
+        <member name="T:Sels.Core.FileSizes.Byte.Binary.ExbiByte">
             <summary>
             Displays file size in exbibyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.Binary.ExbiByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.Binary.ExbiByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.ExbiByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.ExbiByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.ExbiByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.ExbiByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.ExbiByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.ExbiByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.ExbiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.ExbiByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.ExbiByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte">
+        <member name="T:Sels.Core.FileSizes.Byte.Binary.GibiByte">
             <summary>
             Displays file size in gibibyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.Binary.GibiByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.Binary.GibiByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.GibiByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.GibiByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.GibiByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.GibiByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.GibiByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.GibiByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.GibiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.GibiByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.GibiByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte">
+        <member name="T:Sels.Core.FileSizes.Byte.Binary.KibiByte">
             <summary>
             Displays file size in kibibyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.Binary.KibiByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.Binary.KibiByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.KibiByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.KibiByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.KibiByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.KibiByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.KibiByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.KibiByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.KibiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.KibiByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.KibiByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte">
+        <member name="T:Sels.Core.FileSizes.Byte.Binary.MebiByte">
             <summary>
             Displays file size in mebibyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.Binary.MebiByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.Binary.MebiByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.MebiByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.MebiByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.MebiByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.MebiByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.MebiByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.MebiByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.MebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.MebiByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.MebiByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte">
+        <member name="T:Sels.Core.FileSizes.Byte.Binary.PebiByte">
             <summary>
             Displays file size in pebibyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.Binary.PebiByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.Binary.PebiByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.PebiByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.PebiByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.PebiByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.PebiByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.PebiByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.PebiByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.PebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.PebiByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.PebiByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte">
+        <member name="T:Sels.Core.FileSizes.Byte.Binary.TebiByte">
             <summary>
             Displays file size in tebibyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.Binary.TebiByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.Binary.TebiByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.TebiByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.TebiByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.TebiByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.TebiByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.TebiByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.TebiByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.TebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.TebiByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.TebiByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte">
+        <member name="T:Sels.Core.FileSizes.Byte.Binary.YobiByte">
             <summary>
             Displays file size in yobibyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.Binary.YobiByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.Binary.YobiByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.YobiByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.YobiByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.YobiByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.YobiByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.YobiByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.YobiByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.YobiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.YobiByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.YobiByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte">
+        <member name="T:Sels.Core.FileSizes.Byte.Binary.ZebiByte">
             <summary>
             Displays file size in zebibyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.Binary.ZebiByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.Binary.ZebiByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.ZebiByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.Binary.ZebiByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.ZebiByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.ZebiByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.ZebiByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.ZebiByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.Binary.ZebiByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.Binary.ZebiByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.Binary.ZebiByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.ExaByte">
+        <member name="T:Sels.Core.FileSizes.Byte.ExaByte">
             <summary>
             Displays file size in exabyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.ExaByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.ExaByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.ExaByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.ExaByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.ExaByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.ExaByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.ExaByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.ExaByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.ExaByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.ExaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.ExaByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.ExaByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.ExaByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.ExaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.ExaByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.ExaByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.ExaByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.ExaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.ExaByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.ExaByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.GigaByte">
+        <member name="T:Sels.Core.FileSizes.Byte.GigaByte">
             <summary>
             Displays file size in gigabyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.GigaByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.GigaByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.GigaByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.GigaByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.GigaByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.GigaByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.GigaByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.GigaByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.GigaByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.GigaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.GigaByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.GigaByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.GigaByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.GigaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.GigaByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.GigaByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.GigaByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.GigaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.GigaByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.GigaByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.KiloByte">
+        <member name="T:Sels.Core.FileSizes.Byte.KiloByte">
             <summary>
             Displays file size in kilobyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.KiloByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.KiloByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.KiloByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.KiloByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.KiloByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.KiloByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.KiloByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.KiloByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.KiloByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.KiloByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.KiloByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.KiloByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.KiloByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.KiloByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.KiloByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.KiloByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.KiloByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.KiloByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.KiloByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.KiloByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.MegaByte">
+        <member name="T:Sels.Core.FileSizes.Byte.MegaByte">
             <summary>
             Displays file size in megabyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.MegaByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.MegaByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.MegaByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.MegaByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.MegaByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.MegaByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.MegaByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.MegaByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.MegaByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.MegaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.MegaByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.MegaByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.MegaByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.MegaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.MegaByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.MegaByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.MegaByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.MegaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.MegaByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.MegaByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.PetaByte">
+        <member name="T:Sels.Core.FileSizes.Byte.PetaByte">
             <summary>
             Displays file size in petabyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.PetaByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.PetaByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.PetaByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.PetaByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.PetaByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.PetaByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.PetaByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.PetaByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.PetaByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.PetaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.PetaByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.PetaByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.PetaByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.PetaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.PetaByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.PetaByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.PetaByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.PetaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.PetaByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.PetaByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.SingleByte">
+        <member name="T:Sels.Core.FileSizes.Byte.SingleByte">
             <summary>
             Displays file size in byte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.SingleByte.FileSizeDisplayName">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.SingleByte.DisplayName"/>
+        <member name="F:Sels.Core.FileSizes.Byte.SingleByte.FileSizeDisplayName">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.SingleByte.DisplayName"/>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.SingleByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.SingleByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.SingleByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.SingleByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.SingleByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.SingleByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.SingleByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.SingleByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.SingleByte.DisplayName">
+        <member name="P:Sels.Core.FileSizes.Byte.SingleByte.DisplayName">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.SingleByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.SingleByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.SingleByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.SingleByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.SingleByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.SingleByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.SingleByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.SingleByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.SingleByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.SingleByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.SingleByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.SingleByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.TeraByte">
+        <member name="T:Sels.Core.FileSizes.Byte.TeraByte">
             <summary>
             Displays file size in terabyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.TeraByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.TeraByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.TeraByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.TeraByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.TeraByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.TeraByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.TeraByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.TeraByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.TeraByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.TeraByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.TeraByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.TeraByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.TeraByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.TeraByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.TeraByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.TeraByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.TeraByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.TeraByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.TeraByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.TeraByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.YottaByte">
+        <member name="T:Sels.Core.FileSizes.Byte.YottaByte">
             <summary>
             Displays file size in yottabyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.YottaByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.YottaByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.YottaByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.YottaByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.YottaByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.YottaByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.YottaByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.YottaByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.YottaByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.YottaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.YottaByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.YottaByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.YottaByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.YottaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.YottaByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.YottaByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.YottaByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.YottaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.YottaByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.YottaByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSizes.Byte.ZettaByte">
+        <member name="T:Sels.Core.FileSizes.Byte.ZettaByte">
             <summary>
             Displays file size in zettabyte.
             </summary>
         </member>
-        <member name="F:Sels.Core.Components.FileSizes.Byte.ZettaByte.FileSizeAbbreviation">
-            <inheritdoc cref="P:Sels.Core.Components.FileSizes.Byte.ZettaByte.Abbreviation"/>
+        <member name="F:Sels.Core.FileSizes.Byte.ZettaByte.FileSizeAbbreviation">
+            <inheritdoc cref="P:Sels.Core.FileSizes.Byte.ZettaByte.Abbreviation"/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.ZettaByte.Abbreviation">
+        <member name="P:Sels.Core.FileSizes.Byte.ZettaByte.Abbreviation">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSizes.Byte.ZettaByte.SizeMultiplier">
+        <member name="P:Sels.Core.FileSizes.Byte.ZettaByte.SizeMultiplier">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.ZettaByte.#ctor">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.ZettaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.ZettaByte.#ctor">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.ZettaByte"/>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.ZettaByte.#ctor(System.Int64)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.ZettaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.ZettaByte.#ctor(System.Int64)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.ZettaByte"/>
             <param name="byteSize">The file size in bytes</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSizes.Byte.ZettaByte.#ctor(System.Decimal)">
-            <inheritdoc cref="T:Sels.Core.Components.FileSizes.Byte.ZettaByte"/>
+        <member name="M:Sels.Core.FileSizes.Byte.ZettaByte.#ctor(System.Decimal)">
+            <inheritdoc cref="T:Sels.Core.FileSizes.Byte.ZettaByte"/>
             <param name="size">The file size in <paramref name="size"/></param>
         </member>
-        <member name="T:Sels.Core.Components.FileSystem.WindowsDirectory">
+        <member name="T:Sels.Core.FileSystem.WindowsDirectory">
             <summary>
             Windows specific wrapper for <see cref="T:Sels.Core.FileSystem.Templates.FileSystem.CrossPlatformDirectory"/>
             </summary>
         </member>
-        <member name="P:Sels.Core.Components.FileSystem.WindowsDirectory.FreeSpace">
+        <member name="P:Sels.Core.FileSystem.WindowsDirectory.FreeSpace">
             <inheritdoc/>
         </member>
-        <member name="P:Sels.Core.Components.FileSystem.WindowsDirectory.MountPoint">
+        <member name="P:Sels.Core.FileSystem.WindowsDirectory.MountPoint">
             <inheritdoc/>
         </member>
-        <member name="M:Sels.Core.Components.FileSystem.WindowsDirectory.#ctor(System.String)">
+        <member name="M:Sels.Core.FileSystem.WindowsDirectory.#ctor(System.String)">
             <summary>
             Windows specific wrapper for <see cref="T:Sels.Core.FileSystem.Templates.FileSystem.CrossPlatformDirectory"/>
             </summary>
             <param name="path">Path to the directory</param>
         </member>
-        <member name="M:Sels.Core.Components.FileSystem.WindowsDirectory.#ctor(System.IO.DirectoryInfo)">
+        <member name="M:Sels.Core.FileSystem.WindowsDirectory.#ctor(System.IO.DirectoryInfo)">
             <summary>
             Windows specific wrapper for <see cref="T:Sels.Core.FileSystem.Templates.FileSystem.CrossPlatformDirectory"/>
             </summary>
             <param name="info">Directory info to wrap</param>
         </member>
-        <member name="T:Sels.Core.Contracts.Configuration.ConfigurationExceptions">
+        <member name="T:Sels.Core.Configuration.ConfigurationExceptions">
             <summary>
             Contains extension methods related to reading application configuration.
             </summary>
         </member>
-        <member name="M:Sels.Core.Contracts.Configuration.ConfigurationExceptions.GetMaxLogFileSize``1(Sels.Core.Contracts.Configuration.IConfigurationService,System.Boolean)">
+        <member name="M:Sels.Core.Configuration.ConfigurationExceptions.GetMaxLogFileSize``1(Sels.Core.Configuration.IConfigurationService,System.Boolean)">
             <summary>
             Reads <see cref="F:Sels.Core.Constants.Configuration.Logging.MaxFileSize"/> from configuration where it it defined in filesize <typeparamref name="T"/>.
             </summary>
@@ -907,14 +907,14 @@
             Returns the amount of free space on the drive that <paramref name="info"/> is located on. 
             </summary>
             <param name="info">Location to check</param>
-            <returns>Free size in <see cref="T:Sels.Core.Components.FileSizes.Byte.SingleByte"/></returns>
+            <returns>Free size in <see cref="T:Sels.Core.FileSizes.Byte.SingleByte"/></returns>
         </member>
         <member name="M:Sels.Core.FileSystem.Extensions.FileSizes.FileSizeExtensions.GetFreeSpaceOnWindows(System.IO.FileSystemInfo)">
             <summary>
             Returns the amount of free space on the drive that <paramref name="info"/> is located on. Only works on windows as it relies on a windows dll.
             </summary>
             <param name="info">Location to check</param>
-            <returns>Free size in <see cref="T:Sels.Core.Components.FileSizes.Byte.SingleByte"/></returns>
+            <returns>Free size in <see cref="T:Sels.Core.FileSizes.Byte.SingleByte"/></returns>
         </member>
         <member name="M:Sels.Core.FileSystem.Extensions.FileSizes.FileSizeExtensions.ToFileSize``1(System.Int64)">
             <summary>
@@ -1270,7 +1270,7 @@
         </member>
         <member name="M:Sels.Core.FileSystem.Templates.FileSizes.FileSize.op_Implicit(System.Int64)~Sels.Core.FileSystem.Templates.FileSizes.FileSize">
             <summary>
-            Creates a new instance of <see cref="T:Sels.Core.Components.FileSizes.Byte.SingleByte"/> where <see cref="P:Sels.Core.FileSystem.Templates.FileSizes.FileSize.ByteSize"/> is equal to <paramref name="bytes"/>.
+            Creates a new instance of <see cref="T:Sels.Core.FileSizes.Byte.SingleByte"/> where <see cref="P:Sels.Core.FileSystem.Templates.FileSizes.FileSize.ByteSize"/> is equal to <paramref name="bytes"/>.
             </summary>
             <param name="bytes">The bytes for the file size</param>
         </member>

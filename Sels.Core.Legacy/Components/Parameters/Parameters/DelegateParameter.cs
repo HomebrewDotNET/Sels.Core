@@ -1,7 +1,7 @@
 ﻿using Sels.Core.Extensions;
 using System;
 
-namespace Sels.Core.Components.Parameters.Parameters
+namespace Sels.Core.Parameters.Parameters
 {
     public class DelegateParameter : Parameter
     {

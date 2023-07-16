@@ -1,6 +1,6 @@
 ﻿using Sels.Core.Extensions;
 
-namespace Sels.Core.Contracts.Configuration
+namespace Sels.Core.Configuration
 {
     /// <summary>
     /// Contains extension methods related to reading application configuration.

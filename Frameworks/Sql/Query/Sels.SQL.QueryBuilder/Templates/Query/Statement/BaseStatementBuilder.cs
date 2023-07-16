@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Sels.Core.Extensions.Collections;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {

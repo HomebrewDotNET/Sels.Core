@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.MySQL;
 using Dapper;
@@ -30,6 +30,7 @@ using Sels.Core.Extensions.Logging;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Conversion.Extensions;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.DistributedLocking.MySQL.Repository
 {

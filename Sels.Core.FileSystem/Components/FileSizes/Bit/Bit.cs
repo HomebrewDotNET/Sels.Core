@@ -1,6 +1,6 @@
 ﻿using Sels.Core.FileSystem.Templates.FileSizes.Bit;
 
-namespace Sels.Core.Components.FileSizes.Bit
+namespace Sels.Core.FileSizes.Bit
 {
     /// <summary>
     /// Displays file size in bit.

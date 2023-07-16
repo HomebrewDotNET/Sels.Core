@@ -5,6 +5,7 @@ using Sels.SQL.QueryBuilder.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.SQL.QueryBuilder.MySQL.Expressions
 {

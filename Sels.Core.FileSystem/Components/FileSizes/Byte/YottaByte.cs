@@ -1,6 +1,6 @@
 ﻿using Sels.Core.FileSystem.Templates.FileSizes.Byte;
 
-namespace Sels.Core.Components.FileSizes.Byte
+namespace Sels.Core.FileSizes.Byte
 {
     /// <summary>
     /// Displays file size in yottabyte.

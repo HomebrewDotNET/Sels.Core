@@ -9,7 +9,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Sels.DistributedLocking.MySQL.Options;
 using Sels.DistributedLocking.MySQL.Repository;
-using Sels.Core.Contracts.Configuration;
+using Sels.Core.Configuration;
 using Microsoft.Extensions.Options;
 using Sels.SQL.QueryBuilder;
 using Sels.Core.Data.FluentMigrationTool;
@@ -23,7 +23,7 @@ using Polly;
 using MySqlConnector;
 using Polly.Contrib.WaitAndRetry;
 using Sels.Core.Data.MySQL.Extensions;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Reflection;
 using System.Text.RegularExpressions;
 

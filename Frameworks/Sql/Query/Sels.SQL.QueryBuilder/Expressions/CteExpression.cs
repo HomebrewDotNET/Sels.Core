@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Sels.Core.Extensions.Linq;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {

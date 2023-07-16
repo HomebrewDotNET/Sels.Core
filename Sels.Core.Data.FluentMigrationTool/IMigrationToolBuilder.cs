@@ -39,7 +39,7 @@ namespace Sels.Core.Data.FluentMigrationTool
         /// </summary>
         /// <param name="services">The service collection to inherit from</param>
         /// <returns>Current builder for method chaining</returns>
-        IMigrationToolBuilder InheritFrom(IServiceCollection services) => ConfigureServices(x => x.Add(services.ValidateArgument(nameof(services)).Copy()));
+        IMigrationToolBuilder InheritFrom(IServiceCollection services) => ConfigureServices(x => x.Add(services.ValidateArgument(nameof(services))));
         /// <summary>
         /// Adds all migrations from the assembly where <typeparamref name="T"/> is located.
         /// </summary>

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Text;
 
-namespace Sels.Core.Extensions.Object
+namespace Sels.Core.Extensions.Exceptions
 {
     /// <summary>
     /// Contains exception methods for <see cref="Exception"/>.

@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;

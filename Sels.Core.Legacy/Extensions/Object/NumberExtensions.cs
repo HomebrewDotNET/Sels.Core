@@ -1,4 +1,4 @@
-﻿namespace System
+﻿namespace Sels.Core.Extensions.Number
 {
     /// <summary>
     /// Contains extension methods for working with numeric types.

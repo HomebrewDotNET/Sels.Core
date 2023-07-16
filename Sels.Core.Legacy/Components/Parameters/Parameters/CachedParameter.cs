@@ -1,7 +1,8 @@
 ﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
 using System.Collections.Generic;
 
-namespace Sels.Core.Components.Parameters.Parameters
+namespace Sels.Core.Parameters.Parameters
 {
     /// <summary>
     /// Caches generated values by using argument within the same scope

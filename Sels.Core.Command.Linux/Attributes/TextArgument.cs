@@ -2,6 +2,7 @@
 using Sels.Core.Command.Linux.Templates.Attributes;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.Text;
 using System.Collections;
 
 namespace Sels.Core.Command.Linux.Attributes

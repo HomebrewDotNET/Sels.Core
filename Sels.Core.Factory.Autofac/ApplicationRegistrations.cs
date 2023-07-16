@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sels.Core;
-using Sels.Core.Contracts.Factory;
+using Sels.Core.Factory;
 using Sels.Core.Factory;
 using Sels.Core.Factory.Autofac;
 using System;

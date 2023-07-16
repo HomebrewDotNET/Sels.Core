@@ -1,22 +1,18 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using Sels.Core.Components.Logging;
+using Sels.Core.Logging;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Logging.Advanced;
 using Microsoft.Extensions.DependencyInjection;
 using Sels.Core.Mediator.Messaging;
 using System.Threading.Tasks;
-using Sels.Core.Contracts.Configuration;
-using Sels.Core.Components.Configuration;
+using Sels.Core.Configuration;
 using Sels.Core.Deployment;
 using Sels.Core.Data.MySQL.Models;
 using Sels.Core.Conversion.Templates;
 using Sels.Core.Conversion.Converters.Simple;
-using System.Reflection.Emit;
 using Autofac.Extensions.DependencyInjection;
 using Autofac;
 using Sels.Core.Conversion.Converters;
-using Sels.Core.Contracts.Factory;
 using Sels.Core.Factory;
 using Sels.DistributedLocking.Provider;
 using Sels.Core.Extensions.Conversion;
@@ -27,7 +23,6 @@ using Sels.Core.Mediator;
 using Sels.SQL.QueryBuilder;
 using Sels.SQL.QueryBuilder.MySQL;
 using Sels.Core.TestTool.ExportEntities;
-using Sels.SQL.QueryBuilder.Extensions;
 using Sels.SQL.QueryBuilder.Builder;
 
 namespace Sels.Core.TestTool

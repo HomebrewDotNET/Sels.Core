@@ -3,11 +3,12 @@ using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Compilation;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Sels.Core.Extensions.Logging;
+using Sels.Core.Extensions.Text;
+using Sels.Core.Extensions.DateTimes;
 
 namespace Sels.SQL.QueryBuilder.Provider
 {

@@ -1,4 +1,4 @@
-﻿using Sels.Core.Components.FileSizes.Byte.Binary;
+﻿using Sels.Core.FileSizes.Byte.Binary;
 using Sels.Core.FileSystem.Templates.FileSystem;
 using Sels.Core.FileSystem.Templates.FileSizes;
 using Sels.Core.Command.Linux.Commands.FileSystem;

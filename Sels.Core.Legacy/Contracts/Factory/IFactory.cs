@@ -1,4 +1,4 @@
-﻿namespace Sels.Core.Contracts.Factory
+﻿namespace Sels.Core.Factory
 {
     /// <summary>
     /// Factory that is able to create new instances of <typeparamref name="T"/> based on supplied arguments.

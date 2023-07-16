@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Sels.Core.Components.Scope;
-using Sels.Core.Contracts.Configuration;
+using Sels.Core.Scope;
+using Sels.Core.Configuration;
 using Sels.Core.Extensions.Conversion;
 using Sels.DistributedLocking.MySQL.Options;
 using Sels.DistributedLocking.Provider;
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 
 namespace Sels.DistributedLocking.IntegrationTester.Providers
 {

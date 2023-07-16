@@ -1,7 +1,8 @@
-﻿using Sels.Core.FileSystem.Extensions.FileSizes;
+﻿using Sels.Core.Extensions.IO;
+using Sels.Core.FileSystem.Extensions.FileSizes;
 using Sels.Core.FileSystem.Templates.FileSystem;
 
-namespace Sels.Core.Components.FileSystem
+namespace Sels.Core.FileSystem
 {
     /// <summary>
     /// Windows specific wrapper for <see cref="CrossPlatformDirectory"/>

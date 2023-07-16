@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Cli;
-using Sels.Core.Components.Logging;
+using Sels.Core.Logging;
 using System.Reflection;
 using SelsCommandLine = Sels.Core.Cli.CommandLine;
 

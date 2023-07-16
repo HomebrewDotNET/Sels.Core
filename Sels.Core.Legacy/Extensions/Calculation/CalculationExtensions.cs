@@ -138,5 +138,31 @@ namespace Sels.Core.Extensions.Calculation
         /// <returns>The median in <paramref name="source"/></returns>
         public static T Median<T>(this IEnumerable<T> source) where T : IComparable<T> => source.Median(x => x);
         #endregion
+
+        #region RoundTo
+        /// <summary>
+        /// Rounds <paramref name="value"/> to <paramref name="digits"/> digits.
+        /// </summary>
+        /// <param name="value">The value to round</param>
+        /// <param name="digits">To how many digits to round</param>
+        /// <param name="rounding">The rounding strategy to use</param>
+        /// <returns><paramref name="value"/> rounded to <paramref name="digits"/> digits</returns>
+        public static double RoundTo(this double value, int digits, MidpointRounding rounding = MidpointRounding.ToEven)
+        {
+            return Math.Round(value, digits, rounding);
+        }
+
+        /// <summary>
+        /// Rounds <paramref name="value"/> to <paramref name="digits"/> digits.
+        /// </summary>
+        /// <param name="value">The value to round</param>
+        /// <param name="digits">To how many digits to round</param>
+        /// <param name="rounding">The rounding strategy to use</param>
+        /// <returns><paramref name="value"/> rounded to <paramref name="digits"/> digits</returns>
+        public static decimal RoundTo(this decimal value, int digits, MidpointRounding rounding = MidpointRounding.ToEven)
+        {
+            return Math.Round(value, digits, rounding);
+        }
+        #endregion
     }
 }

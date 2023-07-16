@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Cli.Templates.ArgumentParsing;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Cli.ArgumentParsing.Handlers
 {

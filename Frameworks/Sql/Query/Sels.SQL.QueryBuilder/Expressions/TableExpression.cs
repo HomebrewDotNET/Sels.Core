@@ -2,6 +2,7 @@
 using System;
 using System.Data;
 using System.Text;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {

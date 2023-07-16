@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.DateTimes;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

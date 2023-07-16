@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.Conversion;
 using System;
 using System.Collections.Generic;

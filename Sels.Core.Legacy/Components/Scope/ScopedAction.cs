@@ -1,7 +1,7 @@
 ﻿using Sels.Core.Extensions;
 using System;
 
-namespace Sels.Core.Components.Scope
+namespace Sels.Core.Scope
 {
     /// <summary>
     /// Executes an action when this object gets created and an action when this object gets disposed.

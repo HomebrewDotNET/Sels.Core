@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceBuilderExtensions
     {
         /// <summary>
-        /// Returns a builder for creating a new service to inject as dependency.
+        /// Returns a builder for creating a new service to inject as a dependency.
         /// </summary>
         /// <typeparam name="T">The service type</typeparam>
         /// <param name="collection">Collection to register the built service in</param>
@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Returns a builder for creating a new service to inject as dependency.
+        /// Returns a builder for creating a new service to inject as a dependency.
         /// </summary>
         /// <typeparam name="T">The service type</typeparam>
         /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>

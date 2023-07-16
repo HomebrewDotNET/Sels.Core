@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Microsoft.Extensions.Logging;
 using Sels.SQL.QueryBuilder.Builder;
 using Dapper;
@@ -23,6 +23,7 @@ using Sels.Core.Conversion.Attributes.Serialization;
 using Sels.SQL.QueryBuilder.Statements;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Castle.Core.Resource;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.DistributedLocking.SQL.Templates
 {

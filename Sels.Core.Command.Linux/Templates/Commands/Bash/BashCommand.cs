@@ -4,6 +4,7 @@ using Sels.Core.Extensions.Logging;
 using Sels.Core.Command.Components.Commands;
 using Sels.Core.Command.Linux.Contracts;
 using Sels.Core.Command.Linux.Commands;
+using Sels.Core.Extensions.DateTimes;
 
 namespace Sels.Core.Command.Linux.Templates.Commands.Bash
 {

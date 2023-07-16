@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sels.Core.Components.Parameters.Parameters
+namespace Sels.Core.Parameters.Parameters
 {
     public class NewGuidParameter : CachedParameter
     {
