@@ -176,21 +176,24 @@ namespace Sels.DistributedLocking.Memory.Test
             var lockingProvider = provider.CastTo<ILockingProvider>();
 
             // Act
-            var lockOne = await lockingProvider.LockAndWaitAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(100), false);
-            var lockResultTask = lockingProvider.LockAndWaitAsync("Resource", "Requester.2");
-            await Helper.Async.Sleep(100 * 2);
-            var lockResultTaskTwo = lockingProvider.LockAndWaitAsync("Resource", "Requester.3");
+            var lockOne = await lockingProvider.LockAndWaitAsync("Resource", "Requester.1");
+            var lockRequest = await lockingProvider.LockAsync("Resource", "Requester.2");
+
+            // Unlock first lock
+            await lockOne.DisposeAsync();
+
+            // Attempt to directly lock
+            var lockResult = await lockingProvider.TryLockAsync("Resource", "Requester.3");
 
             // Assert
-            Assert.IsNotNull(lockResultTask);
-            Assert.IsTrue(lockResultTask.IsCompleted);
-            var lockResult = await lockResultTask;
             Assert.IsNotNull(lockResult);
-            Assert.That(lockResult.Resource, Is.EqualTo("Resource"));
-            Assert.That(lockResult.LockedBy, Is.EqualTo("Requester.2"));
-            Assert.IsNull(lockResult.ExpiryDate);
-            Assert.IsNotNull(lockResultTaskTwo);
-            Assert.IsFalse(lockResultTaskTwo.IsCompleted);
+            Assert.IsFalse(lockResult.Success);
+            Assert.IsNotNull(lockRequest);
+            var @lock = await Helper.Async.WaitOn(lockRequest.Callback, TimeSpan.FromSeconds(5));
+            Assert.IsNotNull(lockResult);
+            Assert.That(@lock.Resource, Is.EqualTo("Resource"));
+            Assert.That(@lock.LockedBy, Is.EqualTo("Requester.2"));
+            Assert.IsNull(@lock.ExpiryDate);
         }
 
         [Test]
@@ -265,13 +268,11 @@ namespace Sels.DistributedLocking.Memory.Test
 
             // Act
             _ = await lockingProvider.LockAndWaitAsync("Resource", "Requester.1", TimeSpan.FromMilliseconds(100));
-            var lockResultTask = lockingProvider.LockAndWaitAsync("Resource", "Requester.2");
-            await Helper.Async.Sleep(100 * 2);
-
+            var lockRequest = await lockingProvider.LockAsync("Resource", "Requester.2");
+            
             // Assert
-            Assert.That(lockResultTask, Is.Not.Null);
-            Assert.That(lockResultTask.IsCompleted, Is.True);
-            var @lock = await lockResultTask;
+            Assert.That(lockRequest, Is.Not.Null);
+            var @lock = await Helper.Async.WaitOn(lockRequest.Callback, TimeSpan.FromSeconds(5));
             Assert.IsNotNull(@lock);
             Assert.That(@lock.Resource, Is.EqualTo("Resource"));
             Assert.That(@lock.LockedBy, Is.EqualTo("Requester.2"));
