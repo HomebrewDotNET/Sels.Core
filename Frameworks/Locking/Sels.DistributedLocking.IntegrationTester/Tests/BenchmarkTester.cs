@@ -6,7 +6,7 @@ using Sels.Core;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Calculation;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Models;
 using Sels.DistributedLocking.Abstractions.Models;
 using Sels.DistributedLocking.Provider;

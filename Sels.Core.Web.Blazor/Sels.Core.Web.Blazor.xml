@@ -266,7 +266,7 @@
         </member>
         <member name="T:Sels.Core.Web.Blazor.Pages.Form.Validation.CoreContextValidator`3">
             <summary>
-            Validator for an edit form that delegates validation to <see cref="T:Sels.Core.Contracts.Validation.IValidator`3"/>.
+            Validator for an edit form that delegates validation to <see cref="T:Sels.Core.Validation.IValidator`3"/>.
             </summary>
             <typeparam name="TEntity">Type of objects to validate</typeparam>
             <typeparam name="TError">Type of validation errors to returns</typeparam>
@@ -297,7 +297,7 @@
         </member>
         <member name="T:Sels.Core.Web.Blazor.Pages.Form.Validation.CoreValidator`2">
             <summary>
-            Validator for an edit form that delegates validation to <see cref="T:Sels.Core.Contracts.Validation.IValidator`2"/>.
+            Validator for an edit form that delegates validation to <see cref="T:Sels.Core.Validation.IValidator`2"/>.
             </summary>
             <typeparam name="TEntity">Type of objects to validate</typeparam>
             <typeparam name="TError">Type of validation errors to returns</typeparam>

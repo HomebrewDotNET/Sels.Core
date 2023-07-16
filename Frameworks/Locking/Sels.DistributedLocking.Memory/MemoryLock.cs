@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Sels.Core;
 using Sels.Core.Extensions.Conversion;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.DistributedLocking.Provider;
 using System;
 using System.Threading;

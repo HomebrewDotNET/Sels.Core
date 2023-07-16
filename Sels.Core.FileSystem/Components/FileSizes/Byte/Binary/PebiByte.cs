@@ -1,6 +1,6 @@
 ﻿using Sels.Core.FileSystem.Templates.FileSizes.Byte;
 
-namespace Sels.Core.Components.FileSizes.Byte.Binary
+namespace Sels.Core.FileSizes.Byte.Binary
 {
     /// <summary>
     /// Displays file size in pebibyte.

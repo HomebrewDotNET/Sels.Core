@@ -2,7 +2,7 @@
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +14,8 @@ using System.Collections;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.Conversion.Templates;
+using Sels.Core.Extensions.Collections;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Conversion.Serializers.KeyValue
 {

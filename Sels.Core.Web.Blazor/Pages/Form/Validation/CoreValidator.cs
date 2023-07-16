@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Sels.Core.Contracts.Validation;
+using Sels.Core.Validation;
 using Microsoft.AspNetCore.Components.Forms;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Web.Blazor.Exceptions;

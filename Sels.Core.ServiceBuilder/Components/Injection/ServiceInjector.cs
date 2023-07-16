@@ -1,7 +1,7 @@
 ﻿using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.ServiceBuilder.Events;
 using System;

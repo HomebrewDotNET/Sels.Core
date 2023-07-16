@@ -16,12 +16,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System;
 using Sels.Core.Extensions.Reflection;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using Sels.SQL.QueryBuilder.MySQL.MariaDb;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Data.MySQL.Templates.Repository.MariaDb
 {

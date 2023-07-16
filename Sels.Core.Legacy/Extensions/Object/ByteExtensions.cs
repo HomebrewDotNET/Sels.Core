@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace Sels.Core.Extensions
+namespace Sels.Core.Extensions.Bytes
 {
     /// <summary>
     /// Contains extension methods for working with <see cref="byte"/>.

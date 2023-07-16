@@ -4,6 +4,7 @@ using Sels.Core.Extensions.Linq;
 using Sels.SQL.QueryBuilder.Builder;
 using System.Text;
 using System;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.SQL.QueryBuilder
 {

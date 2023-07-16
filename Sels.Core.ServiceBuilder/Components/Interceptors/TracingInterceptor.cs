@@ -2,7 +2,7 @@
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Models.Disposables;
 using Sels.Core.ServiceBuilder.Template.Interceptors;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Logging;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;

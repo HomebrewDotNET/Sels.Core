@@ -4,7 +4,7 @@ using Sels.Core.Conversion.Serialization.Filters;
 using Sels.Core.Conversion.Serializers;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using System.Collections.Generic;
 using System.Reflection;
 

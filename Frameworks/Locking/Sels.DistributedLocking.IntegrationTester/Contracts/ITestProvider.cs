@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Sels.Core.Components.Scope;
+using Sels.Core.Scope;
 using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Generic;

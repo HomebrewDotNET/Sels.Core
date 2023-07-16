@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Extensions.Object
+namespace Sels.Core.Extensions.Threading
 {
     /// <summary>
     /// Contains extension methods for the <see cref="Task"/> domain.
@@ -119,6 +119,17 @@ namespace Sels.Core.Extensions.Object
             {
                 source.SetException(ex);
             }
+        }
+
+        /// <summary>
+        /// Creates a task result using <paramref name="result"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the result</typeparam>
+        /// <param name="result">The result to wrap</param>
+        /// <returns>Task wrapped around <paramref name="result"/></returns>
+        public static Task<T> ToTaskResult<T>(this T result)
+        {
+            return Task.FromResult(result);
         }
     }
 }

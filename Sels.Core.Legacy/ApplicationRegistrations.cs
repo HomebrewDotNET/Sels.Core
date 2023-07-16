@@ -2,9 +2,9 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Sels.Core;
-using Sels.Core.Components.Configuration;
-using Sels.Core.Contracts.Configuration;
-using Sels.Core.Contracts.Factory;
+using Sels.Core.Configuration;
+using Sels.Core.Configuration;
+using Sels.Core.Factory;
 using Sels.Core.Extensions;
 using Sels.Core.Factory;
 using Sels.Core.Options;

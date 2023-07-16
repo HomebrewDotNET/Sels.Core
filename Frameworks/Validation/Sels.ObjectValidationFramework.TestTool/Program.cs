@@ -1,5 +1,5 @@
 ﻿using Sels.Core;
-using Sels.Core.Components.Logging;
+using Sels.Core.Logging;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
@@ -8,6 +8,7 @@ using Sels.ObjectValidationFramework.TestTool.ValidationProfiles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.ObjectValidationFramework.TestTool
 {

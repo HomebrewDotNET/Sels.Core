@@ -4,8 +4,9 @@ using System.Resources;
 using Microsoft.Extensions.Logging;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Localization
 {

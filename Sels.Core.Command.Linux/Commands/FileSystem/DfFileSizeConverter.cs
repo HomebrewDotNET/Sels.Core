@@ -1,8 +1,8 @@
 ﻿using Sels.Core.Conversion.Templates;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.Conversion.Extensions;
-using Sels.Core.Components.FileSizes.Byte.Binary;
-using Sels.Core.Components.FileSizes.Byte;
+using Sels.Core.FileSizes.Byte.Binary;
+using Sels.Core.FileSizes.Byte;
 using Sels.Core.FileSystem.Templates.FileSizes;
 
 namespace Sels.Core.Command.Linux.Commands.FileSystem

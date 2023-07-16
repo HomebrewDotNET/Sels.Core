@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using static Sels.Core.Delegates;
 
-namespace Sels.Core.Contracts.Configuration
+namespace Sels.Core.Configuration
 {
     /// <summary>
     /// Service for accessing application configuration.

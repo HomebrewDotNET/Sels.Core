@@ -1,9 +1,10 @@
 ﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Sels.Core.Components.Parameters
+namespace Sels.Core.Parameters
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public abstract class Parameter

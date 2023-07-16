@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Sels.Core.Contracts.Configuration;
+using Sels.Core.Configuration;
 using Sels.Core.Exceptions.Configuration;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Sels.Core.Components.Configuration
+namespace Sels.Core.Configuration
 {
     /// <inheritdoc cref="IConfigurationService"/>
     public class ConfigurationService : IConfigurationService

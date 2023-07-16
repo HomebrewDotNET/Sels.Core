@@ -4,6 +4,7 @@ using Sels.Core.Command.Linux.Attributes;
 using Sels.Core.Command.Linux.Contracts;
 using Sels.Core.Conversion.Converters;
 using Sels.Core.Conversion.Serializers.Table;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Command.Linux.Commands.FileSystem
 {

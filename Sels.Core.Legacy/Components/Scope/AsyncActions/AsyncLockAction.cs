@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Components.Scope.AsyncActions
+namespace Sels.Core.Scope.AsyncActions
 {
     /// <summary>
     /// Scoped action for executing concurrent actions in the scope using a <see cref="SemaphoreSlim"/>. Action manages the locking and releasing of the lock

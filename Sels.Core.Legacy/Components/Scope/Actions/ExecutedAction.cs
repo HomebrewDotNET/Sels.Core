@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sels.Core.Components.Scope.Actions
+namespace Sels.Core.Scope.Actions
 {
     /// <summary>
     /// Sets a bool to false when creating this action and sets it to true when it is disposed.

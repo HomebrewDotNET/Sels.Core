@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Sels.Core.Components.Logging
+namespace Sels.Core.Logging
 {
     /// <summary>
     /// Implements <see cref="TimedLogger"/> using empty methods.

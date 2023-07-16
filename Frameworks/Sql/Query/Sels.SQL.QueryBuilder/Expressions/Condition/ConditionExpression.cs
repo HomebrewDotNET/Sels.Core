@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Sels.Core;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.SQL.QueryBuilder.Expressions.Condition
 {

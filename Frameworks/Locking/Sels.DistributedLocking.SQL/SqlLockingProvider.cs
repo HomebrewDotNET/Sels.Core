@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using Sels.Core;
 using Sels.Core.Data.Contracts.Repository;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ using Sels.Core.Extensions.Reflection;
 using System.Runtime.CompilerServices;
 using Sels.DistributedLocking.Abstractions.Models;
 using Sels.Core.Dispose;
-using Sels.Core.Components.Scope.Actions;
+using Sels.Core.Scope.Actions;
 using Castle.Core.Resource;
 
 namespace Sels.DistributedLocking.SQL

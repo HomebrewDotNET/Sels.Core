@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace System
+namespace Sels.Core.Extensions.Text
 {
     /// <summary>
     /// Contains extension methods for <see cref="string"/>.

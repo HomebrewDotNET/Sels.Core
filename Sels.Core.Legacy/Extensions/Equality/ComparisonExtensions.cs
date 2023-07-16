@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using static Sels.Core.Delegates;
 
-namespace Sels.Core.Extensions
+namespace Sels.Core.Extensions.Equality
 {
     /// <summary>
     /// Contains extension methods for comparing values.
@@ -22,7 +22,7 @@ namespace Sels.Core.Extensions
         /// <returns>True if <paramref name="value"/> is equal to any of <paramref name="values"/>, otherwise false</returns>
         public static bool In<T>(this T value, params T[] values)
         {
-            return value.In((x,y) => x.Equals(y),values);
+            return value.In((x, y) => x.Equals(y), values);
         }
         /// <summary>
         /// Checks if <paramref name="value"/> is in <paramref name="values"/>.

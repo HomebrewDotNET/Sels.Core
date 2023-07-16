@@ -3,7 +3,7 @@ using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections.Generic;
 
-namespace Sels.Core.Components.Properties
+namespace Sels.Core.Properties
 {
     /// <summary>
     /// Value wrapper where the getter and setter are threadsafe.

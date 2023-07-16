@@ -1,4 +1,6 @@
-﻿namespace System.IO
+﻿using System.IO;
+
+namespace Sels.Core.Extensions.IO
 {
     /// <summary>
     /// Contains extension methods for working with <see cref="DriveInfo"/>.

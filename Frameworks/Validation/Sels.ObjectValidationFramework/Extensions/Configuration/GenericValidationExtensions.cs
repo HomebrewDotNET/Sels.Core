@@ -4,6 +4,7 @@ using System;
 using Sels.Core.Extensions.Reflection;
 using System.Linq;
 using Sels.ObjectValidationFramework.Configurators;
+using Sels.Core.Extensions.Text;
 
 // Adjusted so extensions are available when using the ValidationProfile
 namespace Sels.ObjectValidationFramework.Profile

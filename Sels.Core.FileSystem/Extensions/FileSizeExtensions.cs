@@ -1,10 +1,11 @@
-﻿using Sels.Core.Components.FileSizes.Byte;
+﻿using Sels.Core.FileSizes.Byte;
 using Sels.Core.Extensions;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Security;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.IO;
 
 namespace Sels.Core.FileSystem.Extensions.FileSizes
 {

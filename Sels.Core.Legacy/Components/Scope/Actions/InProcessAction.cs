@@ -1,7 +1,7 @@
 ﻿using Sels.Core.Extensions;
 using System;
 
-namespace Sels.Core.Components.Scope.Actions
+namespace Sels.Core.Scope.Actions
 {
     /// <summary>
     /// Sets a bool to true when creating this action and sets it to false when it is disposed.

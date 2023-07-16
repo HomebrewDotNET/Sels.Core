@@ -1,8 +1,9 @@
-﻿using Sels.Core.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
 using System;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Sels.Core.Extensions.DependencyInjection
 {
     /// <summary>
     /// Contains extension methods for <see cref="IServiceProvider"/>

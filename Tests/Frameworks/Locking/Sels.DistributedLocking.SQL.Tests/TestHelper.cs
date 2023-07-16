@@ -17,7 +17,8 @@ namespace Sels.DistributedLocking.Memory.Test
             var mock = new Mock<IOptionsMonitor<SqlLockingProviderOptions>>();
             var instance = new SqlLockingProviderOptions()
             {
-                MaintenanceInterval = TimeSpan.Zero
+                MaintenanceInterval = TimeSpan.FromMinutes(1),
+                IsCleanupEnabled = false
             };
             setter?.Invoke(instance);
             mock.Setup(x => x.CurrentValue).Returns(instance);

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using Sels.Core;
 using Sels.Core.Extensions;
-using Sels.Core.Extensions.Logging.Advanced;
+using Sels.Core.Extensions.Logging;
 using Sels.DistributedLocking.Provider;
 using System;
 using System.Collections.Generic;
@@ -11,12 +11,16 @@ using System.Threading.Tasks;
 using System.Linq;
 using Sels.DistributedLocking.Abstractions.Extensions;
 using Sels.Core.Extensions.Linq;
-using Sels.Core.Extensions.Object;
+using Sels.Core.Extensions;
 using Newtonsoft.Json.Linq;
 using Sels.Core.Extensions.Conversion;
 using Castle.Core.Resource;
 using Sels.Core.Dispose;
-using Sels.Core.Components.Scope.Actions;
+using Sels.Core.Scope.Actions;
+using Sels.Core.Extensions.Equality;
+using Sels.Core.Extensions.Text;
+using Sels.Core.Extensions.Collections;
+using Sels.Core.Extensions.Threading;
 
 namespace Sels.DistributedLocking.SQL
 {

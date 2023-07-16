@@ -1,4 +1,4 @@
-﻿namespace Sels.Core.Contracts.Mapping
+﻿namespace Sels.Core.Mapping
 {
     /// <summary>
     /// Generic mapper that can map objects to objects of another type.
