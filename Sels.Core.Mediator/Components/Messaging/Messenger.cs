@@ -1,5 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Sels.Core.Extensions.Logging;
+using System.Linq;
 
 namespace Sels.Core.Mediator.Messaging
 {
@@ -7,7 +15,7 @@ namespace Sels.Core.Mediator.Messaging
     /// Messanger that relies on DI to get the subscribers to send to.
     /// </summary>
     /// <typeparam name="T">The type of the message that can be sent</typeparam>
-    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+    [Obsolete("Use the new Sels.Core.Mediator.Event components")]
     internal class Messenger<T> : IMessanger<T>
     {
         // Fields
@@ -79,7 +87,7 @@ namespace Sels.Core.Mediator.Messaging
     /// <summary>
     /// Messanger that relies on DI to get the subscribers to send to.
     /// </summary>
-    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+    [Obsolete("Use the new Sels.Core.Mediator.Event components")]
     internal class Messenger : IMessanger
     {
         // Fields

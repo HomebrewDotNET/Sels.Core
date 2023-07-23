@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging;
 using Sels.Core.Mediator.Event;
 using Sels.Core.Models.Disposables;
@@ -7,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Sels.Core.Mediator
 {
@@ -15,244 +20,160 @@ namespace Sels.Core.Mediator
     public class Notifier : INotifier
     {
         // Fields
-        private readonly ILogger? _logger;
+        private readonly ILogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly IEventSubscriber _eventSubscriber;
         private readonly IServiceProvider _serviceProvider;
 
         /// <inheritdoc cref="Notifier"/>
         /// <param name="eventSubscriber">Subscriber used to get global listeners</param>
         /// <param name="serviceProvider">Provider used to resolve typed event and request subscribers</param>
+        /// <param name="loggerFactory">Optional factory to create loggers for child instances</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public Notifier(IEventSubscriber eventSubscriber, IServiceProvider serviceProvider, ILogger<Notifier>? logger = null)
+        public Notifier(IEventSubscriber eventSubscriber, IServiceProvider serviceProvider, ILoggerFactory loggerFactory = null, ILogger<Notifier> logger = null)
         {
-            _eventSubscriber = Guard.IsNotNull(eventSubscriber);
-            _serviceProvider = Guard.IsNotNull(serviceProvider);
+            _eventSubscriber = eventSubscriber.ValidateArgument(nameof(eventSubscriber));
+            _serviceProvider = serviceProvider.ValidateArgument(nameof(eventSubscriber));
+            _loggerFactory = loggerFactory;
             _logger = logger;
         }
-
+        
         /// <inheritdoc/>
-        public async Task<int> RaiseEventAsync<TEvent>(object sender, TEvent eventData, CancellationToken token = default, EventOptions eventOptions = EventOptions.None)
+        public async Task<int> RaiseEventAsync<TEvent>(object sender, TEvent @event, Action<INotifierEventOptions<TEvent>> eventOptions, CancellationToken token = default)
         {
             using var methodLogger = _logger.TraceMethod(this);
-            Guard.IsNotNull(eventData);
-            Guard.IsNotNull(sender);
+            sender.ValidateArgument(nameof(sender));
+            eventOptions.ValidateArgument(nameof(eventOptions));
+            @event.ValidateArgument(nameof(@event));
 
-            // Launch current method as fire and forget task if enabled
-            if (eventOptions.HasFlag(EventOptions.FireAndForget))
+            _logger.Log($"Raising event <{@event}> created by <{sender}>");
+            await using (var scope = _serviceProvider.CreateAsyncScope())
             {
-                _logger.Debug($"Event <{eventData}> was raised with fire and forget flag. Starting task");
-                _ = Task.Run(async () =>
+                var provider = scope.ServiceProvider;
+                var orchestrator = new EventOrchestrator(this, provider, _loggerFactory?.CreateLogger<EventOrchestrator>());
+                var options = new NotifierEventOptions<TEvent>(this, orchestrator, sender, @event);
+                // Enlist main listeners first
+                Enlist(orchestrator, sender, @event);
+                // Configure options
+                eventOptions(options);
+
+                // Run fire and forget
+                if (options.Options.HasFlag(EventOptions.FireAndForget))
                 {
-                    await RaiseEventAsync(sender, eventData, token, eventOptions & ~EventOptions.FireAndForget).ConfigureAwait(false);
-                }).ConfigureAwait(false);
-                return 0;
-            }
-
-            // Setup
-            bool ignoreException = eventOptions.HasFlag(EventOptions.IgnoreExceptions);
-            bool disableTransaction = eventOptions.HasFlag(EventOptions.NoTransaction);
-            var eventLock = new object();
-            var transactionSource = new TaskCompletionSource();
-            var runningListeners = new List<EventContext>();
-            int totalListeners = 0;
-            Action onReadyAction = null;
-            IDisposable tokenSubscription = NullDisposer.Instance;
-            if (disableTransaction)
-            {
-                _logger.Debug($"Transaction disabled for event <{eventData}>");
-                transactionSource.SetResult();
-                // No need to set transaction state as it's already completed
-                onReadyAction = new Action(() => { });
-            }
-            else
-            {
-                // Subscribe to token cancellation so we can abort the pending transaction
-                tokenSubscription = token.Register(() => transactionSource.SetException(new OperationCanceledException("Event transaction was cancelled")));
-                // Commit transaction when all listeners are ready
-                onReadyAction = new Action(() =>
-                {
-                    lock (eventLock)
-                    {
-                        if (transactionSource.Task.IsCompleted) return;
-
-                        var readyHandlers = runningListeners.Count(x => x.Ready);
-                        if (readyHandlers == totalListeners)
-                        {
-                            _logger.Debug($"All <{readyHandlers}> event handlers are ready. Commiting transaction for event <{eventData}>");
-                            transactionSource.SetResult();
-                        }
-                        else
-                        {
-                            _logger.Trace($"Only <{readyHandlers}/{totalListeners}> are ready. Waiting to commit transaction for event <{eventData}>");
-                        }
-                    }
-                });
-            }
-
-            // Raise event
-            using (tokenSubscription)
-            {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var provider = scope.ServiceProvider;
-                    // Get listeners
-                    var runtimeGlobalListeners = _eventSubscriber.GetAllListeners();
-                    _logger.Debug($"Got <{runtimeGlobalListeners?.Length ?? 0}> listeners subscribed at runtime to all events");
-                    var runtimeListeners = provider.GetRequiredService<IEventSubscriber<TEvent>>().GetAllListeners();
-                    _logger.Debug($"Got <{runtimeListeners?.Length ?? 0}> listeners subscribed at runtime to event of type <{typeof(TEvent)}>");
-                    var injectedGlobalListeners = provider.GetServices<IEventListener>()?.ToArray();
-                    _logger.Debug($"Got <{injectedGlobalListeners?.Length ?? 0}> injected listeners subscribed to all events");
-                    var injectedListeners = provider.GetServices<IEventListener<TEvent>>()?.ToArray();
-                    _logger.Debug($"Got <{injectedListeners?.Length ?? 0}> injected listeners subscribed to event of type <{typeof(TEvent)}>");
-                    var allListeners = Helper.Collection.EnumerateAll<object>(runtimeGlobalListeners, runtimeListeners, injectedGlobalListeners, injectedListeners).ToArray();
-                    totalListeners = allListeners.Length;
-                    if (totalListeners == 0)
-                    {
-                        _logger.Log($"No subscribers listening to event of type <{typeof(TEvent)}>");
-                        return 0;
-                    }
-                    _logger.Log($"Raising event <{eventData}> to <{totalListeners}> subscribers");
-
-                    // Start typed listeners
-                    foreach (var listener in Helper.Collection.EnumerateAll(runtimeListeners, injectedListeners))
-                    {
-                        var context = new EventContext()
-                        {
-                            Sender = sender,
-                            OtherSubscribers = allListeners.Where(x => x != listener).ToArray(),
-                            OnReady = onReadyAction,
-                            CommitTask = transactionSource.Task,
-                            Listener = listener
-                        };
-
-                        _logger.Debug($"Raising event to <{listener}>");
-                        runningListeners.Add(context);
-                        try
-                        {
-                            context.ExecutionTask = listener.HandleAsync(context, eventData, token);
-                        }
-                        catch (Exception ex)
-                        {
-                            context.ExecutionException = ex;
-                        }
-                    }
-
-                    // Start global listeners
-                    foreach (var listener in Helper.Collection.EnumerateAll(runtimeGlobalListeners, injectedGlobalListeners))
-                    {
-                        var context = new EventContext()
-                        {
-                            Sender = sender,
-                            OtherSubscribers = allListeners.Where(x => x != listener).ToArray(),
-                            OnReady = onReadyAction,
-                            CommitTask = transactionSource.Task,
-                            Listener = listener
-                        };
-
-                        _logger.Debug($"Raising event to <{listener}>");
-                        runningListeners.Add(context);
-                        try
-                        {
-                            context.ExecutionTask = listener.HandleAsync(context, eventData, token);
-                        }
-                        catch (Exception ex)
-                        {
-                            context.ExecutionException = ex;
-                        }
-                    }
-
-                    // Wait for all listeners to either finish executing or waiting for the transaction task to commit
-                    _logger.Log($"Waiting for <{totalListeners}> to finish handling event <{eventData}>");
-                    foreach (var executingListener in runningListeners)
-                    {
-                        try
-                        {
-                            await executingListener.ExecutionTask.ConfigureAwait(false);
-                        }
-                        catch (Exception ex)
-                        {
-                            executingListener.ExecutionException = ex;
-                        }
-                    }
-
-                    // Handle process exceptions
-                    var failedListeners = runningListeners.Where(x => x.ExecutionException != null);
-                    if (failedListeners.HasValue())
-                    {
-                        foreach (var listener in failedListeners)
-                        {
-                            _logger.Log($"Listener <{listener}> failed to handle event <{eventData}>", listener.ExecutionException);
-                        }
-
-                        if (!ignoreException) throw new AggregateException($"Some listeners failed to handle event <{eventData}>", failedListeners.Select(x => x.ExecutionException));
-                    }
-
-                    return totalListeners;
+                    // TODO: Use task manager to gracefully wait for tasks to complete when IoC containers gets disposed.
+                    _ = Task.Run(async () => await RaiseEventAsync(orchestrator, sender, @event, options, token).ConfigureAwait(false));
+                    return 0;
                 }
+
+                // Execute
+                return await RaiseEventAsync(orchestrator, sender, @event, options, token).ConfigureAwait(false);
             }
         }
 
-        private class EventContext : IEventListenerContext
+        private async Task<int> RaiseEventAsync<TEvent>(EventOrchestrator orchestrator, object sender, TEvent @event, NotifierEventOptions<TEvent> eventOptions, CancellationToken token)
+        {
+            using var methodLogger = _logger.TraceMethod(this);
+            sender.ValidateArgument(nameof(sender));
+            eventOptions.ValidateArgument(nameof(eventOptions));
+            @event.ValidateArgument(nameof(@event));
+
+            var ignoreExceptions = eventOptions.Options.HasFlag(EventOptions.IgnoreExceptions);
+            var allowParallelExecution = eventOptions.Options.HasFlag(EventOptions.AllowParallelExecution);
+
+            try
+            {
+                _logger.Log($"Executing event transaction for event <{@event}> created by <{sender}> with any enlisted event listeners");
+                return await orchestrator.ExecuteAsync(allowParallelExecution, token).ConfigureAwait(false);
+            }
+            catch(Exception ex)
+            {
+                _logger.Log($"Something went wrong while raising event <{@event}> created by <{sender}>", ex);
+
+                if (!ignoreExceptions) throw;
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Enlists all event listeners to <paramref name="orchestrator"/> if there are any listening for events of type <typeparamref name="TEvent"/>.
+        /// </summary>
+        /// <typeparam name="TEvent">The type of event to enlist</typeparam>
+        /// <param name="orchestrator">The orchestrator to add the listeners to</param>
+        /// <param name="sender">The object that raised <paramref name="event"/></param>
+        /// <param name="event">The event that was raised</param>
+        /// <returns>Task that will complete when all listeners have been enlisted to <paramref name="orchestrator"/></returns>
+        public void Enlist<TEvent>(EventOrchestrator orchestrator, object sender, TEvent @event)
+        {
+            using var methodLogger = _logger.TraceMethod(this);
+            orchestrator.ValidateArgument(nameof(orchestrator));
+            sender.ValidateArgument(nameof(sender));
+            @event.ValidateArgument(nameof(@event));
+
+            var provider = orchestrator.ServiceProvider;
+            // Get listeners
+            var runtimeGlobalListeners = _eventSubscriber.GetAllListeners(provider);
+            _logger.Debug($"Got <{runtimeGlobalListeners?.Length ?? 0}> listeners subscribed at runtime to all events");
+            runtimeGlobalListeners.Execute(x => orchestrator.Enlist(sender, x, @event));
+
+            var runtimeListeners = provider.GetRequiredService<IEventSubscriber<TEvent>>().GetAllListeners();
+            _logger.Debug($"Got <{runtimeListeners?.Length ?? 0}> listeners subscribed at runtime to event of type <{typeof(TEvent)}>");
+            runtimeListeners.Execute(x => orchestrator.Enlist(sender, x, @event));
+
+            var injectedGlobalListeners = provider.GetServices<IEventListener>()?.ToArray();
+            _logger.Debug($"Got <{injectedGlobalListeners?.Length ?? 0}> injected listeners subscribed to all events");
+            injectedGlobalListeners.Execute(x => orchestrator.Enlist(sender, x, @event));
+
+            var injectedListeners = provider.GetServices<IEventListener<TEvent>>()?.ToArray();
+            _logger.Debug($"Got <{injectedListeners?.Length ?? 0}> injected listeners subscribed to event of type <{typeof(TEvent)}>");
+            injectedListeners.Execute(x => orchestrator.Enlist(sender, x, @event));
+        }
+
+        /// <inheritdoc cref="INotifierEventOptions{TEvent}"/>
+        /// <typeparam name="TEvent"></typeparam>
+        private class NotifierEventOptions<TEvent> : INotifierEventOptions<TEvent>
         {
             // Fields
-            private Task _executionTask;
-            private bool _ready;
+            private readonly Notifier _parent;
+            private readonly EventOrchestrator _orchestrator;
+            private readonly object _sender;
+            private readonly TEvent _event;
 
             // Properties
-            /// <inheritdoc/>
-            public object Sender { get; init; }
-            /// <inheritdoc/>
-            public object[] OtherSubscribers { get; init; }
+            /// <summary>
+            /// The configured options.
+            /// </summary>
+            public EventOptions Options { get; private set; }
 
-            /// <summary>
-            /// Task containing the execution state of the listener.
-            /// </summary>
-            public Task ExecutionTask
+            public NotifierEventOptions(Notifier parent, EventOrchestrator eventOrchestrator, object sender, TEvent @event)
             {
-                get => _executionTask;
-                set
-                {
-                    _executionTask = value;
-                    _executionTask.ContinueWith(x => Ready = true);
-                }
+                _parent = parent.ValidateArgument(nameof(parent));
+                _orchestrator = eventOrchestrator.ValidateArgument(nameof(eventOrchestrator));
+                _sender = sender.ValidateArgument(nameof(sender));
+                _event = @event.ValidateArgument(nameof(@event));
             }
-            /// <summary>
-            /// Action raised when the listener either finised execution or is ready to commit.
-            /// </summary>
-            public Action OnReady { get; init; }
-            /// <summary>
-            /// The task returned to the listener when they are waiting to be commited.
-            /// </summary>
-            public Task CommitTask { get; init; }
-            /// <summary>
-            /// Indicates that the current listener is ready
-            /// </summary>
-            public bool Ready
-            {
-                get => _ready;
-                set
-                {
-                    _ready = value;
-                    if (_ready)
-                    {
-                        OnReady?.Invoke();
-                    }
-                }
-            }
-            /// <summary>
-            /// The listener that the current context is attached to.
-            /// </summary>
-            public object Listener { get; init; }
-            /// <summary>
-            /// Any exception throw by executing the listener.
-            /// </summary>
-            public Exception ExecutionException { get; set; }
 
             /// <inheritdoc/>
-            public Task WaitForCommitAsync()
+            public INotifierEventOptions<TEvent> WithOptions(EventOptions options)
             {
-                Ready = true;
-                return CommitTask;
+                Options = options;
+                return this;
+            }
+            /// <inheritdoc/>
+            public INotifierEventOptions<TEvent> AlsoRaiseAs<T>()
+            {
+                if (!(_event is T)) throw new ArgumentException($"Event <{_event}> is not assignable to type <{typeof(T)}>");
+
+                _parent.Enlist(_orchestrator, _sender, _event.CastTo<T>());
+
+                return this;
+            }
+            /// <inheritdoc/>
+            public INotifierEventOptions<TEvent> Enlist<T>(T @event)
+            {
+                @event.ValidateArgument(nameof(@event));
+                _parent.Enlist(_orchestrator, _sender, @event);
+
+                return this;
             }
         }
     }

@@ -31,10 +31,9 @@ namespace Sels.Core.TestTool
     {
         static async Task Main(string[] args)
         {
-            await Helper.Console.RunAsync(() =>
+            await Helper.Console.RunAsync(async () =>
             {
-                TestMySqlQueryProvider();
-                return Task.CompletedTask;
+                await TestNotifier();
             });
         }
 
@@ -135,8 +134,7 @@ namespace Sels.Core.TestTool
             var eventSubscriber = provider.GetRequiredService<IEventSubscriber>();
             var notifier = provider.GetRequiredService<INotifier>();
 
-            var handler = new object();
-            eventSubscriber.Subscribe<string>(handler, (c, e, t) =>
+            var subscription = eventSubscriber.Subscribe<string>((c, e, t) =>
             {
                 logger.Log($"Received message <{e}>");
                 return Task.CompletedTask;
@@ -144,10 +142,9 @@ namespace Sels.Core.TestTool
 
             var received = await notifier.RaiseEventAsync(new object(), "Hello from program");
             logger.Log($"Message received by <{received}> subscribers");
-            eventSubscriber.Unsubscribe<string>(handler);
+            subscription.Dispose();
             received = await notifier.RaiseEventAsync(new object(), "Second message from program");
             logger.Log($"Message received by <{received}> subscribers");
-            eventSubscriber.Unsubscribe(handler);
         }
 
         internal static void TestEnvironmentParser()

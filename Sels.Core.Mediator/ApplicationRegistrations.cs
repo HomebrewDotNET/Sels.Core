@@ -1,6 +1,11 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sels.Core;
+using Sels.Core.Extensions;
 using Sels.Core.Extensions.DependencyInjection;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Mediator;
@@ -23,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The service collection to add the services to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+        [Obsolete("Use the new Sels.Core.Mediator.Event components")]
         public static IServiceCollection AddMessanger(this IServiceCollection services)
         {
             services.ValidateArgument(nameof(services));
@@ -44,7 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="asForwardedService">If the instance needs to be resolved from the DI container instead. Set to true of <typeparamref name="TSubscriber"/> is already registered in the DI container</param>
         /// <param name="serviceScope">The scope for the registered service</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+        [Obsolete("Use the new Sels.Core.Mediator.Event components")]
         public static IServiceCollection AddSubscriber<TMessage, TSubscriber>(this IServiceCollection services, bool asForwardedService = false, ServiceLifetime serviceScope = ServiceLifetime.Scoped) where TSubscriber : class, ISubscriber<TMessage>
         {
             services.ValidateArgument(nameof(services));
@@ -65,7 +70,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The service collection to add the services to</param>
         /// <param name="action">Delegate used to handle messages of type <typeparamref name="TMessage"/> using an instance of <typeparamref name="THandler"/></param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+        [Obsolete("Use the new Sels.Core.Mediator.Event components")]
         public static IServiceCollection AddSubscriber<TMessage, THandler>(this IServiceCollection services, AsyncAction<THandler, object, TMessage, CancellationToken> action) where THandler : notnull
         {
             services.ValidateArgument(nameof(services));
@@ -84,7 +89,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="handlerBuilder">Delegate for configuring the handler</param>
         /// <param name="action">Delegate used to handle messages of type <typeparamref name="TMessage"/> using an instance of <typeparamref name="THandler"/></param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+        [Obsolete("Use the new Sels.Core.Mediator.Event components")]
         public static IServiceCollection AddSubscriber<TMessage, THandler>(this IServiceCollection services, Func<IServiceBuilder<THandler>, IServiceBuilder> handlerBuilder, AsyncAction<THandler, object, TMessage, CancellationToken> action) where THandler : class
         {
             services.ValidateArgument(nameof(services));
@@ -104,7 +109,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TSubscriber">The type of the service to receive the messages with</typeparam>
         /// <param name="services">The service collection to add the services to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+        [Obsolete("Use the new Sels.Core.Mediator.Event components")]
         public static IServiceCollection AddSubscriber<TSubscriber>(this IServiceCollection services) where TSubscriber : class, ISubscriber
         {
             services.ValidateArgument(nameof(services));
@@ -120,7 +125,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The service collection to add the services to</param>
         /// <param name="action">Delegate used to handle messages of all types using an instance of <typeparamref name="THandler"/></param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+        [Obsolete("Use the new Sels.Core.Mediator.Event components")]
         public static IServiceCollection AddSubscriber<THandler>(this IServiceCollection services, AsyncAction<THandler, object, object, CancellationToken> action) where THandler : notnull
         {
             services.ValidateArgument(nameof(services));
@@ -138,7 +143,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="handlerBuilder">Delegate for configuring the handler</param>
         /// <param name="action">Delegate used to handle messages of all types using an instance of <typeparamref name="THandler"/></param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+        [Obsolete("Use the new Sels.Core.Mediator.Event components")]
         public static IServiceCollection AddSubscriber<THandler>(this IServiceCollection services, Func<IServiceBuilder<THandler>, IServiceBuilder> handlerBuilder, AsyncAction<THandler, object, object, CancellationToken> action) where THandler : class
         {
             services.ValidateArgument(nameof(services));
@@ -158,7 +163,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The service collection to add the services to</param>
         /// <param name="assemblies">The assemblies to scan</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+        [Obsolete("Use the new Sels.Core.Mediator.Event components")]
         public static IServiceCollection ScanForSubscribersIn(this IServiceCollection services, params Assembly[] assemblies)
         {
             services.ValidateArgument(nameof(services));
@@ -173,7 +178,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="condition">Predicate that dictates if the type can be added. First arg is the implementation type and the second arg is the interface type</param>
         /// <param name="assemblies">The assemblies to scan</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+        [Obsolete("Use the new Sels.Core.Mediator.Event components")]
         public static IServiceCollection ScanForSubscribersIn(this IServiceCollection services, Condition<Type, Type> condition, params Assembly[] assemblies)
         {
             services.ValidateArgument(nameof(services));
@@ -207,7 +212,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns><paramref name="services"/> for method chaining</returns>
         public static IServiceCollection AddNotifier(this IServiceCollection services)
         {
-            Guard.IsNotNull(services);
+            services.ValidateArgument(nameof(services));
 
             services.TryAddScoped<INotifier, Notifier>();
             services.TryAddSingleton<IEventSubscriber, EventSubscriptionManager>();
@@ -224,10 +229,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <param name="serviceBuilder">Optional delegate for configuring the service registration</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddEventListener<TListener, TEvent>(this IServiceCollection services, Action<IServiceBuilder<IEventListener<TEvent>, TListener>>? serviceBuilder = null)
+        public static IServiceCollection AddEventListener<TListener, TEvent>(this IServiceCollection services, Action<IServiceBuilder<IEventListener<TEvent>, TListener>> serviceBuilder = null)
             where TListener : class, IEventListener<TEvent>
         {
-            Guard.IsNotNull(services);
+            services.ValidateArgument(nameof(services));
             services.AddNotifier();
 
             var builder = services.New<IEventListener<TEvent>, TListener>();
@@ -240,17 +245,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="TEvent">The type of the event to respond to</typeparam>
         /// <param name="handler">The delegate that will be called to react to raised events</param>
+        /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddEventListener<TEvent>(this IServiceCollection services, AsyncAction<IEventListenerContext, TEvent, CancellationToken> handler)
+        public static IServiceCollection AddEventListener<TEvent>(this IServiceCollection services, AsyncAction<IEventListenerContext, TEvent, CancellationToken> handler, uint? priority = null)
         {
-            Guard.IsNotNull(services);
-            Guard.IsNotNull(handler);
+            services.ValidateArgument(nameof(services));
+            handler.ValidateArgument(nameof(handler));
 
             return services.AddEventListener<DelegateEventListener<TEvent>, TEvent>(x => x.AsSingleton()
                                                                                           .WithBehaviour(RegisterBehaviour.Default)
                                                                                           .Trace(x => x.Duration.OfAll)
-                                                                                          .ConstructWith(p => new DelegateEventListener<TEvent>(services, handler))
+                                                                                          .ConstructWith(p => new DelegateEventListener<TEvent>(handler) { Priority = priority })
                                                                                    );
         }
 
@@ -259,17 +265,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="TEvent">The type of the event to respond to</typeparam>
         /// <param name="handler">The delegate that will be called to react to raised events</param>
+        /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddEventListener<TEvent>(this IServiceCollection services, AsyncAction<IServiceProvider, IEventListenerContext, TEvent, CancellationToken> handler)
+        public static IServiceCollection AddEventListener<TEvent>(this IServiceCollection services, AsyncAction<IServiceProvider, IEventListenerContext, TEvent, CancellationToken> handler, uint? priority = null)
         {
-            Guard.IsNotNull(services);
-            Guard.IsNotNull(handler);
+            services.ValidateArgument(nameof(services));
+            handler.ValidateArgument(nameof(handler));
 
             return services.AddEventListener<DelegateEventListener<TEvent>, TEvent>(x => x.AsSingleton()
                                                                                           .WithBehaviour(RegisterBehaviour.Default)
                                                                                           .Trace(x => x.Duration.OfAll)
-                                                                                          .ConstructWith(p => new DelegateEventListener<TEvent>(services, (c, e, t) => handler(p, c, e, t)))
+                                                                                          .ConstructWith(p => new DelegateEventListener<TEvent>((c, e, t) => handler(p, c, e, t)) { Priority = priority })
                                                                                    );
         }
 
@@ -280,10 +287,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <param name="serviceBuilder">Optional delegate for configuring the service registration</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddEventListener<TListener>(this IServiceCollection services, Action<IServiceBuilder<IEventListener, TListener>>? serviceBuilder = null)
+        public static IServiceCollection AddEventListener<TListener>(this IServiceCollection services, Action<IServiceBuilder<IEventListener, TListener>> serviceBuilder = null)
             where TListener : class, IEventListener
         {
-            Guard.IsNotNull(services);
+            services.ValidateArgument(nameof(services));
             services.AddNotifier();
 
             var builder = services.New<IEventListener, TListener>();
@@ -295,35 +302,66 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds a event listener that can react to all events using <paramref name="handler"/>.
         /// </summary>
         /// <param name="handler">The delegate that will be called to react to raised events</param>
+        /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddEventListener(this IServiceCollection services, AsyncAction<IEventListenerContext, object, CancellationToken> handler)
+        public static IServiceCollection AddEventListener(this IServiceCollection services, AsyncAction<IEventListenerContext, object, CancellationToken> handler, uint? priority = null)
         {
-            Guard.IsNotNull(services);
-            Guard.IsNotNull(handler);
+            services.ValidateArgument(nameof(services));
+            handler.ValidateArgument(nameof(handler));
 
             return services.AddEventListener<DelegateEventListener>(x => x.AsSingleton()
                                                                           .WithBehaviour(RegisterBehaviour.Default)
                                                                           .Trace(x => x.Duration.OfAll)
-                                                                          .ConstructWith(p => new DelegateEventListener(services, handler))
+                                                                          .ConstructWith(p => new DelegateEventListener(handler) { Priority = priority })
                                                                    );
+        }
+
+        /// <summary>
+        /// Adds <paramref name="eventListener"/> as a singleton.
+        /// </summary>
+        /// <param name="eventListener">The event listener to add to the container</param>
+        /// <param name="services">The collection the service descriptions will be added to</param>
+        /// <returns><paramref name="services"/> for method chaining</returns>
+        public static IServiceCollection AddEventListener(this IServiceCollection services, IEventListener eventListener)
+        {
+            services.ValidateArgument(nameof(services));
+            eventListener.ValidateArgument(nameof(eventListener));
+
+            return services.AddSingleton(eventListener);
+        }
+
+        /// <summary>
+        /// Adds <paramref name="eventListener"/> as a singleton.
+        /// </summary>
+        /// <typeparam name="TEvent">The type of event to listen to</typeparam>
+        /// <param name="eventListener">The event listener to add to the container</param>
+        /// <param name="services">The collection the service descriptions will be added to</param>
+        /// <returns><paramref name="services"/> for method chaining</returns>
+        public static IServiceCollection AddEventListener<TEvent>(this IServiceCollection services, IEventListener<TEvent> eventListener)
+        {
+            services.ValidateArgument(nameof(services));
+            eventListener.ValidateArgument(nameof(eventListener));
+
+            return services.AddSingleton(eventListener);
         }
 
         /// <summary>
         /// Adds a event listener that can react to all events using <paramref name="handler"/>.
         /// </summary>
         /// <param name="handler">The delegate that will be called to react to raised events</param>
+        /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddEventListener(this IServiceCollection services, AsyncAction<IServiceProvider, IEventListenerContext, object, CancellationToken> handler)
+        public static IServiceCollection AddEventListener(this IServiceCollection services, AsyncAction<IServiceProvider, IEventListenerContext, object, CancellationToken> handler, uint? priority = null)
         {
-            Guard.IsNotNull(services);
-            Guard.IsNotNull(handler);
+            services.ValidateArgument(nameof(services));
+            handler.ValidateArgument(nameof(handler));
 
             return services.AddEventListener<DelegateEventListener>(x => x.AsSingleton()
                                                                           .WithBehaviour(RegisterBehaviour.Default)
                                                                           .Trace(x => x.Duration.OfAll)
-                                                                          .ConstructWith(p => new DelegateEventListener(services, (c, e, t) => handler(p, c, e, t)))
+                                                                          .ConstructWith(p => new DelegateEventListener((c, e, t) => handler(p, c, e, t)) { Priority = priority })
                                                                    );
         }
 
@@ -335,8 +373,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns><paramref name="services"/> for method chaining</returns>
         public static IServiceCollection ScanForEventListenersIn(this IServiceCollection services, params Assembly[] assemblies)
         {
-            Guard.IsNotNull(services);
-            Guard.IsNotNull(assemblies);
+            services.ValidateArgument(nameof(services));
+            assemblies.ValidateArgument(nameof(assemblies));
 
             return services.ScanForListenersIn(x => true, x => ServiceLifetime.Scoped, assemblies);
         }
@@ -348,10 +386,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="scopeSelector">Optional func that select the lifetime for the implementation</param>
         /// <param name="assemblies">The assemblies to scan</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection ScanForListenersIn(this IServiceCollection services, Condition<Type>? condition, Func<Type, ServiceLifetime>? scopeSelector, params Assembly[] assemblies)
+        public static IServiceCollection ScanForListenersIn(this IServiceCollection services, Condition<Type> condition, Func<Type, ServiceLifetime> scopeSelector, params Assembly[] assemblies)
         {
-            Guard.IsNotNull(services);
-            Guard.IsNotNull(assemblies);
+            services.ValidateArgument(nameof(services));
+            assemblies.ValidateArgument(nameof(assemblies));
 
             foreach (var type in assemblies.SelectMany(x => x.ExportedTypes).Where(x => x.IsClass && !x.IsAbstract))
             {

@@ -1,10 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Sels.Core.Extensions.Logging;
 
 namespace Sels.Core.Mediator.Event
 {
@@ -14,21 +18,21 @@ namespace Sels.Core.Mediator.Event
     public class EventSubscriptionManager : IEventSubscriber
     {
         // Fields
-        private readonly ILogger? _logger;
+        private readonly ILogger _logger;
         private readonly SynchronizedCollection<IEventListener> _listeners = new SynchronizedCollection<IEventListener>();
         private readonly IServiceProvider _serviceProvider;
 
         /// <inheritdoc cref="EventSubscriptionManager"/>
         /// <param name="serviceProvider">Service provider used to resolve typed <see cref="IEventSubscriber{TEvent}"/></param>
         /// <param name="logger">Optional logger for tracing</param>
-        public EventSubscriptionManager(IServiceProvider serviceProvider, ILogger<EventSubscriptionManager>? logger = null)
+        public EventSubscriptionManager(IServiceProvider serviceProvider, ILogger<EventSubscriptionManager> logger = null)
         {
-            _serviceProvider = Guard.IsNotNull(serviceProvider);
+            _serviceProvider = serviceProvider.ValidateArgument(nameof(serviceProvider));
             _logger = logger;
         }
 
         /// <inheritdoc/>
-        public IEventListener[] GetAllListeners()
+        public IEventListener[] GetAllListeners(IServiceProvider serviceProvider)
         {
             using var methodLogger = _logger.TraceMethod(this);
 
@@ -38,105 +42,61 @@ namespace Sels.Core.Mediator.Event
             }
         }
         /// <inheritdoc/>
-        public IEventListener<TEvent>[] GetAllListeners<TEvent>()
+        public IEventListener<TEvent>[] GetAllListeners<TEvent>(IServiceProvider serviceProvider)
         {
             using var methodLogger = _logger.TraceMethod(this);
+            serviceProvider.ValidateArgument(nameof(serviceProvider));
 
-            using(var scope = _serviceProvider.CreateScope())
-            {
-                return scope.ServiceProvider.GetRequiredService<IEventSubscriber<TEvent>>().GetAllListeners();
-            }
+            return serviceProvider.GetRequiredService<IEventSubscriber<TEvent>>().GetAllListeners();
         }
         /// <inheritdoc/>
-        public void Subscribe<TEvent>(IEventListener<TEvent> listener)
+        public EventSubscription Subscribe<TEvent>(IEventListener<TEvent> listener)
         {
             using var methodLogger = _logger.TraceMethod(this);
+            listener.ValidateArgument(nameof(listener));
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                scope.ServiceProvider.GetRequiredService<IEventSubscriber<TEvent>>().Subscribe(listener);
+                return scope.ServiceProvider.GetRequiredService<IEventSubscriber<TEvent>>().Subscribe(listener);
             }
         }
         /// <inheritdoc/>
-        public void Subscribe<TEvent>(object listener, Delegates.Async.AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction)
+        public EventSubscription Subscribe<TEvent>(Delegates.Async.AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction, uint? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
+            subscriberAction.ValidateArgument(nameof(subscriberAction));
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                scope.ServiceProvider.GetRequiredService<IEventSubscriber<TEvent>>().Subscribe(listener, subscriberAction);
-            }
-        }
-        /// <inheritdoc/>
-        public void Unsubscribe<TEvent>(IEventListener<TEvent> listener)
-        {
-            using var methodLogger = _logger.TraceMethod(this);
-
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                scope.ServiceProvider.GetRequiredService<IEventSubscriber<TEvent>>().Unsubscribe(listener);
-            }
-        }
-        /// <inheritdoc/>
-        public void Unsubscribe<TEvent>(object listener)
-        {
-            using var methodLogger = _logger.TraceMethod(this);
-
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                scope.ServiceProvider.GetRequiredService<IEventSubscriber<TEvent>>().Unsubscribe(listener);
+                return scope.ServiceProvider.GetRequiredService<IEventSubscriber<TEvent>>().Subscribe(subscriberAction);
             }
         }
 
         /// <inheritdoc/>
-        public void Subscribe(IEventListener listener)
+        public EventSubscription Subscribe(IEventListener listener)
         {
             using var methodLogger = _logger.TraceMethod(this);
-            Guard.IsNotNull(listener);
-            Guard.IsNotNull(listener.Handler);
-
+            listener.ValidateArgument(nameof(listener));
 
             _listeners.Add(listener);
-            _logger.Log($"Subscribed listener <{listener}> handled by <{listener.Handler}> to all events");
-        }
-        /// <inheritdoc/>
-        public void Subscribe(object listener, Delegates.Async.AsyncAction<IEventListenerContext, object, CancellationToken> subscriberAction)
-        {
-            using var methodLogger = _logger.TraceMethod(this);
-            Subscribe(new DelegateEventListener(listener, subscriberAction));
-        }
-        /// <inheritdoc/>
-        public void Unsubscribe(IEventListener listener)
-        {
-            using var methodLogger = _logger.TraceMethod(this);
-            if (_listeners.Remove(listener))
-            {
-                _logger.Log($"Unsubscribed listener <{listener}> handled by <{listener.Handler}> to all events");
-            }
-            else
-            {
-                _logger.Warning($"Listener <{listener}> handled by <{listener.Handler}> was not subscribed to all events so can't unsubscribe");
-            }
-        }
-        /// <inheritdoc/>
-        public void Unsubscribe(object listener)
-        {
-            using var methodLogger = _logger.TraceMethod(this);
+            _logger.Log($"Subscribed listener <{listener}> to all events");
 
-            IEventListener? eventSubscriber = null;
-            lock (_listeners.SyncRoot)
-            {
-                eventSubscriber = _listeners.FirstOrDefault(x => x.Handler == listener);
-            }
+            return new EventSubscription(listener, null, () => Unsubscribe(listener));
+        }
+        /// <inheritdoc/>
+        public EventSubscription Subscribe(Delegates.Async.AsyncAction<IEventListenerContext, object, CancellationToken> subscriberAction, uint? priority = null)
+        {
+            using var methodLogger = _logger.TraceMethod(this);
+            subscriberAction.ValidateArgument(nameof(subscriberAction));
+            return Subscribe(new DelegateEventListener(subscriberAction) { Priority = priority });
+        }
 
-            if (eventSubscriber != null)
-            {
-                Unsubscribe(eventSubscriber);
-            }
-            else
-            {
-                _logger.Warning($"Could not find a listener subscribed to all events that is handled by <{listener}> so can't unsubscribe");
-            }
+        private void Unsubscribe(IEventListener listener)
+        {
+            using var methodLogger = _logger.TraceMethod(this);
+            listener.ValidateArgument(nameof(listener));
+            _logger.Log($"Unsubscribing <{listener}> from all events");
+            _listeners.Remove(listener);
         }
     }
 
@@ -146,12 +106,12 @@ namespace Sels.Core.Mediator.Event
     public class EventSubscriptionManager<TEvent> : IEventSubscriber<TEvent>
     {
         // Fields
-        private readonly ILogger? _logger;
+        private readonly ILogger _logger;
         private readonly SynchronizedCollection<IEventListener<TEvent>> _listeners = new SynchronizedCollection<IEventListener<TEvent>>();
 
         /// <inheritdoc cref="EventSubscriptionManager{TEvent}"/>
         /// <param name="logger">Optional logger for tracing</param>
-        public EventSubscriptionManager(ILogger<EventSubscriptionManager<TEvent>>? logger = null)
+        public EventSubscriptionManager(ILogger<EventSubscriptionManager<TEvent>> logger = null)
         {
             _logger = logger;
         }
@@ -165,56 +125,29 @@ namespace Sels.Core.Mediator.Event
                 return _listeners.ToArray();
             }
         }
-
         /// <inheritdoc/>
-        public void Subscribe(IEventListener<TEvent> listener)
+        public EventSubscription Subscribe(IEventListener<TEvent> listener)
         {
             using var methodLogger = _logger.TraceMethod(this);
-            Guard.IsNotNull(listener);
-            Guard.IsNotNull(listener.Handler);
-            
+            listener.ValidateArgument(nameof(listener));
 
             _listeners.Add(listener);
-            _logger.Log($"Subscribed listener <{listener}> handled by <{listener.Handler}> to events of type <{typeof(TEvent)}>");
+            _logger.Log($"Subscribed listener <{listener}> to events of type <{typeof(TEvent)}>");
+            return new EventSubscription(listener, typeof(TEvent), () => Unsubscribe(listener));
         }
         /// <inheritdoc/>
-        public void Subscribe(object listener, Delegates.Async.AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction)
+        public EventSubscription Subscribe(Delegates.Async.AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction, uint? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
-            Subscribe(new DelegateEventListener<TEvent>(listener, subscriberAction));
+            return Subscribe(new DelegateEventListener<TEvent>(subscriberAction) { Priority = priority });
         }
-        /// <inheritdoc/>
-        public void Unsubscribe(IEventListener<TEvent> listener)
-        {
-            using var methodLogger = _logger.TraceMethod(this);
-            if (_listeners.Remove(listener))
-            {
-                _logger.Log($"Unsubscribed listener <{listener}> handled by <{listener.Handler}> to events of type <{typeof(TEvent)}>");
-            }
-            else
-            {
-                _logger.Warning($"Listener <{listener}> handled by <{listener.Handler}> was not subscribed to events of type <{typeof(TEvent)}> so can't unsubscribe");
-            }
-        }
-        /// <inheritdoc/>
-        public void Unsubscribe(object listener)
-        {
-            using var methodLogger = _logger.TraceMethod(this);
 
-            IEventListener<TEvent>? eventSubscriber = null;
-            lock(_listeners.SyncRoot)
-            {
-                eventSubscriber = _listeners.FirstOrDefault(x => x.Handler == listener);
-            }
-
-            if (eventSubscriber != null)
-            {
-                Unsubscribe(eventSubscriber);
-            }
-            else
-            {
-                _logger.Warning($"Could not find a listener subscribed to events of type <{typeof(TEvent)}> that is handled by <{listener}> so can't unsubscribe");
-            }
+        private void Unsubscribe(IEventListener<TEvent> listener)
+        {
+            using var methodLogger = _logger.TraceMethod(this);
+            listener.ValidateArgument(nameof(listener));
+            _logger.Log($"Unsubscribing <{listener}> from events of type <{typeof(TEvent)}>");
+            _listeners.Remove(listener);
         }
     }
 }

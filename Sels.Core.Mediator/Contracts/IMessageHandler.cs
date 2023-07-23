@@ -12,8 +12,8 @@ namespace Sels.Core.Mediator
     public interface IMessageHandler
     {
         /// <summary>
-        /// The actual object that's listening. Used to subscribe and unsubscribe to messages when dealing with delegates.
+        /// The priority of the handler. Used to determine the order handlers are called. A lower value means higher priority. Null means lowest priority.
         /// </summary>
-        object Handler { get; }
+        uint? Priority { get; }
     }
 }

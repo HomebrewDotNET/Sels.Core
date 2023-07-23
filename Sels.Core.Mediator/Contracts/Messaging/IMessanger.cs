@@ -1,10 +1,14 @@
-﻿namespace Sels.Core.Mediator.Messaging
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Sels.Core.Mediator.Messaging
 {
     /// <summary>
     /// Allows objects to send messages of type <typeparamref name="T"/> to other objects who are subscibed to that message.
     /// </summary>
     /// <typeparam name="T">The type of the message that can be sent</typeparam>
-    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+    [Obsolete("Use the new Sels.Core.Mediator.Event components")]
     public interface IMessanger<in T>
     {
         /// <summary>
@@ -20,7 +24,7 @@
     /// <summary>
     /// Allows objects to send messages to other objects who are subscibed to that message.
     /// </summary>
-    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+    [Obsolete("Use the new Sels.Core.Mediator.Event components")]
     public interface IMessanger
     {
         /// <summary>

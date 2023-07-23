@@ -17,16 +17,16 @@ namespace Sels.Core.Mediator.Event
         /// </summary>
         None = 0,
         /// <summary>
-        /// Don't wait for any subscribers to handle the event. Method call will return immediately. Exceptions will be logged. 0 will always be returned.
+        /// Don't wait for any subscribers to handle the event. Method call will return immediately and event handling will be scheduled on the thread pool. Exceptions will be logged. 0 will always be returned.
         /// </summary>
         FireAndForget = 1,
         /// <summary>
-        /// Exceptions thrown by subscribers will be caught but not rethrown. Exceptions will be logged.
+        /// Exceptions thrown by subscribers will be caught but not rethrown. Exceptions will be logged. 0 will always be returned.
         /// </summary>
         IgnoreExceptions = 2,
         /// <summary>
-        /// Subscribers that make use of <see cref="IEventListenerContext.WaitForCommitAsync"/> will return immediately instead of waiting for each other.
+        /// Allows the event listeners to run in parallel. Should only be enabled if the event being raised is either readonly or thead safe.
         /// </summary>
-        NoTransaction = 4
+        AllowParallelExecution = 4
     }
 }

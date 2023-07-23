@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Sels.Core.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static Sels.Core.Delegates.Async;
 
@@ -14,19 +16,17 @@ namespace Sels.Core.Mediator.Event
     public class DelegateEventListener<TEvent> : IEventListener<TEvent>
     {
         // Fields
-        private readonly object _handler;
         private readonly AsyncAction<IEventListenerContext, TEvent, CancellationToken> _action;
 
+        // Properties
         /// <inheritdoc/>
-        public object Handler => _handler;
+        public uint? Priority { get; set; }
 
         /// <inheritdoc cref="DelegateEventListener{TEvent}"/>
-        /// <param name="handler">The actual object that's listening to events using <paramref name="asyncAction"/></param>
         /// <param name="asyncAction">The delegate that will be called to react to raised events</param>
-        public DelegateEventListener(object handler, AsyncAction<IEventListenerContext, TEvent, CancellationToken> asyncAction)
+        public DelegateEventListener(AsyncAction<IEventListenerContext, TEvent, CancellationToken> asyncAction)
         {
-            _handler = Guard.IsNotNull(handler);
-            _action = Guard.IsNotNull(asyncAction);
+            _action = asyncAction.ValidateArgument(nameof(asyncAction));
         }
 
         /// <inheritdoc/>
@@ -39,19 +39,17 @@ namespace Sels.Core.Mediator.Event
     public class DelegateEventListener : IEventListener
     {
         // Fields
-        private readonly object _handler;
         private readonly AsyncAction<IEventListenerContext, object, CancellationToken> _action;
 
+        // Properties
         /// <inheritdoc/>
-        public object Handler => _handler;
+        public uint? Priority { get; set; }
 
         /// <inheritdoc cref="DelegateEventListener"/>
-        /// <param name="handler">The actual object that's listening to events using <paramref name="asyncAction"/></param>
         /// <param name="asyncAction">The delegate that will be called to react to raised events</param>
-        public DelegateEventListener(object handler, AsyncAction<IEventListenerContext, object, CancellationToken> asyncAction)
+        public DelegateEventListener(AsyncAction<IEventListenerContext, object, CancellationToken> asyncAction)
         {
-            _handler = Guard.IsNotNull(handler);
-            _action = Guard.IsNotNull(asyncAction);
+            _action = asyncAction.ValidateArgument(nameof(asyncAction));
         }
 
         /// <inheritdoc/>
