@@ -8,7 +8,7 @@ namespace Sels.DistributedLocking.Memory.Test
 {
     public class MemoryLockingProvider_GetAsync
     {
-        [Test]
+        [Test, Timeout(10000)]
         public async Task ReturnsCorrectStateOfLock()
         {
             // Arrange
@@ -30,7 +30,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(result.PendingRequests, Is.EqualTo(lockResult.AcquiredLock.PendingRequests));
         }
 
-        [Test]
+        [Test, Timeout(10000)]
         public async Task NonExistantLockReturnsFreeLock()
         {
             // Arrange

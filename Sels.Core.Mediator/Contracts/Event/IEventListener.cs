@@ -48,7 +48,7 @@ namespace Sels.Core.Mediator.Event
         /// </summary>
         object Sender { get; }
         /// <summary>
-        /// An array of all current subscribers listening to the event.
+        /// An array of all other current subscribers listening to the event.
         /// </summary>
         IMessageHandler[] OtherSubscribers { get; }
 

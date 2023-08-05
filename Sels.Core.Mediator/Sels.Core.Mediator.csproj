@@ -45,7 +45,6 @@
 	</Target>
 
 	<ItemGroup>
-		<Folder Include="Contracts\Request\" />
 		<Folder Include="Templates\" />
 	</ItemGroup>
 

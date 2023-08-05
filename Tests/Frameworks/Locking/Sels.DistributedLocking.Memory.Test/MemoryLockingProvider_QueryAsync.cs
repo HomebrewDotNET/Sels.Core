@@ -174,7 +174,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(result.Results.Length, Is.EqualTo(amountOfLocks-amountOfExpiredLocks));
         }
 
-        [Test]
+        [Test, Timeout(10000)]
         public async Task ReturnsAllLocksWhenNoFilterApplied()
         {
             // Arrange
@@ -269,7 +269,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(results, Is.Not.Null);
             CollectionAssert.AreEqual(expected, results.Results.Select(x => x.LockedBy));
         }
-        [Test]
+        [Test, Timeout(10000)]
         public async Task CorrectSortingIsAppliedWhenSortingOnLastLockDate()
         {
             // Arrange
@@ -291,7 +291,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(results, Is.Not.Null);
             CollectionAssert.AreEqual(Enumerable.Range(0, 100).Select(x => x.ToString()), results.Results.Select(x => x.Resource));
         }
-        [Test]
+        [Test, Timeout(10000)]
         public async Task CorrectSortingIsAppliedWhenSortingOnLockDate()
         {
             // Arrange
@@ -310,7 +310,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(results, Is.Not.Null);
             CollectionAssert.AreEqual(Enumerable.Range(0, 100).Select(x => x.ToString()), results.Results.Select(x => x.Resource));
         }
-        [Test]
+        [Test, Timeout(10000)]
         public async Task CorrectSortingIsAppliedWhenSortingOnExpiryDate()
         {
             // Arrange

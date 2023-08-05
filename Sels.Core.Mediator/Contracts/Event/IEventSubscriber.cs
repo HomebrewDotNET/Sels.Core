@@ -17,15 +17,15 @@ namespace Sels.Core.Mediator.Event
         /// <summary>
         /// Gets all current event listeners.
         /// </summary>
-        /// <param name="serviceProvider">The service provider scope to use to resolve the listeners</param>
-        /// <returns>All listeners that can react to all type of events</returns>
+        /// <param name="serviceProvider">The service scope to resolve any services in</param>
+        /// <returns>All listeners that can react to all type of events or an empty array when there aren't any</returns>
         IEventListener[] GetAllListeners(IServiceProvider serviceProvider);
 
         /// <summary>
         /// Gets all current event listeners that are listening to events of <typeparamref name="TEvent"/>.
         /// </summary>
-        /// <param name="serviceProvider">The service provider scope to use to resolve the listeners</param>
-        /// <returns>All listeners that can react to events of type <typeparamref name="TEvent"/></returns>
+        /// <param name="serviceProvider">The service scope to resolve any services in</param>
+        /// <returns>All listeners that can react to events of type <typeparamref name="TEvent"/> or an empty array when there aren't any</returns>
         IEventListener<TEvent>[] GetAllListeners<TEvent>(IServiceProvider serviceProvider);
         #endregion
 

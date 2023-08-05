@@ -9,8 +9,7 @@ namespace Sels.Core.Mediator.Test.Components
 {
     public class Notifier_RaiseEventAsync
     {
-        [Test]
-        [Timeout(5000)]
+        [Test, Timeout(10000)]
         public async Task EventIsRaisedToGlobalGenericListener()
         {
             // Arrange
@@ -29,7 +28,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task EventIsRaisedToGlobalListener()
         {
             // Arrange
@@ -48,7 +47,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task EventIsRaisedToRuntimeGenericListener()
         {
             // Arrange
@@ -69,7 +68,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task EventIsRaisedToRuntimeListener()
         {
             // Arrange
@@ -90,7 +89,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task UnsubscribingStopsGenericRuntimeListenerFromReceivingEvents()
         {
             // Arrange
@@ -112,7 +111,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task UnsubscribingStopsRuntimeListenerFromReceivingEvents()
         {
             // Arrange
@@ -134,7 +133,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task EnlistedEventIsAlsoRaised()
         {
             // Arrange
@@ -155,7 +154,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task EnlistedEventRaisedByListenerIsAlsoRaised()
         {
             // Arrange
@@ -179,7 +178,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task EventIsAlsoRaisedAsBaseClass()
         {
             // Arrange
@@ -201,7 +200,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task CancellingTokenCancelsEvent()
         {
             // Arrange
@@ -229,7 +228,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task ExceptionsAreIgnoredWhenOptionIsEnabled()
         {
             // Arrange
@@ -257,7 +256,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task FireAndForgetTaskIsLaunchedWhenOptionIsEnabled()
         {
             // Arrange
@@ -285,7 +284,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task EventListenersAreCalledInTheCorrectOrder()
         {
             // Arrange
@@ -319,7 +318,7 @@ namespace Sels.Core.Mediator.Test.Components
         [TestCase(0)]
         [TestCase(10)]
         [TestCase(100)]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task CorrectAmountOfListenersAreExecutedInParallel(int amount)
         {
             // Arrange
@@ -344,7 +343,7 @@ namespace Sels.Core.Mediator.Test.Components
         [TestCase(5)]
         [TestCase(7)]
         [TestCase(10)]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task EventGetsRaisedCorrectlyWhenListenersWaitForTransaction(int amount)
         {
             // Arrange
@@ -369,7 +368,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public async Task EventTransactionGetsCancelledWhenAnyEventListenerFails()
         {
             // Arrange

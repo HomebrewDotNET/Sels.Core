@@ -274,12 +274,12 @@ namespace Sels.Core.Mediator.Event
             /// <param name="token">Token that can be cancelled by the caller</param>
             public void StartExecution(CancellationToken token)
             {
-                _logger.Log($"Starting executing for <{ListenerContext.Listener}>");
+                _logger.Log($"Starting executing for <{ListenerContext.Listener}> who has a priority of <{(ListenerContext.Listener.Priority.HasValue ? ListenerContext.Listener.Priority.Value.ToString() : "NULL")}>");
                 Result = ListenerContext.ExecuteAsync(this, token);
 
                 // Let orchestrator return if listener executes without transaction
                 Result.ContinueWith(x => CompleteCallback(x));
-                _logger.Log($"Started executing for <{ListenerContext.Listener}>");
+                _logger.Log($"Started executing for <{ListenerContext.Listener}> who has a priority of <{(ListenerContext.Listener.Priority.HasValue ? ListenerContext.Listener.Priority.Value.ToString() : "NULL")}>");
             }
 
             void CompleteCallback(Task result = null)

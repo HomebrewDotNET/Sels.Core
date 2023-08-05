@@ -5,6 +5,7 @@ using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging;
 using Sels.Core.Mediator.Event;
+using Sels.Core.Mediator.Request;
 using Sels.Core.Models.Disposables;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace Sels.Core.Mediator
 {
@@ -23,17 +23,20 @@ namespace Sels.Core.Mediator
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IEventSubscriber _eventSubscriber;
+        private readonly IRequestSubscriptionManager _requestSubscriptionManager;
         private readonly IServiceProvider _serviceProvider;
 
         /// <inheritdoc cref="Notifier"/>
-        /// <param name="eventSubscriber">Subscriber used to get global listeners</param>
+        /// <param name="eventSubscriber">Manager used to get global listeners</param>
+        /// <param name="requestSubscriptionManager">Manager used to get the runtime request handlers</param>
         /// <param name="serviceProvider">Provider used to resolve typed event and request subscribers</param>
         /// <param name="loggerFactory">Optional factory to create loggers for child instances</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public Notifier(IEventSubscriber eventSubscriber, IServiceProvider serviceProvider, ILoggerFactory loggerFactory = null, ILogger<Notifier> logger = null)
+        public Notifier(IEventSubscriber eventSubscriber, IRequestSubscriptionManager requestSubscriptionManager, IServiceProvider serviceProvider, ILoggerFactory loggerFactory = null, ILogger<Notifier> logger = null)
         {
             _eventSubscriber = eventSubscriber.ValidateArgument(nameof(eventSubscriber));
-            _serviceProvider = serviceProvider.ValidateArgument(nameof(eventSubscriber));
+            _serviceProvider = serviceProvider.ValidateArgument(nameof(serviceProvider));
+            _requestSubscriptionManager = requestSubscriptionManager.ValidateArgument(nameof(requestSubscriptionManager));
             _loggerFactory = loggerFactory;
             _logger = logger;
         }
@@ -60,6 +63,7 @@ namespace Sels.Core.Mediator
                 // Run fire and forget
                 if (options.Options.HasFlag(EventOptions.FireAndForget))
                 {
+                    _logger.Debug($"Fire and forget enabled for event <{@event}> raised by <{sender}>. Starting task");
                     // TODO: Use task manager to gracefully wait for tasks to complete when IoC containers gets disposed.
                     _ = Task.Run(async () => await RaiseEventAsync(orchestrator, sender, @event, options, token).ConfigureAwait(false));
                     return 0;
@@ -93,7 +97,6 @@ namespace Sels.Core.Mediator
                 return 0;
             }
         }
-
         /// <summary>
         /// Enlists all event listeners to <paramref name="orchestrator"/> if there are any listening for events of type <typeparamref name="TEvent"/>.
         /// </summary>
@@ -126,6 +129,87 @@ namespace Sels.Core.Mediator
             var injectedListeners = provider.GetServices<IEventListener<TEvent>>()?.ToArray();
             _logger.Debug($"Got <{injectedListeners?.Length ?? 0}> injected listeners subscribed to event of type <{typeof(TEvent)}>");
             injectedListeners.Execute(x => orchestrator.Enlist(sender, x, @event));
+        }
+
+        /// <inheritdoc/>
+        public async Task<RequestResponse<TResponse>> RequestAsync<TRequest, TResponse>(object sender, TRequest request, Action<INotifierRequestOptions<TRequest>> requestOptions, CancellationToken token = default)
+        {
+            using var methodLogger = _logger.TraceMethod(this);
+            sender.ValidateArgument(nameof(sender));
+            requestOptions.ValidateArgument(nameof(requestOptions));
+            request.ValidateArgument(nameof(request));
+
+            _logger.Log($"Raising request <{request}> created by <{sender}>");
+            var options = new NotifierRequestOptions<TRequest>();
+            requestOptions(options);
+            var executionChain = new RequestExecutionChain<TRequest, TResponse>(_loggerFactory?.CreateLogger<RequestExecutionChain<TRequest, TResponse>>());
+
+            await using var scope = _serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
+
+            // Get handlers
+            var runtimeHandlers = _requestSubscriptionManager.GetHandlers<TRequest, TResponse>();
+            _logger.Debug($"Got <{runtimeHandlers?.Length ?? 0}> handlers subscribed at runtime to requests of type <{typeof(TRequest)}> to which they can reply with <{typeof(TResponse)}>");
+            runtimeHandlers.Execute(x => executionChain.Enlist(x));
+
+            var injectedHandlers = provider.GetServices<IRequestHandler<TRequest, TResponse>>()?.ToArray();
+            _logger.Debug($"Got <{injectedHandlers?.Length ?? 0}> injected handlers subscribed to requests of type <{typeof(TRequest)}> to which they can reply with <{typeof(TResponse)}>");
+            injectedHandlers.Execute(x => executionChain.Enlist(x));
+
+            // Execute
+            _logger.Debug($"Executing request chain for <{request}> raised by <{sender}>");
+            var response = await executionChain.ExecuteAsync(sender, request, token);
+
+            if (response.Completed)
+            {
+                _logger.Log($"Got a response for <{request}> created by <{sender}>");
+            }
+            else
+            {
+                _logger.Log($"Could not get a response for <{request}> created by <{sender}>");
+                if (options.ExceptionFactory != null) throw options.ExceptionFactory(request);
+            }
+            return response;
+        }
+        /// <inheritdoc/>
+        public async Task<RequestAcknowledgement> RequestAcknowledgementAsync<TRequest>(object sender, TRequest request, Action<INotifierRequestOptions<TRequest>> requestOptions, CancellationToken token = default)
+        {
+            using var methodLogger = _logger.TraceMethod(this);
+            sender.ValidateArgument(nameof(sender));
+            requestOptions.ValidateArgument(nameof(requestOptions));
+            request.ValidateArgument(nameof(request));
+
+            _logger.Log($"Raising request <{request}> created by <{sender}>");
+            var options = new NotifierRequestOptions<TRequest>();
+            requestOptions(options);
+            var executionChain = new RequestExecutionChain<TRequest>(_loggerFactory?.CreateLogger<RequestExecutionChain<TRequest>>());
+
+            await using var scope = _serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
+
+            // Get handlers
+            var runtimeHandlers = _requestSubscriptionManager.GetHandlers<TRequest>();
+            _logger.Debug($"Got <{runtimeHandlers?.Length ?? 0}> handlers subscribed at runtime to requests of type <{typeof(TRequest)}> that they can acknowledge");
+            runtimeHandlers.Execute(x => executionChain.Enlist(x));
+
+            var injectedHandlers = provider.GetServices<IRequestHandler<TRequest>>()?.ToArray();
+            _logger.Debug($"Got <{injectedHandlers?.Length ?? 0}> injected handlers subscribed to requests of type <{typeof(TRequest)}> that they can acknowledge");
+            injectedHandlers.Execute(x => executionChain.Enlist(x));
+
+            // Execute
+            _logger.Debug($"Executing request chain for <{request}> raised by <{sender}>");
+            var response = await executionChain.ExecuteAsync(sender, request, token);
+
+            if (response.Acknowledged)
+            {
+                _logger.Log($"Got an acknowledgment for <{request}> created by <{sender}>");
+            }
+            else
+            {
+                _logger.Log($"Could not get an acknowledgment for <{request}> created by <{sender}>");
+                if (options.ExceptionFactory != null) throw options.ExceptionFactory(request);
+            }
+            return response;
         }
 
         /// <inheritdoc cref="INotifierEventOptions{TEvent}"/>
@@ -173,6 +257,23 @@ namespace Sels.Core.Mediator
                 @event.ValidateArgument(nameof(@event));
                 _parent.Enlist(_orchestrator, _sender, @event);
 
+                return this;
+            }
+        }
+
+        /// <inheritdoc cref="INotifierRequestOptions{TRequest}"/>
+        private class NotifierRequestOptions<TRequest> : INotifierRequestOptions<TRequest>
+        {
+            // Properties
+            /// <summary>
+            /// Custom exception factory to throw an exception when a raised requests is not replied to. When set to null no exception will be thrown.
+            /// </summary>
+            public Func<TRequest, Exception> ExceptionFactory { get; private set; }
+
+            /// <inheritdoc/>
+            public INotifierRequestOptions<TRequest> ThrowOnUnhandled(Func<TRequest, Exception> exceptionFactory)
+            {
+                ExceptionFactory = exceptionFactory.ValidateArgument(nameof(exceptionFactory));
                 return this;
             }
         }
