@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
+		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<Authors>Jens Sels</Authors>
 		<Company>Homebrew IT</Company>
-		<Product>Mediator Library</Product>
+		<Product>Asynchronous Library</Product>
 		<Description>
-			Library containing code for sending messages to other subscribing objects within the same process.
+			Library with components/services that make use of the TPL / Thread Pool.
 			Used by projects maintained here: https://github.com/Jenssels1998
 		</Description>
 		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
@@ -16,14 +16,13 @@
 		<PackageTags>Sels</PackageTags>
 		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
 		<!--For NuGet package-->
-		<VersionPrefix>2.0.0</VersionPrefix>
+		<VersionPrefix>1.0.0</VersionPrefix>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' != ''">$([System.String]::Format('{0:000000}', $([System.Int32]::Parse($(BUILD_NUMBER)))))</BuildNumber>
 		<VersionSuffix Condition="'$(Configuration)' == 'Debug'">beta-$(BuildNumber)</VersionSuffix>
 		<DocumentationFile>bin/$(Configuration)/$(TargetFramework)/$(MSBuildProjectName).xml</DocumentationFile>
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 	</PropertyGroup>
-
 	<!--Exclude pdb files from release build-->
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<DebugType>None</DebugType>
@@ -45,15 +44,9 @@
 	</Target>
 
 	<ItemGroup>
-		<Folder Include="Templates\" />
+		<Folder Include="Exceptions\" />
 	</ItemGroup>
-
 	<ItemGroup>
-		<PackageReference Include="System.ServiceModel.Primitives" Version="4.10.2" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
 		<ProjectReference Include="..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
 	</ItemGroup>
 
