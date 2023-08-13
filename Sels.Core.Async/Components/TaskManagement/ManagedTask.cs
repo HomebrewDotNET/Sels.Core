@@ -12,55 +12,18 @@ namespace Sels.Core.Async.TaskManagement
     /// <summary>
     /// An managed task scheduled on the Thread Pool using a <see cref="ITaskManager"/>.
     /// </summary>
-    public class ManagedTask : IManagedTask
+    public class ManagedTask : BaseManagedTask, IManagedTask
     {
-        // Fields
-        private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
-        private readonly TaskCompletionSource<bool> _callbackSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        // State
-        private List<IManagedTask> _continuations;
-        private List<IManagedAnonymousTask> _anonymousContinuations;
-        private CancellationTokenRegistration _cancellationRegistration;
-
         /// <inheritdoc cref="ManagedTask"/>
         /// <param name="owner">The instance the managed task is tied to</param>
         /// <param name="name">Optional unique name for the task</param>
-        /// <param name="input">Optional input for the work performed by the task</param>
         /// <param name="taskOptions">The options for this task</param>
         /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
-        public ManagedTask(object owner, string? name, object input, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken)
+        public ManagedTask(object owner, string? name, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken) : base(taskOptions, cancellationToken)
         {
             Owner = owner.ValidateArgument(nameof(owner));
             Name = name;
-            Input = input;
             TaskOptions = taskOptions.ValidateArgument(nameof(taskOptions));
-
-            // Register to cancellation
-            CancellationToken = cancellationToken;
-            _cancellationRegistration = cancellationToken.Register(Cancel);
-
-            // Set task in cancelled state
-            if (cancellationToken.IsCancellationRequested)
-            {
-                var cancelSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                Task = cancelSource.Task;
-
-                var exception = new TaskCanceledException();
-                Result = exception;
-                cancelSource.SetException(exception);
-                _callbackSource.SetResult(true);
-            }
-            else
-            {
-                // Schedule work on thread pool
-                var scheduledTask = Task.Factory.StartNew(() => taskOptions.ExecuteDelegate(input, _cancellationSource.Token), _cancellationSource.Token, taskOptions.TaskCreationOptions & ~TaskCreationOptions.DenyChildAttach, TaskScheduler.Default).Unwrap();
-
-                // Handle task result using continuation
-                scheduledTask.ContinueWith(OnCompleted, TaskContinuationOptions.AttachedToParent);
-
-                Task = scheduledTask;
-            }
         }
 
         // Properties
@@ -68,81 +31,28 @@ namespace Sels.Core.Async.TaskManagement
         /// The options used to create the current instance.
         /// </summary>
         public ManagedTaskCreationOptions TaskOptions { get; }
-        /// <summary>
-        /// The cancellation token of the caller that created the first managed task in the chain.
-        /// </summary>
-        public CancellationToken CancellationToken { get; }
         /// <inheritdoc/>
         public object Owner { get; }
         /// <inheritdoc/>
         public string? Name { get; }
-        /// <inheritdoc/>
-        public object Input { get; }
-        /// <inheritdoc/>
-        public Task Task { get; }
-        /// <inheritdoc/>
-        public bool CancellationRequested => _cancellationSource.IsCancellationRequested;
-        /// <inheritdoc/>
-        public ManagedTaskOptions Options => TaskOptions.ManagedTaskOptions;
-        /// <inheritdoc/>
-        public IReadOnlyDictionary<string, object> Properties => TaskOptions.Properties;
-        /// <inheritdoc/>
-        public Task Callback => _callbackSource.Task;
-        /// <inheritdoc/>
-        public object? Result { get; private set; }
 
         /// <inheritdoc/>
-        public IManagedTask[] Continuations => _continuations?.ToArray() ?? Array.Empty<IManagedTask>();
-        /// <inheritdoc/>
-        public IManagedAnonymousTask[] AnonymousContinuations => _anonymousContinuations?.ToArray() ?? Array.Empty<IManagedAnonymousTask>();
-
-        /// <inheritdoc/>
-        public void Cancel() => _cancellationSource.Cancel();
-        /// <inheritdoc/>
-        public void CancelAfter(TimeSpan delay) => _cancellationSource.CancelAfter(delay);
-
-        private async Task OnCompleted(Task<object> completedTask)
+        protected override async Task TriggerContinuations()
         {
-            // Get task result
-            object result = null;
-            try
+            // Trigger anonymous tasks
+            foreach (var anonymousFactory in TaskOptions.AnonymousContinuationFactories)
             {
-                var taskResult = await completedTask;
-                if (taskResult != null && taskResult != Null.Value) result = taskResult;
+                _anonymousContinuations ??= new List<IManagedAnonymousTask>();
+                var task = await anonymousFactory(this, Result, Token).ConfigureAwait(false);
+                if (task != null) _anonymousContinuations.Add(task);
             }
-            catch (Exception ex)
-            {
-                result = ex;
-            }
-            Result = result;
 
-            // Trigger continuations
-            try
+            // Trigger managed tasks
+            foreach (var factory in TaskOptions.ContinuationFactories)
             {
-                // Trigger anonymous tasks
-                foreach (var anonymousFactory in TaskOptions.AnonymousContinuationFactories)
-                {
-                    _anonymousContinuations ??= new List<IManagedAnonymousTask>();
-
-                    _anonymousContinuations.Add(await anonymousFactory(this, Input, result, CancellationToken).ConfigureAwait(false));
-                }
-
-                // Trigger managed tasks
-                foreach (var factory in TaskOptions.ContinuationFactories)
-                {
-                    _continuations ??= new List<IManagedTask>();
-
-                    _continuations.Add(await factory(this, Input, result, CancellationToken).ConfigureAwait(false));
-                }
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                await _cancellationRegistration.DisposeAsync();
-                _callbackSource.SetResult(true);
+                _continuations ??= new List<IManagedTask>();
+                var task = await factory(this, Result, Token).ConfigureAwait(false);
+                if (task != null) _continuations.Add(task);
             }
         }
 

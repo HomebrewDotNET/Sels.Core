@@ -117,7 +117,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.ServiceBuilder.Po
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Mediator.Test", "Tests\Sels.Core.Mediator.Test\Sels.Core.Mediator.Test.csproj", "{8560D834-4234-4299-9F25-3F3B9EC56600}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sels.Core.Async", "Sels.Core.Async\Sels.Core.Async.csproj", "{895EF19C-A5DE-4E1B-8754-68D6D27CD0C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Async", "Sels.Core.Async\Sels.Core.Async.csproj", "{895EF19C-A5DE-4E1B-8754-68D6D27CD0C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sels.Core.Async.Test", "Tests\Sels.Core.Async.Test\Sels.Core.Async.Test.csproj", "{0F85A9B3-4560-47E7-8CD6-09C10AC7A09F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -297,6 +299,10 @@ Global
 		{895EF19C-A5DE-4E1B-8754-68D6D27CD0C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{895EF19C-A5DE-4E1B-8754-68D6D27CD0C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{895EF19C-A5DE-4E1B-8754-68D6D27CD0C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F85A9B3-4560-47E7-8CD6-09C10AC7A09F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F85A9B3-4560-47E7-8CD6-09C10AC7A09F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F85A9B3-4560-47E7-8CD6-09C10AC7A09F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F85A9B3-4560-47E7-8CD6-09C10AC7A09F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -352,6 +358,7 @@ Global
 		{E3059CBE-F226-4996-BEDA-9EE08CCF8A7D} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
 		{8560D834-4234-4299-9F25-3F3B9EC56600} = {9ADF9A39-B6EC-440C-AA22-6478FF9F7EA6}
 		{895EF19C-A5DE-4E1B-8754-68D6D27CD0C9} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
+		{0F85A9B3-4560-47E7-8CD6-09C10AC7A09F} = {9ADF9A39-B6EC-440C-AA22-6478FF9F7EA6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9510E55C-920C-4EDB-9F77-D83C4E047361}

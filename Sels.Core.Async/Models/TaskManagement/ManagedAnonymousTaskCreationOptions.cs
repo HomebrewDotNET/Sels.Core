@@ -14,10 +14,10 @@ namespace Sels.Core.Async.TaskManagement
         /// <summary>
         /// The factory delegates used to create the continuation managed tasks.
         /// </summary>
-        public AsyncFunc<IManagedAnonymousTask, object, object, CancellationToken, IManagedTask?>[] ContinuationFactories { get; internal set; }
+        public AsyncFunc<IManagedAnonymousTask, object, CancellationToken, IManagedTask?>[] ContinuationFactories { get; internal set; }
         /// <summary>
         /// The factory delegates used to create the continuation managed anonymous tasks.
         /// </summary>
-        public AsyncFunc<IManagedAnonymousTask, object, object, CancellationToken, IManagedAnonymousTask?>[] AnonymousContinuationFactories { get; internal set; }
+        public AsyncFunc<IManagedAnonymousTask, object, CancellationToken, IManagedAnonymousTask?>[] AnonymousContinuationFactories { get; internal set; }
     }
 }

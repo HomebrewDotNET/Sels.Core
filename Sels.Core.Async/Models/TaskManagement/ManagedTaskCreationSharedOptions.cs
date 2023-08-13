@@ -23,7 +23,7 @@ namespace Sels.Core.Async.TaskManagement
         /// <summary>
         /// The delegate executed by the managed task on the Thread Pool.
         /// </summary>
-        public AsyncFunc<object, CancellationToken, object> ExecuteDelegate { get; internal set; }
+        public Func<CancellationToken, Task<object>> ExecuteDelegate { get; internal set; }
         /// <summary>
         /// The properties tied to the managed task.
         /// </summary>

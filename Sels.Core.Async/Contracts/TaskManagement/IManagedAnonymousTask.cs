@@ -12,9 +12,9 @@ namespace Sels.Core.Async.TaskManagement
     public interface IManagedAnonymousTask
     {
         /// <summary>
-        /// The input for <see cref="Task"/> if one was provided when scheduling the task.
+        /// The cancellation token used to cancel the current task.
         /// </summary>
-        object? Input { get; }
+        CancellationToken Token { get; }
         /// <summary>
         /// The task that was scheduled on the Thread Pool.
         /// </summary>
@@ -33,13 +33,33 @@ namespace Sels.Core.Async.TaskManagement
         IReadOnlyDictionary<string, object> Properties { get; }
 
         /// <summary>
-        /// Task that will complete when the current task finishes executing.
+        /// Task that will complete when the current task finishes executing and all continuations are triggered.
         /// </summary>
-        Task Callback { get; }
+        Task OnExecuted { get; }
+        /// <summary>
+        /// Task that will complete when the task manager has handled the execution of the managed (anonymous) task.
+        /// </summary>
+        Task OnFinalized { get; }
         /// <summary>
         /// The result from executing <see cref="Task"/>. Will be the return value from the task if it executed successfully, null if executed successfully but doesn't return a value or the exception if it failed.
         /// </summary>
         object? Result { get; }
+        /// <summary>
+        /// The date the managed (anonymous) task was created and scheduled.
+        /// </summary>
+        DateTime CreatedDate { get; }
+        /// <summary>
+        /// The date the managed (anonymous) task started executing.
+        /// </summary>
+        DateTime? StartedDate { get; }
+        /// <summary>
+        /// How long the managed (anonymous) task executed.
+        /// </summary>
+        TimeSpan? Duration { get; }
+        /// <summary>
+        /// The date the managed (anonymous) task finished executing.
+        /// </summary>
+        DateTime? FinishedDate { get; }
 
         /// <summary>
         /// If this task hould be kept alive if it fails with an exception.
