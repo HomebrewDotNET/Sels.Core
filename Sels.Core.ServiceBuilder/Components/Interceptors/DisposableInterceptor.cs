@@ -13,7 +13,7 @@ using Sels.Core.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Sels.Core.Extensions.Reflection;
 
-namespace Sels.Core.ServiceBuilder.Components.Interceptors
+namespace Sels.Core.ServiceBuilder.Interceptors
 {
     /// <summary>
     /// Interceptor that throws an <see cref="ObjectDisposedException"/> when the proxy target implements <see cref="IDisposableState"/> and the state indicates that the object is disposing/is disposed.

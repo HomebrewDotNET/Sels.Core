@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.Core.Async.Contracts.TaskManagement
+namespace Sels.Core.Async.TaskManagement
 {
     /// <summary>
     /// Represents a managed (anonymous) task that still needs to be queued.

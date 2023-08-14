@@ -83,6 +83,7 @@ namespace Sels.Core.Mediator.Event
 
         /// <summary>
         /// Subscribes <paramref name="subscriberAction"/> to events of type <typeparamref name="TEvent"/>. When an event is raised, <paramref name="subscriberAction"/> will be called.
+        /// </summary>
         /// <param name="subscriberAction">The delegate that will be called to react to events of type <typeparamref name="TEvent"/></param>
         /// <param name="priority"><inheritdoc cref="IMessageHandler.Priority"/></param>
         /// <returns>The active subscription to the event. Disposing the subscription will stop <paramref name="subscriberAction"/> from receiving events</returns>

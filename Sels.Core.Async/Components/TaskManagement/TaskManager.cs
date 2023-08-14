@@ -17,7 +17,7 @@ using Microsoft.Extensions.Options;
 using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.Conversion;
 using static Sels.Core.Delegates.Async;
-using Sels.Core.Async.Contracts.TaskManagement;
+using Sels.Core.Async.TaskManagement;
 
 namespace Sels.Core.Async.TaskManagement
 {

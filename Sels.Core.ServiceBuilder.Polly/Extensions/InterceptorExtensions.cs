@@ -6,7 +6,7 @@ using Sels.Core.Conversion.Converters;
 using Sels.Core.Dispose;
 using Sels.Core.Extensions;
 using Sels.Core.ServiceBuilder;
-using Sels.Core.ServiceBuilder.Components.Interceptors;
+using Sels.Core.ServiceBuilder.Interceptors;
 using Sels.Core.ServiceBuilder.Contracts.Interceptors.Caching;
 using Sels.Core.ServiceBuilder.Interceptors;
 using Sels.Core.ServiceBuilder.Interceptors.Caching;

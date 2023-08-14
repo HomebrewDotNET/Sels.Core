@@ -90,7 +90,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
                 await connection.OpenAsync(token).ConfigureAwait(false);
                 return connection;
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 await connection.DisposeAsync();
                 throw;

@@ -1,4 +1,4 @@
-﻿using Sels.Core.Async.Contracts.TaskManagement;
+﻿using Sels.Core.Async.TaskManagement;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Threading;
 using Sels.Core.Models;
