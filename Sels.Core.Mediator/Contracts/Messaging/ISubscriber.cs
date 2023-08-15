@@ -1,10 +1,14 @@
-﻿namespace Sels.Core.Mediator.Messaging
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Sels.Core.Mediator.Messaging
 {
     /// <summary>
     /// Allows an object to receive messages of type <typeparamref name="T"/> from messagers.
     /// </summary>
     /// <typeparam name="T">The type of message to subscribe to</typeparam>
-    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+    [Obsolete("Use the new Sels.Core.Mediator.Event components")]
     public interface ISubscriber<in T> : IMessageHandler
     {
         /// <summary>
@@ -20,7 +24,7 @@
     /// <summary>
     /// Allows an object to receive messages of all messagers.
     /// </summary>
-    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+    [Obsolete("Use the new Sels.Core.Mediator.Event components")]
     public interface ISubscriber : IMessageHandler
     {
         /// <summary>
@@ -35,7 +39,7 @@
     /// <summary>
     /// Exposes the object that can handle messages.
     /// </summary>
-    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+    [Obsolete("Use the new Sels.Core.Mediator.Event components")]
     public interface IMessageHandler
     {
         /// <summary>

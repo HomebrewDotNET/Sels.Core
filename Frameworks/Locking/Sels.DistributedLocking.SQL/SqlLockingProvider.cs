@@ -65,7 +65,7 @@ namespace Sels.DistributedLocking.SQL
         /// <summary>
         /// Proxy constructor.
         /// </summary>
-        public SqlLockingProvider()
+        protected SqlLockingProvider()
         {
 
         }

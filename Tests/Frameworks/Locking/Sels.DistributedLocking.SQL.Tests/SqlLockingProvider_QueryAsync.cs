@@ -14,7 +14,7 @@ namespace Sels.DistributedLocking.Memory.Test
 {
     public class SqlLockingProvider_QueryAsync
     {
-        [Test]
+        [Test, Timeout(10000)]
         public async Task CorrectParametersArePassedToLockRepository()
         {
             // Arrange
@@ -37,7 +37,7 @@ namespace Sels.DistributedLocking.Memory.Test
                                                      It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Test]
+        [Test, Timeout(10000)]
         public async Task ReturnsCorrectLocks()
         {
             // Arrange

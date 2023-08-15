@@ -14,7 +14,7 @@ namespace Sels.Core.Scope.AsyncActions
     {
         ///<inheritdoc cref="AsyncLockAction"/>
         /// <param name="semaphore">The semaphore to use for the locking</param>
-        public AsyncLockAction(SemaphoreSlim semaphore) : base(x => PlaceLock(semaphore, x), x => UnLock(semaphore, x))
+        public AsyncLockAction(SemaphoreSlim semaphore) : base(x => PlaceLock(semaphore, x), x => Unlock(semaphore, x))
         {
             
         }
@@ -26,7 +26,7 @@ namespace Sels.Core.Scope.AsyncActions
             return semaphore.WaitAsync(token);
         }
 
-        private static Task UnLock(SemaphoreSlim semaphore, CancellationToken token)
+        private static Task Unlock(SemaphoreSlim semaphore, CancellationToken token)
         {
             semaphore.ValidateArgument(nameof(semaphore));
 

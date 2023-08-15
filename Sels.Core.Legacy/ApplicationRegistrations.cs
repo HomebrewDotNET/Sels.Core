@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.ValidateArgument(nameof(services));
 
-            services.AddSingleton<IConfigurationService, ConfigurationService>();
+            services.TryAddSingleton<IConfigurationService, ConfigurationService>();
 
             return services;
         }
@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
             serviceCollection.ValidateArgument(nameof(serviceCollection));
             directory.ValidateArgumentExists(nameof(directory));
 
-            serviceCollection.AddSingleton(x => Helper.Configuration.BuildConfigurationFromDirectory(directory, filter, reloadOnChange));
+            serviceCollection.TryAddSingleton(x => Helper.Configuration.BuildConfigurationFromDirectory(directory, filter, reloadOnChange));
 
             return serviceCollection;
         }
@@ -63,7 +63,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             serviceCollection.ValidateArgument(nameof(serviceCollection));
 
-            serviceCollection.AddSingleton(x => Helper.Configuration.BuildConfigurationFromDirectory(filter, reloadOnChange));
+            serviceCollection.TryAddSingleton(x => Helper.Configuration.BuildConfigurationFromDirectory(filter, reloadOnChange));
 
             return serviceCollection;
         }
@@ -82,6 +82,7 @@ namespace Microsoft.Extensions.DependencyInjection
             serviceCollection.AddOptions();
             serviceCollection.AddSingleton<IConfigureOptions<TOptions>>(x => new OptionConfigurationProvider<TOptions>(x.GetRequiredService<IConfiguration>(), sectionName));
             serviceCollection.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
+            serviceCollection.AddConfigurationFromDirectory(x => x.Name.ToLower().Contains("settings"), true);
 
             return serviceCollection;
         }

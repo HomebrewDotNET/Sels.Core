@@ -1,16 +1,23 @@
-﻿using Sels.Core.Extensions.Collections;
+﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
+using Sels.Core.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace Sels.Core.Mediator.Messaging
 {
     /// <summary>
     /// Thread safe singleton message subscriber that keeps a list of subscribers.
     /// </summary>
-    [Obsolete($"Use the new Sels.Core.Mediator.Event components")]
+    [Obsolete("Use the new Sels.Core.Mediator.Event components")]
     internal class SubscriptionManager : IMessageSubscriber
     {
         // Fields
-        private readonly Dictionary<Type, List<object>> _subscribers = new ();
-        private readonly List<ISubscriber> _allSubscribers = new();
+        private readonly Dictionary<Type, List<object>> _subscribers = new Dictionary<Type, List<object>>();
+        private readonly List<ISubscriber> _allSubscribers = new List<ISubscriber>();
         private readonly object _threadLock = new object();
         private readonly object _allThreadLock = new object();
         private readonly ILogger? _logger;

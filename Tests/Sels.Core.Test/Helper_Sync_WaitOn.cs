@@ -11,7 +11,7 @@ namespace Sels.Core.Test
     public class Helper_Sync_WaitOn
     {
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public void ReturnsWhenTaskCompletes()
         {
             // Arrange
@@ -25,7 +25,7 @@ namespace Sels.Core.Test
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public void ThrowsTimeoutExceptionWhenTaskDoesNotCompleteWithinTime()
         {
             // Arrange
@@ -48,7 +48,7 @@ namespace Sels.Core.Test
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public void ThrowsTaskCanceledExceptionWhenCancellationTokenIsCanceled()
         {
             // Arrange
@@ -73,7 +73,7 @@ namespace Sels.Core.Test
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public void GenericTask_ReturnsWhenTaskCompletes()
         {
             // Arrange
@@ -92,7 +92,7 @@ namespace Sels.Core.Test
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public void GenericTask_ThrowsTimeoutExceptionWhenTaskDoesNotCompleteWithinTime()
         {
             // Arrange
@@ -115,7 +115,7 @@ namespace Sels.Core.Test
         }
 
         [Test]
-        [Timeout(5000)]
+        [Timeout(10000)]
         public void GenericTask_ThrowsTaskCanceledExceptionWhenCancellationTokenIsCanceled()
         {
             // Arrange

@@ -1343,6 +1343,23 @@ namespace Sels.Core
 
                 return new DurationAction(duration);
             }
+
+            /// <summary>
+            /// Captures the duration of the action executed within the scope. 
+            /// Disposing the returned object will stop the stopwatch and call <paramref name="elapsedHandler"/> with the duration.
+            /// </summary>
+            /// <param name="elapsedHandler">The delegate to handle the elapsed time with</param>
+            /// <returns>Disposable to define the scope to capture the duraction for</returns>
+            public static IDisposable CaptureDuration(Action<TimeSpan> elapsedHandler)
+            {
+                elapsedHandler.ValidateArgument(nameof(elapsedHandler));
+                var stopwatch = new Stopwatch();
+                return new ScopedAction(() => stopwatch.Start(), () =>
+                {
+                    stopwatch.Stop();
+                    elapsedHandler(stopwatch.Elapsed);
+                });
+            }
         }
         #endregion
     }

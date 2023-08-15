@@ -45,7 +45,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(lockResult.AcquiredLock.ExpiryDate, Is.Null);
         }
 
-        [Test]
+        [Test, Timeout(10000)]
         public async Task ShouldNotAcquireLockTwice()
         {
             // Arrange
@@ -77,7 +77,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.IsNull(lockResultTwo.AcquiredLock);
         }
 
-        [Test]
+        [Test, Timeout(10000)]
         public async Task TrueIsReturnedWhenRequesterLocksResourceItAlreadyHolds()
         {
             // Arrange

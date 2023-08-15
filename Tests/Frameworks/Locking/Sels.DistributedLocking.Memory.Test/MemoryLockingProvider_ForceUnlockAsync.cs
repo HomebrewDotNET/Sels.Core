@@ -10,7 +10,7 @@ namespace Sels.DistributedLocking.Memory.Test
 {
     public class MemoryLockingProvider_ForceUnlockAsync
     {
-        [Test]
+        [Test, Timeout(10000)]
         public async Task LockIsRemovedOnResource()
         {
             // Arrange
@@ -30,7 +30,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(result.ExpiryDate, Is.Null);
         }
 
-        [Test]
+        [Test, Timeout(10000)]
         public async Task LockRequestsAreRemoved()
         {
             // Arrange

@@ -1,4 +1,7 @@
-﻿using Sels.Core.Extensions.Conversion;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Sels.Core.Mediator.Models.Messages.State
 {
