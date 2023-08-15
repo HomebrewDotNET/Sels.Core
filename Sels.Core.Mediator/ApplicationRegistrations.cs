@@ -9,6 +9,7 @@ using Sels.Core.Extensions;
 using Sels.Core.Extensions.DependencyInjection;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Mediator;
+using Sels.Core.Mediator.Components;
 using Sels.Core.Mediator.Event;
 using Sels.Core.Mediator.Messaging;
 using Sels.Core.Mediator.Request;
@@ -210,10 +211,21 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds all required services to make use of <see cref="INotifier"/> to raise requests/events and subscribe to them.
         /// </summary>
         /// <param name="services">The collection the service descriptions will be added to</param>
+        /// <param name="options">Optional delegate to configure the options</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddNotifier(this IServiceCollection services)
+        public static IServiceCollection AddNotifier(this IServiceCollection services, Action<NotifierOptions> options = null)
         {
             services.ValidateArgument(nameof(services));
+
+            // Task manager
+            services.AddTaskManager();
+
+            // Options
+            services.AddOptions();
+            services.BindOptionsFromConfig<NotifierOptions>();
+            services.AddValidationProfile<NotifierOptionsValidationProfile, string>(ServiceLifetime.Singleton);
+            services.AddOptionProfileValidator<NotifierOptions, NotifierOptionsValidationProfile>();
+            if(options != null) services.Configure<NotifierOptions>(options);
 
             services.TryAddScoped<INotifier, Notifier>();
 

@@ -1,13 +1,18 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Sels.Core.Async.TaskManagement;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging;
+using Sels.Core.Mediator.Components;
 using Sels.Core.Mediator.Event;
 using Sels.Core.Mediator.Request;
 using Sels.Core.Models.Disposables;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +22,7 @@ using System.Threading.Tasks;
 namespace Sels.Core.Mediator
 {
     /// <inheritdoc cref="INotifier"/>
-    public class Notifier : INotifier
+    public class Notifier : INotifier, IAsyncDisposable
     {
         // Fields
         private readonly ILogger _logger;
@@ -25,22 +30,42 @@ namespace Sels.Core.Mediator
         private readonly IEventSubscriber _eventSubscriber;
         private readonly IRequestSubscriptionManager _requestSubscriptionManager;
         private readonly IServiceProvider _serviceProvider;
+        private readonly EventFireAndForgetStrategy _strategy;
 
         /// <inheritdoc cref="Notifier"/>
+        /// <param name="options">The options for this instance</param>
+        /// <param name="taskManager">Manager used to schedule fire and forget events</param>
         /// <param name="eventSubscriber">Manager used to get global listeners</param>
         /// <param name="requestSubscriptionManager">Manager used to get the runtime request handlers</param>
         /// <param name="serviceProvider">Provider used to resolve typed event and request subscribers</param>
         /// <param name="loggerFactory">Optional factory to create loggers for child instances</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public Notifier(IEventSubscriber eventSubscriber, IRequestSubscriptionManager requestSubscriptionManager, IServiceProvider serviceProvider, ILoggerFactory loggerFactory = null, ILogger<Notifier> logger = null)
+        public Notifier(IOptions<NotifierOptions> options, ITaskManager taskManager, IEventSubscriber eventSubscriber, IRequestSubscriptionManager requestSubscriptionManager, IServiceProvider serviceProvider, ILoggerFactory loggerFactory = null, ILogger<Notifier> logger = null)
         {
             _eventSubscriber = eventSubscriber.ValidateArgument(nameof(eventSubscriber));
             _serviceProvider = serviceProvider.ValidateArgument(nameof(serviceProvider));
             _requestSubscriptionManager = requestSubscriptionManager.ValidateArgument(nameof(requestSubscriptionManager));
             _loggerFactory = loggerFactory;
+            options.ValidateArgument(nameof(options));
+            taskManager.ValidateArgument(nameof(taskManager));
             _logger = logger;
+
+            switch(options.Value.FireAndForgetStrategy)
+            {
+                case FireAndForgetStrategy.ThreadPool:
+                    _strategy = new EventFireAndForgetStrategy(taskManager);
+                    break;
+                case FireAndForgetStrategy.GlobalQueue:
+                    _strategy = new GlobalQueueFireAndForgetStrategy(options.Value.GlobalQueueName, options.Value.QueueConcurrency, taskManager);
+                    break;
+                case FireAndForgetStrategy.QueuePerType:
+                    _strategy = new EventQueueFireAndForgetStrategy(options.Value.QueueConcurrency, taskManager);
+                    break;
+                default:
+                    throw new NotSupportedException($"Strategy <{options.Value.FireAndForgetStrategy}> is not known");
+            }
         }
-        
+
         /// <inheritdoc/>
         public async Task<int> RaiseEventAsync<TEvent>(object sender, TEvent @event, Action<INotifierEventOptions<TEvent>> eventOptions, CancellationToken token = default)
         {
@@ -63,9 +88,8 @@ namespace Sels.Core.Mediator
                 // Run fire and forget
                 if (options.Options.HasFlag(EventOptions.FireAndForget))
                 {
-                    _logger.Debug($"Fire and forget enabled for event <{@event}> raised by <{sender}>. Starting task");
-                    // TODO: Use task manager to gracefully wait for tasks to complete when IoC containers gets disposed.
-                    _ = Task.Run(async () => await RaiseEventAsync(orchestrator, sender, @event, options, token).ConfigureAwait(false));
+                    _logger.Debug($"Fire and forget enabled for event <{@event}> raised by <{sender}>. Scheduling task");
+                    await _strategy.FireAndForget<TEvent>(t => RaiseEventAsync(orchestrator, sender, @event, options, t), token);
                     return 0;
                 }
 
@@ -89,7 +113,7 @@ namespace Sels.Core.Mediator
                 _logger.Log($"Executing event transaction for event <{@event}> created by <{sender}> with any enlisted event listeners");
                 return await orchestrator.ExecuteAsync(allowParallelExecution, token).ConfigureAwait(false);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Log($"Something went wrong while raising event <{@event}> created by <{sender}>", ex);
 
@@ -212,6 +236,9 @@ namespace Sels.Core.Mediator
             return response;
         }
 
+        /// <inheritdoc/>
+        public ValueTask DisposeAsync() => _strategy.DisposeAsync();
+
         /// <inheritdoc cref="INotifierEventOptions{TEvent}"/>
         /// <typeparam name="TEvent"></typeparam>
         private class NotifierEventOptions<TEvent> : INotifierEventOptions<TEvent>
@@ -277,5 +304,93 @@ namespace Sels.Core.Mediator
                 return this;
             }
         }
+
+        #region FireAndForgetStrategies
+        private class EventFireAndForgetStrategy : IAsyncDisposable
+        {
+            // Fields
+            protected ITaskManager _taskManager;
+
+            public EventFireAndForgetStrategy(ITaskManager taskManager)
+            {
+                _taskManager = taskManager.ValidateArgument(nameof(taskManager));
+            }
+
+            /// <summary>
+            /// Schedules a fire and forget action on the Thread Pool.
+            /// </summary>
+            /// <param name="fireAndForgetAction">The action to schedule</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <typeparam name="T">The type of event being scheduled</typeparam>
+            public virtual Task FireAndForget<T>(Func<CancellationToken, Task> fireAndForgetAction, CancellationToken token)
+            {
+                fireAndForgetAction.ValidateArgument(nameof(fireAndForgetAction));
+
+                _taskManager.ScheduleAnonymousAction(fireAndForgetAction, token: token);
+                return Task.CompletedTask;
+            }
+
+            /// <inheritdoc/>
+            public virtual async ValueTask DisposeAsync()
+            {
+                await _taskManager.StopAllForAsync(this).ConfigureAwait(false);
+            }
+        }
+
+        private class GlobalQueueFireAndForgetStrategy : EventFireAndForgetStrategy
+        {
+            // Fields
+            private readonly IManagedTaskGlobalQueue _queue;
+
+            public GlobalQueueFireAndForgetStrategy(string name, int maxConcurrency, ITaskManager taskManager) : base(taskManager)
+            {
+                _queue = taskManager.ValidateArgument(nameof(taskManager)).CreateOrGetGlobalQueue(name, maxConcurrency);
+            }
+            /// <inheritdoc/>
+            public override async Task FireAndForget<T>(Func<CancellationToken, Task> fireAndForgetAction, CancellationToken token)
+            {
+                fireAndForgetAction.ValidateArgument(nameof(fireAndForgetAction));
+
+                await _queue.EnqueueAsync((t, c) => t.ScheduleAnonymousAction(fireAndForgetAction), token).ConfigureAwait(false);
+            }
+            /// <inheritdoc/>
+            public override ValueTask DisposeAsync()
+            {
+                _queue.Dispose();
+                return new ValueTask();
+            }
+        }
+
+        private class EventQueueFireAndForgetStrategy : EventFireAndForgetStrategy
+        {
+            // Fields
+            private readonly Dictionary<Type, IManagedTaskLocalQueue> _queues = new Dictionary<Type, IManagedTaskLocalQueue>();
+            private readonly int _maxConcurrency;
+
+            public EventQueueFireAndForgetStrategy(int maxConcurrency, ITaskManager taskManager) : base(taskManager)
+            {
+                _maxConcurrency = maxConcurrency.ValidateArgumentLargerOrEqual(nameof(maxConcurrency), 1);
+            }
+            /// <inheritdoc/>
+            public override async Task FireAndForget<T>(Func<CancellationToken, Task> fireAndForgetAction, CancellationToken token)
+            {
+                fireAndForgetAction.ValidateArgument(nameof(fireAndForgetAction));
+
+                IManagedTaskLocalQueue queue = null;
+                lock(_queues)
+                {
+                    queue = _queues.TryGetOrSet(typeof(T), () => _taskManager.CreateLocalQueue(this, _maxConcurrency));
+                }
+
+                await queue.EnqueueAsync((t, c) => t.ScheduleAnonymousAction(fireAndForgetAction), token).ConfigureAwait(false);
+            }
+            /// <inheritdoc/>
+            public override ValueTask DisposeAsync()
+            {
+                _queues.Values.Execute(x => x.Dispose());
+                return new ValueTask();
+            }
+        }
+        #endregion
     }
 }
