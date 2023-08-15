@@ -61,6 +61,22 @@ namespace Sels.Core.Async.TaskManagement
         IManagedAnonymousTask ScheduleAnonymous<TOutput>(Func<CancellationToken, Task<TOutput>> action, Action<IManagedAnonymousTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default);
 
         /// <summary>
+        /// Creates a local queue tied to <paramref name="instance"/> that can be used to schedule throttled managed (anonymous) tasks.
+        /// </summary>
+        /// <param name="instance">The instance to tie the queue to</param>
+        /// <param name="maxConcurrency">How many tasks can scheduled and executed in parallel on the queue</param>
+        /// <returns>The local queue that was created</returns>
+        IManagedTaskLocalQueue CreateLocalQueue(object instance, int maxConcurrency);
+        /// <summary>
+        /// Tries to create a global queue with name <paramref name="name"/> that is shared by the whole application.
+        /// Global queues are only created if they do not exists yet. <paramref name="maxConcurrency"/> will be ignored if a queue exists.
+        /// </summary>
+        /// <param name="name">The unique name of the queue</param>
+        /// <param name="maxConcurrency">How many tasks can scheduled and executed in parallel on the queue</param>
+        /// <returns>The global queue that was created, or the existing one if one with <paramref name="name"/> was already created</returns>
+        IManagedTaskGlobalQueue CreateOrGetGlobalQueue(string name, int maxConcurrency);
+
+        /// <summary>
         /// Gets the managed task with <see cref="IManagedTask.Name"/> set to <paramref name="name"/> if it exists and is still running.
         /// </summary>
         /// <param name="name">The name of the managed task to get</param>
@@ -87,6 +103,7 @@ namespace Sels.Core.Async.TaskManagement
 
         /// <summary>
         /// Cancels all running managed tasks for instance <paramref name="instance"/> (if not cancelled already) and waits for all managed tasks to stop. 
+        /// Also cancels any pending work in queues tied to <paramref name="instance"/>.
         /// </summary>
         /// <param name="instance">The instance to cancel the tasks for</param>
         /// <param name="token">Optional token to cancel the request</param>

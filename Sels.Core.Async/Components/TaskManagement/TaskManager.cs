@@ -18,6 +18,8 @@ using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.Conversion;
 using static Sels.Core.Delegates.Async;
 using Sels.Core.Async.TaskManagement;
+using Sels.Core.Async.TaskManagement.Queue;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.Core.Async.TaskManagement
 {
@@ -31,19 +33,25 @@ namespace Sels.Core.Async.TaskManagement
         private readonly HashSet<ManagedTask> _managedTasks = new HashSet<ManagedTask>();
         private readonly Dictionary<string, ManagedTask> _nameIndex = new Dictionary<string, ManagedTask>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<object, List<ManagedTask>> _ownerIndex = new Dictionary<object, List<ManagedTask>>();
+        private readonly Dictionary<string, GlobalManagedTaskQueue> _globalQueues = new Dictionary<string, GlobalManagedTaskQueue>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<object, List<LocalManagedTaskQueue>> _localQueues = new Dictionary<object, List<LocalManagedTaskQueue>>();
+        private readonly ILoggerFactory? _loggerFactory;
         private readonly ILogger? _logger;
         private readonly IOptionsMonitor<TaskManagerOptions> _optionsMonitor;
 
         // Properties
         /// <inheritdoc/>
         public bool? IsDisposed { get; private set; }
+        private ITaskManager Self => (ITaskManager)this;
 
         /// <inheritdoc cref="TaskManager"/>
         /// <param name="optionsMonitor">Used to access the options for this instance</param>
+        /// <param name="loggerFactory">Optional logger factory used to create loggers for private instances</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public TaskManager(IOptionsMonitor<TaskManagerOptions> optionsMonitor, ILogger<TaskManager>? logger = null)
+        public TaskManager(IOptionsMonitor<TaskManagerOptions> optionsMonitor, ILoggerFactory? loggerFactory = null, ILogger<TaskManager>? logger = null)
         {
             _optionsMonitor = optionsMonitor.ValidateArgument(nameof(optionsMonitor));
+            _loggerFactory = loggerFactory;
             _logger = logger;
         }
 
@@ -119,6 +127,130 @@ namespace Sels.Core.Async.TaskManagement
         }
 
         /// <inheritdoc/>
+        public virtual IManagedTaskLocalQueue CreateLocalQueue(object instance, int maxConcurrency)
+        {
+            instance.ValidateArgument(nameof(instance));
+            maxConcurrency.ValidateArgumentLargerOrEqual(nameof(maxConcurrency), 1);
+
+            _logger.Log($"Creating local queue for <{instance}> with <{maxConcurrency}> workers");
+
+            lock (_localQueues)
+            {
+                LocalManagedTaskQueue localQueue = null;
+                localQueue = new LocalManagedTaskQueue(instance, () => Release(localQueue), this, maxConcurrency, _loggerFactory?.CreateLogger<LocalManagedTaskQueue>())
+                {
+                    GracefulStopTime = _optionsMonitor.CurrentValue.GracefulQueueStopTime
+                };
+                _localQueues.AddValueToList(instance, localQueue);
+                localQueue.TrackReference();
+                return localQueue;
+            }
+        }
+        /// <inheritdoc/>
+        public virtual IManagedTaskGlobalQueue CreateOrGetGlobalQueue(string name, int maxConcurrency)
+        {
+            name.ValidateArgumentNotNullOrWhitespace(nameof(name));
+            maxConcurrency.ValidateArgumentLargerOrEqual(nameof(maxConcurrency), 1);
+
+            _logger.Log($"Trying to create global queue <{name}> with <{maxConcurrency}> workers");
+
+            lock (_globalQueues)
+            {
+                GlobalManagedTaskQueue globalQueue = null;
+
+                if(!_globalQueues.TryGetValue(name, out globalQueue))
+                {
+                    _logger.Log($"Global queue with name <{name}> does not exist yet. Creating new");
+                    globalQueue = new GlobalManagedTaskQueue(name, () => Release(globalQueue), this, maxConcurrency, _loggerFactory?.CreateLogger<GlobalManagedTaskQueue>())
+                    {
+                        GracefulStopTime = _optionsMonitor.CurrentValue.GracefulQueueStopTime
+                    };
+                    _globalQueues.Add(name, globalQueue);
+                }
+                else
+                {
+                    _logger.Log($"Global queue with name <{name}> already exists. Returning existing");
+                }
+
+                globalQueue.TrackReference();
+                return globalQueue;
+            }
+        }
+
+        /// <summary>
+        /// Tries to dispose <paramref name="queue"/> if it can be cleaned up.
+        /// </summary>
+        /// <param name="queue">The queue to dispose</param>
+        protected virtual void Release(LocalManagedTaskQueue queue)
+        {
+            queue.ValidateArgument(nameof(queue));
+
+            _logger.Log($"Trying to release <{queue}>");
+
+            lock (_localQueues)
+            {
+                if(queue.CurrentReferences == 0 && queue.Pending == 0)
+                {
+                    _logger.Log($"Queue <{queue}> is not referenced anymore and does not contain work. Triggering asynchronous cleanup");
+
+                    if(_localQueues.TryGetValue(queue.Owner, out var queues))
+                    {
+                        queues.Remove(queue);
+
+                        if (!queues.HasValue()) _localQueues.Remove(queue.Owner);
+                    }
+
+                    Self.ScheduleAnonymousAction(async t =>
+                    {
+                        try
+                        {
+                            await queue.DisposeAsync();
+                        }
+                        catch(Exception ex)
+                        {
+                            _logger.Log($"Something went wrong disposing queue <{queue}>", ex);
+                        }
+                    });
+                }
+            }
+        }
+        /// <summary>
+        /// Tries to dispose <paramref name="queue"/> if it can be cleaned up.
+        /// </summary>
+        /// <param name="queue">The queue to dispose</param>
+        protected virtual void Release(GlobalManagedTaskQueue queue)
+        {
+            queue.ValidateArgument(nameof(queue));
+
+            _logger.Log($"Trying to release <{queue}>");
+
+            lock (_globalQueues)
+            {
+                if (queue.CurrentReferences == 0 && queue.Pending == 0)
+                {
+                    _logger.Log($"Queue <{queue}> is not referenced anymore and does not contain work. Triggering asynchronous cleanup");
+
+                    if (_globalQueues.ContainsKey(queue.Name))
+                    {
+                        _globalQueues.Remove(queue.Name);
+                    }
+
+                    Self.ScheduleAnonymousAction(async t =>
+                    {
+                        try
+                        {
+                            await queue.DisposeAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Log($"Something went wrong disposing queue <{queue}>", ex);
+                        }
+                    });
+                }
+            }
+        }
+
+        /// <inheritdoc/>
         public virtual IManagedTask GetByName(string name, CancellationToken token = default)
         {
             name.ValidateArgument(nameof(name));
@@ -167,15 +299,58 @@ namespace Sels.Core.Async.TaskManagement
         public virtual async Task<IManagedTask[]> StopAllForAsync(object instance, CancellationToken token = default)
         {
             instance.ValidateArgument(nameof(instance));
+            var exceptions = new List<Exception>();
 
-            _logger.Log($"Stopping all tasks owned by <{instance}>");
+            // Get queues to stop
+            _logger.Log($"Stopping all queues owned by <{instance}>");
+            LocalManagedTaskQueue[] localQueues = null;
+            lock (_localQueues)
+            {
+                if (_localQueues.ContainsKey(instance))
+                {
+                    localQueues = _localQueues[instance].ToArray();
+                    _localQueues.Remove(instance);
+                }
+            }
+
+            // Trigger stop
+            if (localQueues.HasValue())
+            {
+                _logger.Debug($"Disposing <{localQueues.Length}> queues tied to <{instance}>");
+                try
+                {
+                    await StopQueues(localQueues).ConfigureAwait(false);
+                }
+                catch(Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }
 
             // Trigger cancellation
-            var tasks = CancelAllFor(instance, token);
+            _logger.Log($"Cancelling all tasks owned by <{instance}>");
+            var managedTasks = CancelAllFor(instance, token);
 
-            // Wait for callback
-            await Task.WhenAll(tasks.Select(x => x.OnExecuted)).ConfigureAwait(false);
-            return tasks;
+            _logger.Log($"Waiting on all queues and tasks to stop <{instance}>");
+
+            // Wait for callbacks
+            try
+            {
+                await Task.WhenAll(managedTasks.Select(x => x.OnExecuted)).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                exceptions.Add(ex);
+            }
+
+            // Throw on issues
+            if (exceptions.HasValue())
+            {
+                var exceptionsToThrow = exceptions.SelectMany(x => x is AggregateException aggregate ? aggregate.InnerExceptions : x.AsEnumerable()).Where(x => !x.IsAssignableTo<OperationCanceledException>()).ToArray();
+                if (exceptionsToThrow.HasValue()) throw new AggregateException(exceptionsToThrow);
+            }
+
+            return managedTasks;
         }
         /// <summary>
         /// Sends cancellation request to all tasks returned by <paramref name="tasks"/>.
@@ -205,6 +380,18 @@ namespace Sels.Core.Async.TaskManagement
                     task.CancelAfter(cancelTime);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gracefully tries to dispose <paramref name="queues"/>.
+        /// </summary>
+        /// <param name="queues">The queues to dispose</param>
+        /// <returns>Task that will complete when all queues were disposed</returns>
+        protected virtual Task StopQueues(IEnumerable<ManagedTaskQueue> queues)
+        {
+            queues.ValidateArgument(nameof(queues));
+
+            return Task.WhenAll(queues.Select(x => x.DisposeAsync().AsTask()));
         }
 
         /// <summary>
@@ -479,6 +666,40 @@ namespace Sels.Core.Async.TaskManagement
             {
                 _logger.Log($"Disposing task manager");
 
+                // Queues
+                _logger.Log($"Stopping all queues");
+                while(_globalQueues.HasValue() || _localQueues.HasValue())
+                {
+                    var queues = new List<ManagedTaskQueue>();
+
+                    lock (_localQueues)
+                    {
+                        _logger.Log($"Sending cancellation to <{_localQueues.Values.SelectMany(x => x).Count()}> local queues");
+                        queues.AddRange(_localQueues.Values.SelectMany(x => x));
+                        _localQueues.Clear();
+                    }
+
+                    lock (_globalQueues)
+                    {
+                        _logger.Log($"Sending cancellation to <{_globalQueues.Values.Count()}> global queues");
+                        queues.AddRange(_globalQueues.Values);
+                        _globalQueues.Clear();
+                    }
+
+                    // Wait for cancellation
+                    try
+                    {
+                        _logger.Log($"Waiting for <{queues.Count}> queues to stop");
+                        await StopQueues(queues).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Log($"Not all queues stopped gracefully", ex);
+                    }
+                }
+
+                // Tasks
+                _logger.Log($"Stopping all managed tasks");
                 while (_anonymousTasks.HasValue() || _managedTasks.HasValue())
                 {
                     var pending = new HashSet<IManagedAnonymousTask>();
@@ -750,16 +971,6 @@ namespace Sels.Core.Async.TaskManagement
                 SetOptions(options, taskManager, action);
                 return options;
             }
-        }
-        #endregion
-
-        #region Pendin task
-        private class PendingTask<T> : IPendingTask<T>
-        {
-            /// <inheritdoc/>
-            public DateTime Created { get; } = DateTime.Now;
-            /// <inheritdoc/>
-            public Task<T> Callback { get; set; }
         }
         #endregion
     }

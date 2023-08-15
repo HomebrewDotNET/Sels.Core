@@ -20,5 +20,9 @@ namespace Sels.Core.Async.TaskManagement
         /// This gives managed (anonymous) tasks time to finish executing without throwing <see cref="OperationCanceledException"/>.
         /// </summary>
         public TimeSpan LongRunningGracefulCancellationWaitTime { get; set; } = TimeSpan.FromSeconds(5);
+        /// <summary>
+        /// How long to wait for <see cref="IManagedTaskGlobalQueue"/> or <see cref="IManagedTaskLocalQueue"/> to process all items before cancelling the pending tasks.
+        /// </summary>
+        public TimeSpan GracefulQueueStopTime { get; set; } = TimeSpan.FromSeconds(5);
     }
 }

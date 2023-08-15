@@ -404,7 +404,7 @@ namespace Sels.Core.Async.Queue
                 // Throw on issues
                 if (exceptions.HasValue())
                 {
-                    var exceptionsToThrow = exceptions.SelectMany(x => x is AggregateException aggregate ? aggregate.InnerExceptions : x.AsEnumerable()).Where(x => x.IsAssignableTo<OperationCanceledException>()).ToArray();
+                    var exceptionsToThrow = exceptions.SelectMany(x => x is AggregateException aggregate ? aggregate.InnerExceptions : x.AsEnumerable()).Where(x => !x.IsAssignableTo<OperationCanceledException>()).ToArray();
                     if (exceptionsToThrow.HasValue()) throw new AggregateException(exceptionsToThrow);
                 }
             }
