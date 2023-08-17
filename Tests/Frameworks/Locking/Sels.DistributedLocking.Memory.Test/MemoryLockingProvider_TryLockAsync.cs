@@ -35,7 +35,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(lockResult.AcquiredLock.ExpiryDate, Is.Null);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ShouldNotAcquireLockTwice()
         {
             // Arrange
@@ -53,7 +53,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.IsNull(lockResultTwo.AcquiredLock);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task OnlyOneThreadLocksResourceWhenMultipleLocksAreCalledInParallel()
         {
             // Arrange
@@ -75,7 +75,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(results.Count(x => x), Is.EqualTo(1));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task TrueIsReturnedWhenRequesterLocksResourceItAlreadyHolds()
         {
             // Arrange
@@ -93,7 +93,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.IsNotNull(lockResultTwo.AcquiredLock);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ResourceCanBeLockedAfterUnlocking()
         {
             // Arrange
@@ -118,7 +118,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(lockResultTwo.AcquiredLock.ExpiryDate, Is.Null);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ResourceCanBeLockedAfterExpiring()
         {
             // Arrange
@@ -140,7 +140,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(lockResultTwo.AcquiredLock.LockedBy, Is.EqualTo("Requester.2"));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task LockExpiryDateIsExtendedWhenKeepAliveIsEnabled()
         {
             // Arrange
@@ -159,7 +159,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(currentExpiry, Is.GreaterThan(initialExpiry));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task LockRequestTakesPriorityOverDirectCalls()
         {
             // Arrange

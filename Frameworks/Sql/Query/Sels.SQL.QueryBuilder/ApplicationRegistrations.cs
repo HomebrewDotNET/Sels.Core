@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.ValidateArgument(nameof(services));
 
             services.New<ISqlQueryProvider, SqlQueryProvider>()
-                    .Trace(x => x.Duration.OfAll)
+                    .Trace(x => x.Duration.OfAll.WithDurationThresholds(50, 100))
                     .AsScoped()
                     .TryRegister();
 
@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         memoryOptionsBuilder?.Invoke(memoryOptions);
                         return new CachedSqlQueryProvider(p.GetRequiredService<IMemoryCache>(), memoryOptions, p.GetRequiredService<ISqlCompiler>(), expressionCompileOptions, p.GetService<ILogger<CachedSqlQueryProvider>>());
                     })
-                    .Trace(x => x.Duration.OfAll)
+                    .Trace(x => x.Duration.OfAll.WithDurationThresholds(50, 100))
                     .AsScoped()
                     .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
                     .Register();

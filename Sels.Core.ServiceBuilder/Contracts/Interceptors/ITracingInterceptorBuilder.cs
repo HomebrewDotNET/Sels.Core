@@ -41,7 +41,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
     /// <summary>
     /// Builder for creating an interceptor that traces all method duration.
     /// </summary>
-    public interface IAllMethodDurationInterceptorBuilder
+    public interface IAllMethodDurationInterceptorBuilder : IMethodDurationSharedInterceptorBuilder<IAllMethodDurationInterceptorBuilder>
     {
         /// <summary>
         /// Returns the parent builder for defining more tracing configuration.
@@ -76,7 +76,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
     /// <summary>
     /// Builder for creating an interceptor that traces the duration of specific methods.
     /// </summary>
-    public interface ISpecificMethodDurationInterceptorBuilder
+    public interface ISpecificMethodDurationInterceptorBuilder : IMethodDurationSharedInterceptorBuilder<ISpecificMethodDurationInterceptorBuilder>
     {
         /// <summary>
         /// Returns the parent builder for defining more tracing configuration.
@@ -107,6 +107,64 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         /// <param name="methodNames">The names of the methods to trace</param>
         /// <returns>Current builder for method chaining</returns>
         ISpecificMethodDurationInterceptorBuilder Methods(params string[] methodNames) => Methods(x => methodNames.ValidateArgument(nameof(methodNames)).Contains(x.Method.Name));
+    }
+    /// <summary>
+    /// Builder for configuring extra options when tracing the duration of methods.
+    /// </summary>
+    /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+    public interface IMethodDurationSharedInterceptorBuilder<TDerived> where TDerived : IMethodDurationSharedInterceptorBuilder<TDerived>
+    {
+        /// <summary>
+        /// If method duration is above or equal to <paramref name="duration"/>, the duration will be traced using log level <paramref name="logLevel"/>.
+        /// </summary>
+        /// <param name="duration">The threshold above which to trace with <paramref name="duration"/></param>
+        /// <param name="logLevel">THe log level to trace with</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived WhenDurationAbove(TimeSpan duration, LogLevel logLevel);
+        /// <summary>
+        /// If method duration is above or equal to <paramref name="duration"/>ms, the duration will be traced using log level <paramref name="logLevel"/>.
+        /// </summary>
+        /// <param name="duration">The threshold (in ms) above which to trace with <paramref name="duration"/></param>
+        /// <param name="logLevel">THe log level to trace with</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived WhenDurationAbove(uint duration, LogLevel logLevel) => WhenDurationAbove(TimeSpan.FromMilliseconds(duration), logLevel);
+
+        /// <summary>
+        /// Sets the duration threshold above which to trace with <see cref="LogLevel.Warning"/> and <see cref="LogLevel.Error"/>.
+        /// </summary>
+        /// <param name="warningDuration">The threshold above which to trace with log level <see cref="LogLevel.Warning"/></param>
+        /// <param name="errorDuration">The threshold above which to trace with log level <see cref="LogLevel.Error"/></param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived WithDurationThresholds(TimeSpan warningDuration, TimeSpan errorDuration) => WhenDurationAbove(warningDuration, LogLevel.Warning).WhenDurationAbove(errorDuration, LogLevel.Error);
+        /// <summary>
+        /// Sets the duration threshold above which to trace with <see cref="LogLevel.Warning"/> and <see cref="LogLevel.Error"/>.
+        /// </summary>
+        /// <param name="warningDuration">The threshold (in ms) above which to trace with log level <see cref="LogLevel.Warning"/></param>
+        /// <param name="errorDuration">The threshold (in ms) above which to trace with log level <see cref="LogLevel.Error"/></param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived WithDurationThresholds(uint warningDuration, uint errorDuration) => WhenDurationAbove(warningDuration, LogLevel.Warning).WhenDurationAbove(errorDuration, LogLevel.Error);
+        /// <summary>
+        /// Sets the duration threshold above which to trace with <see cref="LogLevel.Warning"/>, <see cref="LogLevel.Error"/> and <see cref="LogLevel.Critical"/>.
+        /// </summary>
+        /// <param name="warningDuration">The threshold above which to trace with log level <see cref="LogLevel.Warning"/></param>
+        /// <param name="errorDuration">The threshold above which to trace with log level <see cref="LogLevel.Error"/></param>
+        /// <param name="criticalDuration">The threshold above which to trace with log level <see cref="LogLevel.Critical"/></param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived WithDurationThresholds(TimeSpan warningDuration, TimeSpan errorDuration, TimeSpan criticalDuration) => WithDurationThresholds(warningDuration, errorDuration).WhenDurationAbove(criticalDuration, LogLevel.Critical);
+        /// <summary>
+        /// Sets the duration threshold above which to trace with <see cref="LogLevel.Warning"/>, <see cref="LogLevel.Error"/> and <see cref="LogLevel.Critical"/>.
+        /// </summary>
+        /// <param name="warningDuration">The threshold (in ms) above which to trace with log level <see cref="LogLevel.Warning"/></param>
+        /// <param name="errorDuration">The threshold (in ms) above which to trace with log level <see cref="LogLevel.Error"/></param>
+        /// <param name="criticalDuration">The threshold (in ms) above which to trace with log level <see cref="LogLevel.Critical"/></param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived WithDurationThresholds(uint warningDuration, uint errorDuration, uint criticalDuration) => WithDurationThresholds(TimeSpan.FromMilliseconds(warningDuration), TimeSpan.FromMilliseconds(errorDuration), TimeSpan.FromMilliseconds(criticalDuration));
+
+        /// <summary>
+        /// Traces with <see cref="LogLevel.Warning"/> when method duration goes above 250ms and with <see cref="LogLevel.Error"/> when duration goes above 1000ms.
+        /// </summary>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived WithDefaultThresholds() => WithDurationThresholds(250, 1000);
     }
 
     /// <summary>

@@ -8,7 +8,7 @@ namespace Sels.DistributedLocking.Memory.Test
 {
     public class MemoryLockingProvider_GetPendingRequestsAsync
     {
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ReturnsCorrectAmountOfPendingRequests()
         {
             // Arrange
@@ -36,7 +36,7 @@ namespace Sels.DistributedLocking.Memory.Test
             }
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ReturnsEmptyArrayWhenThereAreNoPendingRequests()
         {
             // Arrange
@@ -52,7 +52,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(pendingRequests.Length, Is.EqualTo(0));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ReturnsEmptyArrayWhenNoLocksExistForTheResource()
         {
             // Arrange

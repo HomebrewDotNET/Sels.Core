@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddServiceFactoryScope();
             services.New<IServiceFactory, AutofacServiceFactory>()
                     .AsSingleton()
-                    .Trace(x => x.Duration.OfAll)
+                    .Trace(x => x.Duration.OfAll.WithDefaultThresholds())
                     .Register();
 
             return services;

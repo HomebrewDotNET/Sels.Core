@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         var loggerFactory = p.GetService<Logging.ILoggerFactory>();
                         return new MySqlCompiler(loggerFactory?.CreateLogger<MySqlCompiler>());
                     })
-                    .Trace(x => x.Duration.OfAll)
+                    .Trace(x => x.Duration.OfAll.WithDurationThresholds(50, 100))
                     .AsScoped()
                     .TryRegister();
 

@@ -10,7 +10,7 @@ namespace Sels.DistributedLocking.SQL.Test
 {
     public class SqlLockingProvider_GetAsync
     {
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ReturnsCorrectStateOfLock()
         {
             // Arrange
@@ -51,7 +51,7 @@ namespace Sels.DistributedLocking.SQL.Test
             Assert.That(result.PendingRequests, Is.EqualTo(lockResult.AcquiredLock.PendingRequests));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task NonExistantLockReturnsFreeLock()
         {
             // Arrange

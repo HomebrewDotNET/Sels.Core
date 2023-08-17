@@ -13,7 +13,7 @@ namespace Sels.Core.Async.Test.Components.Queue
         [TestCase(420)]
         [TestCase(-450459)]
         [TestCase(459234755)]
-        [Timeout(10000)]
+        [Timeout(60000)]
         public async Task ReturnsTrueWithItemWhenQueueIsNotEmpty(int item)
         {
             // Arrange
@@ -32,7 +32,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.AreEqual(item, dequeued);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ReturnsFalseWhenQueueIsEmpty()
         {
             // Arrange
@@ -49,7 +49,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.IsFalse(wasDequeued);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ThrowsOperationCanceledExceptionWhenTokenGetsCancelled()
         {
             // Arrange

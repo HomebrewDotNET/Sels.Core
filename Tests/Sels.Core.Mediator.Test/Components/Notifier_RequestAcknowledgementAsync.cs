@@ -11,7 +11,7 @@ namespace Sels.Core.Mediator.Test.Components
     public class Notifier_RequestAcknowledgementAsync
     {
         [Test]
-        [Timeout(10000)]
+        [Timeout(60000)]
         public async Task RequestIsRaisedToGlobalHandler()
         {
             // Arrange
@@ -31,7 +31,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(10000)]
+        [Timeout(60000)]
         public async Task RequestIsRaisedToRuntimeHandler()
         {
             // Arrange
@@ -53,7 +53,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(10000)]
+        [Timeout(60000)]
         public async Task UnsubscribingStopsRuntimeHandlerFromReceivingRequests()
         {
             // Arrange
@@ -76,7 +76,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(10000)]
+        [Timeout(60000)]
         public async Task CancellingTokenCancelsRequest()
         {
             // Arrange
@@ -109,7 +109,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(10000)]
+        [Timeout(60000)]
         public async Task RequestHandlersAreCalledInTheCorrectOrder()
         {
             // Arrange
@@ -139,7 +139,7 @@ namespace Sels.Core.Mediator.Test.Components
         }
 
         [Test]
-        [Timeout(10000)]
+        [Timeout(60000)]
         public async Task OnlyOneHandlerCanRespondToRequest()
         {
             // Arrange

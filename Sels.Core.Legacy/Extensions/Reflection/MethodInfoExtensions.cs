@@ -1,4 +1,5 @@
 ﻿using Sels.Core.Extensions.Linq;
+using Sels.Core.Extensions.Text;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -94,10 +95,31 @@ namespace Sels.Core.Extensions.Reflection
         {
             method.ValidateArgument(nameof(method));
 
-            StringBuilder builder = new StringBuilder();
+            return GetDisplayName(method, includeNamespace ? MethodDisplayOptions.FullMethodOnly : MethodDisplayOptions.MethodOnly, arguments);
+        }
 
-            // Add namespace + method name
-            builder.GetDisplayName(method.ReflectedType, includeNamespace).Append('.').Append(method.Name);
+        /// <summary>
+        /// Returns a display name where in case of a generic method the types are fully filled out.
+        /// </summary>
+        /// <param name="method">Method to get the display name for</param>
+        /// <param name="options">The display options</param>
+        /// <param name="arguments">Optional list of argument for the method</param>
+        /// <returns>The display name for <paramref name="method"/></returns>
+        public static string GetDisplayName(this MethodInfo method, MethodDisplayOptions options, params string[] arguments)
+        {
+            method.ValidateArgument(nameof(method));
+
+            StringBuilder builder = new StringBuilder();
+            var includeNamespace = options.HasFlag(MethodDisplayOptions.IncludeNamespace);
+            var includeType = options.HasFlag(MethodDisplayOptions.IncludeType);
+            var includeParameterTypes = options.HasFlag(MethodDisplayOptions.IncludeParameterTypes);
+            var includeParameterNames = options.HasFlag(MethodDisplayOptions.IncludeParameterNames);
+
+            // Add namespace of parent
+            if (includeType) builder.GetDisplayName(method.ReflectedType, includeNamespace).Append('.');
+
+            // Method name
+            builder.Append(method.Name);
 
             // Add generic type arguments if present
             if (method.IsGenericMethod)
@@ -107,7 +129,7 @@ namespace Sels.Core.Extensions.Reflection
                 genericArguments.Execute((i, x) =>
                 {
                     builder.GetDisplayName(x, includeNamespace);
-                    if (i < genericArguments.Length - 1) builder.Append(',');
+                    if (i < genericArguments.Length - 1) builder.Append(", ");
                 });
                 builder.Append('>');
             }
@@ -120,7 +142,17 @@ namespace Sels.Core.Extensions.Reflection
                 arguments.Execute((i, x) =>
                 {
                     builder.Append(x);
-                    if (i < arguments.Length - 1) builder.Append(',');
+                    if (i < arguments.Length - 1) builder.Append(", ");
+                });
+            }
+            else if (includeParameterTypes)
+            {
+                var parameters = method.GetParameters();
+                parameters.Execute((i, x) =>
+                {
+                    builder.GetDisplayName(x.ParameterType, includeNamespace);
+                    if (includeParameterNames) builder.AppendSpace().Append(x.Name);
+                    if (i < parameters.Length - 1) builder.Append(", ");
                 });
             }
 
@@ -140,5 +172,46 @@ namespace Sels.Core.Extensions.Reflection
 
             return method.ReturnType.IsAssignableTo<Task>() || method.ReturnType.IsAssignableTo<ValueTask>();
         }
+    }
+
+    /// <summary>
+    /// Exposes for display options for <see cref="MethodInfo"/>.
+    /// </summary>
+    [Flags]
+    public enum MethodDisplayOptions
+    {
+        /// <summary>
+        /// No options selected.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Includes the defining type name.
+        /// </summary>
+        IncludeType = 1,
+        /// <summary>
+        /// Includes the full namespace when displaying types.
+        /// </summary>
+        IncludeNamespace = 2,
+        /// <summary>
+        /// Includes the the type names of the method parameters. Only used when no arguments are provided. 
+        /// </summary>
+        IncludeParameterTypes = 4,
+        /// <summary>
+        /// Include the parameter names if <see cref="IncludeParameterTypes"/> is enabled.
+        /// </summary>
+        IncludeParameterNames = 8,
+
+        /// <summary>
+        /// Only display the method and it's parameters including the namespace of types.
+        /// </summary>
+        FullMethodOnly = MethodOnly | IncludeNamespace,
+        /// <summary>
+        /// Only display the method and it's parameters.
+        /// </summary>
+        MethodOnly = IncludeParameterTypes | IncludeParameterNames,
+        /// <summary>
+        /// Displays everything
+        /// </summary>
+        Full = IncludeType | IncludeNamespace | IncludeParameterTypes
     }
 }

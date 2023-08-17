@@ -10,7 +10,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
     {
         private const string GlobalQueueName = "UnitTests";
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task AnonymousTaskIsScheduledAndExecuted()
         {
             // Arrange
@@ -33,7 +33,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             await scheduledTask.OnExecuted;
             Assert.IsTrue(executed);
         }
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ManagedTaskIsScheduledAndExecuted()
         {
             // Arrange

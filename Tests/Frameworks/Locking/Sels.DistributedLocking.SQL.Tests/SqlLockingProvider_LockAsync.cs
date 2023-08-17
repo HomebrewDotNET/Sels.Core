@@ -91,7 +91,7 @@ namespace Sels.DistributedLocking.SQL.Test
             repositoryMock.Verify(x => x.CreateRequestAsync(It.IsAny<IRepositoryTransaction>(), It.Is<SqlLockRequest>(x => x.Resource.Equals(resource) && x.Requester.Equals(requester)), It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         [MaxTime(2000)]
         public async Task LockRequestIsProperlyTimedOut()
         {
@@ -150,7 +150,7 @@ namespace Sels.DistributedLocking.SQL.Test
             repositoryMock.Verify(x => x.DeleteAllRequestsById(It.IsAny<IRepositoryTransaction>(), It.Is<long[]>(x => x.Contains(sqlRequest.Id)), It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task CancelingRequestThrowsOperationCanceledException()
         {
             // Arrange

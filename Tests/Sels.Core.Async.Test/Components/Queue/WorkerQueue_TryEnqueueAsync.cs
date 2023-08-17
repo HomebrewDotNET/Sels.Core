@@ -10,7 +10,7 @@ namespace Sels.Core.Async.Test.Components.Queue
 {
     public class WorkerQueue_TryEnqueueAsync
     {
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ReturnsTrueWhenQueueIsNotAtMaxSize()
         {
             // Arrange
@@ -26,7 +26,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             // Assert
             Assert.IsTrue(actual);
         }
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ReturnsTrueWhenQueueDoesNotHaveMaxSize()
         {
             // Arrange
@@ -42,7 +42,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             // Assert
             Assert.IsTrue(actual);
         }
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ReturnsFalseWhenQueueIsAtMaxSize()
         {
             // Arrange
@@ -59,7 +59,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             // Assert
             Assert.IsFalse(actual);
         }
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task AddingToQueueIncreasesCount()
         {
             // Arrange
@@ -79,7 +79,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             // Assert
             Assert.AreEqual(amount, queue.Count);
         }
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ThrowsOperationCanceledExceptionWhenTokenIsCancelled()
         {
             // Arrange

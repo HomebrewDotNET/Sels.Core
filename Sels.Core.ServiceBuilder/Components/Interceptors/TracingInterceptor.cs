@@ -10,6 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
+using Sels.Core.Extensions.Reflection;
 
 namespace Sels.Core.ServiceBuilder.Interceptors
 {
@@ -23,7 +25,8 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         private readonly ILogger _logger;
 
         // State
-        private MethodTracer _methodTracer;
+        private List<AllMethodTracer> _allMethodTracers = new List<AllMethodTracer>();
+        private List<SpecificMethodTracer> _specificMethodTracers = new List<SpecificMethodTracer>();
         private ExceptionTracer _exceptionTracer;
 
         /// <inheritdoc cref="TracingInterceptor"/>
@@ -44,27 +47,46 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         /// <inheritdoc/>
         public IExceptionTracingInterceptorBuilder Exceptions { get { _exceptionTracer = new ExceptionTracer(this); return _exceptionTracer; } }
         /// <inheritdoc/>
-        public IAllMethodDurationInterceptorBuilder OfAll { get { var tracer = new AllMethodTracer(this); _methodTracer = tracer; return tracer; } }
+        public IAllMethodDurationInterceptorBuilder OfAll { get { var tracer = new AllMethodTracer(this); _allMethodTracers.Add(tracer); return tracer; } }
         /// <inheritdoc/>
-        public ISpecificMethodDurationInterceptorBuilder Of { get { var tracer = new SpecificMethodTracer(this); _methodTracer = tracer; return tracer; } }
+        public ISpecificMethodDurationInterceptorBuilder Of { get { var tracer = new SpecificMethodTracer(this); _specificMethodTracers.Add(tracer); return tracer; } }
 
         /// <inheritdoc/>
         protected override async Task InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed)
         {
-            var loggers = GetLoggerFor(invocation);
+            var logger = GetLoggerFor(invocation);
 
             try
             {
-                using (_methodTracer != null && _methodTracer.CanTrace(invocation) ? loggers.TraceMethod(invocation.TargetType, invocation.Method.Name) : NullDisposer.Instance)
+                var tracer = Helper.Collection.EnumerateAll<MethodTracer>(_specificMethodTracers, _allMethodTracers).FirstOrDefault(x => x.CanTrace(invocation));
+
+                if(tracer != null)
+                {
+                    var method = invocation.Method.GetDisplayName(MethodDisplayOptions.MethodOnly);
+                    logger.Trace($"Executing method <{method}>");
+                    using (Helper.Time.CaptureDuration(x =>
+                    {
+                        var logLevel = LogLevel.Trace;
+                        foreach(var durationLogLevel in tracer.DurationLogLevels?.OrderBy(x => x.Value).Where(d => x >= d.Value))
+                        {
+                            logLevel = durationLogLevel.Key;
+                        }
+                        logger.Log(logLevel, $"Executed method <{method}> in <{x}>");
+                    }))
+                    {
+                        await proceed(invocation, proceedInfo);
+                    }
+                }
+                else
                 {
                     await proceed(invocation, proceedInfo);
-                }               
+                }                   
             }
             catch (Exception ex)
             {
-                if(loggers != null)
+                if(logger != null)
                 {
-                    _exceptionTracer?.Trace(invocation, loggers, ex);
+                    _exceptionTracer?.Trace(invocation, logger, ex);
                 }
 
                 throw;
@@ -152,6 +174,15 @@ namespace Sels.Core.ServiceBuilder.Interceptors
                 _exceptions.Add(condition);
                 return this;
             }
+
+            public IAllMethodDurationInterceptorBuilder WhenDurationAbove(TimeSpan duration, LogLevel logLevel)
+            {
+                DurationLogLevels ??= new Dictionary<LogLevel, TimeSpan>();
+
+                DurationLogLevels.AddOrUpdate(logLevel, duration);
+
+                return this;
+            }
         }
         private class SpecificMethodTracer : MethodTracer, ISpecificMethodDurationInterceptorBuilder
         {
@@ -178,12 +209,24 @@ namespace Sels.Core.ServiceBuilder.Interceptors
                 _selectors.Add(condition);
                 return this;
             }
+
+            public ISpecificMethodDurationInterceptorBuilder WhenDurationAbove(TimeSpan duration, LogLevel logLevel)
+            {
+                DurationLogLevels ??= new Dictionary<LogLevel, TimeSpan>();
+
+                DurationLogLevels.AddOrUpdate(logLevel, duration);
+
+                return this;
+            }
         }
         private abstract class MethodTracer : Delegator
         {
             protected MethodTracer(ITracingInterceptorBuilder builder) : base(builder)
             {
             }
+
+
+            public Dictionary<LogLevel, TimeSpan> DurationLogLevels { get; protected set; }
 
             public abstract bool CanTrace(IInvocation invocation);
         }

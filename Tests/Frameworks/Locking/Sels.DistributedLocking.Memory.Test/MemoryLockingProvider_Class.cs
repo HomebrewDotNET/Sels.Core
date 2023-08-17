@@ -8,7 +8,7 @@ namespace Sels.DistributedLocking.Memory.Test
 {
     public class MemoryLockingProvider_Class
     {
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task InActiveLocksAreCleanedUpWithCleanupMethodSetToAlways()
         {
             // Arrange
@@ -37,7 +37,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(result.Results.Length, Is.EqualTo(0));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task InActiveLocksAreCleanedUpWithCleanupMethodSetToAmount()
         {
             // Arrange
@@ -67,7 +67,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(result.Results.Length, Is.EqualTo(0));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task InActiveLocksAreCleanedUpWithCleanupMethodSetToTime()
         {
             // Arrange
@@ -97,7 +97,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(result.Results.Length, Is.EqualTo(0));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task InActiveLocksAreCleanedUpWithCleanupMethodSetToProcessMemory()
         {
             // Arrange

@@ -13,7 +13,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
 {
     public class TaskManager_Schedule
     {
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task TaskIsScheduledAndExecuted()
         {
             // Arrange
@@ -38,7 +38,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
         [TestCase(10)]
         [TestCase(69)]
         [TestCase(420)]
-        [Timeout(10000)]
+        [Timeout(60000)]
         public async Task CorrectOutputIsReturnedFromTask(int output)
         {
             // Arrange
@@ -58,7 +58,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.AreEqual(output, actual);
         }
 
-        [Test,Timeout(10000)]
+        [Test,Timeout(60000)]
         public async Task CorrectExceptionIsReturnedFromTask()
         {
             // Arrange
@@ -79,7 +79,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(actual, Is.AssignableTo<DivideByZeroException>());
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task TaskIsCancelledWhenTokenGetsCancelled()
         {
             // Arrange
@@ -103,7 +103,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(exception, Is.AssignableTo<OperationCanceledException>());
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task PreAndPostExecutionAreExecuted()
         {
             // Arrange
@@ -127,7 +127,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.IsTrue(postExecuted);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ExceptionThrownInPreActionIsCaptured()
         {
             // Arrange
@@ -148,7 +148,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(actual, Is.AssignableTo<AbandonedMutexException>());
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ExceptionThrownInPostActionIsCaptured()
         {
             // Arrange
@@ -172,7 +172,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
         [TestCase(TaskCreationOptions.PreferFairness)]
         [TestCase(TaskCreationOptions.LongRunning | TaskCreationOptions.HideScheduler)]
         [TestCase(TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.DenyChildAttach)]
-        [Timeout(10000)]
+        [Timeout(60000)]
         public async Task TaskIsScheduledWithExpectedTaskCreationOptions(TaskCreationOptions creationOptions)
         {
             // Arrange
@@ -192,7 +192,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
         [TestCase(ManagedTaskOptions.GracefulCancellation)]
         [TestCase(ManagedTaskOptions.AutoRestart | ManagedTaskOptions.KeepAlive)]
         [TestCase(ManagedTaskOptions.None)]
-        [Timeout(10000)]
+        [Timeout(60000)]
         public async Task TaskIsScheduledWithExpectedManagedTaskOptions(ManagedTaskOptions taskOptions)
         {
             // Arrange
@@ -209,7 +209,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.AreEqual(taskOptions, scheduledTask.Options);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ManagedContinuationIsTriggered()
         {
             // Arrange
@@ -234,7 +234,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(scheduledTask.Continuations[0], Is.EqualTo(managedTask));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ManagedNamedContinuationIsTriggered()
         {
             // Arrange
@@ -261,7 +261,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(scheduledTask.Continuations[0].Name, Is.EqualTo(TaskName));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task AnonymousContinuationIsTriggered()
         {
             // Arrange

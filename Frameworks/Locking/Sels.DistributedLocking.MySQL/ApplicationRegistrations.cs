@@ -105,7 +105,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.New<ISqlLockRepository, T>()
                         .ConstructWith(factory)
-                        .Trace(x => x.Duration.OfAll)
+                        .Trace(x => x.Duration.OfAll.WithDefaultThresholds())
                         .ExecuteWithPolly((p, b) =>
                         {
                             var logger = p.GetService<ILogger<T>>();

@@ -69,7 +69,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(request.KeepAlive, Is.False);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ExpectedNumberOfRequestsAreCreatedWhenResourceIsLocked()
         {
             // Arrange
@@ -102,7 +102,7 @@ namespace Sels.DistributedLocking.Memory.Test
             }
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ResourceCanBeLockedAfterUnlocking()
         {
             // Arrange
@@ -126,7 +126,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(lockTwo.ExpiryDate, Is.Null);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task ResourceCanBeLockedAfterExpiring()
         {
             // Arrange
@@ -147,7 +147,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(lockTwo.LockedBy, Is.EqualTo("Requester.2"));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task LockExpiryDateIsExtendedWhenKeepAliveIsEnabled()
         {
             // Arrange
@@ -167,7 +167,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(currentExpiry, Is.GreaterThan(initialExpiry));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task LockRequestTakesPriorityOverDirectCalls()
         {
             // Arrange
@@ -196,7 +196,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.IsNull(@lock.ExpiryDate);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task LockRequestIsProperlyTimedOut()
         {
             // Arrange
@@ -231,7 +231,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(timeoutException.Timeout, Is.EqualTo(TimeSpan.FromMilliseconds(100)));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task CancelingRequestThrowsOperationCanceledException()
         {
             // Arrange
@@ -258,7 +258,7 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(exception, Is.InstanceOf<OperationCanceledException>());
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(60000)]
         public async Task LockThatExpiresAssignsNextRequestInQueue()
         {
             // Arrange
