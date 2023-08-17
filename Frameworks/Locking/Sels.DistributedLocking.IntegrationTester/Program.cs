@@ -78,7 +78,7 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                        }
                        else
                        {
-                           x.AddFilter("Sels.Core", LogLevel.Error);
+                           //x.AddFilter("Sels.Core", LogLevel.Error);
                            x.AddFilter("Sels.SQL.QueryBuilder", LogLevel.Error);
                            x.AddFilter("Sels.ObjectValidationFramework", LogLevel.Error);
                            x.SetMinimumLevel(logLevel);
@@ -156,6 +156,7 @@ var exitCode = await SelsCommandLine.CreateAsyncTool<CliArguments>()
                                            logger.Log($"Executing test <{testType}> for provider <{providerKey}>");
                                            var success = await tester.RunTests(providerKey, setupProvider.Value, t);
                                            if (!success) anyTestFailed = true;
+                                           logger.Log($"Executed test <{testType}> for provider <{providerKey}>");
                                        }
                                    }
                                    catch (Exception ex)

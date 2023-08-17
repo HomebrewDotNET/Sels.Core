@@ -23,6 +23,9 @@ using Sels.DistributedLocking.Abstractions.Models;
 using Sels.Core.Dispose;
 using Sels.Core.Scope.Actions;
 using Castle.Core.Resource;
+using Sels.Core.Mediator;
+using Sels.Core.Mediator.Event;
+using Sels.DistributedLocking.SQL.Event;
 
 namespace Sels.DistributedLocking.SQL
 {
@@ -37,6 +40,8 @@ namespace Sels.DistributedLocking.SQL
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
         private readonly CancellationTokenSource _maintenanceTokenSource = new CancellationTokenSource();
+        private readonly INotifier _notifier;
+        private readonly IEventSubscriber _eventSubscriber;
         private Task _maintenanceTask;
 
         // Properties
@@ -48,12 +53,16 @@ namespace Sels.DistributedLocking.SQL
         public bool? IsDisposed { get; private set; }
 
         /// <inheritdoc cref="SqlLockingProvider"/>
+        /// <param name="notifier">Used to raised events</param>
+        /// <param name="eventSubscriber">Used to subscribe to events</param>
         /// <param name="lockRepository">Used to manage lock state</param>
         /// <param name="options">The configuration for this instance</param>
         /// <param name="loggerFactory">Optional factory used to create loggers for child instances</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public SqlLockingProvider(ISqlLockRepository lockRepository, IOptionsMonitor<SqlLockingProviderOptions> options, ILoggerFactory loggerFactory = null, ILogger<SqlLockingProvider> logger = null)
+        public SqlLockingProvider(INotifier notifier, IEventSubscriber eventSubscriber, ISqlLockRepository lockRepository, IOptionsMonitor<SqlLockingProviderOptions> options, ILoggerFactory loggerFactory = null, ILogger<SqlLockingProvider> logger = null)
         {
+            _notifier = notifier.ValidateArgument(nameof(notifier));
+            _eventSubscriber = eventSubscriber.ValidateArgument(nameof(eventSubscriber));
             _lockRepository = lockRepository.ValidateArgument(nameof(lockRepository));
             _logger = logger;
             _loggerFactory = loggerFactory;
@@ -264,6 +273,10 @@ namespace Sels.DistributedLocking.SQL
             else
             {
                 _logger.Log($"Resource <{resource}> unlocked by <{requester}>");
+
+                // Raise event that lock was unlocked
+                _ = await _notifier.RaiseEventAsync(this, new ResourceUnlockedEvent(resource), x => x.WithOptions(EventOptions.FireAndForget | EventOptions.AllowParallelExecution), token);
+
                 return true;
             }
         }
@@ -333,7 +346,7 @@ namespace Sels.DistributedLocking.SQL
         {
             lock (_requestManagers)
             {
-                var requestManager = new RequestManager(OptionsMonitor, (l, r) => new AcquiredSqlLock(l, this, r.KeepAlive, r.ExpiryTime.HasValue ? TimeSpan.FromSeconds(r.ExpiryTime.Value) : TimeSpan.Zero, _loggerFactory?.CreateLogger<AcquiredSqlLock>()), _lockRepository, _loggerFactory?.CreateLogger<RequestManager>());
+                var requestManager = new RequestManager(_eventSubscriber, OptionsMonitor, (l, r) => new AcquiredSqlLock(l, this, r.KeepAlive, r.ExpiryTime.HasValue ? TimeSpan.FromSeconds(r.ExpiryTime.Value) : TimeSpan.Zero, _loggerFactory?.CreateLogger<AcquiredSqlLock>()), _lockRepository, _loggerFactory?.CreateLogger<RequestManager>());
                 _requestManagers.Add(requestManager);
                 return requestManager; 
             }

@@ -174,7 +174,7 @@ namespace Sels.Core.Cli
                 var collection = new ServiceCollection();
                 if (_serviceBuilder != null) _serviceBuilder(collection, arguments);
 
-                using (var provider = collection.BuildServiceProvider())
+                await using (var provider = collection.BuildServiceProvider())
                 {
                     foreach (var execution in _asyncExecutions)
                     {

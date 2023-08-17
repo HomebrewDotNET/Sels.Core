@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.DistributedLocking.Memory.Test
+namespace Sels.DistributedLocking.SQL.Test
 {
     public class SqlLockingProvider_GetAsync
     {
@@ -34,7 +34,7 @@ namespace Sels.DistributedLocking.Memory.Test
                 x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), resource, true, false, It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
             
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
 
             // Act
             var lockResult = await provider.TryLockAsync(resource, requester, TimeSpan.FromMinutes(5));
@@ -60,7 +60,7 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), "Resource", true, false, default)).Returns(Task.FromResult<SqlLock?>(null));
             });
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
 
             // Act
             var result = await provider.GetAsync("Resource");

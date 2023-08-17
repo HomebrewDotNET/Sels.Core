@@ -19,6 +19,10 @@ namespace Sels.Core.Async.TaskManagement
         private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
         private readonly TaskCompletionSource<bool> _callbackSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<bool> _finalizeSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        /// <summary>
+        /// Used to signal the task that it can start running.
+        /// </summary>
+        protected readonly TaskCompletionSource<bool> _startSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         // State
         /// <summary>
@@ -55,6 +59,7 @@ namespace Sels.Core.Async.TaskManagement
                 // Schedule work on thread pool
                 var scheduledTask = Task.Factory.StartNew(async () =>
                 {
+                    await _startSource.Task;
                     StartedDate = DateTime.Now;
 
                     try

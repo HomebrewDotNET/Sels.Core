@@ -36,6 +36,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddValidationProfile<ProviderOptionsValidationProfile, string>(ServiceLifetime.Singleton);
             services.AddOptionProfileValidator<SqlLockingProviderOptions, ProviderOptionsValidationProfile>();
 
+            // Event handling
+            services.AddNotifier();
+
             // Add custom delegate
             if(configurator != null) services.Configure<SqlLockingProviderOptions>(configurator);
 

@@ -2,13 +2,16 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Sels.Core.Mediator;
+using Sels.Core.Mediator.Event;
+using Sels.Core.Mediator.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.DistributedLocking.Memory.Test
+namespace Sels.DistributedLocking.SQL.Test
 {
     internal static class TestHelper
     {
@@ -35,6 +38,18 @@ namespace Sels.DistributedLocking.Memory.Test
 
             configurator?.Invoke(repositoryMock);
             return repositoryMock;
+        }
+
+        public static Mock<INotifier> GetNotifierMock()
+        {
+            var notifierMock = new Mock<INotifier>();
+            return notifierMock;
+        }
+
+        public static Mock<IEventSubscriber> GetSubscriberMock()
+        {
+            var subscriberMock = new Mock<IEventSubscriber>();
+            return subscriberMock;
         }
 
         public static ILogger<T> GetDebugLogger<T>()

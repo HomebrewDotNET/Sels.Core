@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.DistributedLocking.Memory.Test
+namespace Sels.DistributedLocking.SQL.Test
 {
     public class SqlLockingProvider_GetPendingRequestsAsync
     {
@@ -54,7 +54,7 @@ namespace Sels.DistributedLocking.Memory.Test
                 x.Setup(x => x.GetAllLockRequestsByResourceAsync(It.IsAny<IRepositoryTransaction>(), resource, It.IsAny<CancellationToken>())).ReturnsAsync(sqlRequests);
             });
 
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
 
             // Act
             var pendingRequests = await provider.GetPendingRequestsAsync(resource);
@@ -85,7 +85,7 @@ namespace Sels.DistributedLocking.Memory.Test
                 x.Setup(x => x.GetAllLockRequestsByResourceAsync(It.IsAny<IRepositoryTransaction>(), resource, It.IsAny<CancellationToken>())).ReturnsAsync(Array.Empty<SqlLockRequest>());
             });
 
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
 
             // Act
             var pendingRequests = await provider.GetPendingRequestsAsync(resource);
@@ -103,7 +103,7 @@ namespace Sels.DistributedLocking.Memory.Test
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
             });
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
 
             // Act
             var pendingRequests = await provider.GetPendingRequestsAsync("NonExistant");

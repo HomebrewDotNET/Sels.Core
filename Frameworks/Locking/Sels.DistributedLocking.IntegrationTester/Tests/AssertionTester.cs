@@ -279,7 +279,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             Assert.IsFalse(secondLockResult.Success, "Expected direct lock to fail but succeeded");
 
             // Wait for request
-            requestResult = await Helper.Async.WaitOn(lockRequest.Callback, TimeSpan.FromSeconds(5), token);
+            requestResult = await Helper.Async.WaitOn(lockRequest.Callback, _options.MaxWaitTime, token);
             Assert.That(requestResult, Is.Not.Null, "Lock request returned null");
         }
 
@@ -393,7 +393,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             try
             {
                 // Give time for lock to timeout
-                await Helper.Async.WaitOn(lockRequest.Callback, TimeSpan.FromSeconds(5));
+                await Helper.Async.WaitOn(lockRequest.Callback, _options.MaxWaitTime);
             }
             catch (Exception ex)
             {
@@ -429,7 +429,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
 
             try
             {
-                await Helper.Async.WaitOn(lockRequest.Callback, TimeSpan.FromSeconds(5));
+                await Helper.Async.WaitOn(lockRequest.Callback, _options.MaxWaitTime);
             }
             catch (Exception ex)
             {
@@ -450,7 +450,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             var lockRequest = await lockingProvider.LockAsync(nameof(Lock_RequestGetsAssignedWhenLockExpiresWithCorrectSettings), $"{nameof(AssertionTester)}.2", TimeSpan.FromMinutes(5), true, token: token);
 
             // Give time for request to be assigned
-            var @lock = await Helper.Async.WaitOn(lockRequest.Callback, TimeSpan.FromSeconds(5));
+            var @lock = await Helper.Async.WaitOn(lockRequest.Callback, _options.MaxWaitTime);
 
             // Assert
             Assert.IsNotNull(@lock);

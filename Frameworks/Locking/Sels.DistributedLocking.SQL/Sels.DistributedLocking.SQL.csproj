@@ -52,6 +52,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\Sels.Core.Data\Sels.Core.Data.csproj" />
 		<ProjectReference Include="..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+		<ProjectReference Include="..\..\..\Sels.Core.Mediator\Sels.Core.Mediator.csproj" />
 		<ProjectReference Include="..\..\..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
 		<ProjectReference Include="..\..\Sql\Query\Sels.SQL.QueryBuilder\Sels.SQL.QueryBuilder.csproj" />
 		<ProjectReference Include="..\..\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />

@@ -16,6 +16,10 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         /// Optional regex filters to mimit which assertions can run. When null/empty all assertions can run.
         /// </summary>
         public string[] Filters { get; set; }
+        /// <summary>
+        /// How long to wait for some test cases to complete
+        /// </summary>
+        public TimeSpan MaxWaitTime { get; set; } = TimeSpan.FromSeconds(10);
     }
 
     /// <summary>

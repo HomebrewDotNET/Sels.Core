@@ -410,6 +410,12 @@ namespace Sels.Core.Async.Queue
             }
         }
 
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"WorkerQueue<{typeof(T).GetDisplayName(false)}>({Id}): Pending items: {(MaxSize.HasValue ? $"{Count}/{MaxSize}" : Count.ToString())} | Waiting callers: {_requests.Count}";
+        }
+
         #region Request
         private class DequeueRequest : IDisposable
         {

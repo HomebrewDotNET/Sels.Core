@@ -20,6 +20,7 @@ using static Sels.Core.Delegates.Async;
 using Sels.Core.Async.TaskManagement;
 using Sels.Core.Async.TaskManagement.Queue;
 using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.Linq;
 
 namespace Sels.Core.Async.TaskManagement
 {
@@ -331,12 +332,12 @@ namespace Sels.Core.Async.TaskManagement
             _logger.Log($"Cancelling all tasks owned by <{instance}>");
             var managedTasks = CancelAllFor(instance, token);
 
-            _logger.Log($"Waiting on all queues and tasks to stop <{instance}>");
+            _logger.Log($"Waiting on all queues and tasks to stop for <{instance}>");
 
             // Wait for callbacks
             try
             {
-                await Task.WhenAll(managedTasks.Select(x => x.OnExecuted)).ConfigureAwait(false);
+                await Task.WhenAll(managedTasks.Select(x => x.OnFinalized)).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -708,11 +709,15 @@ namespace Sels.Core.Async.TaskManagement
                     {
                         _logger.Log($"Sending cancellation to <{_anonymousTasks.Count}> anonymous tasks");
                         pending.Intersect(_anonymousTasks.Where(x => !x.CancellationRequested));
+                        var completed = _anonymousTasks.Where(x => x.Task.IsCompleted).ToHashSet();
+                        completed.Execute(x => _anonymousTasks.Remove(x));
                     }
                     lock (_managedLock)
                     {
                         _logger.Log($"Sending cancellation to <{_managedTasks.Count}> managed tasks");
                         pending.Intersect(_managedTasks.Where(x => !x.CancellationRequested));
+                        var completed = _managedTasks.Where(x => x.Task.IsCompleted).ToHashSet();
+                        completed.Execute(x => _managedTasks.Remove(x));
                     }
 
                     // Trigger cancellation
@@ -722,7 +727,7 @@ namespace Sels.Core.Async.TaskManagement
                     try
                     {
                         _logger.Log($"Waiting for <{pending.Count}> managed (anonymous) tasks to cancel");
-                        await Task.WhenAll(pending.Where(x => x.CancellationRequested).Select(x => x.OnExecuted)).ConfigureAwait(false);
+                        await Task.WhenAll(pending.Where(x => x.CancellationRequested).Select(x => x.OnFinalized)).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {

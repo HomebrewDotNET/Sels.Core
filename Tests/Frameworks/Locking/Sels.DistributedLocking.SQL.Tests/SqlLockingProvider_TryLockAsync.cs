@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.DistributedLocking.Memory.Test
+namespace Sels.DistributedLocking.SQL.Test
 {
     public class SqlLockingProvider_TryLockAsync
     {
@@ -31,7 +31,7 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
 
             // Act
             var lockResult = await provider.TryLockAsync(resource, requester);
@@ -64,7 +64,7 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
 
             // Act
             var lockResult = await provider.TryLockAsync(resource, holder);
@@ -95,7 +95,7 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
 
             // Act
             var lockResult = await provider.TryLockAsync(resource, requester);

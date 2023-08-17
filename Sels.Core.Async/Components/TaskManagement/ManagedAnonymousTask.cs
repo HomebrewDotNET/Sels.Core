@@ -20,7 +20,9 @@ namespace Sels.Core.Async.TaskManagement
         /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
         public ManagedAnonymousTask(ManagedAnonymousTaskCreationOptions taskOptions, CancellationToken cancellationToken) : base(taskOptions, cancellationToken)
         {
-            TaskOptions = taskOptions.ValidateArgument(nameof(taskOptions));      
+            TaskOptions = taskOptions.ValidateArgument(nameof(taskOptions));
+
+            _startSource.SetResult(true);
         }
 
         // Properties
@@ -40,19 +42,25 @@ namespace Sels.Core.Async.TaskManagement
         protected override async Task TriggerContinuations()
         {
             // Trigger anonymous tasks
-            foreach (var anonymousFactory in TaskOptions.AnonymousContinuationFactories)
+            if (TaskOptions.AnonymousContinuationFactories.HasValue())
             {
-                _anonymousContinuations ??= new List<IManagedAnonymousTask>();
-                var task = await anonymousFactory(this, Result, Token).ConfigureAwait(false);
-                if(task != null) _anonymousContinuations.Add(task);
+                foreach (var anonymousFactory in TaskOptions.AnonymousContinuationFactories)
+                {
+                    _anonymousContinuations ??= new List<IManagedAnonymousTask>();
+                    var task = await anonymousFactory(this, Result, Token).ConfigureAwait(false);
+                    if (task != null) _anonymousContinuations.Add(task);
+                } 
             }
 
             // Trigger managed tasks
-            foreach (var factory in TaskOptions.ContinuationFactories)
+            if (TaskOptions.ContinuationFactories.HasValue())
             {
-                _continuations ??= new List<IManagedTask>();
-                var task = await factory(this, Result, Token).ConfigureAwait(false);
-                if(task != null) _continuations.Add(task);
+                foreach (var factory in TaskOptions.ContinuationFactories)
+                {
+                    _continuations ??= new List<IManagedTask>();
+                    var task = await factory(this, Result, Token).ConfigureAwait(false);
+                    if (task != null) _continuations.Add(task);
+                } 
             }
         }
     }

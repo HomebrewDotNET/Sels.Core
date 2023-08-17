@@ -748,8 +748,6 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                         if (seedSettings.CreateRequest)
                         {
                             _ = await lockingProvider.LockAsync(resource, $"{nameof(BenchmarkTester)}.{number}", token: runTimeSource.Token);
-                            // Wait for request to flush
-                            await Task.Delay(50, token);
                         }
 
                         if (lockResult.Success && seedSettings.Unlock)

@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sels.DistributedLocking.Memory.Test
+namespace Sels.DistributedLocking.SQL.Test
 {
     public class SqlLockingProvider_QueryAsync
     {
@@ -22,7 +22,7 @@ namespace Sels.DistributedLocking.Memory.Test
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
             });
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
 
             // Act
             var results = await provider.QueryAsync(x => x.WithFilterOnResource("Deployment")
@@ -63,7 +63,7 @@ namespace Sels.DistributedLocking.Memory.Test
             {
                 x.Setup(x => x.SearchAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<SqlQuerySearchCriteria>(), It.IsAny<CancellationToken>())).ReturnsAsync((sqlLocks, sqlLocks.Length));
             });
-            await using var provider = new SqlLockingProvider(repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
 
             // Act
             var result = await provider.QueryAsync(x => { });
