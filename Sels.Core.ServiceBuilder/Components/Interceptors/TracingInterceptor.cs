@@ -3,7 +3,6 @@ using Sels.Core.Extensions.Conversion;
 using Sels.Core.Models.Disposables;
 using Sels.Core.ServiceBuilder.Template.Interceptors;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Logging;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +11,7 @@ using System;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.Reflection;
+using Sels.Core.Extensions.Linq;
 
 namespace Sels.Core.ServiceBuilder.Interceptors
 {
@@ -67,11 +67,11 @@ namespace Sels.Core.ServiceBuilder.Interceptors
                     using (Helper.Time.CaptureDuration(x =>
                     {
                         var logLevel = LogLevel.Trace;
-                        foreach(var durationLogLevel in tracer.DurationLogLevels?.OrderBy(x => x.Value).Where(d => x >= d.Value))
+                        tracer.DurationLogLevels?.OrderBy(x => x.Value)?.Where(d => x >= d.Value).Execute(x =>
                         {
-                            logLevel = durationLogLevel.Key;
-                        }
-                        logger.Log(logLevel, $"Executed method <{method}> in <{x}>");
+                            logLevel = x.Key;
+                        });
+                        logger.LogMessage(logLevel, $"Executed method <{method}> in <{x}>");
                     }))
                     {
                         await proceed(invocation, proceedInfo);
