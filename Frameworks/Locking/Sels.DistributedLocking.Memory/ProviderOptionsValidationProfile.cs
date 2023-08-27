@@ -17,7 +17,9 @@ namespace Sels.DistributedLocking.Memory
         {
             CreateValidationFor<MemoryLockingProviderOptions>()
                 .ForProperty(x => x.ExpiryOffset)
-                    .MustBeLargerThan(0)
+                    .MustBeLargerThan(100)
+                .ForProperty(x => x.ExpiryNotifyOffset)
+                    .MustBeLargerThan(5)
                 .Switch(x => x.CleanupMethod)
                     .Case(MemoryLockCleanupMethod.Time)
                     .Case(MemoryLockCleanupMethod.Amount)

@@ -46,7 +46,7 @@ namespace Sels.DistributedLocking.SQL
         /// <summary>
         /// The maximum amount of request managers that will be created. Used to avoid flooding the thread pool and using all the sql connections.
         /// </summary>
-        public int MaximumRequestManagers { get; set; } = 25;
+        public int MaximumRequestManagers { get; set; } = 5;
         /// <summary>
         /// The ideal maximum resources that each request manager should manage. Used to determine when to start a new request manager.
         /// </summary>

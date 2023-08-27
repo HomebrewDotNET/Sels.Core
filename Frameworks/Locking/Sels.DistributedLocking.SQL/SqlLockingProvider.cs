@@ -173,8 +173,8 @@ namespace Sels.DistributedLocking.SQL
                     var sqlLockRequest = await _lockRepository.CreateRequestAsync(transaction, new SqlLockRequest() { Requester = requester, Resource = resource, ExpiryTime = expiryTime?.TotalSeconds, KeepAlive = keepAlive, Timeout = timeout.HasValue ? DateTime.Now.Add(timeout.Value) : (DateTime?)null, CreatedAt = DateTime.Now }, token).ConfigureAwait(false);
 
                     _logger.Log($"Created lock request <{sqlLockRequest.Id}> for <{sqlLockRequest.Requester}> on resource <{sqlLockRequest.Resource}>");
-                    request = requestManager.TrackRequest(sqlLockRequest, timeout, token);
                     await transaction.CommitAsync(token).ConfigureAwait(false);
+                    request = requestManager.TrackRequest(sqlLockRequest, timeout, token);
                 }
             }
 
@@ -386,7 +386,7 @@ namespace Sels.DistributedLocking.SQL
                         var pending = requestManagers.Sum(x => x.Pending);
                         var resources = requestManagers.Sum(x => x.PendingResources.Length);
                         _logger.Debug($"There are currently <{totalManagers}({runningManagers}/{idleManagers})>(Running/Idle) request managers running for <{pending}> pending requests across <{resources}> resources");
-                        if (resources >= options.ActiveResourceMonitorWarningThreshold) _logger.Log(resources >= options.ActiveResourceMonitorErrorThreshold ? LogLevel.Error : LogLevel.Warning, $"There are currently <{resources}> resource being polled by <{requestManagers.Length}> request managers. Performance may be degraded");                       
+                        if (resources >= options.ActiveResourceMonitorWarningThreshold) _logger.Log(resources >= options.ActiveResourceMonitorErrorThreshold ? LogLevel.Error : LogLevel.Warning, $"There are currently <{resources}> resources with <{pending}> pending requests being polled by <{requestManagers.Length}> request managers. Performance may be degraded");                       
 
                         // Cleanup old locks
                         if (!options.IsCleanupEnabled) continue;

@@ -189,6 +189,10 @@ namespace Sels.DistributedLocking.Memory
                         else
                         {
                             _logger.Warning($"Keep alive task on lock <{Resource}> supposed to be held by <{LockedBy}> could not extend expiry date. Lock is probably stale. Stopping");
+                            lock (SyncRoot)
+                            {
+                                _expiryTask = NotifyExpiryDateExceeded(_cancellationTokenSource.Token);
+                            }
                             return;
                         }
                     }
@@ -196,7 +200,10 @@ namespace Sels.DistributedLocking.Memory
                 catch (Exception ex)
                 {
                     _logger.Warning($"Something when wrong while trying to extend the expiry for lock <{Resource}> held by <{LockedBy}>. Starting notify task", ex);
-                    _expiryTask = NotifyExpiryDateExceeded(token);
+                    lock (SyncRoot)
+                    {
+                        _expiryTask = NotifyExpiryDateExceeded(token); 
+                    }
                 }
             }
         }
@@ -205,7 +212,7 @@ namespace Sels.DistributedLocking.Memory
         {
             using (_logger.TraceMethod(this))
             {
-                var sleepTime = ExpiryDate.Value - DateTime.Now;
+                var sleepTime = (ExpiryDate.Value - DateTime.Now).Add(TimeSpan.FromMilliseconds(_provider.OptionsMonitor.CurrentValue.ExpiryNotifyOffset));
                 _logger.Debug($"Notifying provider in <{sleepTime.TotalMilliseconds}ms> that lock <{Resource}> held by <{LockedBy}> expired");
                 await Helper.Async.Sleep(sleepTime, token).ConfigureAwait(false);
                 if (token.IsCancellationRequested) return;

@@ -39,6 +39,10 @@ namespace Sels.DistributedLocking.Memory
         /// How many milliseconds before a lock expires to extend the expiry date.
         /// </summary>
         public int ExpiryOffset { get; set; } = 1000;
+        /// <summary>
+        /// How many milliseconds after a lock expires to notify the locking manager that it expired.
+        /// </summary>
+        public int ExpiryNotifyOffset { get; set; } = 10;
 
         /// <inheritdoc/>
         public MemoryLockingProviderOptions()
