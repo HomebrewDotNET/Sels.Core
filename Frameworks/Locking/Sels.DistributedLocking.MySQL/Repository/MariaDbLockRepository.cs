@@ -87,8 +87,8 @@ namespace Sels.DistributedLocking.MySQL.Repository
 
                 // Get query that checks if the lock exists and if it exists if it is locked
                 var existsQuery = q.Select<SqlLock>().ForUpdate()
-                                    .Expression(e => e.AssignVariable(ExistsVariable, 1))
-                                    .Expression(e => e.AssignVariable(IsLockedVariable, b => b.Case(ca => ca.When(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))
+                                    .ColumnExpression(e => e.AssignVariable(ExistsVariable, 1))
+                                    .ColumnExpression(e => e.AssignVariable(IsLockedVariable, b => b.Case(ca => ca.When(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))
                                                                                                                        .And.WhereGroup(g => g.Column(c => c.LockedBy).IsNull.
                                                                                                                                             Or.WhereGroup(g => g.Column(c => c.LockedBy).EqualTo.Parameter(nameof(requester)).
                                                                                                                                                                Or.Column(c => c.ExpiryDate).LesserThan.CurrentDate()))

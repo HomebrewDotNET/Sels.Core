@@ -52,9 +52,9 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
             var expected = "WITH Recursive `cte` AS ( SELECT 1 as `n` UNION ALL SELECT n+1 FROM `cte` WHERE n < 20) SELECT * FROM `cte`".GetWithoutWhitespace().ToLower();
             var builder = MySql.With()
                                 .RecursiveCte("cte").As(
-                                    MySql.Select().Value(1, "n")
+                                    MySql.Select().Value(1).As("n")
                                     .UnionAll(
-                                    MySql.Select().Expression("n+1").From("cte").Where(x => x.Expression("n").LesserThan.Value(20))    
+                                    MySql.Select().ColumnExpression("n+1").From("cte").Where(x => x.Expression("n").LesserThan.Value(20))    
                                     ))                                   
                                 .Execute(
                                     MySql.Select().All().From("cte")

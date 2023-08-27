@@ -11,6 +11,7 @@ using Sels.Core.Extensions.Reflection;
 using System.Collections.Generic;
 using Sels.Core;
 using Sels.Core.Models;
+using Sels.SQL.QueryBuilder.Expressions.Select;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -18,7 +19,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// Exposes methods for building a sql select query.
     /// </summary>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-    /// <typeparam name="TEntity">The main entity to insert</typeparam>
+    /// <typeparam name="TEntity">The main entity to select from</typeparam>
     public interface ISelectStatementBuilder<TEntity, out TDerived> : 
         IStatementQueryBuilder<TEntity, SelectExpressionPositions, TDerived>, 
         IStatementConditionBuilder<TEntity, TDerived>,
@@ -61,54 +62,42 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select <paramref name="column"/> from</param>
         /// <param name="column">The name of the column to select</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Column(object dataset, string column, string columnAlias) => Expression(new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)), columnAlias), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Column(object dataset, string column) => ColumnExpression(new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column))));
         /// <summary>
         /// Specifies a column to select by using the name of the property selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Overwrites the default alias of <typeparamref name="T"/></param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Column<T>(object dataset, Expression<Func<T, object>> property, string columnAlias = null) => Column(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, columnAlias);
-        /// <summary>
-        /// Specifies a column to select.
-        /// </summary>
-        /// <param name="dataset">Optional dataset alias to select <paramref name="column"/> from</param>
-        /// <param name="column">The name of the column to select</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Column(object dataset, string column) => Column(dataset, column, null);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Column<T>(object dataset, Expression<Func<T, object>> property) => Column(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Specifies a column to select.
         /// </summary>
         /// <param name="column">The name of the column to select</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Column(string column) => Column(null, column, null);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Column(string column) => Column(null, column);
         /// <summary>
         /// Specifies a column to select by using the name of the property selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Column<T>(Expression<Func<T, object>> property, string columnAlias = null) => Column<T>(typeof(T), property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Column<T>(Expression<Func<T, object>> property) => Column<T>(typeof(T), property);
         /// <summary>
         /// Specifies a column to select by using the name of the property selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Column(Expression<Func<TEntity, object>> property, string columnAlias = null) => Column<TEntity>(property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Column(Expression<Func<TEntity, object>> property) => Column<TEntity>(property);
         /// <summary>
         /// Specifies a column to select by using the name of the property selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/></param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Overwrites the default alias of <typeparamref name="TEntity"/></param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Column(object dataset, Expression<Func<TEntity, object>> property, string columnAlias = null) => Column<TEntity>(dataset, property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Column(object dataset, Expression<Func<TEntity, object>> property) => Column<TEntity>(dataset, property);
         #endregion
         #region Columns
         /// <summary>
@@ -175,97 +164,125 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// Selects <paramref name="value"/> as a constant sql value.
         /// </summary>
         /// <param name="value">The value to select</param>
-        /// <param name="alias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Value(object value, string alias = null) => Expression(new AliasExpression(new SqlConstantExpression(value), alias), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Value(object value) => ColumnExpression(new SqlConstantExpression(value));
         #endregion
         #region Expression
+        /// <summary>
+        /// Adds a new expression in the <see cref="SelectExpressionPositions.Column"/> position and returns a builder for configuring said value.
+        /// </summary>
+        /// <param name="expression">The expression that will be selected</param>
+        /// <param name="order">Optional order for <paramref name="expression"/>. A lower order means it will be compiled first. Can be used to sort custom expressions</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> ColumnExpression(IExpression expression, int order = 0)
+        {
+            expression.ValidateArgument(nameof(expression));
+            var builder = new SelectedValueExpression<TEntity, TDerived>(expression, this);
+            Expression(builder, SelectExpressionPositions.Column, order);
+            return builder;
+        }
         /// <summary>
         /// Selects a raw sql expression defined by the <see cref="object.ToString()"/> on <paramref name="value"/>.
         /// </summary>
         /// <param name="value">Object containing the raw sql expression</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Expression(object value) => Expression(new RawExpression(value.ValidateArgument(nameof(value))), SelectExpressionPositions.Column);
+        /// <param name="order">Optional order for the created expression. A lower order means it will be compiled first. Can be used to sort custom expressions</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> ColumnExpression(object value, int order = 0) => ColumnExpression(new RawExpression(value.ValidateArgument(nameof(value))), order);
         /// <summary>
         /// Defines a value to select using <paramref name="builder"/>.
         /// </summary>
         /// <typeparam name="T">The main entity to create the expression for</typeparam>
         /// <param name="builder">The builder to create the expression</param>
-        /// <param name="alias">Optional alias for the selected value</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Expression<T>(Action<ISharedExpressionBuilder<T, Null>> builder, string alias = null) => Expression(new AliasExpression(new ExpressionBuilder<T>(builder), alias), SelectExpressionPositions.Column);
+        /// <param name="order">Optional order for the created expression. A lower order means it will be compiled first. Can be used to sort custom expressions</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> ColumnExpression<T>(Action<ISharedExpressionBuilder<T, Null>> builder, int order = 0) => ColumnExpression(new ExpressionBuilder<T>(builder), order);
         /// <summary>
         /// Defines a value to select using <paramref name="builder"/>.
         /// </summary>
         /// <param name="builder">The builder to create the expression</param>
-        /// <param name="alias">Optional alias for the selected value</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Expression(Action<ISharedExpressionBuilder<TEntity, Null>> builder, string alias = null) => Expression(new AliasExpression(new ExpressionBuilder<TEntity>(builder), alias), SelectExpressionPositions.Column);
+        /// <param name="order">Optional order for the created expression. A lower order means it will be compiled first. Can be used to sort custom expressions</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> ColumnExpression(Action<ISharedExpressionBuilder<TEntity, Null>> builder, int order = 0) => ColumnExpression(new ExpressionBuilder<TEntity>(builder), order);
+
+        /// <summary>
+        /// Adds a new expression in the <see cref="SelectExpressionPositions.Column"/> position and returns a builder for configuring said value.
+        /// Expression should return an aggregated value (From functions, ...)
+        /// </summary>
+        /// <param name="expression">The expression that will be selected</param>
+        /// <param name="order">Optional order for <paramref name="expression"/>. A lower order means it will be compiled first. Can be used to sort custom expressions</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> AggregatedColumnExpression(IExpression expression, int order = 0)
+        {
+            expression.ValidateArgument(nameof(expression));
+            var builder = new AggregateSelectedValueExpression<TEntity, TDerived>(expression, this);
+            Expression(builder, SelectExpressionPositions.Column, order);
+            return builder;
+        }
+        /// <summary>
+        /// Selects a raw sql expression defined by the <see cref="object.ToString()"/> on <paramref name="value"/>.
+        /// Expression should return an aggregated value (From functions, ...)
+        /// </summary>
+        /// <param name="value">Object containing the raw sql expression</param>
+        /// <param name="order">Optional order for the created expression. A lower order means it will be compiled first. Can be used to sort custom expressions</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> AggregatedColumnExpression(object value, int order = 0) => AggregatedColumnExpression(new RawExpression(value.ValidateArgument(nameof(value))), order);
         #endregion
         #region Case
         /// <summary>
         /// Select a value using a case expression.
         /// </summary>
         /// <param name="caseBuilder">Delegate that configures the case expression</param>
-        /// <param name="caseAlias">Optional alias for the value returned from the case expression</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Case(Action<ICaseExpressionRootBuilder<TEntity>> caseBuilder, string caseAlias = null) => Case<TEntity>(caseBuilder, caseAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Case(Action<ICaseExpressionRootBuilder<TEntity>> caseBuilder) => Case<TEntity>(caseBuilder);
         /// <summary>
         /// Select a value using a case expression.
         /// </summary>
         /// <typeparam name="T">The main type to create the case expression with</typeparam>
         /// <param name="caseBuilder">Delegate that configures the case expression</param>
-        /// <param name="caseAlias">Optional alias for the value returned from the case expression</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Case<T>(Action<ICaseExpressionRootBuilder<T>> caseBuilder, string caseAlias = null) => Expression(new AliasExpression(new WrappedExpression(new CaseExpression<T>(caseBuilder)), caseAlias), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Case<T>(Action<ICaseExpressionRootBuilder<T>> caseBuilder) => ColumnExpression(new WrappedExpression(new CaseExpression<T>(caseBuilder)));
         #endregion
         #region Parameter
         /// <summary>
         /// Select the value from an SQL parameter.
         /// </summary>
         /// <param name="parameter">The name of the sql parameter</param>
-        /// <param name="alias">Optional alias for the selected value</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Parameter(string parameter, string alias = null) => Expression(new AliasExpression(new SqlParameterExpression(parameter.ValidateArgumentNotNullOrWhitespace(nameof(parameter))), alias), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Parameter(string parameter) => ColumnExpression(new SqlParameterExpression(parameter.ValidateArgumentNotNullOrWhitespace(nameof(parameter))));
         /// <summary>
         /// Select the value from an SQL parameter where the parameter name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="alias">Optional alias for the selected value</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Parameter<T>(Expression<Func<T, object>> property, string alias = null) => Parameter(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, alias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Parameter<T>(Expression<Func<T, object>> property) => Parameter(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Select the value from an SQL parameter where the parameter name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="alias">Optional alias for the selected value</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Parameter(Expression<Func<TEntity, object>> property, string alias = null) => Parameter<TEntity>(property, alias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Parameter(Expression<Func<TEntity, object>> property) => Parameter<TEntity>(property);
         #endregion
         #region Variable
         /// <summary>
         /// Select the value from an SQL variable.
         /// </summary>
         /// <param name="variable">The name of the sql variable</param>
-        /// <param name="alias">Optional alias for the selected value</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Variable(string variable, string alias = null) => Expression(new AliasExpression(new VariableExpression(variable.ValidateArgumentNotNullOrWhitespace(nameof(variable))), alias), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Variable(string variable) => ColumnExpression(new VariableExpression(variable.ValidateArgumentNotNullOrWhitespace(nameof(variable))));
         /// <summary>
         /// Select the value from an SQL parameter where the variable name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="alias">Optional alias for the selected value</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Variable<T>(Expression<Func<T, object>> property, string alias = null) => Variable(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Variable<T>(Expression<Func<T, object>> property) => Variable(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Select the value from an SQL parameter where the variable name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="alias">Optional alias for the selected value</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Variable(Expression<Func<TEntity, object>> property, string alias = null) => Variable<TEntity>(property);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Variable(Expression<Func<TEntity, object>> property) => Variable<TEntity>(property);
         #endregion
         #endregion
 
@@ -346,60 +363,52 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// Counts the total amount of rows returned.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived CountAll(object dataset, string columnAlias = null) => Expression(new FunctionExpression(Functions.Count, new ColumnExpression(dataset, Sql.All.ToString(), columnAlias)), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> CountAll(object dataset = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Count, new ColumnExpression(dataset, Sql.All.ToString())));
         /// <summary>
         /// Counts the total amount of rows where <paramref name="column"/> is not null.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to count</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Count(object dataset, string column, string columnAlias = null) => Expression(new FunctionExpression(Functions.Count, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)), columnAlias)), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Count(object dataset, string column = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Count, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="T"/> is not null.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Count<T>(object dataset, Expression<Func<T, object>> property, string columnAlias = null) => Count(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Count<T>(object dataset, Expression<Func<T, object>> property = null) => Count(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="TEntity"/> is not null.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Count(object dataset, Expression<Func<TEntity, object>> property, string columnAlias = null) => Count<TEntity>(dataset, property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Count(object dataset, Expression<Func<TEntity, object>> property = null) => Count<TEntity>(dataset, property);
         /// <summary>
         /// Counts the total amount of rows returned.
         /// </summary>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived CountAll(string columnAlias = null) => CountAll(null, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> CountAll() => CountAll(null);
         /// <summary>
         /// Counts the total amount of rows where <paramref name="column"/> is not null.
         /// </summary>
         /// <param name="column">The column to count</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Count(string column, string columnAlias = null) => Count(null, column, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Count(string column = null) => Count(null, column);
         /// <summary>
         /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="T"/> is not null.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Count<T>(Expression<Func<T, object>> property, string columnAlias = null) => Count<T>(typeof(T), property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Count<T>(Expression<Func<T, object>> property = null) => Count<T>(typeof(T), property);
         /// <summary>
         /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="TEntity"/> is not null.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Count(Expression<Func<TEntity, object>> property, string columnAlias = null) => Count<TEntity>(property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Count(Expression<Func<TEntity, object>> property = null) => Count<TEntity>(property);
 
         #endregion
         #region Avg
@@ -408,46 +417,40 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the average from</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Average(object dataset, string column, string columnAlias = null) => Expression(new FunctionExpression(Functions.Avg, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)), columnAlias)), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Average(object dataset, string column = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Avg, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         ///  Calculates the average of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Average<T>(object dataset, Expression<Func<T, object>> property, string columnAlias = null) => Average(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Average<T>(object dataset, Expression<Func<T, object>> property = null) => Average(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         ///  Calculates the average of the column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Average(object dataset, Expression<Func<TEntity, object>> property, string columnAlias = null) => Average<TEntity>(dataset, property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Average(object dataset, Expression<Func<TEntity, object>> property = null) => Average<TEntity>(dataset, property);
         /// <summary>
         ///  Calculates the average of the column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Average(Expression<Func<TEntity, object>> property, string columnAlias = null) => Average<TEntity>(property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Average(Expression<Func<TEntity, object>> property = null) => Average<TEntity>(property);
         /// <summary>
         /// Calculates the average of <paramref name="column"/>.
         /// </summary>
         /// <param name="column">The column to get the average from</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Average(string column, string columnAlias = null) => Average(null, column, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Average(string column = null) => Average(null, column);
         /// <summary>
         ///  Calculates the average of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Average<T>(Expression<Func<T, object>> property, string columnAlias = null) => Average<T>(typeof(T), property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Average<T>(Expression<Func<T, object>> property = null) => Average<T>(typeof(T), property);
         #endregion
         #region Sum
         /// <summary>
@@ -455,46 +458,40 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the average from</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Sum(object dataset, string column, string columnAlias = null) => Expression(new FunctionExpression(Functions.Sum, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)), columnAlias)), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Sum(object dataset, string column = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Sum, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         ///  Calculates the sum of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Sum<T>(object dataset, Expression<Func<T, object>> property, string columnAlias = null) => Sum(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Sum<T>(object dataset, Expression<Func<T, object>> property = null) => Sum(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         ///  Calculates the sum of the column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Sum(object dataset, Expression<Func<TEntity, object>> property, string columnAlias = null) => Sum<TEntity>(dataset, property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Sum(object dataset, Expression<Func<TEntity, object>> property = null) => Sum<TEntity>(dataset, property);
         /// <summary>
         /// Calculates the sum of <paramref name="column"/>.
         /// </summary>
         /// <param name="column">The column to get the average from</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Sum(string column, string columnAlias = null) => Sum(null, column, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Sum(string column = null) => Sum(null, column);
         /// <summary>
         ///  Calculates the sum of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Sum<T>(Expression<Func<T, object>> property, string columnAlias = null) => Sum<T>(typeof(T), property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Sum<T>(Expression<Func<T, object>> property = null) => Sum<T>(typeof(T), property);
         /// <summary>
         ///  Calculates the sum of the column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Sum(Expression<Func<TEntity, object>> property, string columnAlias = null) => Sum<TEntity>(property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Sum(Expression<Func<TEntity, object>> property = null) => Sum<TEntity>(property);
         #endregion
         #region Max
         /// <summary>
@@ -502,46 +499,40 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the max from</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Max(object dataset, string column, string columnAlias = null) => Expression(new FunctionExpression(Functions.Max, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)), columnAlias)), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Max(object dataset, string column = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Max, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         /// Returns the largest value of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Max<T>(object dataset, Expression<Func<T, object>> property, string columnAlias = null) => Max(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Max<T>(object dataset, Expression<Func<T, object>> property = null) => Max(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Returns the largest value of column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Max(object dataset, Expression<Func<TEntity, object>> property, string columnAlias = null) => Max<TEntity>(dataset, property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Max(object dataset, Expression<Func<TEntity, object>> property = null) => Max<TEntity>(dataset, property);
         /// <summary>
         /// Returns the largest value of <paramref name="column"/>.
         /// </summary>
         /// <param name="column">The column to get the max from</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Max(string column, string columnAlias = null) => Max(null, column, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Max(string column = null) => Max(null, column);
         /// <summary>
         /// Returns the largest value of column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Max<T>(Expression<Func<T, object>> property, string columnAlias = null) => Max<T>(typeof(T), property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Max<T>(Expression<Func<T, object>> property = null) => Max<T>(typeof(T), property);
         /// <summary>
         /// Returns the largest value of column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Max(Expression<Func<TEntity, object>> property, string columnAlias = null) => Max<TEntity>(property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Max(Expression<Func<TEntity, object>> property = null) => Max<TEntity>(property);
         #endregion
         #region Min
         /// <summary>
@@ -549,46 +540,40 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the max from</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Min(object dataset, string column, string columnAlias = null) => Expression(new FunctionExpression(Functions.Min, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)), columnAlias)), SelectExpressionPositions.Column);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Min(object dataset, string column = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Min, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         /// Returns the smallest value of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Min<T>(object dataset, Expression<Func<T, object>> property, string columnAlias = null) => Min(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Min<T>(object dataset, Expression<Func<T, object>> property = null) => Min(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
         /// <summary>
         /// Returns the smallest value of column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Min(object dataset, Expression<Func<TEntity, object>> property, string columnAlias = null) => Min<TEntity>(dataset, property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Min(object dataset, Expression<Func<TEntity, object>> property = null) => Min<TEntity>(dataset, property);
         /// <summary>
         /// Returns the smallest value of <paramref name="column"/>.
         /// </summary>
         /// <param name="column">The column to get the max from</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Min(string column, string columnAlias = null) => Min(null, column, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Min(string column = null) => Min(null, column);
         /// <summary>
         /// Returns the smallest value of column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Min<T>(Expression<Func<T, object>> property, string columnAlias = null) => Min<T>(typeof(T), property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Min<T>(Expression<Func<T, object>> property = null) => Min<T>(typeof(T), property);
         /// <summary>
         /// Returns the smallest value of column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="columnAlias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived Min(Expression<Func<TEntity, object>> property, string columnAlias = null) => Min<TEntity>(property, columnAlias);
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Min(Expression<Func<TEntity, object>> property = null) => Min<TEntity>(property);
         #endregion
         #endregion
 
