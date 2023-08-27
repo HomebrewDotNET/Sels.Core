@@ -180,6 +180,226 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         TReturn AssignVariable(Expression<Func<TEntity, object>> property, Action<ISharedExpressionBuilder<TEntity, Null>> builder) => AssignVariable<TEntity>(property, builder);
         #endregion
 
+        #region Functions
+        #region Count
+        /// <summary>
+        /// Counts the total amount of rows returned.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn CountAll(object dataset) => Expression(new FunctionExpression(Functions.Count, new ColumnExpression(dataset, Sql.All.ToString())));
+        /// <summary>
+        /// Counts the total amount of rows where <paramref name="column"/> is not null.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="column">The column to count</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Count(object dataset, string column) => Expression(new FunctionExpression(Functions.Count, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        /// <summary>
+        /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="T"/> is not null.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Count<T>(object dataset, Expression<Func<T, object>> property) => Count(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        /// <summary>
+        /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="TEntity"/> is not null.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Count(object dataset, Expression<Func<TEntity, object>> property) => Count<TEntity>(dataset, property);
+        /// <summary>
+        /// Counts the total amount of rows returned.
+        /// </summary>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn CountAll(string columnAlias = null) => CountAll(null);
+        /// <summary>
+        /// Counts the total amount of rows where <paramref name="column"/> is not null.
+        /// </summary>
+        /// <param name="column">The column to count</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Count(string column) => Count(null, column);
+        /// <summary>
+        /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="T"/> is not null.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Count<T>(Expression<Func<T, object>> property) => Count<T>(typeof(T), property);
+        /// <summary>
+        /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="TEntity"/> is not null.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Count(Expression<Func<TEntity, object>> property) => Count<TEntity>(property);
+
+        #endregion
+        #region Avg
+        /// <summary>
+        /// Calculates the average of <paramref name="column"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="column">The column to get the average from</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Average(object dataset, string column) => Expression(new FunctionExpression(Functions.Avg, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        /// <summary>
+        ///  Calculates the average of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Average<T>(object dataset, Expression<Func<T, object>> property) => Average(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        /// <summary>
+        ///  Calculates the average of the column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Average(object dataset, Expression<Func<TEntity, object>> property) => Average<TEntity>(dataset, property);
+        /// <summary>
+        ///  Calculates the average of the column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Average(Expression<Func<TEntity, object>> property) => Average<TEntity>(property);
+        /// <summary>
+        /// Calculates the average of <paramref name="column"/>.
+        /// </summary>
+        /// <param name="column">The column to get the average from</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Average(string column) => Average(null, column);
+        /// <summary>
+        ///  Calculates the average of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Average<T>(Expression<Func<T, object>> property) => Average<T>(typeof(T), property);
+        #endregion
+        #region Sum
+        /// <summary>
+        /// Calculates the sum of <paramref name="column"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="column">The column to get the average from</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Sum(object dataset, string column) => Expression(new FunctionExpression(Functions.Sum, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        /// <summary>
+        ///  Calculates the sum of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Sum<T>(object dataset, Expression<Func<T, object>> property) => Sum(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        /// <summary>
+        ///  Calculates the sum of the column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Sum(object dataset, Expression<Func<TEntity, object>> property) => Sum<TEntity>(dataset, property);
+        /// <summary>
+        /// Calculates the sum of <paramref name="column"/>.
+        /// </summary>
+        /// <param name="column">The column to get the average from</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Sum(string column) => Sum(null, column);
+        /// <summary>
+        ///  Calculates the sum of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Sum<T>(Expression<Func<T, object>> property) => Sum<T>(typeof(T), property);
+        /// <summary>
+        ///  Calculates the sum of the column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Sum(Expression<Func<TEntity, object>> property) => Sum<TEntity>(property);
+        #endregion
+        #region Max
+        /// <summary>
+        /// Returns the largest value of <paramref name="column"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="column">The column to get the max from</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Max(object dataset, string column) => Expression(new FunctionExpression(Functions.Max, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        /// <summary>
+        /// Returns the largest value of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Max<T>(object dataset, Expression<Func<T, object>> property) => Max(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        /// <summary>
+        /// Returns the largest value of column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Max(object dataset, Expression<Func<TEntity, object>> property) => Max<TEntity>(dataset, property);
+        /// <summary>
+        /// Returns the largest value of <paramref name="column"/>.
+        /// </summary>
+        /// <param name="column">The column to get the max from</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Max(string column) => Max(null, column);
+        /// <summary>
+        /// Returns the largest value of column selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Max<T>(Expression<Func<T, object>> property) => Max<T>(typeof(T), property);
+        /// <summary>
+        /// Returns the largest value of column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Max(Expression<Func<TEntity, object>> property) => Max<TEntity>(property);
+        #endregion
+        #region Min
+        /// <summary>
+        /// Returns the smallest value of <paramref name="column"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="column">The column to get the max from</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Min(object dataset, string column) => Expression(new FunctionExpression(Functions.Min, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        /// <summary>
+        /// Returns the smallest value of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Min<T>(object dataset, Expression<Func<T, object>> property) => Min(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        /// <summary>
+        /// Returns the smallest value of column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="dataset">Optional dataset alias to select column from</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Min(object dataset, Expression<Func<TEntity, object>> property) => Min<TEntity>(dataset, property);
+        /// <summary>
+        /// Returns the smallest value of <paramref name="column"/>.
+        /// </summary>
+        /// <param name="column">The column to get the max from</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Min(string column) => Min(null, column);
+        /// <summary>
+        /// Returns the smallest value of column selected by <paramref name="property"/> from <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Min<T>(Expression<Func<T, object>> property) => Min<T>(typeof(T), property);
+        /// <summary>
+        /// Returns the smallest value of column selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TReturn Min(Expression<Func<TEntity, object>> property) => Min<TEntity>(property);
+        #endregion
+        #endregion
+
         #region Query
         /// <summary>
         /// Adds a sub query expression.

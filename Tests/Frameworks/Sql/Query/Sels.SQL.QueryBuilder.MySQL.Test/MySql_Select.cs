@@ -182,6 +182,26 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         }
 
         [Test]
+        public void BuildsCorrectSelectQueryWithHaving()
+        {
+            // Arrange
+            var expected = "SELECT P.`Name`, Count(*) as Amount FROM `Person` P GROUP BY P.`Name` HAVING Count(*) > 1 AND `Name` LIKE 'J%'".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>().Column(x => x.Name).CountAll("Amount")
+                               .From()
+                               .GroupBy(x => x.Name)
+                               .Having(h => h.CountAll("Amount").GreaterThan.Value(1)
+                                         .And.Column(x => x.Name).Like.Value("J%")
+                                      );
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
         public void BuildsCorrectSelectQueryWithJoin()
         {
             // Arrange

@@ -19,7 +19,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// </summary>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
     /// <typeparam name="TEntity">The main entity to insert</typeparam>
-    public interface ISelectStatementBuilder<TEntity, out TDerived> : IStatementQueryBuilder<TEntity, SelectExpressionPositions, TDerived>, IStatementConditionBuilder<TEntity, TDerived>, IStatementJoinBuilder<TEntity, TDerived>
+    public interface ISelectStatementBuilder<TEntity, out TDerived> : 
+        IStatementQueryBuilder<TEntity, SelectExpressionPositions, TDerived>, 
+        IStatementConditionBuilder<TEntity, TDerived>,
+        IStatementHavingBuilder<TEntity, TDerived>,
+        IStatementJoinBuilder<TEntity, TDerived>
     {
         #region Keywords
         /// <summary>

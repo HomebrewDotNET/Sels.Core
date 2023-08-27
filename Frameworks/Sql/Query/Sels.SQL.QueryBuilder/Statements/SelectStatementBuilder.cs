@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Conversion;
+using System;
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
 {
@@ -46,6 +47,16 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
             {
                 Expression(new ColumnExpression(dataset, property.Name), SelectExpressionPositions.Column);
             }
+
+            return this;
+        }
+        /// <inheritdoc/>
+        public ISelectStatementBuilder<TEntity> Having(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder)
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            var expression = new ConditionGroupExpression<TEntity>(builder, false);
+            if (expression.Expressions.Length != 0) Expression(expression, SelectExpressionPositions.Having);
 
             return this;
         }

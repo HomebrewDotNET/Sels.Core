@@ -42,13 +42,21 @@
         /// </summary>
         AfterWhere,
         /// <summary>
-        /// Expression should be located with the order group by statements.
+        /// Expression should be located with the group by statements.
         /// </summary>
         GroupBy,
         /// <summary>
         /// Expression should be located after the group by statements.
         /// </summary>
         AfterGroupBy,
+        /// <summary>
+        /// Expression should be located with the having statements.
+        /// </summary>
+        Having,
+        /// <summary>
+        /// Expression should be located after the having statements.
+        /// </summary>
+        AfterHaving,
         /// <summary>
         /// Expression should be located with the order by statements.
         /// </summary>

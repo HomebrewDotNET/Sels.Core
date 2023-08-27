@@ -79,6 +79,10 @@ namespace Sels.SQL.QueryBuilder
             /// </summary>
             public const string OrderBy = "ORDER BY";
             /// <summary>
+            /// The sql clause for defining conditions on aggregated results.
+            /// </summary>
+            public const string Having = "HAVING";
+            /// <summary>
             /// The sql clause for defining how to group the query results.
             /// </summary>
             public const string GroupBy = "GROUP BY";
