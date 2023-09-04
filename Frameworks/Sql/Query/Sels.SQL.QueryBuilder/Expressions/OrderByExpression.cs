@@ -20,7 +20,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         /// </summary>
         public IExpression Expression { get; set; }
 
-        /// <inheritdoc cref="FunctionExpression"/>
+        /// <inheritdoc cref="ColumnFunctionExpression"/>
         /// <param name="sortOrder"><inheritdoc cref="SortOrder"/></param>
         /// <param name="expression"><inheritdoc cref="Expression"/></param>
         public OrderByExpression(IExpression expression, SortOrders? sortOrder = null)

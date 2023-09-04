@@ -79,6 +79,14 @@ namespace Sels.SQL.QueryBuilder
             /// </summary>
             public const string OrderBy = "ORDER BY";
             /// <summary>
+            /// The sql clause for defining conditions on aggregated results.
+            /// </summary>
+            public const string Having = "HAVING";
+            /// <summary>
+            /// The sql clause for partitioning an aggregated value.
+            /// </summary>
+            public const string Over = "OVER";
+            /// <summary>
             /// The sql clause for defining how to group the query results.
             /// </summary>
             public const string GroupBy = "GROUP BY";
@@ -90,6 +98,49 @@ namespace Sels.SQL.QueryBuilder
             /// The sql clause for concatenating the results of 2 select queries. Duplicate rows are included.
             /// </summary>
             public const string UnionAll = "UNION ALL";
+        }
+
+        /// <summary>
+        /// Contains SQL keywords related to the OVER clause.
+        /// </summary>
+        public static class Over
+        {
+            /// <summary>
+            /// The keyword used to define the partitions for a window function.
+            /// </summary>
+            public const string PartitionBy = "PARTITION BY";
+            /// <summary>
+            /// The keyword used to define the lower and upper bound of a window frame.
+            /// </summary>
+            public const string Between = "BETWEEN";
+            /// <summary>
+            /// The ROWS clause for limiting a window frame.
+            /// </summary>
+            public const string Rows = "ROWS";
+            /// <summary>
+            /// The ROWS clause for limiting a window frame.
+            /// </summary>
+            public const string Range = "RANGE";
+            /// <summary>
+            /// The ROWS clause for limiting a window frame.
+            /// </summary>
+            public const string Groups = "GROUPS";
+            /// <summary>
+            /// The keyword used to set either the lower or upper bound of a window frame border to the current row.
+            /// </summary>
+            public const string CurrentRow = "CURRENT ROW";
+            /// <summary>
+            /// The keyword used when there's no limit on the lower or upper bound of a window frame border.
+            /// </summary>
+            public const string Unbounded = "UNBOUNDED";
+            /// <summary>
+            /// The keyword used to limit the lower bound of a window frame border.
+            /// </summary>
+            public const string Preceding = "PRECEDING";
+            /// <summary>
+            /// The keyword used to limit the upper bound of a window frame border.
+            /// </summary>
+            public const string Following = "FOLLOWING";
         }
 
         /// <summary>
@@ -139,6 +190,36 @@ namespace Sels.SQL.QueryBuilder
             /// The name of the count function.
             /// </summary>
             public const string Count = "COUNT";
+        }
+        /// <summary>
+        /// Contains the sql window function names.
+        /// </summary>
+        public static class WindowFunctions
+        {
+            /// <summary>
+            /// The name of the ROW_NUMBER function.
+            /// </summary>
+            public const string RowNumber = "ROW_NUMBER";
+            /// <summary>
+            /// The name of the DENSE function.
+            /// </summary>
+            public const string Dense = "DENSE";
+            /// <summary>
+            /// The name of the DENSE_RANK function.
+            /// </summary>
+            public const string DenseRank = "DENSE_RANK";
+            /// <summary>
+            /// The name of the NTILE function.
+            /// </summary>
+            public const string Ntile = "NTILE";
+            /// <summary>
+            /// The name of the LAG function.
+            /// </summary>
+            public const string Lag = "LAG";
+            /// <summary>
+            /// The name of the LEAD function.
+            /// </summary>
+            public const string Lead = "LEAD";
         }
         /// <summary>
         /// Contains the sql sort orders.

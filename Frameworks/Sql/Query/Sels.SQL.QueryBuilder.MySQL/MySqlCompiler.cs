@@ -50,6 +50,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             { SelectExpressionPositions.Where, (true, Sql.Clauses.Where, Constants.Strings.Comma + Sql.LogicOperators.And, false) },
             { SelectExpressionPositions.OrderBy, (true, Sql.Clauses.OrderBy, Constants.Strings.Comma, false) },
             { SelectExpressionPositions.GroupBy, (true, Sql.Clauses.GroupBy, Constants.Strings.Comma, false) },
+            { SelectExpressionPositions.Having, (true, Sql.Clauses.Having, Constants.Strings.Comma + Sql.LogicOperators.And, false) },
             { SelectExpressionPositions.After, (true, null, Environment.NewLine, false) },
         };
         private static readonly IReadOnlyDictionary<UpdateExpressionPositions, (bool IsNewLine, string Prefix, string[] ExpressionJoinValues, string Suffix, bool IsSingleExpression)> _updatePositionConfigs = new Dictionary<UpdateExpressionPositions, (bool IsNewLine, string Prefix, string[] ExpressionJoinValues, string Suffix, bool IsSingleExpression)>()

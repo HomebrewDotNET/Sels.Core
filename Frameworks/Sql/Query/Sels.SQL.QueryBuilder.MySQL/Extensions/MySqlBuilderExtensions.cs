@@ -228,13 +228,12 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         /// <typeparam name="TEntity">The main entity to select</typeparam>
         /// <param name="builder">The builder to add the expression to</param>
-        /// <param name="alias">Optional column alias</param>
-        /// <returns>Current builder for method chaining</returns>
-        public static TDerived LastInsertedId<TEntity, TDerived>(this ISelectStatementBuilder<TEntity, TDerived> builder, string alias = null)
+        /// <returns>Builder for configuring the selected value</returns>
+        public static ISelectStatementSelectedValueBuilder<TEntity, TDerived> LastInsertedId<TEntity, TDerived>(this ISelectStatementBuilder<TEntity, TDerived> builder)
         {
             builder.ValidateArgument(nameof(builder));
 
-            return builder.Expression(b => b.Expression((sb, o) => sb.Append(MySql.Functions.LastInsertId).Append("()")), alias);
+            return builder.ColumnExpression(b => b.Expression((sb, o) => sb.Append(MySql.Functions.LastInsertId).Append("()")));
         }
     }
 }

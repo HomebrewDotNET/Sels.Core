@@ -173,7 +173,7 @@ namespace Sels.Core.Data.MySQL
                     // Build query
                     var queryBuilder = new StringBuilder();
                     // Check if record exists
-                    MySql.Select<DatabaseLock>().Expression($"{ExistsVariable} := 1").From().ForUpdate()
+                    MySql.Select<DatabaseLock>().ColumnExpression($"{ExistsVariable} := 1").From().ForUpdate()
                             .Where(x => x.Column(c => c.Name).EqualTo.Parameter(c => c.Name))
                             .Build(queryBuilder, ExpressionCompileOptions.Format | ExpressionCompileOptions.AppendSeparator);
                     queryBuilder.AppendLine($"IF {ExistsVariable} = 1 THEN");

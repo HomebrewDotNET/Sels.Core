@@ -152,7 +152,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
             if (countRequests)
             {
                 _logger.Debug($"Counting pending requests for lock on resource <{resource}>");
-                queryBuilder.Expression(b => b.Query(QueryProvider.Select<SqlLockRequest>().CountAll().Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)))), nameof(SqlLock.PendingRequests));
+                queryBuilder.ColumnExpression(b => b.Query(QueryProvider.Select<SqlLockRequest>().CountAll().Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))))).As(nameof(SqlLock.PendingRequests));
             }
 
             if (forUpdate)
@@ -199,15 +199,14 @@ namespace Sels.DistributedLocking.MySQL.Repository
             // Count pending requests
             if (searchCriteria.IncludePendingRequests)
             {
-                cteQuery.Expression(e => e.Query(QueryProvider.Select<SqlLockRequest>().CountAll()
-                                                     .Where(w => w.Column(c => c.Resource).EqualTo.Column<SqlLock>(c => c.Resource)))
-                                       , nameof(SqlLock.PendingRequests));
+                cteQuery.ColumnExpression(e => e.Query(QueryProvider.Select<SqlLockRequest>().CountAll()
+                                                     .Where(w => w.Column(c => c.Resource).EqualTo.Column<SqlLock>(c => c.Resource)))).As(nameof(SqlLock.PendingRequests));
                 _logger.Debug($"Including pending requests in search query");
             }
             else
             {
                 _logger.Debug($"Not including pending requests in search query. Defaulting to 0");
-                cteQuery.Value(0, nameof(SqlLock.PendingRequests));
+                cteQuery.Value(0).As(nameof(SqlLock.PendingRequests));
             }
 
 
@@ -265,7 +264,7 @@ namespace Sels.DistributedLocking.MySQL.Repository
             // Full select
             var selectQuery = QueryProvider.Select<SqlLock>()
                                            .AllOf()
-                                           .Expression(x => x.Query(QueryProvider.Select().CountAll().From(CteName)), TotalColumnName)
+                                           .ColumnExpression(x => x.Query(QueryProvider.Select().CountAll().From(CteName))).As(TotalColumnName)
                                            .From(CteName, datasetAlias: SqlLockAlias);
 
             // Filter on pending results
@@ -329,8 +328,8 @@ namespace Sels.DistributedLocking.MySQL.Repository
 
                 // Get query that checks if the lock exists and if it exists if it is locked
                 var existsQuery = q.Select<SqlLock>().ForUpdate()
-                                    .Expression(e => e.AssignVariable(ExistsVariable, 1))
-                                    .Expression(e => e.AssignVariable(IsLockedVariable, b => b.Case(ca => ca.When(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))
+                                    .ColumnExpression(e => e.AssignVariable(ExistsVariable, 1))
+                                    .ColumnExpression(e => e.AssignVariable(IsLockedVariable, b => b.Case(ca => ca.When(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))
                                                                                                                        .And.WhereGroup(g => g.Column(c => c.LockedBy).IsNull.
                                                                                                                                             Or.WhereGroup(g => g.Column(c => c.LockedBy).EqualTo.Parameter(nameof(requester)).
                                                                                                                                                                Or.Column(c => c.ExpiryDate).LesserThan.CurrentDate()))                                                                                                                       
