@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		LICENSE.md = LICENSE.md
+		NOTICE = NOTICE
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -119,7 +120,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Mediator.Test", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Async", "Sels.Core.Async\Sels.Core.Async.csproj", "{895EF19C-A5DE-4E1B-8754-68D6D27CD0C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sels.Core.Async.Test", "Tests\Sels.Core.Async.Test\Sels.Core.Async.Test.csproj", "{0F85A9B3-4560-47E7-8CD6-09C10AC7A09F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Async.Test", "Tests\Sels.Core.Async.Test\Sels.Core.Async.Test.csproj", "{0F85A9B3-4560-47E7-8CD6-09C10AC7A09F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
