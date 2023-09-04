@@ -60,6 +60,12 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
 
             return this;
         }
+        /// <inheritdoc/>
+        public ISelectStatementBuilder<TEntity> OrderBy(IExpression expression)
+        {
+            expression.ValidateArgument(nameof(expression));
+            return Expression(expression, SelectExpressionPositions.OrderBy);
+        }
         #endregion
 
         /// <inheritdoc/>

@@ -11,10 +11,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// <typeparam name="TDerived">The type inheriting the current interface</typeparam>
     public interface ISelectStatementAggregatedValueBuilder<TEntity, out TDerived> : ISelectStatementSelectedValueBuilder<TEntity, TDerived>  
     {
-        ///// <summary>
-        ///// Defines an OVER clause for the current aggregated value.
-        ///// </summary>
-        ///// <returns>Current builder for method chaining</returns>
-        //ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Over();
+        /// <summary>
+        /// Defines an OVER clause for the current aggregated value.
+        /// </summary>
+        /// <param name="builder">Builder used to create the over clause</param>
+        /// <returns>Current builder for method chaining</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Over(Func<ISelectStatementOverBuilder<TEntity>, ISelectStatementOverBuilder<TEntity>> builder);
     }
 }

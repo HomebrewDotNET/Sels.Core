@@ -24,7 +24,8 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         IStatementQueryBuilder<TEntity, SelectExpressionPositions, TDerived>, 
         IStatementConditionBuilder<TEntity, TDerived>,
         IStatementHavingBuilder<TEntity, TDerived>,
-        IStatementJoinBuilder<TEntity, TDerived>
+        IStatementJoinBuilder<TEntity, TDerived>,
+        IOrderByBuilder<TEntity, TDerived>
     {
         #region Keywords
         /// <summary>
@@ -364,14 +365,14 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <returns>Builder for configuring the selected value</returns>
-        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> CountAll(object dataset = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Count, new ColumnExpression(dataset, Sql.All.ToString())));
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> CountAll(object dataset = null) => AggregatedColumnExpression(new ColumnFunctionExpression(Functions.Count, new ColumnExpression(dataset, Sql.All.ToString())));
         /// <summary>
         /// Counts the total amount of rows where <paramref name="column"/> is not null.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to count</param>
         /// <returns>Builder for configuring the selected value</returns>
-        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Count(object dataset, string column = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Count, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Count(object dataset, string column = null) => AggregatedColumnExpression(new ColumnFunctionExpression(Functions.Count, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="T"/> is not null.
         /// </summary>
@@ -386,11 +387,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Builder for configuring the selected value</returns>
         ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Count(object dataset, Expression<Func<TEntity, object>> property = null) => Count<TEntity>(dataset, property);
-        /// <summary>
-        /// Counts the total amount of rows returned.
-        /// </summary>
-        /// <returns>Builder for configuring the selected value</returns>
-        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> CountAll() => CountAll(null);
         /// <summary>
         /// Counts the total amount of rows where <paramref name="column"/> is not null.
         /// </summary>
@@ -418,7 +414,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the average from</param>
         /// <returns>Builder for configuring the selected value</returns>
-        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Average(object dataset, string column = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Avg, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Average(object dataset, string column = null) => AggregatedColumnExpression(new ColumnFunctionExpression(Functions.Avg, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         ///  Calculates the average of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
@@ -459,7 +455,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the average from</param>
         /// <returns>Builder for configuring the selected value</returns>
-        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Sum(object dataset, string column = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Sum, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Sum(object dataset, string column = null) => AggregatedColumnExpression(new ColumnFunctionExpression(Functions.Sum, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         ///  Calculates the sum of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
@@ -500,7 +496,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the max from</param>
         /// <returns>Builder for configuring the selected value</returns>
-        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Max(object dataset, string column = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Max, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Max(object dataset, string column = null) => AggregatedColumnExpression(new ColumnFunctionExpression(Functions.Max, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         /// Returns the largest value of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
@@ -541,7 +537,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the max from</param>
         /// <returns>Builder for configuring the selected value</returns>
-        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Min(object dataset, string column = null) => AggregatedColumnExpression(new FunctionExpression(Functions.Min, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Min(object dataset, string column = null) => AggregatedColumnExpression(new ColumnFunctionExpression(Functions.Min, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         /// Returns the smallest value of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
@@ -577,69 +573,134 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         #endregion
         #endregion
 
-        #region OrderBy
+        #region Window Functions
+        #region Row Number
         /// <summary>
-        /// Orders query results by <paramref name="column"/>.
+        /// <inheritdoc cref="WindowFunctions.RowNumber"/>
+        /// </summary>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> RowNumber() => AggregatedColumnExpression(new FunctionExpression(new EnumExpression<WindowFunctions>(WindowFunctions.RowNumber)));
+        #endregion
+        #region Dense
+        /// <summary>
+        /// <inheritdoc cref="WindowFunctions.Dense"/>
+        /// </summary>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Dense() => AggregatedColumnExpression(new FunctionExpression(new EnumExpression<WindowFunctions>(WindowFunctions.Dense)));
+        #endregion
+        #region DenseRank
+        /// <summary>
+        /// <inheritdoc cref="WindowFunctions.DenseRank"/>
+        /// </summary>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> DenseRank() => AggregatedColumnExpression(new FunctionExpression(new EnumExpression<WindowFunctions>(WindowFunctions.DenseRank)));
+        #endregion
+        #region Ntile
+        /// <summary>
+        /// <inheritdoc cref="WindowFunctions.Ntile"/>
+        /// </summary>
+        /// <param name="buckets">How many buckets to divide the result set into</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Ntile(uint buckets) => AggregatedColumnExpression(new FunctionExpression(new EnumExpression<WindowFunctions>(WindowFunctions.Ntile), new SqlConstantExpression(buckets.ValidateArgumentLargerOrEqual(nameof(buckets), 1u))));
+        #endregion
+        #region Lag
+        /// <summary>
+        /// <inheritdoc cref="WindowFunctions.Lag"/>
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select <paramref name="column"/> from</param>
-        /// <param name="column">The column to order by</param>
-        /// <param name="sortOrder">In what order to sort</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived OrderBy(object dataset, string column, SortOrders? sortOrder = null) => Expression(new OrderByExpression(new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column))), sortOrder), SelectExpressionPositions.OrderBy);
+        /// <param name="column">The name of the column to select</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lag(object dataset, string column, uint rows) => AggregatedColumnExpression(new FunctionExpression(new EnumExpression<WindowFunctions>(WindowFunctions.Lag), new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column))), new SqlConstantExpression(rows.ValidateArgumentLargerOrEqual(nameof(rows), 1u))));
         /// <summary>
-        /// Orders query results by column where the name of the property selected by <paramref name="property"/> from <typeparamref name="T"/> is used as the column name.
+        /// <inheritdoc cref="WindowFunctions.Lag"/>
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/></param>
-        ///<param name="property">The expression that points to the property to use</param>
-        /// <param name="sortOrder">In what order to sort</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived OrderBy<T>(object dataset, Expression<Func<T, object>> property, SortOrders? sortOrder = null) => OrderBy(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, sortOrder);
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lag<T>(object dataset, Expression<Func<T, object>> property, uint rows) => Lag(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, rows);
         /// <summary>
-        /// Orders query results by <paramref name="column"/>.
+        /// <inheritdoc cref="WindowFunctions.Lag"/>
         /// </summary>
-        /// <param name="column">The column to order by</param>
-        /// <param name="sortOrder">In what order to sort</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived OrderBy(string column, SortOrders? sortOrder = null) => OrderBy(null, column, sortOrder);
+        /// <param name="column">The name of the column to select</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lag(string column, uint rows) => Lag(null, column, rows);
         /// <summary>
-        /// Orders query results by column where the name of the property selected by <paramref name="property"/> from <typeparamref name="T"/> is used as the column name.
+        /// <inheritdoc cref="WindowFunctions.Lag"/>
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
-        ///<param name="property">The expression that points to the property to use</param>
-        /// <param name="sortOrder">In what order to sort</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived OrderBy<T>(Expression<Func<T, object>> property, SortOrders? sortOrder = null) => OrderBy<T>(typeof(T), property, sortOrder);
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lag<T>(Expression<Func<T, object>> property, uint rows) => Lag<T>(typeof(T), property, rows);
         /// <summary>
-        /// Orders query results by column where the name of the property selected by <paramref name="property"/> from <typeparamref name="TEntity"/> is used as the column name.
-        /// </summary>
-        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/></param>
-        ///<param name="property">The expression that points to the property to use</param>
-        /// <param name="sortOrder">In what order to sort</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived OrderBy(object dataset, Expression<Func<TEntity, object>> property, SortOrders? sortOrder = null) => OrderBy<TEntity>(dataset, property, sortOrder);
-        /// <summary>
-        /// Orders query results by column where the name of the property selected by <paramref name="property"/> from <typeparamref name="TEntity"/> is used as the column name.
+        /// <inheritdoc cref="WindowFunctions.Lag"/>
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
-        /// <param name="sortOrder">In what order to sort</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived OrderBy(Expression<Func<TEntity, object>> property, SortOrders? sortOrder = null) => OrderBy<TEntity>(typeof(TEntity), property, sortOrder);
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lag(Expression<Func<TEntity, object>> property, uint rows) => Lag<TEntity>(property, rows);
         /// <summary>
-        /// Order query results using a CASE WHEN expression.
+        /// <inheritdoc cref="WindowFunctions.Lag"/>
         /// </summary>
-        /// <param name="caseBuilder">Delegate that configures the case expression</param>
-        /// <param name="sortOrder">In what order to sort</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived OrderByCase(Action<ICaseExpressionRootBuilder<TEntity>> caseBuilder, SortOrders? sortOrder = null) => OrderByCase<TEntity>(caseBuilder, sortOrder);
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/></param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lag(object dataset, Expression<Func<TEntity, object>> property, uint rows) => Lag<TEntity>(dataset, property, rows);
+        #endregion
+        #region Lead
         /// <summary>
-        /// Order query results using a CASE WHEN expression.
+        /// <inheritdoc cref="WindowFunctions.Lead"/>
         /// </summary>
-        /// <typeparam name="T">The main type to create the case expression with</typeparam>
-        /// <param name="caseBuilder">Delegate that configures the case expression</param>
-        /// <param name="sortOrder">In what order to sort</param>
-        /// <returns>Current builder for method chaining</returns>
-        TDerived OrderByCase<T>(Action<ICaseExpressionRootBuilder<T>> caseBuilder, SortOrders? sortOrder = null) => Expression(new OrderByExpression(new WrappedExpression(new CaseExpression<T>(caseBuilder)), sortOrder), SelectExpressionPositions.OrderBy);
+        /// <param name="dataset">Optional dataset alias to select <paramref name="column"/> from</param>
+        /// <param name="column">The name of the column to select</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lead(object dataset, string column, uint rows) => AggregatedColumnExpression(new FunctionExpression(new EnumExpression<WindowFunctions>(WindowFunctions.Lead), new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column))), new SqlConstantExpression(rows.ValidateArgumentLargerOrEqual(nameof(rows), 1u))));
+        /// <summary>
+        /// <inheritdoc cref="WindowFunctions.Lead"/>
+        /// </summary>
+        /// <typeparam name="T">The type to select the property from</typeparam>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="T"/>. If a type is used the alias defined for the type is taken. Set to an empty string to omit the dataset alias</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lead<T>(object dataset, Expression<Func<T, object>> property, uint rows) => Lead(dataset, property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, rows);
+        /// <summary>
+        /// <inheritdoc cref="WindowFunctions.Lead"/>
+        /// </summary>
+        /// <param name="column">The name of the column to select</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lead(string column, uint rows) => Lead(null, column, rows);
+        /// <summary>
+        /// <inheritdoc cref="WindowFunctions.Lead"/>
+        /// </summary>
+        /// <typeparam name="T">The type to select the property from</typeparam>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lead<T>(Expression<Func<T, object>> property, uint rows) => Lead<T>(typeof(T), property, rows);
+        /// <summary>
+        /// <inheritdoc cref="WindowFunctions.Lead"/>
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lead(Expression<Func<TEntity, object>> property, uint rows) => Lead<TEntity>(property, rows);
+        /// <summary>
+        /// <inheritdoc cref="WindowFunctions.Lead"/>
+        /// </summary>
+        /// <param name="dataset">Overwrites the default dataset name defined for type <typeparamref name="TEntity"/></param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="rows">How many rows away to pull from</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementAggregatedValueBuilder<TEntity, TDerived> Lead(object dataset, Expression<Func<TEntity, object>> property, uint rows) => Lead<TEntity>(dataset, property, rows);
+        #endregion
         #endregion
 
         #region GroupBy

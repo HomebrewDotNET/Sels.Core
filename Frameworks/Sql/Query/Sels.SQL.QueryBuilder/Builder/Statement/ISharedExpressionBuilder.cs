@@ -187,14 +187,14 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <returns>Current builder for method chaining</returns>
-        TReturn CountAll(object dataset) => Expression(new FunctionExpression(Functions.Count, new ColumnExpression(dataset, Sql.All.ToString())));
+        TReturn CountAll(object dataset = null) => Expression(new ColumnFunctionExpression(Functions.Count, new ColumnExpression(dataset, Sql.All.ToString())));
         /// <summary>
         /// Counts the total amount of rows where <paramref name="column"/> is not null.
         /// </summary>
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to count</param>
         /// <returns>Current builder for method chaining</returns>
-        TReturn Count(object dataset, string column) => Expression(new FunctionExpression(Functions.Count, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        TReturn Count(object dataset, string column) => Expression(new ColumnFunctionExpression(Functions.Count, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         /// Counts the total amount of rows where column selected by <paramref name="property"/> from <typeparamref name="T"/> is not null.
         /// </summary>
@@ -209,11 +209,6 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="property">The expression that points to the property to use</param>
         /// <returns>Current builder for method chaining</returns>
         TReturn Count(object dataset, Expression<Func<TEntity, object>> property) => Count<TEntity>(dataset, property);
-        /// <summary>
-        /// Counts the total amount of rows returned.
-        /// </summary>
-        /// <returns>Current builder for method chaining</returns>
-        TReturn CountAll(string columnAlias = null) => CountAll(null);
         /// <summary>
         /// Counts the total amount of rows where <paramref name="column"/> is not null.
         /// </summary>
@@ -241,7 +236,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the average from</param>
         /// <returns>Current builder for method chaining</returns>
-        TReturn Average(object dataset, string column) => Expression(new FunctionExpression(Functions.Avg, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        TReturn Average(object dataset, string column) => Expression(new ColumnFunctionExpression(Functions.Avg, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         ///  Calculates the average of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
@@ -282,7 +277,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the average from</param>
         /// <returns>Current builder for method chaining</returns>
-        TReturn Sum(object dataset, string column) => Expression(new FunctionExpression(Functions.Sum, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        TReturn Sum(object dataset, string column) => Expression(new ColumnFunctionExpression(Functions.Sum, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         ///  Calculates the sum of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
@@ -323,7 +318,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the max from</param>
         /// <returns>Current builder for method chaining</returns>
-        TReturn Max(object dataset, string column) => Expression(new FunctionExpression(Functions.Max, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        TReturn Max(object dataset, string column) => Expression(new ColumnFunctionExpression(Functions.Max, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         /// Returns the largest value of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
@@ -364,7 +359,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="dataset">Optional dataset alias to select column from</param>
         /// <param name="column">The column to get the max from</param>
         /// <returns>Current builder for method chaining</returns>
-        TReturn Min(object dataset, string column) => Expression(new FunctionExpression(Functions.Min, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
+        TReturn Min(object dataset, string column) => Expression(new ColumnFunctionExpression(Functions.Min, new ColumnExpression(dataset, column.ValidateArgumentNotNullOrWhitespace(nameof(column)))));
         /// <summary>
         /// Returns the smallest value of the column selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>

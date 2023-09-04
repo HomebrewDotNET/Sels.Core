@@ -138,9 +138,9 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         public void BuildsCorrectSelectQueryWithSubQuery()
         {
             // Arrange
-            var expected = "SELECT Q.`Name`, Q.`Amount` FROM (SELECT P.`Name`, Count(*) as Amount FROM `Person` P GROUP BY P.`Name`) Q WHERE Q.`Amount` > 1".GetWithoutWhitespace().ToLower();
-            var builder = MySql.Select().Column("Q").As("Name").Column("Q").As("Amount")
-                                .FromQuery(MySql.Select<Person>().Column(x => x.Name).CountAll("Amount").From().GroupBy(x => x.Name), "Q")
+            var expected = "SELECT Q.`Name`, Q.`Amount` FROM (SELECT P.`Name`, Count(*) as `Amount` FROM `Person` P GROUP BY P.`Name`) Q WHERE Q.`Amount` > 1".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select().Column("Q", "Name").Column("Q", "Amount")
+                                .FromQuery(MySql.Select<Person>().Column(x => x.Name).CountAll().As("Amount").From().GroupBy(x => x.Name), "Q")
                                 .Where(x => x.Column("Q", "Amount").GreaterThan.Value(1));
 
             // Act
@@ -170,8 +170,8 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         public void BuildsCorrectSelectQueryWithGroupBy()
         {
             // Arrange
-            var expected = "SELECT P.`Name`, Count(*) as Amount FROM `Person` P GROUP BY P.`Name`".GetWithoutWhitespace().ToLower();
-            var builder = MySql.Select<Person>().Column(x => x.Name).CountAll("Amount").From().GroupBy(x => x.Name);
+            var expected = "SELECT P.`Name`, Count(*) as `Amount` FROM `Person` P GROUP BY P.`Name`".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>().Column(x => x.Name).CountAll().As("Amount").From().GroupBy(x => x.Name);
 
             // Act
             var query = builder.Build();
@@ -185,13 +185,152 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         public void BuildsCorrectSelectQueryWithHaving()
         {
             // Arrange
-            var expected = "SELECT P.`Name`, Count(*) as Amount FROM `Person` P GROUP BY P.`Name` HAVING Count(*) > 1 AND `Name` LIKE 'J%'".GetWithoutWhitespace().ToLower();
-            var builder = MySql.Select<Person>().Column(x => x.Name).CountAll("Amount")
+            var expected = "SELECT P.`Name`, Count(*) as `Amount` FROM `Person` P GROUP BY P.`Name` HAVING Count(*) > 1 AND P.`Name` LIKE 'J%'".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select<Person>().Column(x => x.Name).CountAll().As("Amount")
                                .From()
                                .GroupBy(x => x.Name)
-                               .Having(h => h.CountAll("Amount").GreaterThan.Value(1)
+                               .Having(h => h.CountAll().GreaterThan.Value(1)
                                          .And.Column(x => x.Name).Like.Value("J%")
                                       );
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithOverClauseWithPartitionBy()
+        {
+            // Arrange
+            var expected = "SELECT `Id`, ROW() OVER (PARTITION BY `ServerId`, `Resource`) FROM `Locks`".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select()
+                                    .Column("Id")
+                                    .AggregatedColumnExpression("ROW()").Over(o => o.PartitionBy(p => p.Column("ServerId"), p => p.Column("Resource")))
+                                    .From("Locks");
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithOverClauseWithOrderByAndRangeBetween()
+        {
+            // Arrange
+            var expected = "SELECT `Id`, Count(*) OVER (ORDER BY `CreatedAt` ASC RANGE BETWEEN 1 FOLLOWING AND UNBOUNDED FOLLOWING) AS `PendingAfter` FROM `LockRequests`".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select()
+                                    .Column("Id")
+                                    .CountAll().Over(o => o.OrderBy("CreatedAt", SortOrders.Ascending).Range.Between.Following(1).And.UnboundedFollowing()).As("PendingAfter")
+                                    .From("LockRequests");
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+
+        [Test]
+        public void BuildsCorrectSelectQueryWithRowNumberFunction()
+        {
+            // Arrange
+            var expected = "SELECT `Id`, ROW_NUMBER() OVER (PARTITION BY `ServerId`, `Resource` ORDER BY `CreatedAt` ASC) FROM `LockRequests`".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select()
+                                    .Column("Id")
+                                    .RowNumber().Over(o => o.PartitionBy("ServerId", "Resource").OrderBy("CreatedAt", SortOrders.Ascending))
+                                    .From("LockRequests");
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+        [Test]
+        public void BuildsCorrectSelectQueryWithDenseFunction()
+        {
+            // Arrange
+            var expected = "SELECT `Id`, DENSE() OVER (PARTITION BY `ServerId`, `Resource` ORDER BY `CreatedAt` ASC) FROM `LockRequests`".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select()
+                                    .Column("Id")
+                                    .Dense().Over(o => o.PartitionBy("ServerId", "Resource").OrderBy("CreatedAt", SortOrders.Ascending))
+                                    .From("LockRequests");
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+        [Test]
+        public void BuildsCorrectSelectQueryWithDenseRankFunction()
+        {
+            // Arrange
+            var expected = "SELECT `Id`, DENSE_RANK() OVER (PARTITION BY `ServerId`, `Resource` ORDER BY `CreatedAt` ASC) FROM `LockRequests`".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select()
+                                    .Column("Id")
+                                    .DenseRank().Over(o => o.PartitionBy("ServerId", "Resource").OrderBy("CreatedAt", SortOrders.Ascending))
+                                    .From("LockRequests");
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+        [Test]
+        public void BuildsCorrectSelectQueryWithNtileFunction()
+        {
+            // Arrange
+            var expected = "SELECT `Id`, NTILE(4) OVER (PARTITION BY `CreatedAt`) FROM `LockRequests`".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select()
+                                    .Column("Id")
+                                    .Ntile(4).Over(o => o.PartitionBy("CreatedAt"))
+                                    .From("LockRequests");
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+        [Test]
+        public void BuildsCorrectSelectQueryWithLagFunction()
+        {
+            // Arrange
+            var expected = "SELECT `Id`, LAG(`CreatedAt`, 1) OVER (PARTITION BY `Resource` ORDER BY `CreatedAt` DESC) FROM `LockRequests`".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select()
+                                    .Column("Id")
+                                    .Lag("CreatedAt", 1).Over(o => o.PartitionBy("Resource").OrderBy("CreatedAt", SortOrders.Descending))
+                                    .From("LockRequests");
+
+            // Act
+            var query = builder.Build();
+
+            // Assert
+            Assert.IsNotNull(query);
+            Assert.AreEqual(expected, query.GetWithoutWhitespace().ToLower());
+        }
+        [Test]
+        public void BuildsCorrectSelectQueryWithLeadFunction()
+        {
+            // Arrange
+            var expected = "SELECT `Id`, LEAD(`CreatedAt`, 1) OVER (PARTITION BY `Resource` ORDER BY `CreatedAt` DESC) FROM `LockRequests`".GetWithoutWhitespace().ToLower();
+            var builder = MySql.Select()
+                                    .Column("Id")
+                                    .Lead("CreatedAt", 1).Over(o => o.PartitionBy("Resource").OrderBy("CreatedAt", SortOrders.Descending))
+                                    .From("LockRequests");
 
             // Act
             var query = builder.Build();
@@ -277,7 +416,7 @@ namespace Sels.SQL.QueryBuilder.MySQL.Test
         public void BuildsCorrectSelectQueryWithUnion()
         {
             // Arrange
-            var expected = "SELECT COUNT(P.`Name`) As Amount FROM `Person` P UNION SELECT COUNT(R.`Street`) as Amount FROM `Residence` R".GetWithoutWhitespace().ToLower();
+            var expected = "SELECT COUNT(P.`Name`) As `Amount` FROM `Person` P UNION SELECT COUNT(R.`Street`) as `Amount` FROM `Residence` R".GetWithoutWhitespace().ToLower();
             var builder = MySql.Select<Person>().Count(x => x.Name).As("Amount").From()
                             .Union(MySql.Select<Residence>().Count(x => x.Street).As("Amount").From());
 

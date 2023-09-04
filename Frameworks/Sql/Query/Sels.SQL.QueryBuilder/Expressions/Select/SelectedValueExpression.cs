@@ -44,7 +44,7 @@ namespace Sels.SQL.QueryBuilder.Expressions.Select
         }
 
         /// <inheritdoc/>
-        public void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public virtual void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
             subBuilder.ValidateArgument(nameof(subBuilder));

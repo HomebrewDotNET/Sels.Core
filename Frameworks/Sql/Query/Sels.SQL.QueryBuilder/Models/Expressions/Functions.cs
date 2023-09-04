@@ -18,7 +18,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
         [StringEnumValue(Sql.Functions.Min)]
         Min,
         /// <summary>
-        /// Function that returns the averga of a column.
+        /// Function that returns the average of a column.
         /// </summary>
         [StringEnumValue(Sql.Functions.Avg)]
         Avg,

@@ -1,49 +1,65 @@
-﻿using System;
+﻿using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Linq;
+using Sels.SQL.QueryBuilder.Builder;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using Sels.Core.Attributes.Enumeration.Value;
-using Sels.Core.Extensions;
-using Sels.Core.Extensions.Text;
 
-namespace Sels.SQL.QueryBuilder.Builder.Expressions
+namespace Sels.SQL.QueryBuilder.Expressions
 {
     /// <summary>
-    /// Expression that represents a sql function.
+    /// Expression that represents a sql function with optionally arguments for the function.
     /// </summary>
-    public class FunctionExpression : BaseColumnExpression
+    public class FunctionExpression : BaseExpressionContainer
     {
+        // Properties
         /// <summary>
-        /// The sql function this expression represents.
+        /// Expression that contains the function name.
         /// </summary>
-        public Functions Function { get;}
+        public IExpression FunctionNameExpression { get; }
         /// <summary>
-        /// Expression that contains the column to perform the function on.
+        /// Optional expressions that contain the arguments for the function.
         /// </summary>
-        public IColumnExpression Expression { get; set; }
+        public IExpression[] ArgumentExpressions { get; }
 
         /// <inheritdoc cref="FunctionExpression"/>
-        /// <param name="function"><inheritdoc cref="Function"/></param>
-        /// <param name="expression"><inheritdoc cref="Expression"/></param>
-        public FunctionExpression(Functions function, IColumnExpression expression) : base(expression.DataSet, expression.Object, expression.Alias)
+        /// <param name="functionNameExpression"><inheritdoc cref="FunctionNameExpression"/></param>
+        /// <param name="argumentExpressions"><inheritdoc cref="ArgumentExpressions"/></param>
+        public FunctionExpression(IExpression functionNameExpression, IEnumerable<IExpression> argumentExpressions)
         {
-            Expression = expression.ValidateArgument(nameof(expression));
-            Function = function;
+            FunctionNameExpression = functionNameExpression.ValidateArgument(nameof(functionNameExpression));
+            ArgumentExpressions = argumentExpressions.ToArrayOrDefault();
+        }
+        /// <inheritdoc cref="FunctionExpression"/>
+        /// <param name="functionNameExpression"><inheritdoc cref="FunctionNameExpression"/></param>
+        /// <param name="argumentExpressions"><inheritdoc cref="ArgumentExpressions"/></param>
+        public FunctionExpression(IExpression functionNameExpression, params IExpression[] argumentExpressions) : this(functionNameExpression, argumentExpressions.CastToOrDefault<IEnumerable<IExpression>>())
+        {
         }
 
         /// <inheritdoc/>
-        public override void ToSql(StringBuilder builder, Func<object, string> datasetConverterer, Func<string, string> columnConverter = null, bool includeAlias = true, ExpressionCompileOptions options = ExpressionCompileOptions.None)
+        public override void ToSql(StringBuilder builder, Action<StringBuilder, IExpression> subBuilder, ExpressionCompileOptions options = ExpressionCompileOptions.None)
         {
             builder.ValidateArgument(nameof(builder));
-            datasetConverterer.ValidateArgument(nameof(datasetConverterer));
+            subBuilder.ValidateArgument(nameof(subBuilder));
 
-            var function = Function.GetStringValue();
+            // Function name
+            subBuilder(builder, FunctionNameExpression);
+            builder.Append('(');
 
-            builder.Append(function).Append('(');
-
-            Expression.ToSql(builder, datasetConverterer, columnConverter, false);
-
+            // Arguments
+            if (ArgumentExpressions.HasValue())
+            {
+                ArgumentExpressions.Execute((i, e) =>
+                {
+                    subBuilder(builder, e);
+                    if (i < ArgumentExpressions.Length - 1) builder.Append(", ");
+                });
+            }
             builder.Append(')');
-
-            if (includeAlias && Alias != null) builder.AppendSpace().Append(Sql.As).AppendSpace().Append(Alias);
         }
     }
 }

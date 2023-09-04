@@ -52,6 +52,12 @@ namespace Sels.SQL.QueryBuilder.Templates.Query.Expressions.Proxy
             return _target.Join(joinType);
         }
         /// <inheritdoc/>
+        public TDerived OrderBy(IExpression expression)
+        {
+            return _target.OrderBy(expression);
+        }
+
+        /// <inheritdoc/>
         public TDerived Where(Func<IStatementConditionExpressionBuilder<TEntity>, IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>>> builder)
         {
             return _target.Where(builder);
