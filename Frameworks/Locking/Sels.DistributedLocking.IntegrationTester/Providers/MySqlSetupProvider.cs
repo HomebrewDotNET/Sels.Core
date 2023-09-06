@@ -63,7 +63,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Providers
         /// </summary>
         /// <param name="services">The service collection to use to build the service provider</param>
         /// <returns>The service provider to resolve the locking provider</returns>
-        protected virtual ServiceProvider BuildProvider(IServiceCollection services) => services.AddMySqlLockingProvider(x => x.ConfigureDeployment(c => c.IgnoreMigrationExceptions = false).ConfigureProvider(p => p.RequestPollingRate = 500)).BuildServiceProvider();
+        protected virtual ServiceProvider BuildProvider(IServiceCollection services) => services.AddMySqlLockingProvider(x => x.ConfigureDeployment(c => c.IgnoreMigrationExceptions = false).ConfigureProvider(p => { })).BuildServiceProvider();
 
         /// <summary>
         /// Setup the environment for a next test run.

@@ -24,6 +24,7 @@ using Sels.SQL.QueryBuilder.Statements;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Castle.Core.Resource;
 using Sels.Core.Extensions.Text;
+using Sels.Core.Data.SQL.Extensions.Dapper;
 
 namespace Sels.DistributedLocking.SQL.Templates
 {
@@ -88,12 +89,80 @@ namespace Sels.DistributedLocking.SQL.Templates
             _queryNameFormat = $"{GetType().GetDisplayName()}.{{0}}";
 
 #if DEBUG
-            _queryOptions &= ExpressionCompileOptions.Format;
+            _queryOptions |= ExpressionCompileOptions.Format;
 #endif
 
             _logger = logger;
         }
+        /// <inheritdoc/>
+        public async Task<SqlLockRequest[]> GetAllLockRequestsByIdsAsync(IRepositoryTransaction transaction, long[] ids, CancellationToken token)
+        {
+            ids.ValidateArgumentNotNullOrEmpty(nameof(ids));
+            var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
 
+            _logger.Log($"Fetching the state of <{ids.Length}> lock requests");
+            // Generate query
+            var query = QueryProvider.Select<SqlLockRequest>()
+                                        .All()
+                                        .Where(w => w.Column(c => c.Id).In.Values(ids))
+                                        .Build(_queryOptions);
+            _logger.Trace($"Fetching the state of <{ids.Length}> lock requests using query <{query}>");
+
+            // Execute query
+            var locks = (await dbConnection.QueryAsync<SqlLockRequest>(new CommandDefinition(query, null, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false)).ToArray();
+            _logger.Log($"Fetched <{locks.Length}> lock requests");
+            return locks;
+        }
+        /// <inheritdoc/>
+        public virtual async Task<SqlLock> GetLockByResourceAsync(IRepositoryTransaction transaction, string resource, bool countRequests, CancellationToken token)
+        {
+            resource.ValidateArgument(nameof(resource));
+            var (dbConnection, dbTransaction) = GetTransactionInfo(transaction);
+
+            _logger.Log($"Fetching lock on resource <{resource}>");
+            // Generate query
+            string query = null;
+            if (countRequests)
+            {
+                query = _queryProvider.Value.GetQuery(_queryNameFormat.FormatString($"{nameof(GetLockByResourceAsync)}.WithCount"), x =>
+                {
+                    return x.Select<SqlLock>()
+                        .AllOf()
+                        .ColumnExpression(b => b.Query(QueryProvider.Select<SqlLockRequest>().CountAll().Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))))).As(nameof(SqlLock.PendingRequests))
+                        .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)));
+                });
+            }
+            else
+            {
+                query = _queryProvider.Value.GetQuery(_queryNameFormat.FormatString($"{nameof(GetLockByResourceAsync)}.NoCount"), x =>
+                {
+                    return x.Select<SqlLock>()
+                        .AllOf()
+                        .Value(0).As(nameof(SqlLock.PendingRequests))
+                        .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)));
+                });
+            }
+
+            var parameters = new DynamicParameters()
+                                 .AddParameter($"@{nameof(resource)}", resource);
+            _logger.Trace($"Fetching lock on resource <{resource}> using <{query}>");
+
+            // Execute query
+            var sqlLock = await dbConnection.QuerySingleOrDefaultAsync<SqlLock>(new CommandDefinition(query, parameters, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false);
+
+            // Query always returns even though there's no row so check resource too
+            if (sqlLock == null || sqlLock.Resource == null)
+            {
+                _logger.Warning($"Lock on resource <{resource}> does not exist");
+                return null;
+            }
+            else
+            {
+                _logger.Log($"Fetched lock on resource <{resource}>");
+            }
+
+            return sqlLock?.SetToLocal();
+        }
         /// <inheritdoc/>
         public virtual async Task DeleteAllRequestsById(IRepositoryTransaction transaction, long[] ids, CancellationToken token)
         {
@@ -311,11 +380,9 @@ namespace Sels.DistributedLocking.SQL.Templates
             _logger.Log($"Cleared <{deleted}> locks and requests");
         }
         /// <inheritdoc/>
-        public abstract Task<SqlLock> GetLockByResourceAsync(IRepositoryTransaction transaction, string resource, bool countRequests, bool forUpdate, CancellationToken token);
-        /// <inheritdoc/>
         public abstract Task<(SqlLock[] Results, int TotalMatching)> SearchAsync(IRepositoryTransaction transaction, SqlQuerySearchCriteria searchCriteria, CancellationToken token = default);
         /// <inheritdoc/>
-        public abstract Task<SqlLock> TryAssignLockToAsync(IRepositoryTransaction transaction, string resource, string requester, DateTime? expiryDate, CancellationToken token);
+        public abstract Task<SqlLock> TryLockAsync(IRepositoryTransaction transaction, string resource, string requester, DateTime? expiryDate, CancellationToken token);
 
         /// <summary>
         /// Returns the connection and transaction contained in <paramref name="transaction"/>.
@@ -377,6 +444,8 @@ namespace Sels.DistributedLocking.SQL.Templates
         /// <returns>The connection and transaction included in <paramref name="transaction"/></returns>
         protected abstract (IDbConnection Connection, IDbTransaction Transaction) GetRepositoryTransactionInfo(IRepositoryTransaction transaction);
 
+        /// <inheritdoc/>
+        public abstract Task TryAssignLockRequestsAsync(IRepositoryTransaction transaction, CancellationToken token);
         /// <inheritdoc/>
         public abstract Task<SqlLockRequest> CreateRequestAsync(IRepositoryTransaction transaction, SqlLockRequest request, CancellationToken token);
         /// <inheritdoc/>

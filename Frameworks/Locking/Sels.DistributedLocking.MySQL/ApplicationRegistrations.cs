@@ -117,7 +117,7 @@ namespace Microsoft.Extensions.DependencyInjection
                                                        .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromMilliseconds(100), maxRetryCount, fastFirst: true),
                                                        (e, t, r, c) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}/{maxRetryCount}>", e));
 
-                            return b.ForAsync(x => x.TryAssignLockToAsync(default, default, default, default, default)).ExecuteWith(duplicateKeyPolicy)
+                            return b.ForAsync(x => x.TryLockAsync(default, default, default, default, default)).ExecuteWith(duplicateKeyPolicy)
                                                 .ForAllAsync.ExecuteWith(transientPolicy, 1);
                         })
                         .AsSingleton()

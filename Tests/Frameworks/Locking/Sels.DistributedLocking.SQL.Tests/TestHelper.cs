@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Sels.Core.Async.TaskManagement;
 using Sels.Core.Mediator;
 using Sels.Core.Mediator.Event;
 using Sels.Core.Mediator.Messaging;
@@ -50,6 +51,12 @@ namespace Sels.DistributedLocking.SQL.Test
         {
             var subscriberMock = new Mock<IEventSubscriber>();
             return subscriberMock;
+        }
+
+        public static Mock<ITaskManager> GetManagerMock()
+        {
+            var mock = new Mock<ITaskManager>();
+            return mock;
         }
 
         public static ILogger<T> GetDebugLogger<T>()

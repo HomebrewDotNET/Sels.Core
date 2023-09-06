@@ -9,6 +9,7 @@ using Sels.Core;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Text;
+using Sels.Core.Attributes.Enumeration.Value;
 
 namespace Sels.SQL.QueryBuilder.Expressions.Condition
 {
@@ -52,7 +53,7 @@ namespace Sels.SQL.QueryBuilder.Expressions.Condition
                 if (i != expressions.Length - 1) builder.AppendSpace();
             });
 
-            if (LogicOperator.HasValue) builder.AppendSpace().Append(LogicOperator.Value);
+            if (LogicOperator.HasValue) builder.AppendSpace().Append(LogicOperator.Value.GetStringValue());
         }
     }
 }

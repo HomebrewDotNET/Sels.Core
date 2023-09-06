@@ -29,9 +29,9 @@ namespace Sels.DistributedLocking.SQL.Test
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
+                x.Setup(x => x.TryLockAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
-            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, TestHelper.GetManagerMock().Object, repositoryMock.Object, options);
 
             // Act
             var lockResult = await provider.TryLockAsync(resource, requester);
@@ -62,9 +62,9 @@ namespace Sels.DistributedLocking.SQL.Test
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
+                x.Setup(x => x.TryLockAsync(It.IsAny<IRepositoryTransaction>(), resource, It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
-            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, TestHelper.GetManagerMock().Object, repositoryMock.Object, options);
 
             // Act
             var lockResult = await provider.TryLockAsync(resource, holder);
@@ -93,9 +93,9 @@ namespace Sels.DistributedLocking.SQL.Test
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
+                x.Setup(x => x.TryLockAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
-            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, TestHelper.GetManagerMock().Object, repositoryMock.Object, options);
 
             // Act
             var lockResult = await provider.TryLockAsync(resource, requester);

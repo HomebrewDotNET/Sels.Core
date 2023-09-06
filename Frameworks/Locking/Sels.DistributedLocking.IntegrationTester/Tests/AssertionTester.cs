@@ -404,9 +404,8 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             Assert.That(exception, Is.Not.Null);
             Assert.That(exception, Is.InstanceOf<LockTimeoutException>());
             var timeoutException = exception as LockTimeoutException;
-            Assert.That(timeoutException.Lock, Is.Not.Null);
-            Assert.That(timeoutException.Lock.Resource, Is.EqualTo(nameof(Lock_LockRequestIsProperlyTimedOut)));
-            Assert.That(timeoutException.Lock.LockedBy, Is.EqualTo($"{nameof(AssertionTester)}.1"));
+            Assert.That(timeoutException, Is.Not.Null);
+            Assert.That(timeoutException.Resource, Is.EqualTo(nameof(Lock_LockRequestIsProperlyTimedOut)));
             Assert.That(timeoutException.Requester, Is.EqualTo($"{nameof(AssertionTester)}.2"));
             Assert.That(timeoutException.Timeout, Is.EqualTo(TimeSpan.FromSeconds(WaitTime)));
 

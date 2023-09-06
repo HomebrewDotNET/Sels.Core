@@ -28,10 +28,9 @@ namespace Sels.DistributedLocking.SQL
         /// <param name="transaction">The transaction to execute the operation in</param>
         /// <param name="resource">The resource the lock is placed on</param>
         /// <param name="countRequests">Whether or not to set <see cref="SqlLock.PendingRequests"/></param>
-        /// <param name="forUpdate">If a lock should be placed on the selected record</param>
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>The state of lock or null if no lock exists on <paramref name="resource"/></returns>
-        Task<SqlLock> GetLockByResourceAsync(IRepositoryTransaction transaction, string resource, bool countRequests, bool forUpdate, CancellationToken token);
+        Task<SqlLock> GetLockByResourceAsync(IRepositoryTransaction transaction, string resource, bool countRequests, CancellationToken token);
 
         /// <summary>
         /// Fetches all pending locking requests for <paramref name="resource"/>.
@@ -41,9 +40,17 @@ namespace Sels.DistributedLocking.SQL
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>All pending requests on <paramref name="resource"/> or null if there aren't any pending requests</returns>
         Task<SqlLockRequest[]> GetAllLockRequestsByResourceAsync(IRepositoryTransaction transaction, string resource, CancellationToken token);
+        /// <summary>
+        /// Fetches all pending locking requests where the id is equal to one of <paramref name="ids"/>.
+        /// </summary>
+        /// <param name="transaction">The transaction to execute the operation in</param>
+        /// <param name="ids">Ids of the requests to fetch</param>
+        /// <param name="token">Optional token to cancel the request</param>
+        /// <returns>All pending locking requests where the id is equal to one of <paramref name="ids"/></returns>
+        Task<SqlLockRequest[]> GetAllLockRequestsByIdsAsync(IRepositoryTransaction transaction, long[] ids, CancellationToken token);
 
         /// <summary>
-        /// Tries to assign a lock on resource <paramref name="resource"/> to <paramref name="requester"/>.
+        /// Tries to assign a lock on resource <paramref name="resource"/> to <paramref name="requester"/> if it is free and has no pending requests.
         /// </summary>
         /// <param name="transaction">The transaction to execute the operation in</param>
         /// <param name="resource">The resource to lock</param>
@@ -51,7 +58,14 @@ namespace Sels.DistributedLocking.SQL
         /// <param name="expiryDate">The expiry date for the lock if it could be placed</param>
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>The latest state of the lock</returns>
-        Task<SqlLock> TryAssignLockToAsync(IRepositoryTransaction transaction, string resource, string requester, DateTime? expiryDate, CancellationToken token);
+        Task<SqlLock> TryLockAsync(IRepositoryTransaction transaction, string resource, string requester, DateTime? expiryDate, CancellationToken token);
+        /// <summary>
+        /// Try to assign pending lock requests to resources that can be locked.
+        /// </summary>
+        /// <param name="transaction">The transaction to execute the operation in</param>
+        /// <param name="token">Optional token to cancel the request</param>
+        /// <returns>Task containing the execution state</returns>
+        Task TryAssignLockRequestsAsync(IRepositoryTransaction transaction, CancellationToken token);
 
         /// <summary>
         /// Unlock resource <paramref name="resource"/> if it still held by <paramref name="requester"/>.

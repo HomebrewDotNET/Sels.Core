@@ -60,7 +60,7 @@ namespace Sels.DistributedLocking.Memory
                     var sleepTime = Timeout.Value - DateTime.Now;
                     await Helper.Async.Sleep(sleepTime, _tokenSource.Token).ConfigureAwait(false);
                     if (_tokenSource.Token.IsCancellationRequested) return;
-                    AbortRequest(new LockTimeoutException(requester, memoryLock, timeout.Value));
+                    AbortRequest(new LockTimeoutException(requester, memoryLock.Resource, timeout.Value));
                 });
             }
         }
