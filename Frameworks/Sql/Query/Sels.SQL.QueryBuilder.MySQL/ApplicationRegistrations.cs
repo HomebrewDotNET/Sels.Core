@@ -1,6 +1,7 @@
 ﻿using Castle.Core.Logging;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Sels.Core.Extensions;
 using Sels.SQL.QueryBuilder;
 using Sels.SQL.QueryBuilder.Builder;
@@ -18,6 +19,19 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class ApplicationRegistrations
     {
+        private static IServiceCollection AddMySqlCompilerOptions(this IServiceCollection services)
+        {
+            services.ValidateArgument(nameof(services));
+
+            services.AddOptions();
+
+            services.BindOptionsFromConfig<MySqlCompilerOptions>(nameof(MySqlCompilerOptions));
+            services.AddOptionProfileValidator<MySqlCompilerOptions, MySqlCompilerOptionsValidationProfile>();
+            services.AddValidationProfile<MySqlCompilerOptionsValidationProfile, string>(ServiceLifetime.Singleton);
+
+            return services;
+        }
+
         /// <summary>
         /// Registers <see cref="ISqlCompiler"/> so it can be used by the query providers.
         /// </summary>
@@ -27,13 +41,19 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.ValidateArgument(nameof(services));
 
+            services.AddMySqlCompilerOptions();
+
             services.New<ISqlCompiler, MySqlCompiler>()
                     .ConstructWith(p =>
                     {
                         var loggerFactory = p.GetService<Logging.ILoggerFactory>();
                         return new MySqlCompiler(loggerFactory?.CreateLogger<MySqlCompiler>());
                     })
-                    .Trace(x => x.Duration.OfAll.WithDurationThresholds(50, 100))
+                    .Trace((p, b) =>
+                    {
+                        var options = p.GetRequiredService<IOptions<MySqlCompilerOptions>>();
+                        return b.Duration.OfAll.WithDurationThresholds(options.Value.PerformanceWarningDurationThreshold, options.Value.PerformanceErrorDurationThreshold);
+                    })
                     .AsScoped()
                     .TryRegister();
 
@@ -44,12 +64,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Registers <see cref="ISqlQueryProvider"/> that can be injected in repositories to generate MySQL queries.
         /// </summary>
         /// <param name="services">Collection to add the services to</param>
+        /// <param name="overwrite">True to overwrite previous registrations, otherwise false</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddMySqlQueryProvider(this IServiceCollection services)
+        public static IServiceCollection AddMySqlQueryProvider(this IServiceCollection services, bool overwrite = false)
         {
             services.ValidateArgument(nameof(services));
 
-            services.AddSqlQueryProvider();
+            services.AddSqlQueryProvider(overwrite: overwrite);
             services.AddMySqlCompiler();
 
             return services;
@@ -58,19 +79,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Registers <see cref="ICachedSqlQueryProvider"/> that can be injected in repositories to generate MySQL queries.
         /// </summary>
-        /// <param name="memoryOptionsBuilder">Delegate for configuring the options for the cached queries</param>
-        /// <param name="expressionCompileOptions">The default compile options for generated queries</param>
         /// <param name="services">Collection to add the services to</param>
         /// <param name="overwrite">True to overwrite previous registrations, otherwise false</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddCachedMySqlQueryProvider(this IServiceCollection services, Action<MemoryCacheEntryOptions> memoryOptionsBuilder = null, ExpressionCompileOptions expressionCompileOptions = ExpressionCompileOptions.None, bool overwrite = false)
+        public static IServiceCollection AddCachedMySqlQueryProvider(this IServiceCollection services, bool overwrite = false)
         {
             services.ValidateArgument(nameof(services));
 
             services.AddMySqlCompiler();
             // MySql always needs the separator 
-            expressionCompileOptions |= ExpressionCompileOptions.AppendSeparator;
-            services.AddCachedSqlQueryProvider(memoryOptionsBuilder, expressionCompileOptions, overwrite);
+            services.Configure<SqlQueryProviderOptions>(o => o.CompileOptions |= ExpressionCompileOptions.AppendSeparator);
+            services.AddCachedSqlQueryProvider(overwrite);
 
             return services;
         }

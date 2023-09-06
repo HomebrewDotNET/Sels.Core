@@ -52,6 +52,15 @@ namespace Sels.DistributedLocking.SQL
         /// </summary>
         public int RequestCheckLimit { get; set; } = 100;
 
+        /// <summary>
+        /// The threshold above which a warning will be logged when any method on <see cref="SqlLockingProvider"/> takes longer to execute.
+        /// </summary>
+        public TimeSpan PerformanceWarningDurationThreshold { get; set; } = TimeSpan.FromMilliseconds(250);
+        /// <summary>
+        /// The threshold above which an error will be logged when any method on <see cref="SqlLockingProvider"/> takes longer to execute.
+        /// </summary>
+        public TimeSpan PerformanceErrorDurationThreshold { get; set; } = TimeSpan.FromMilliseconds(1000);
+
         /// <inheritdoc/>
         public SqlLockingProviderOptions()
         {

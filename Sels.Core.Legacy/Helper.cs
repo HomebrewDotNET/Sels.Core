@@ -19,7 +19,6 @@ using Newtonsoft.Json.Linq;
 using Sels.Core.Process;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Extensions.Linq;
-using Sels.Core.Extensions;
 using Sels.Core.Scope;
 using Sels.Core.Models;
 using Sels.Core.Scope.Actions;

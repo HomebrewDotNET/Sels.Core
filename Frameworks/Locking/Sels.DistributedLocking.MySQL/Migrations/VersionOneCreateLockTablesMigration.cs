@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Logging;
 
 namespace Sels.DistributedLocking.MySQL.Migrations
 {

@@ -66,6 +66,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
 	  <ProjectReference Include="..\..\..\..\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj" />
+	  <ProjectReference Include="..\..\..\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
 	</ItemGroup>
 
 </Project>

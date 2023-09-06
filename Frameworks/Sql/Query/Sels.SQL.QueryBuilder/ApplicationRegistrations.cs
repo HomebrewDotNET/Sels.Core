@@ -1,6 +1,7 @@
 ﻿using Castle.Core.Logging;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Sels.Core.Extensions;
 using Sels.Core.ServiceBuilder;
 using Sels.SQL.QueryBuilder;
@@ -18,19 +19,40 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class ApplicationRegistrations
     {
+        private static IServiceCollection AddSqlQueryProviderOptions(this IServiceCollection services)
+        {
+            services.ValidateArgument(nameof(services));
+
+            services.AddOptions();
+
+            services.BindOptionsFromConfig<SqlQueryProviderOptions>(nameof(SqlQueryProviderOptions));
+            services.AddOptionProfileValidator<SqlQueryProviderOptions, SqlQueryProviderOptionsValidationProfile>();
+            services.AddValidationProfile<SqlQueryProviderOptionsValidationProfile, string>(ServiceLifetime.Singleton);
+
+            return services;
+        }
+
         /// <summary>
         /// Registers <see cref="ISqlQueryProvider"/> that can be injected in repositories to generate sql queries.
         /// </summary>
         /// <param name="services">Collection to add the services to</param>
+        /// <param name="overwrite">True to overwrite previous registrations, otherwise false</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddSqlQueryProvider(this IServiceCollection services)
+        public static IServiceCollection AddSqlQueryProvider(this IServiceCollection services, bool overwrite = false)
         {
             services.ValidateArgument(nameof(services));
 
+            services.AddSqlQueryProviderOptions();
+
             services.New<ISqlQueryProvider, SqlQueryProvider>()
-                    .Trace(x => x.Duration.OfAll.WithDurationThresholds(50, 100))
+                    .Trace((p, b) =>
+                    {
+                        var options = p.GetRequiredService<IOptions<SqlQueryProviderOptions>>();
+                        return b.Duration.OfAll.WithDurationThresholds(options.Value.PerformanceWarningDurationThreshold, options.Value.PerformanceErrorDurationThreshold);
+                    })
                     .AsScoped()
-                    .TryRegister();
+                    .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
+                    .Register();
 
             return services;
         }
@@ -38,24 +60,27 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Registers <see cref="ICachedSqlQueryProvider"/> that can be injected in repositories to generate sql queries.
         /// </summary>
-        /// <param name="memoryOptionsBuilder">Delegate for configuring the options for the cached queries</param>
-        /// <param name="expressionCompileOptions">The default compile options for generated queries</param>
         /// <param name="services">Collection to add the services to</param>
         /// <param name="overwrite">True to overwrite previous registrations, otherwise false</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddCachedSqlQueryProvider(this IServiceCollection services, Action<MemoryCacheEntryOptions> memoryOptionsBuilder = null, ExpressionCompileOptions expressionCompileOptions = ExpressionCompileOptions.None, bool overwrite = false)
+        public static IServiceCollection AddCachedSqlQueryProvider(this IServiceCollection services, bool overwrite = false)
         {
             services.ValidateArgument(nameof(services));
+
+            services.AddSqlQueryProviderOptions();
 
             services.AddMemoryCache();
 
             services.New<ICachedSqlQueryProvider, CachedSqlQueryProvider>()
                     .ConstructWith(p => {
-                        var memoryOptions = new MemoryCacheEntryOptions();
-                        memoryOptionsBuilder?.Invoke(memoryOptions);
-                        return new CachedSqlQueryProvider(p.GetRequiredService<IMemoryCache>(), memoryOptions, p.GetRequiredService<ISqlCompiler>(), expressionCompileOptions, p.GetService<ILogger<CachedSqlQueryProvider>>());
+                        var options = p.GetRequiredService<IOptions<SqlQueryProviderOptions>>();
+                        return new CachedSqlQueryProvider(p.GetRequiredService<IMemoryCache>(), options.Value.CacheEntryOptions, p.GetRequiredService<ISqlCompiler>(), options.Value.CompileOptions, p.GetService<ILogger<CachedSqlQueryProvider>>());
                     })
-                    .Trace(x => x.Duration.OfAll.WithDurationThresholds(50, 100))
+                    .Trace((p, b) =>
+                    {
+                        var options = p.GetRequiredService<IOptions<SqlQueryProviderOptions>>();
+                        return b.Duration.OfAll.WithDurationThresholds(options.Value.PerformanceWarningDurationThreshold, options.Value.PerformanceErrorDurationThreshold);
+                    })
                     .AsScoped()
                     .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
                     .Register();

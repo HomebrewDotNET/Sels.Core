@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO.Pipes;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -44,7 +45,11 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Add provider as self for interception
             services.New<SqlLockingProvider>()
-                    .Trace(x => x.Duration.OfAll.WithDefaultThresholds())
+                    .Trace((p, b) =>
+                    {
+                        var options = p.GetRequiredService<IOptions<SqlLockingProviderOptions>>();
+                        return b.Duration.OfAll.WithDurationThresholds(options.Value.PerformanceWarningDurationThreshold, options.Value.PerformanceErrorDurationThreshold);
+                    })
                     .HandleDisposed()
                     .AsSingleton()
                     .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)

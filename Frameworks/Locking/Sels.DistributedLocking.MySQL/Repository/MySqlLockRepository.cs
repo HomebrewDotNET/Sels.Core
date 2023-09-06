@@ -26,7 +26,6 @@ using Sels.DistributedLocking.MySQL.Migrations;
 using System.Collections;
 using System.Linq;
 using Sels.SQL.QueryBuilder.Expressions;
-using Sels.Core.Extensions.Logging;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Conversion.Extensions;

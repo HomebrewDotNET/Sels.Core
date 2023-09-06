@@ -26,6 +26,8 @@ namespace Sels.DistributedLocking.SQL
                     .MustBeLargerThan(TimeSpan.FromMilliseconds(10))
                 .ForProperty(x => x.RequestCheckLimit)
                     .MustBeLargerOrEqualTo(1)
+                .ForProperty(x => x.PerformanceErrorDurationThreshold)
+                    .ValidIf(x => x.Value > x.Source.PerformanceWarningDurationThreshold, x => $"Must be larger than <{nameof(x.Source.PerformanceWarningDurationThreshold)}>")
                 .Switch(x => x.CleanupMethod)
                     .Case(SqlLockCleanupMethod.Time)
                     .Case(SqlLockCleanupMethod.Amount)
