@@ -73,14 +73,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="TOptions">The type of the option to bond from config</typeparam>
         /// <param name="serviceCollection">Collection to add the services to</param>
+        /// <param name="nameBehaviour"><inheritdoc cref="ConfigurationProviderNamedOptionBehaviour"/></param>
+        /// <param name="fallbackOnDefault">Set to true to fallback to <paramref name="sectionName"/> if no configuration section exists for the name</param>
         /// <param name="sectionName">Optional section name to bind from. When not set the type name will be used as the section name</param>
         /// <returns><paramref name="serviceCollection"/> for method chaining</returns>
-        public static IServiceCollection BindOptionsFromConfig<TOptions>(this IServiceCollection serviceCollection, string sectionName = null) where TOptions : class
+        public static IServiceCollection BindOptionsFromConfig<TOptions>(this IServiceCollection serviceCollection, string sectionName = null, ConfigurationProviderNamedOptionBehaviour nameBehaviour = ConfigurationProviderNamedOptionBehaviour.SubSection, bool fallbackOnDefault = true) where TOptions : class
         {
             serviceCollection.ValidateArgument(nameof(serviceCollection));
 
             serviceCollection.AddOptions();
-            serviceCollection.AddSingleton<IConfigureOptions<TOptions>>(x => new OptionConfigurationProvider<TOptions>(x.GetRequiredService<IConfiguration>(), sectionName));
+            serviceCollection.AddSingleton<IConfigureOptions<TOptions>>(x => new OptionConfigurationProvider<TOptions>(x.GetRequiredService<IConfiguration>(), nameBehaviour, fallbackOnDefault, sectionName));
             serviceCollection.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
             serviceCollection.AddConfigurationFromDirectory(x => x.Name.ToLower().Contains("settings"), true);
 

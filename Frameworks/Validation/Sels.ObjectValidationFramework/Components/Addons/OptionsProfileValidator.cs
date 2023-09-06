@@ -21,23 +21,20 @@ namespace Sels.ObjectValidationFramework.Addons
         // Fields
         private readonly Func<ValidationError<string>, string> _projector;
         private readonly ValidationProfile<string>[] _profiles;
-        private readonly object _context;
         private readonly ProfileExecutionOptions _executionOptions;
         private readonly string[] _targets;
         private readonly ILogger _logger;
 
         /// <inheritdoc cref="OptionsProfileValidator{TOptions}"/>
         /// <param name="profiles">The validation profiles used to validate the options instance</param>
-        /// <param name="context">Optional context for the profiles</param>
         /// <param name="executionOptions">The options to use when calling the validation profiles</param>
         /// <param name="projector">Optional projector to modify the error messages returned from the profiles. 
         /// The default projector prefixes the error message like {Property}: {ErrorMessage} if a property is available for the error message</param>
         /// <param name="logger">Optional logger for tracing</param>
         /// <param name="targets">The names of the options instances the current validator can target. If set to null or empty all options will be validated</param>
-        public OptionsProfileValidator(IEnumerable<ValidationProfile<string>> profiles, object context, ProfileExecutionOptions executionOptions, Func<ValidationError<string>, string> projector, ILogger<OptionsProfileValidator<TOption>> logger, params string[] targets)
+        public OptionsProfileValidator(IEnumerable<ValidationProfile<string>> profiles, ProfileExecutionOptions executionOptions, Func<ValidationError<string>, string> projector, ILogger<OptionsProfileValidator<TOption>> logger, params string[] targets)
         {
             _profiles = profiles.ValidateArgumentNotNullOrEmpty(nameof(profiles)).ToArray();
-            _context = context;
             _executionOptions = executionOptions;
             _projector = projector ?? Project;
             _targets = targets;
@@ -62,7 +59,7 @@ namespace Sels.ObjectValidationFramework.Addons
                 foreach (var profile in _profiles)
                 {
                     _logger.Debug($"Validating option <{typeof(TOption).GetDisplayName(false)}> with name <{name}> using profile <{profile}>");
-                    var result = profile.Validate(options, _context, _executionOptions);
+                    var result = profile.Validate(options, new OptionValidationContext(name), _executionOptions);
                     if (!result.IsValid)
                     {
                         _logger.Debug($"Option <{typeof(TOption).GetDisplayName(false)}> with name <{name}> is not valid according to profile <{profile}> and returned <{result.Errors.Length}> errors");
@@ -87,5 +84,23 @@ namespace Sels.ObjectValidationFramework.Addons
         }
 
         private string Project(ValidationError<string> error) => $"{error.DisplayName}: {error.Message}";
+    }
+
+    /// <summary>
+    /// The validation context supplied when validating options.
+    /// </summary>
+    public class OptionValidationContext
+    {
+        /// <summary>
+        /// The name of the option being validated. Empty string when the default option is being validated.
+        /// </summary>
+        string OptionName { get; }
+
+        /// <inheritdoc cref="OptionValidationContext"/>
+        /// <param name="optionName"><inheritdoc cref="OptionName"/></param>
+        public OptionValidationContext(string optionName)
+        {
+            OptionName = optionName ?? string.Empty;
+        }
     }
 }

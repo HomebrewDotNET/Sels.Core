@@ -419,13 +419,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TOption">Type of the options to validate</typeparam>
         /// <param name="services">Service collection to add the service registration to</param>
         /// <param name="profileConstructor">Delegate that returns the validation profiles to use</param>
-        /// <param name="context">Optional context for the profiles</param>
         /// <param name="executionOptions">The options to use when calling the validation profiles</param>
         /// <param name="projector">Optional projector to modify the error messages returned from the profiles. 
         /// The default projector prefixes the error message like {Property}: {ErrorMessage} if a property is available for the error message</param>
         /// <param name="targets">The names of the options instances the current validator can target. If set to null or empty all options will be validated</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddOptionProfileValidator<TOption>(this IServiceCollection services, Func<IServiceProvider, IEnumerable<ValidationProfile<string>>> profileConstructor, object context = null, ProfileExecutionOptions executionOptions = ProfileExecutionOptions.None, Func<ValidationError<string>, string> projector = null, params string[] targets) where TOption : class
+        public static IServiceCollection AddOptionProfileValidator<TOption>(this IServiceCollection services, Func<IServiceProvider, IEnumerable<ValidationProfile<string>>> profileConstructor, ProfileExecutionOptions executionOptions = ProfileExecutionOptions.None, Func<ValidationError<string>, string> projector = null, params string[] targets) where TOption : class
         {
             services.ValidateArgument(nameof(services));
             profileConstructor.ValidateArgument(nameof(profileConstructor));
@@ -433,7 +432,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IValidateOptions<TOption>>(x =>
             {
                 var profiles = profileConstructor(x);
-                return new OptionsProfileValidator<TOption>(profiles, context, executionOptions, projector, x.GetService<ILogger<OptionsProfileValidator<TOption>>>(), targets);
+                return new OptionsProfileValidator<TOption>(profiles, executionOptions, projector, x.GetService<ILogger<OptionsProfileValidator<TOption>>>(), targets);
             });
 
             return services;
@@ -445,19 +444,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TOption">Type of the options to validate</typeparam>
         /// <typeparam name="TProfile">Type of the validation profile to use</typeparam>
         /// <param name="services">Service collection to add the service registration to</param>
-        /// <param name="context">Optional context for the profiles</param>
         /// <param name="executionOptions">The options to use when calling the validation profiles</param>
         /// <param name="projector">Optional projector to modify the error messages returned from the profiles. 
         /// The default projector prefixes the error message like {Property}: {ErrorMessage} if a property is available for the error message</param>
         /// <param name="targets">The names of the options instances the current validator can target. If set to null or empty all options will be validated</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddOptionProfileValidator<TOption, TProfile>(this IServiceCollection services, object context = null, ProfileExecutionOptions executionOptions = ProfileExecutionOptions.None, Func<ValidationError<string>, string> projector = null, params string[] targets) 
+        public static IServiceCollection AddOptionProfileValidator<TOption, TProfile>(this IServiceCollection services, ProfileExecutionOptions executionOptions = ProfileExecutionOptions.None, Func<ValidationError<string>, string> projector = null, params string[] targets) 
             where TOption : class
             where TProfile : ValidationProfile<string>
         {
             services.ValidateArgument(nameof(services));
 
-            return services.AddOptionProfileValidator<TOption>(x => x.GetRequiredService<TProfile>().AsEnumerable(), context, executionOptions, projector, targets);
+            return services.AddOptionProfileValidator<TOption>(x => x.GetRequiredService<TProfile>().AsEnumerable(), executionOptions, projector, targets);
         }
         #endregion
     }

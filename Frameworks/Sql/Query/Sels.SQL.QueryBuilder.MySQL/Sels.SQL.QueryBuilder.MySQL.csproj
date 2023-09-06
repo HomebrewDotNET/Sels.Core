@@ -65,6 +65,7 @@
 
 
 	<ItemGroup>
+    <ProjectReference Include="..\..\..\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
     <ProjectReference Include="..\Sels.SQL.QueryBuilder\Sels.SQL.QueryBuilder.csproj" />
   </ItemGroup>
 

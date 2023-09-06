@@ -60,6 +60,7 @@ namespace Sels.Core.Async.TaskManagement
                 var scheduledTask = Task.Factory.StartNew(async () =>
                 {
                     await _startSource.Task;
+                    _cancellationSource.Token.ThrowIfCancellationRequested();
                     StartedDate = DateTime.Now;
 
                     try

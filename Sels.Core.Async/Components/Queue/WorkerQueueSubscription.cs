@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Sels.Core.Extensions.Linq;
+using Sels.Core.Dispose;
+using Sels.Core.Scope.Actions;
 
 namespace Sels.Core.Async.Queue
 {
@@ -14,11 +16,14 @@ namespace Sels.Core.Async.Queue
     /// An active subscription to items added to a <see cref="WorkerQueue{T}"/>. Manages tasks that will dequeue items asynchronously.
     /// Disposing the subscriptions will cancel the tasks.
     /// </summary>
-    public struct WorkerQueueSubscription<T> : IDisposable
+    public struct WorkerQueueSubscription<T> : IExposedDisposable
     {
         // Fields
         private readonly CancellationTokenSource _tokenSource;
         private readonly CancellationTokenRegistration _registration;
+
+        /// <inheritdoc/>
+        public bool? IsDisposed { get; private set; }
 
         /// <inheritdoc/>
         /// <param name="workerAmount">How many threads to subscribe with</param>
@@ -31,6 +36,7 @@ namespace Sels.Core.Async.Queue
             queue.ValidateArgument(nameof(queue));
             itemHandler.ValidateArgument(nameof(itemHandler));
 
+            IsDisposed = null;
             var tokenSource = new CancellationTokenSource();
             _registration = cancellationToken.Register(tokenSource.Cancel);
             _tokenSource = tokenSource;
@@ -52,9 +58,17 @@ namespace Sels.Core.Async.Queue
         /// <inheritdoc/>
         public void Dispose()
         {
-            _registration.Dispose();
+            if (IsDisposed.HasValue) return;
 
-            _tokenSource?.Cancel();
+            var current = this;
+
+            using(new ExecutedAction(x => current.IsDisposed = x))
+            {
+                _registration.Dispose();
+
+                _tokenSource?.Cancel();
+                _tokenSource?.Dispose();
+            }
         }
     }
 }

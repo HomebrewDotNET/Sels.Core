@@ -152,21 +152,24 @@ namespace Sels.Core.Async.Queue
                 }
 
                 // Try assign first
-                if (_requests.TryDequeue(out var request))
+                while (_requests.TryDequeue(out var request))
                 {
-                    using (request)
+                    lock (request)
                     {
-                        request.Assign(item);
-                        _logger.Log($"Item <{item}> assigned to next request");
+                        using (request)
+                        {
+                            if (request.Callback.IsCompleted) continue;
+                            request.Assign(item);
+                            _logger.Log($"Item <{item}> assigned to next request");
+                            return true;
+                        }
                     }
+
                 }
-                // Enqueue
-                else
-                {
-                    _queue.Enqueue(item);
-                    _logger.Log($"Item <{item}> added to queue");
-                    TriggerEvents(true, token);
-                }
+
+                _queue.Enqueue(item);
+                _logger.Log($"Item <{item}> added to queue");
+                TriggerEvents(true, token);
                 return true;
             }
         }
@@ -255,7 +258,7 @@ namespace Sels.Core.Async.Queue
                 _subscriptions.Add(subscription);
                 return new WorkerQueueEventSubscription(() =>
                 {
-                    lock(_subscriptions)
+                    lock (_subscriptions)
                     {
                         _subscriptions.Remove(subscription);
                     }
@@ -275,7 +278,7 @@ namespace Sels.Core.Async.Queue
         /// <param name="handler">Delegate that will be called when queue count reaches <see cref="MaxSize"/></param>
         /// <param name="ensureTrigger">If <paramref name="handler"/> needs to be queued even if it is already running. When set to false and if it is already running <paramref name="handler"/> won't be called</param>
         /// <returns>An active subscription to the event. Disposing the object will stop <paramref name="handler"/> from receiving events</returns>
-        public WorkerQueueEventSubscription OnFullQueue(Func<CancellationToken, Task> handler, bool ensureTrigger = true) 
+        public WorkerQueueEventSubscription OnFullQueue(Func<CancellationToken, Task> handler, bool ensureTrigger = true)
         {
             if (!MaxSize.HasValue) throw new InvalidOperationException($"Queue does not have a max size set so queue can never be full");
             return OnQueueChanged((s, i) => s == MaxSize.Value && i, handler, ensureTrigger);
@@ -304,7 +307,7 @@ namespace Sels.Core.Async.Queue
         /// <param name="workerAmount">How many threads to subscribe with</param>
         /// <param name="itemHandler">Delegate used to handle dequeued items</param>
         /// <param name="cancellationToken">Optional token to cancel the scheduled tasks</param>
-        /// <returns>An active subscription that can be cancelled to stop receiving work with <paramref name="itemHandler"/></returns>
+        /// <returns>An active subscription that can be disposed to stop receiving work with <paramref name="itemHandler"/></returns>
         public WorkerQueueSubscription<T> Subscribe(int workerAmount, Func<T, CancellationToken, Task> itemHandler, CancellationToken cancellationToken = default)
         {
             using var methodLogger = _logger.TraceMethod(this);
@@ -312,7 +315,7 @@ namespace Sels.Core.Async.Queue
             workerAmount.ValidateArgumentLargerOrEqual(nameof(workerAmount), 1);
             itemHandler.ValidateArgument(nameof(itemHandler));
 
-            return new WorkerQueueSubscription<T>(workerAmount, this, itemHandler, cancellationToken);  
+            return new WorkerQueueSubscription<T>(workerAmount, this, itemHandler, cancellationToken);
         }
 
         private void TriggerEvents(bool queueIncreased, CancellationToken token = default)
@@ -326,12 +329,12 @@ namespace Sels.Core.Async.Queue
                 subscriptions = _subscriptions.ToArray();
             }
 
-            foreach(var handler in subscriptions.Where(x => x.CanTrigger(Count, queueIncreased)))
+            foreach (var handler in subscriptions.Where(x => x.CanTrigger(Count, queueIncreased)))
             {
                 _logger.Debug($"Triggering handler <{handler.Name}>");
                 _ = TaskManager.ScheduleActionAsync(this, handler.Name, handler.EventHandler, x => x.ExecuteFirst(() => _logger.Debug($"Executing handler <{handler.Name}>"))
                                                                                                     .ExecuteAfter(() => _logger.Debug($"Executed handler <{handler.Name}>"))
-                                                                                                    .WithPolicy(handler.EnsureTrigger ? NamedManagedTaskPolicy.WaitAndStart : NamedManagedTaskPolicy.TryStart)            
+                                                                                                    .WithPolicy(handler.EnsureTrigger ? NamedManagedTaskPolicy.WaitAndStart : NamedManagedTaskPolicy.TryStart)
                                                    , token);
                 _logger.Debug($"Handler <{handler.Name}> has been scheduled");
             }
@@ -354,7 +357,7 @@ namespace Sels.Core.Async.Queue
         public async ValueTask DisposeAsync()
         {
             if (IsDisposed.HasValue) return;
-            using(new ExecutedAction(x => IsDisposed = x))
+            using (new ExecutedAction(x => IsDisposed = x))
             {
                 var exceptions = new List<Exception>();
                 _logger.Log($"Disposing worker queue <{Id}>");
@@ -366,11 +369,11 @@ namespace Sels.Core.Async.Queue
 
                     await TaskManager.StopAllForAsync(this).ConfigureAwait(false);
                 }
-                catch(AggregateException aggrEx) when(aggrEx.InnerExceptions.All(x => x.IsAssignableTo<OperationCanceledException>()))
+                catch (AggregateException aggrEx) when (aggrEx.InnerExceptions.All(x => x.IsAssignableTo<OperationCanceledException>()))
                 {
                     _logger.Debug($"All tasks cancelled for worker queue <{Id}>");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _logger.Log($"Something went wrong stopping tasks for worker queue <{Id}>", ex);
                     exceptions.Add(ex);
@@ -382,7 +385,7 @@ namespace Sels.Core.Async.Queue
                 {
                     _logger.Debug($"There are <{Count}> items remaining in the queue");
 
-                    while(_queue.TryDequeue(out var item))
+                    while (_queue.TryDequeue(out var item))
                     {
                         _logger.Debug($"Item <{item}> was still in the queue. Releasing");
 
@@ -421,7 +424,6 @@ namespace Sels.Core.Async.Queue
         {
             // Fields
             private readonly TaskCompletionSource<T> _taskSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
-            private readonly CancellationTokenSource _tokenSource = new CancellationTokenSource();
             private readonly CancellationTokenRegistration _tokenRegistration;
 
             public DequeueRequest(CancellationToken token)
@@ -440,13 +442,28 @@ namespace Sels.Core.Async.Queue
             /// Assigns <paramref name="item"/> to the caller.
             /// </summary>
             /// <param name="item">The item assigned to the caller</param>
-            public void Assign(T item) => _taskSource.SetResult(item.ValidateArgument(nameof(item)));
+            public void Assign(T item)
+            {
+                lock (this)
+                {
+                    if (!_taskSource.Task.IsCompleted) _taskSource.SetResult(item.ValidateArgument(nameof(item)));
+                }
+            }
             /// <summary>
             /// Cancels the request and allows the caller to return.
             /// </summary>
-            public void Cancel() => _tokenSource.Cancel();
+            public void Cancel()
+            {
+                lock (this)
+                {
+                    if (!_taskSource.Task.IsCompleted) _taskSource.SetCanceled();
+                }
+            }
             /// <inheritdoc/>
-            public void Dispose() => _tokenSource.Dispose();
+            public void Dispose()
+            {
+                _tokenRegistration.Dispose();
+            }
         }
 
         private class EventHandlerSubscription
