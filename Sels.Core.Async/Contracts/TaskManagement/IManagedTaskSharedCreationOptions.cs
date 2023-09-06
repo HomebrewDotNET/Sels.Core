@@ -82,6 +82,7 @@ namespace Sels.Core.Async.TaskManagement
             });
         }
         #endregion
+        #region DelayStartBy
         /// <summary>
         /// Delays the execution of the managed task by <paramref name="delay"/>.
         /// </summary>
@@ -94,6 +95,30 @@ namespace Sels.Core.Async.TaskManagement
         /// <param name="delay">How many milliseconds to delay the execution by</param>
         /// <returns>Current options for method chaining</returns>
         TDerived DelayStartBy(int delay) => ExecuteFirst(t => Task.Delay(delay, t));
+        /// <summary>
+        /// Delays the execution of the managed task by the amount returned by <paramref name="delay"/>.
+        /// </summary>
+        /// <param name="delay">Delegate that returns how much to delay the execution by</param>
+        /// <returns>Current options for method chaining</returns>
+        TDerived DelayStartBy(Func<TimeSpan> delay)
+        {
+            delay.ValidateArgument(nameof(delay));
+
+            return ExecuteFirst(t => Task.Delay(delay(), t));
+        }
+        /// <summary>
+        /// Delays the execution of the managed task by the amount returned by <paramref name="delay"/> ms.
+        /// </summary>
+        /// <param name="delay">Delegate that returns how many milliseconds to delay the execution by</param>
+        /// <returns>Current options for method chaining</returns>
+        TDerived DelayStartBy(Func<int> delay)
+        {
+            delay.ValidateArgument(nameof(delay));
+
+            return ExecuteFirst(t => Task.Delay(delay(), t));
+        }
+        #endregion
+
         #endregion
 
         #region ExecuteLast

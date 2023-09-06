@@ -21,7 +21,7 @@ namespace Sels.ObjectValidationFramework.Target
         WithSuppliedContext = 1,
         /// <summary>
         /// When a rule returns an error the validation rules defined after won't be executed. By default all rules are executed. 
-        /// Can be handy when the first rule checks for nulls but the rules afterwards don't. This avoids having to add extra null checks after the first rule or <see cref="NullReferenceException"/>'s.
+        /// Can be handy when the first rule checks for nulls but the rules afterwards don't. This avoids having to add extra null checks after the first rule or dealing with <see cref="NullReferenceException"/>'s.
         /// </summary>
         ExitOnInvalid = 2
     }

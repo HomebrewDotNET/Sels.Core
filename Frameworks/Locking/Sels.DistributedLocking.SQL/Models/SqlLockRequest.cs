@@ -28,6 +28,10 @@ namespace Sels.DistributedLocking.SQL
         public DateTime? Timeout { get; set; }
         /// <inheritdoc/>
         public DateTime CreatedAt { get; set; }
+        /// <summary>
+        /// Indicates that the lock request is assigned. Lock request can then be completed and removed afterwards.
+        /// </summary>
+        public bool IsAssigned { get; set; }
 
         TimeSpan? ILockRequest.ExpiryTime => ExpiryTime != null ? TimeSpan.FromSeconds(ExpiryTime.Value) : (TimeSpan?)null;
 

@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Sels.Core;
 using Sels.Core.Configuration;
-using Sels.Core.Configuration;
 using Sels.Core.Extensions;
 using Sels.DistributedLocking.IntegrationTester;
 using SelsCommandLine = Sels.Core.Cli.CommandLine;

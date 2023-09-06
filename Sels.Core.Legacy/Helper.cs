@@ -19,7 +19,6 @@ using Newtonsoft.Json.Linq;
 using Sels.Core.Process;
 using Sels.Core.Extensions.Fluent;
 using Sels.Core.Extensions.Linq;
-using Sels.Core.Extensions;
 using Sels.Core.Scope;
 using Sels.Core.Models;
 using Sels.Core.Scope.Actions;
@@ -1016,6 +1015,22 @@ namespace Sels.Core
                     await Task.Delay(waitTime, token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException) { }
+            }
+
+            /// <summary>
+            /// Sleeps until <paramref name="sleepTime"/> asynchronously. When <paramref name="token"/> is cancelled no <see cref="TaskCanceledException"/> will be thrown.
+            /// </summary>
+            /// <param name="sleepTime">The date after which the returned task will complete</param>
+            /// <param name="token">Optional token to cancel the sleeping</param>
+            /// <returns>Task that will complete when either the time goes past <paramref name="sleepTime"/> or when <paramref name="token"/> gets cancelled</returns>
+            public static async Task SleepUntil(DateTime sleepTime, CancellationToken token = default)
+            {
+                while(DateTime.Now < sleepTime)
+                {
+                    var waitTime = DateTime.Now - sleepTime;
+
+                    await Sleep(waitTime, token).ConfigureAwait(false);
+                }
             }
 
             /// <summary>

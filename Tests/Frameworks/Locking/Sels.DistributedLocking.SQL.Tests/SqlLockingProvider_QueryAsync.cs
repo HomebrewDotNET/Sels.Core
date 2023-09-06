@@ -22,7 +22,7 @@ namespace Sels.DistributedLocking.SQL.Test
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
             });
-            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, TestHelper.GetManagerMock().Object, repositoryMock.Object, options);
 
             // Act
             var results = await provider.QueryAsync(x => x.WithFilterOnResource("Deployment")
@@ -63,7 +63,7 @@ namespace Sels.DistributedLocking.SQL.Test
             {
                 x.Setup(x => x.SearchAsync(It.IsAny<IRepositoryTransaction>(), It.IsAny<SqlQuerySearchCriteria>(), It.IsAny<CancellationToken>())).ReturnsAsync((sqlLocks, sqlLocks.Length));
             });
-            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, TestHelper.GetManagerMock().Object, repositoryMock.Object, options);
 
             // Act
             var result = await provider.QueryAsync(x => { });

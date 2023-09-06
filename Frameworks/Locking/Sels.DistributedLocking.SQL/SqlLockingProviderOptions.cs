@@ -15,10 +15,6 @@ namespace Sels.DistributedLocking.SQL
 
         // Properties
         /// <summary>
-        /// The interval that will be used by <see cref="SqlLockingProvider"/> to do self/database maintenance.
-        /// </summary>
-        public TimeSpan MaintenanceInterval { get; set; } = TimeSpan.FromMinutes(3);
-        /// <summary>
         /// If cleanup of locks is enabled.
         /// </summary>
         public bool IsCleanupEnabled { get; set; }
@@ -40,25 +36,30 @@ namespace Sels.DistributedLocking.SQL
         public int ExpiryOffset { get; set; } = 1000;
 
         /// <summary>
-        /// How often to check pending requests in milliseconds if they were assigned. Requests are also timed out by the same poller so setting it too high will mean requests will get timed out way past the provided timeout.
+        /// The interval that will be used by <see cref="SqlLockingProvider"/> to do self/database maintenance.
         /// </summary>
-        public int RequestPollingRate { get; set; } = 1000;
+        public TimeSpan MaintenanceInterval { get; set; } = TimeSpan.FromMinutes(5);
         /// <summary>
-        /// The maximum amount of request managers that will be created. Used to avoid flooding the thread pool and using all the sql connections.
+        /// How often <see cref="SqlLockingProvider"/> will try to assign pending requests.
         /// </summary>
-        public int MaximumRequestManagers { get; set; } = 5;
+        public TimeSpan RequestAssignmentInterval { get; set; } = TimeSpan.FromMilliseconds(500);
         /// <summary>
-        /// The ideal maximum resources that each request manager should manage. Used to determine when to start a new request manager.
+        /// How often <see cref="SqlLockingProvider"/> will check if requests have been assigned.
         /// </summary>
-        public int MaxWantedResourcePerManager { get; set; } = 5;
+        public TimeSpan RequestCompletionInterval { get; set; } = TimeSpan.FromMilliseconds(250);
         /// <summary>
-        /// How many resources with pending requests there need to be before logging a warning.
+        /// How many requests will be checked at the same time by the request completion worker.
         /// </summary>
-        public int ActiveResourceMonitorWarningThreshold { get; set; } = 100;
+        public int RequestCheckLimit { get; set; } = 100;
+
         /// <summary>
-        /// How many resources with pending requests there need to be before logging an error.
+        /// The threshold above which a warning will be logged when any method on <see cref="SqlLockingProvider"/> takes longer to execute.
         /// </summary>
-        public int ActiveResourceMonitorErrorThreshold { get; set; } = 150;
+        public TimeSpan PerformanceWarningDurationThreshold { get; set; } = TimeSpan.FromMilliseconds(250);
+        /// <summary>
+        /// The threshold above which an error will be logged when any method on <see cref="SqlLockingProvider"/> takes longer to execute.
+        /// </summary>
+        public TimeSpan PerformanceErrorDurationThreshold { get; set; } = TimeSpan.FromMilliseconds(1000);
 
         /// <inheritdoc/>
         public SqlLockingProviderOptions()

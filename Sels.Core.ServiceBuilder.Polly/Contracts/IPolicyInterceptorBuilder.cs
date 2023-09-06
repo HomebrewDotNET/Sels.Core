@@ -57,7 +57,7 @@ namespace Sels.Core.ServiceBuilder.Polly
         /// </summary>
         ISelectSyncPolicyInterceptorBuilder<T> ForAll { get; }
         /// <summary>
-        /// Executes all asynchronous methods with am async Polly policy.
+        /// Executes all asynchronous methods with an async Polly policy.
         /// </summary>
         ISelectAsyncPolicyInterceptorBuilder<T> ForAllAsync { get; }
     }

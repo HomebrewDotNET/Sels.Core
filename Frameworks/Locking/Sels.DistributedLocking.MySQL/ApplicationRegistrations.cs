@@ -57,17 +57,21 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Add configuration handler
             services.BindOptionsFromConfig<MySqlLockRepositoryDeploymentOptions>();
+            services.BindOptionsFromConfig<MySqlLockRepositoryOptions>();
 
             // Add option validator
             services.AddValidationProfile<MySqlLockRepositoryDeploymentOptionsValidationProfile, string>(ServiceLifetime.Singleton);
-            services.AddOptionProfileValidator<SqlLockingProviderOptions, MySqlLockRepositoryDeploymentOptionsValidationProfile>();
+            services.AddOptionProfileValidator<MySqlLockRepositoryDeploymentOptions, MySqlLockRepositoryDeploymentOptionsValidationProfile>();
+            services.AddValidationProfile<MySqlLockRepositoryOptionsValidationProfile, string>(ServiceLifetime.Singleton);
+            services.AddOptionProfileValidator<MySqlLockRepositoryOptions, MySqlLockRepositoryOptionsValidationProfile>();
 
             // Configure deployment options
             if (registrationOptions.DeploymentConfigurator != null) services.Configure(registrationOptions.DeploymentConfigurator);
+            if (registrationOptions.RepositoryConfigurator != null) services.Configure(registrationOptions.RepositoryConfigurator);
 
             // Add Sql Locking provider
             services.AddSqlLockingProvider(registrationOptions.ProviderConfigurator, overwrite);
-            services.AddCachedMySqlQueryProvider(registrationOptions.CacheOptions, ExpressionCompileOptions.AppendSeparator, overwrite);
+            services.AddCachedMySqlQueryProvider(overwrite);
 
             // Add repository
             if (registrationOptions.UseMariaDbRepository)
@@ -105,19 +109,23 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.New<ISqlLockRepository, T>()
                         .ConstructWith(factory)
-                        .Trace(x => x.Duration.OfAll.WithDefaultThresholds())
+                        .Trace((p, b) =>
+                        {
+                            var options = p.GetRequiredService<IOptions<MySqlLockRepositoryOptions>>();
+                            return b.Duration.OfAll.WithDurationThresholds(options.Value.PerformanceWarningDurationThreshold, options.Value.PerformanceErrorDurationThreshold);
+                        })
                         .ExecuteWithPolly((p, b) =>
                         {
                             var logger = p.GetService<ILogger<T>>();
                             var displayName = typeof(T).GetDisplayName();
                             var duplicateKeyPolicy = Policy.Handle<MySqlException>(x => x.ErrorCode == MySqlErrorCode.DuplicateKeyEntry)
-                               .WaitAndRetryForeverAsync(x => TimeSpan.FromMilliseconds(x),
+                               .WaitAndRetryForeverAsync(x => TimeSpan.FromMilliseconds(x * 10),
                                                         (e, r, t) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}>. Will retry forever.", e));
                             var transientPolicy = Policy.Handle<MySqlException>(x => x.IsTransient && !(x.ErrorCode == MySqlErrorCode.UnableToConnectToHost && Regex.IsMatch(x.Message, "All pooled connections are in use")))
-                                                       .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromMilliseconds(100), maxRetryCount, fastFirst: true),
+                                                       .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromMilliseconds(100), maxRetryCount, fastFirst: false),
                                                        (e, t, r, c) => logger.Warning($"<{displayName}> ran into recoverable exception. Current retry count is <{r}/{maxRetryCount}>", e));
 
-                            return b.ForAsync(x => x.TryAssignLockToAsync(default, default, default, default, default)).ExecuteWith(duplicateKeyPolicy)
+                            return b.ForAsync(x => x.TryLockAsync(default, default, default, default, default)).ExecuteWith(duplicateKeyPolicy)
                                                 .ForAllAsync.ExecuteWith(transientPolicy, 1);
                         })
                         .AsSingleton()
@@ -129,8 +137,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             // Properties
             public Action<MySqlLockRepositoryDeploymentOptions> DeploymentConfigurator { get; private set; }
+            public Action<MySqlLockRepositoryOptions> RepositoryConfigurator { get; private set; }
             public Action<SqlLockingProviderOptions> ProviderConfigurator { get; private set; }
-            public Action<MemoryCacheEntryOptions> CacheOptions { get; private set; }
             public Func<IServiceProvider, string> ConnectionStringFactory { get; private set; }
             public bool UseMariaDbRepository { get; private set; }
 
@@ -156,6 +164,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 return this;
             }
             /// <inheritdoc/>
+            public IMySqlLockingProviderRegistrationOptions ConfigureRepository(Action<MySqlLockRepositoryOptions> configurator)
+            {
+                RepositoryConfigurator = configurator.ValidateArgument(nameof(configurator));
+                return this;
+            }
+            /// <inheritdoc/>
             public IMySqlLockingProviderRegistrationOptions UseConnectionString(Func<IServiceProvider, string> connectionStringFactory)
             {
                 ConnectionStringFactory = connectionStringFactory.ValidateArgument(nameof(connectionStringFactory));
@@ -167,12 +181,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 UseMariaDbRepository = true;
                 return this;
             }
-            /// <inheritdoc/>
-            public IMySqlLockingProviderRegistrationOptions UseQueryCacheOptions(Action<MemoryCacheEntryOptions> cacheOptions)
-            {
-                CacheOptions = cacheOptions.ValidateArgument(nameof(cacheOptions));
-                return this;
-            }
         }
     }
 
@@ -182,23 +190,23 @@ namespace Microsoft.Extensions.DependencyInjection
     public interface IMySqlLockingProviderRegistrationOptions
     {
         /// <summary>
-        /// Configures the options for the Sql <see cref="ILockingProvider"/>.
+        /// Configures the options for the Sql <see cref="SqlLockingProvider"/>.
         /// </summary>
         /// <param name="configurator">Delegate for configuring the options</param>
         /// <returns>Current options for method chaining</returns>
         IMySqlLockingProviderRegistrationOptions ConfigureProvider(Action<SqlLockingProviderOptions> configurator);
         /// <summary>
-        /// Configures the options for the MySql <see cref="ISqlLockRepository"/>.
+        /// Configures the deployment options for the <see cref="MySqlLockRepository"/>.
         /// </summary>
         /// <param name="configurator">Delegate for configuring the options</param>
         /// <returns>Current options for method chaining</returns>
         IMySqlLockingProviderRegistrationOptions ConfigureDeployment(Action<MySqlLockRepositoryDeploymentOptions> configurator);
         /// <summary>
-        /// Configures the options for caching of queries.
+        /// Configures the options for the <see cref="MySqlLockRepository"/>.
         /// </summary>
-        /// <param name="cacheOptions">Delegate for configuring the options</param>
+        /// <param name="configurator">Delegate for configuring the options</param>
         /// <returns>Current options for method chaining</returns>
-        IMySqlLockingProviderRegistrationOptions UseQueryCacheOptions(Action<MemoryCacheEntryOptions> cacheOptions);
+        IMySqlLockingProviderRegistrationOptions ConfigureRepository(Action<MySqlLockRepositoryOptions> configurator);
 
         /// <summary>
         /// Use a <see cref="ISqlLockRepository"/> optimized for mariaDb.

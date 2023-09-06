@@ -224,9 +224,8 @@ namespace Sels.DistributedLocking.Memory.Test
             Assert.That(exception, Is.Not.Null);
             Assert.That(exception, Is.InstanceOf<LockTimeoutException>());
             var timeoutException = exception as LockTimeoutException;
-            Assert.That(timeoutException.Lock, Is.Not.Null);
-            Assert.That(timeoutException.Lock.Resource, Is.EqualTo("Resource"));
-            Assert.That(timeoutException.Lock.LockedBy, Is.EqualTo("Requester.1"));
+            Assert.That(timeoutException, Is.Not.Null);
+            Assert.That(timeoutException.Resource, Is.EqualTo("Resource"));
             Assert.That(timeoutException.Requester, Is.EqualTo("Requester.2"));
             Assert.That(timeoutException.Timeout, Is.EqualTo(TimeSpan.FromMilliseconds(100)));
         }

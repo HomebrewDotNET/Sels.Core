@@ -12,9 +12,9 @@ namespace Sels.DistributedLocking
     {
         // Properties
         /// <summary>
-        /// The lock that could not be placed.
+        /// The name of the resource where the lock could not be placed upon.
         /// </summary>
-        public ILockInfo Lock { get; }
+        public string Resource { get; }
         /// <summary>
         /// The requested timeout.
         /// </summary>
@@ -26,12 +26,12 @@ namespace Sels.DistributedLocking
 
         /// <inheritdoc cref="LockTimeoutException"/>
         /// <param name="requester"><inheritdoc cref="Requester"/></param>
-        /// <param name="lockInfo"><inheritdoc cref="Lock"/></param>
+        /// <param name="resource"><inheritdoc cref="Resource"/></param>
         /// <param name="timeout"><inheritdoc cref="Timeout"/></param>
-        public LockTimeoutException(string requester, ILockInfo lockInfo, TimeSpan timeout) : base($"A lock on resource <{lockInfo?.Resource}> could not be placed by <{requester}> within <{timeout}>")
+        public LockTimeoutException(string requester, string resource, TimeSpan timeout) : base($"A lock on resource <{resource}> could not be placed by <{requester}> within <{timeout}>")
         {
-            Lock = lockInfo ?? throw new ArgumentNullException(nameof(lockInfo));
-            Requester = !string.IsNullOrWhiteSpace(requester) ? requester : throw new ArgumentNullException(nameof(lockInfo));
+            Resource = resource ?? throw new ArgumentNullException(nameof(resource));
+            Requester = !string.IsNullOrWhiteSpace(requester) ? requester : throw new ArgumentNullException(nameof(requester));
             Timeout = timeout;
         }
     }

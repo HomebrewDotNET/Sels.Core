@@ -29,6 +29,6 @@ namespace Sels.DistributedLocking.IntegrationTester.Providers
         }
 
         /// <inheritdoc/>
-        protected override ServiceProvider BuildProvider(IServiceCollection services) => services.AddMySqlLockingProvider(x => x.ConfigureDeployment(c => c.IgnoreMigrationExceptions = false).UseMariaDb().ConfigureProvider(p => p.RequestPollingRate = 500)).BuildServiceProvider();
+        protected override ServiceProvider BuildProvider(IServiceCollection services) => services.AddMySqlLockingProvider(x => x.ConfigureDeployment(c => c.IgnoreMigrationExceptions = false).UseMariaDb().ConfigureProvider(p => { })).BuildServiceProvider();
     }
 }

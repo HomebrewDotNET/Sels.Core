@@ -30,11 +30,11 @@ namespace Sels.DistributedLocking.SQL.Test
             };
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.TryAssignLockToAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
-                x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), resource, true, false, It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
+                x.Setup(x => x.TryLockAsync(It.IsAny<IRepositoryTransaction>(), resource, requester, It.IsAny<DateTime?>(), It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
+                x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), resource, true, It.IsAny<CancellationToken>())).ReturnsAsync(sqlLock);
             });
             
-            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, TestHelper.GetManagerMock().Object, repositoryMock.Object, options);
 
             // Act
             var lockResult = await provider.TryLockAsync(resource, requester, TimeSpan.FromMinutes(5));
@@ -58,9 +58,9 @@ namespace Sels.DistributedLocking.SQL.Test
             var options = TestHelper.GetProviderOptionsMock();
             var repositoryMock = TestHelper.GetRepositoryMock(x =>
             {
-                x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), "Resource", true, false, default)).Returns(Task.FromResult<SqlLock?>(null));
+                x.Setup(x => x.GetLockByResourceAsync(It.IsAny<IRepositoryTransaction>(), "Resource", true, default)).Returns(Task.FromResult<SqlLock?>(null));
             });
-            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, repositoryMock.Object, options);
+            await using var provider = new SqlLockingProvider(TestHelper.GetNotifierMock().Object, TestHelper.GetSubscriberMock().Object, TestHelper.GetManagerMock().Object, repositoryMock.Object, options);
 
             // Act
             var result = await provider.GetAsync("Resource");

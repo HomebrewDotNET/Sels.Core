@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Logging;
 
 namespace Sels.DistributedLocking.MySQL.Migrations
 {
@@ -47,6 +46,7 @@ namespace Sels.DistributedLocking.MySQL.Migrations
                         .WithColumn("Requester").AsString().NotNullable()
                         .WithColumn("ExpiryTime").AsDouble().Nullable()
                         .WithColumn("KeepAlive").AsBoolean().NotNullable()
+                        .WithColumn("IsAssigned").AsBoolean().NotNullable()
                         .WithColumn("Timeout").AsCustom("DateTime(6)").Nullable()
                         .WithColumn("CreatedAt").AsCustom("DateTime(6)").NotNullable();
             }
@@ -68,10 +68,11 @@ namespace Sels.DistributedLocking.MySQL.Migrations
                 logger.Warning($"Index IX_Resource_LockedBy_ExpiryDate already exists on table <{MigrationState.LockTableName}>. Skipping");
             }
 
-            if (!Schema.Table(MigrationState.LockRequestTableName).Index("IX_Resource_CreatedAt").Exists())
+            if (!Schema.Table(MigrationState.LockRequestTableName).Index("IX_Resource_IsAssigned_CreatedAt").Exists())
             {
                 Create.Index("IX_Resource_CreatedAt").OnTable(MigrationState.LockRequestTableName)
                         .OnColumn("Resource").Ascending()
+                        .OnColumn("IsAssigned").Ascending()
                         .OnColumn("CreatedAt").Ascending();
             }
             else
