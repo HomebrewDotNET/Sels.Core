@@ -118,8 +118,8 @@ namespace Sels.DistributedLocking.MySQL.Repository
                 var multiBuilder = p.New();
 
                 // Insert record
-                multiBuilder.Append(p.Insert<SqlLockRequest>().ColumnsOf(nameof(SqlLockRequest.Id))
-                                    .ParametersFrom(excludedProperties: nameof(SqlLockRequest.Id)));
+                multiBuilder.Append(p.Insert<SqlLockRequest>().ColumnsOf(nameof(SqlLockRequest.Id), nameof(SqlLockRequest.Lock))
+                                    .ParametersFrom(null, nameof(SqlLockRequest.Id), nameof(SqlLockRequest.Lock)));
 
                 // Return insert id
                 multiBuilder.Append(p.Select().LastInsertedId());
@@ -281,44 +281,41 @@ namespace Sels.DistributedLocking.MySQL.Repository
             var query = QueryProvider.GetQuery(_queryNameFormat.FormatString(nameof(TryLockAsync)), q =>
             {
                 const string ExistsVariable = "Exists";
-                const string RequestCountVariable = "RequestCount";
 
                 // Get query that checks if the lock exists and has pending requests
                 var existsQuery = q.Select<SqlLock>().ForUpdate()
                                     .ColumnExpression(e => e.AssignVariable(ExistsVariable, 1))
-                                    .ColumnExpression(e => e.AssignVariable(RequestCountVariable, b => b.Query(q.Select<SqlLockRequest>().CountAll().Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource))))))
                                     .Where(x => x.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)));
+
+                // Query that counts the amount of pending requests
+                var countQuery = q.Select<SqlLockRequest>()
+                                  .CountAll()
+                                  .Where(w => w.Column(c => c.Resource).EqualTo.Column<SqlLock>(c => c.Resource));
 
                 // Query that selects the latest lock state
                 var getLockQuery = q.Select<SqlLock>()
                                     .AllOf()
-                                    .Variable(RequestCountVariable).As(nameof(SqlLock.PendingRequests))
+                                    .Query(countQuery).As(nameof(SqlLock.PendingRequests))
                                     .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)));
 
                 var lockQuery = q.If().Condition(w => w.Variable(ExistsVariable).EqualTo.Value(1))
                                      // Record exists so we check if it has pending requests
-                                     .Then(q.If().Condition(w => w.Variable(RequestCountVariable).EqualTo.Value(0))
-                                                 // No pending requests so try to lock
-                                                 .Then(q.Update<SqlLock>()
-                                                       .Set.Column(c => c.LockedBy).To.Parameter(nameof(requester))
-                                                       .Set.Column(c => c.ExpiryDate).To.Parameter(nameof(expiryDate))
-                                                       .Set.Column(c => c.LastLockDate).To.CurrentDate()
-                                                       .Set.Column(c => c.LockedAt).To.CurrentDate()
-                                                       .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)).And
-                                                                    .WhereGroup(w => w.Column(c => c.LockedBy).IsNull.Or // Not locked
-                                                                                      .Column(c => c.LockedBy).EqualTo.Parameter(nameof(requester)).Or // Already locked by requester
-                                                                                      .WhereGroup(w => w.Column(c => c.ExpiryDate).IsNotNull.And
-                                                                                                        .Column(c => c.ExpiryDate).LesserThan.CurrentDate()
-                                                                                                 ) // Expired
-                                                                               )
-                                                             )
-                                                     )
-                                                 // Get latest state
-                                                 .Then(getLockQuery)
-                                            // Resource has pending requests so return latest state
-                                            .Else
-                                                .Then(getLockQuery)
-                                     )
+                                     .Then(q.Update<SqlLock>()
+                                            .Set.Column(c => c.LockedBy).To.Parameter(nameof(requester))
+                                            .Set.Column(c => c.ExpiryDate).To.Parameter(nameof(expiryDate))
+                                            .Set.Column(c => c.LastLockDate).To.CurrentDate()
+                                            .Set.Column(c => c.LockedAt).To.CurrentDate()
+                                            .Where(w => w.Column(c => c.Resource).EqualTo.Parameter(nameof(resource)).And
+                                                        .Query(countQuery).EqualTo.Value(0).And // No pending requests
+                                                        .WhereGroup(w => w.Column(c => c.LockedBy).IsNull.Or // Not locked
+                                                                            .Column(c => c.LockedBy).EqualTo.Parameter(nameof(requester)).Or // Already locked by requester
+                                                                            .WhereGroup(w => w.Column(c => c.ExpiryDate).IsNotNull.And
+                                                                                            .Column(c => c.ExpiryDate).LesserThan.CurrentDate()
+                                                                                        ) // Expired
+                                                                    )
+                                                    )
+                                          )
+                                     .Then(getLockQuery)
                                  .Else
                                      // Record doesn't exist so we insert
                                      .Then(q.Insert<SqlLock>().Columns(x => x.Resource, x => x.LockedBy, x => x.ExpiryDate, x => x.LockedAt, x => x.LastLockDate)

@@ -285,6 +285,27 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <returns>Builder for configuring the selected value</returns>
         ISelectStatementSelectedValueBuilder<TEntity, TDerived> Variable(Expression<Func<TEntity, object>> property) => Variable<TEntity>(property);
         #endregion
+        #region Query
+        /// <summary>
+        /// Selects a value from a sub query.
+        /// </summary>
+        /// <param name="query">Delegate that adds the query to the supplied builder</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Query(Action<StringBuilder, ExpressionCompileOptions> query) => ColumnExpression(new SubQueryExpression(null, query.ValidateArgument(nameof(query))));
+        /// <summary>
+        /// Selects a value from a sub query.
+        /// </summary>
+        /// <param name="query">The query string</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Query(string query) => Query((b, o) => b.Append(query.ValidateArgumentNotNullOrWhitespace(nameof(query))));
+        /// <summary>
+        /// Selects a value from a sub query.
+        /// </summary>
+        /// <param name="builder">Builder for creating the sub query</param>
+        /// <returns>Builder for configuring the selected value</returns>
+        ISelectStatementSelectedValueBuilder<TEntity, TDerived> Query(IQueryBuilder builder) => ColumnExpression(new SubQueryExpression(null, builder.ValidateArgument(nameof(builder))));
+
+        #endregion
         #endregion
 
         #region From

@@ -96,7 +96,7 @@ namespace Sels.DistributedLocking.SQL.Test
         public async Task LockRequestIsProperlyTimedOut()
         {
             // Arrange
-            var options = TestHelper.GetProviderOptionsMock(x => x.RequestCompletionInterval = TimeSpan.FromMilliseconds(50));
+            var options = TestHelper.GetProviderOptionsMock();
             var resource = "Resource";
             var holder = "Holder";
             var requester = "Requester";
@@ -152,7 +152,7 @@ namespace Sels.DistributedLocking.SQL.Test
         public async Task CancelingRequestThrowsOperationCanceledException()
         {
             // Arrange
-            var options = TestHelper.GetProviderOptionsMock(x => x.RequestCompletionInterval = TimeSpan.FromMilliseconds(50));
+            var options = TestHelper.GetProviderOptionsMock();
             var resource = "Resource";
             var holder = "Holder";
             var requester = "Requester";

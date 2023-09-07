@@ -37,13 +37,13 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
         /// </summary>
         public int MaximumAttempts { get; set; } = 1000;
         /// <summary>
-        /// How many workers will be used to benchmark.
+        /// Array with how many workers to perform the benchmarks with.
         /// </summary>
-        public int Workers { get; set; } = Environment.ProcessorCount * 2;
+        public int[] Workers { get; set; } = new int[] { 1, 2, Environment.ProcessorCount };
         /// <summary>
-        /// The pool of resources that will be shared by workers when benchmarking collision between workers.
+        /// The pool of resources that will be shared by workers when benchmarking collision between workers. Worker amount will be divided by the modifier.
         /// </summary>
-        public int ResourcePoolSize { get; set; } = Environment.ProcessorCount;
+        public int ResourcePoolSizeModifier { get; set; } = 2;
         /// <summary>
         /// The size of the result set to return when benchmarking query performance.
         /// </summary>
@@ -66,7 +66,9 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 .ForProperty(x => x.RunTime)
                     .ValidIf(x => x.Value.TotalMilliseconds >= 100, x => $"Total should be larger or equal to 100 milliseconds")
                 .ForProperty(x => x.Workers)
-                    .MustBeLargerOrEqualTo(2)
+                    .CannotBeNull()
+                .ForElements(x => x.Workers)
+                    .MustBeLargerOrEqualTo(1)
                 .ForProperty(x => x.MaximumAttempts)
                     .MustBeLargerOrEqualTo(1)
                 .ForProperty(x => x.StorageSize)
@@ -83,10 +85,10 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
                 .ForProperty(x => x.UnlockedRatio)
                     .MustBeLargerOrEqualTo(0.01)
                     .MustBeSmallerOrEqualTo(1.0)
-                .ForProperty(x => x.ResourcePoolSize)
+                .ForProperty(x => x.ResourcePoolSizeModifier)
                     .MustBeLargerOrEqualTo(1)
                 .ForProperty(x => x.QueryResultSetSize)
-                    .MustBeLargerOrEqualTo(1); ;
+                    .MustBeLargerOrEqualTo(1);
         }
     }
 }

@@ -95,10 +95,9 @@ namespace Sels.DistributedLocking.SQL
                                                                                             .WithManagedOptions(ManagedTaskOptions.KeepRunning));
             taskManager.TrySchedule(this, AssignmentWorkerName, AssignPendingRequestsAsync, x => x.ExecuteFirst(() => _logger.Debug($"Assigning pending requests in <{OptionsMonitor.CurrentValue.RequestAssignmentInterval}>"))
                                                                                                   .DelayStartBy(() => OptionsMonitor.CurrentValue.RequestAssignmentInterval)
-                                                                                                  .WithManagedOptions(ManagedTaskOptions.KeepRunning));
-            taskManager.TrySchedule(this, CompletionWorkerName, CompletePendingRequestsAsync, x => x.ExecuteFirst(() => _logger.Debug($"Trying to complete pending requests in <{OptionsMonitor.CurrentValue.RequestCompletionInterval}>"))
-                                                                                                    .DelayStartBy(() => OptionsMonitor.CurrentValue.RequestCompletionInterval)
-                                                                                                    .WithManagedOptions(ManagedTaskOptions.KeepRunning));
+                                                                                                  .WithManagedOptions(ManagedTaskOptions.KeepRunning)
+                                                                                                  .ContinueWith((m, t, o, c) => m.TrySchedule(this, CompletionWorkerName, CompletePendingRequestsAsync))
+                                                                                                  );
         }
 
         /// <summary>
@@ -422,7 +421,7 @@ namespace Sels.DistributedLocking.SQL
         }
         private async Task AssignPendingRequestsAsync(CancellationToken token)
         {
-            using (_logger.TraceMethod(this))
+            using (Helper.Time.CaptureDuration(x => TraceTime("Assign pending requests", x)))
             {
                 try
                 {
@@ -457,7 +456,7 @@ namespace Sels.DistributedLocking.SQL
         }
         private async Task CompletePendingRequestsAsync(CancellationToken token)
         {
-            using (_logger.TraceMethod(this))
+            using (Helper.Time.CaptureDuration(x => TraceTime("Completing pending requests", x)))
             {
                 try
                 {
@@ -526,12 +525,9 @@ namespace Sels.DistributedLocking.SQL
                             // Lock was assigned
                             else if (sqlLockRequest.IsAssigned)
                             {
-                                await using (var transaction = await _lockRepository.CreateTransactionAsync(token).ConfigureAwait(false))
-                                {
-                                    var sqlLock = await _lockRepository.GetLockByResourceAsync(transaction, sqlLockRequest.Resource, false, token);
-                                    var @lock = new AcquiredSqlLock(sqlLock, this, pendingLockRequest.Request.KeepAlive, pendingLockRequest.Request.ExpiryTime.HasValue ? TimeSpan.FromSeconds(pendingLockRequest.Request.ExpiryTime.Value) : TimeSpan.Zero, _loggerFactory?.CreateLogger<AcquiredSqlLock>());
-                                    pendingLockRequest.Set(@lock);
-                                }
+                                var @lock = new AcquiredSqlLock(sqlLockRequest.Lock, this, pendingLockRequest.Request.KeepAlive, pendingLockRequest.Request.ExpiryTime.HasValue ? TimeSpan.FromSeconds(pendingLockRequest.Request.ExpiryTime.Value) : TimeSpan.Zero, _loggerFactory?.CreateLogger<AcquiredSqlLock>());
+                                pendingLockRequest.Set(@lock);
+
                                 requestsToDelete.Add(pendingLockRequest.Request.Id);
                                 lock (_pendingRequests)
                                 {
@@ -566,6 +562,20 @@ namespace Sels.DistributedLocking.SQL
                     return;
                 }
             }
+        }
+        private void TraceTime(string action, TimeSpan duration)
+        {
+            var logLevel = LogLevel.Trace;
+            if(duration > OptionsMonitor.CurrentValue.PerformanceErrorDurationThreshold)
+            {
+                logLevel = LogLevel.Error;
+            }
+            else if (duration > OptionsMonitor.CurrentValue.PerformanceWarningDurationThreshold)
+            {
+                logLevel = LogLevel.Warning;
+            }
+
+            _logger.Log(logLevel, $"Executed action <{action}> in <{duration}>");
         }
         #endregion
 

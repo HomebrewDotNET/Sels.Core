@@ -41,7 +41,7 @@ namespace Sels.DistributedLocking.SQL
         /// <returns>All pending requests on <paramref name="resource"/> or null if there aren't any pending requests</returns>
         Task<SqlLockRequest[]> GetAllLockRequestsByResourceAsync(IRepositoryTransaction transaction, string resource, CancellationToken token);
         /// <summary>
-        /// Fetches all pending locking requests where the id is equal to one of <paramref name="ids"/>.
+        /// Fetches all pending locking requests where the id is equal to one of <paramref name="ids"/>. Should include <see cref="SqlLockRequest.Lock"/>.
         /// </summary>
         /// <param name="transaction">The transaction to execute the operation in</param>
         /// <param name="ids">Ids of the requests to fetch</param>

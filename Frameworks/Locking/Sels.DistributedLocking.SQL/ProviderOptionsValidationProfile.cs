@@ -22,8 +22,6 @@ namespace Sels.DistributedLocking.SQL
                     .MustBeLargerThan(TimeSpan.FromMilliseconds(100))
                 .ForProperty(x => x.RequestAssignmentInterval)
                     .MustBeLargerThan(TimeSpan.FromMilliseconds(10))
-                .ForProperty(x => x.RequestCompletionInterval)
-                    .MustBeLargerThan(TimeSpan.FromMilliseconds(10))
                 .ForProperty(x => x.RequestCheckLimit)
                     .MustBeLargerOrEqualTo(1)
                 .ForProperty(x => x.PerformanceErrorDurationThreshold)

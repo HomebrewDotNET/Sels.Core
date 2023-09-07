@@ -42,7 +42,6 @@ namespace Sels.DistributedLocking.MySQL.Migrations
                         .WithColumn("Id").AsInt64().PrimaryKey($"PK_{MigrationState.LockRequestTableName}").Identity()
                         .WithColumn("Resource").AsString().NotNullable()
                             .ForeignKey("FK_LockRequest_Lock", MigrationState.LockTableName, "Resource")
-                            .Indexed("IX_Resource")
                         .WithColumn("Requester").AsString().NotNullable()
                         .WithColumn("ExpiryTime").AsDouble().Nullable()
                         .WithColumn("KeepAlive").AsBoolean().NotNullable()
@@ -56,28 +55,50 @@ namespace Sels.DistributedLocking.MySQL.Migrations
             }
 
             // Indexes
-            if (!Schema.Table(MigrationState.LockTableName).Index("IX_Resource_LockedBy_ExpiryDate").Exists())
+            //// Lock
+            if (!Schema.Table(MigrationState.LockTableName).Index("IX_LockedBy_LastLockDate").Exists())
             {
-                Create.Index("IX_Resource_LockedBy_ExpiryDate").OnTable(MigrationState.LockTableName)
-                        .OnColumn("Resource").Ascending()
+                Create.Index("IX_LockedBy_LastLockDate").OnTable(MigrationState.LockTableName)
                         .OnColumn("LockedBy").Ascending()
-                        .OnColumn("ExpiryDate").Descending();
+                        .OnColumn("LastLockDate").Ascending();
             }
             else
             {
-                logger.Warning($"Index IX_Resource_LockedBy_ExpiryDate already exists on table <{MigrationState.LockTableName}>. Skipping");
+                logger.Warning($"Index IX_LockedBy_LastLockDate already exists on table <{MigrationState.LockTableName}>. Skipping");
             }
 
-            if (!Schema.Table(MigrationState.LockRequestTableName).Index("IX_Resource_IsAssigned_CreatedAt").Exists())
+            //// Lock request
+            if (!Schema.Table(MigrationState.LockRequestTableName).Index("IX_IsAssigned_Timeout").Exists())
+            {
+                Create.Index("IX_IsAssigned_Timeout").OnTable(MigrationState.LockRequestTableName)
+                        .OnColumn("IsAssigned").Descending()
+                        .OnColumn("Timeout").Ascending();
+            }
+            else
+            {
+                logger.Warning($"Index IX_IsAssigned_Timeout already exists on table <{MigrationState.LockTableName}>. Skipping");
+            }
+
+            if (!Schema.Table(MigrationState.LockRequestTableName).Index("IX_Resource_CreatedAt").Exists())
             {
                 Create.Index("IX_Resource_CreatedAt").OnTable(MigrationState.LockRequestTableName)
                         .OnColumn("Resource").Ascending()
-                        .OnColumn("IsAssigned").Ascending()
                         .OnColumn("CreatedAt").Ascending();
             }
             else
             {
                 logger.Warning($"Index IX_Resource_CreatedAt already exists on table <{MigrationState.LockTableName}>. Skipping");
+            }
+
+            if (!Schema.Table(MigrationState.LockRequestTableName).Index("IX_IsAssigned_Requester").Exists())
+            {
+                Create.Index("IX_IsAssigned_Requester").OnTable(MigrationState.LockRequestTableName)
+                        .OnColumn("IsAssigned").Ascending()
+                        .OnColumn("Requester").Ascending();
+            }
+            else
+            {
+                logger.Warning($"Index IX_IsAssigned_Requester already exists on table <{MigrationState.LockTableName}>. Skipping");
             }
         }
     }

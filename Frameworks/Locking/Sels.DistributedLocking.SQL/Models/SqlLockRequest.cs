@@ -32,7 +32,12 @@ namespace Sels.DistributedLocking.SQL
         /// Indicates that the lock request is assigned. Lock request can then be completed and removed afterwards.
         /// </summary>
         public bool IsAssigned { get; set; }
+        /// <summary>
+        /// The lock the request is created for.
+        /// </summary>
+        public SqlLock Lock { get; set; }
 
+        /// <inheritdoc/>
         TimeSpan? ILockRequest.ExpiryTime => ExpiryTime != null ? TimeSpan.FromSeconds(ExpiryTime.Value) : (TimeSpan?)null;
 
         /// <summary>

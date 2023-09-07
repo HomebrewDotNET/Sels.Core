@@ -42,11 +42,7 @@ namespace Sels.DistributedLocking.SQL
         /// <summary>
         /// How often <see cref="SqlLockingProvider"/> will try to assign pending requests.
         /// </summary>
-        public TimeSpan RequestAssignmentInterval { get; set; } = TimeSpan.FromMilliseconds(500);
-        /// <summary>
-        /// How often <see cref="SqlLockingProvider"/> will check if requests have been assigned.
-        /// </summary>
-        public TimeSpan RequestCompletionInterval { get; set; } = TimeSpan.FromMilliseconds(250);
+        public TimeSpan RequestAssignmentInterval { get; set; } = TimeSpan.FromMilliseconds(200);
         /// <summary>
         /// How many requests will be checked at the same time by the request completion worker.
         /// </summary>
@@ -55,7 +51,7 @@ namespace Sels.DistributedLocking.SQL
         /// <summary>
         /// The threshold above which a warning will be logged when any method on <see cref="SqlLockingProvider"/> takes longer to execute.
         /// </summary>
-        public TimeSpan PerformanceWarningDurationThreshold { get; set; } = TimeSpan.FromMilliseconds(250);
+        public TimeSpan PerformanceWarningDurationThreshold { get; set; } = TimeSpan.FromMilliseconds(500);
         /// <summary>
         /// The threshold above which an error will be logged when any method on <see cref="SqlLockingProvider"/> takes longer to execute.
         /// </summary>

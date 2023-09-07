@@ -103,13 +103,20 @@ namespace Sels.DistributedLocking.SQL.Templates
             _logger.Log($"Fetching the state of <{ids.Length}> lock requests");
             // Generate query
             var query = QueryProvider.Select<SqlLockRequest>()
-                                        .All()
+                                        .AllOf<SqlLock>()
+                                        .AllOf()
+                                        .InnerJoin().Table<SqlLock>().On(o => o.Column(c => c.Resource).EqualTo.Column<SqlLock>(c => c.Resource))
                                         .Where(w => w.Column(c => c.Id).In.Values(ids))
+                                        .OrderBy(x => x.IsAssigned, SortOrders.Descending)
                                         .Build(_queryOptions);
             _logger.Trace($"Fetching the state of <{ids.Length}> lock requests using query <{query}>");
 
             // Execute query
-            var locks = (await dbConnection.QueryAsync<SqlLockRequest>(new CommandDefinition(query, null, transaction: dbTransaction, cancellationToken: token)).ConfigureAwait(false)).ToArray();
+            var locks = (await dbConnection.QueryAsync< SqlLock, SqlLockRequest, SqlLockRequest>(new CommandDefinition(query, null, transaction: dbTransaction, cancellationToken: token), (l, r) =>
+            {
+                r.Lock = l;
+                return r;
+            }, nameof(SqlLockRequest.Id)).ConfigureAwait(false)).ToArray();
             _logger.Log($"Fetched <{locks.Length}> lock requests");
             return locks;
         }

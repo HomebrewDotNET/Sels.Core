@@ -45,32 +45,32 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             // Seed storage
             await SeedStorage(lockingProvider, token);
 
+            var workerAmounts = _options.Workers.OrderByDescending(x => x);
             Helper.Console.WriteLine(ConsoleColor.DarkGray, $"Benchmark settings:");
-            Console.WriteLine($"Workers: {_options.Workers}");
+            Console.WriteLine($"Worker amounts: {workerAmounts.JoinString(", ")}");
             Console.WriteLine($"Storage size: {_options.StorageSize}");
             Console.WriteLine($"Expiry ratio: {_options.ExpiryRatio}");
             Console.WriteLine($"Expired ratio: {_options.ExpiredRatio}");
             Console.WriteLine($"Unlocked ratio: {_options.UnlockedRatio}");
             Console.WriteLine($"Max runtime: {_options.RunTime}");
             Console.WriteLine($"Max allowed attempts per worker: {_options.MaximumAttempts}");
-            Console.WriteLine($"Lock resource pool size: {_options.ResourcePoolSize}");
+            Console.WriteLine($"Lock resource pool size modifier: {_options.ResourcePoolSizeModifier}");
             Console.WriteLine($"Query result set size: {_options.QueryResultSetSize}");
             Console.WriteLine($"TryLock to Lock ratio: {_options.TryLockToLockRatio}");
             Console.WriteLine();
 
             bool anyFailed = false;
-            _logger.Log($"Running benchmark tests with {_options.Workers} workers for provider <{provider}>");
-            var failed = await RunBenchmarks(_options.Workers, provider, lockingProvider, token);
-            if (!anyFailed) anyFailed = failed;
-
-            _logger.Log($"Running benchmark tests with single worker for provider <{provider}>");
-            failed = await RunBenchmarks(1, provider, lockingProvider, token);
-            if (!anyFailed) anyFailed = failed;
-
+            foreach(var workerAmount in workerAmounts)
+            {
+                _logger.Log($"Running benchmark tests with {_options.Workers} workers for provider <{provider}>");
+                var failed = await RunBenchmarks(workerAmount, Math.Ceiling(workerAmount.ChangeType<double>() / _options.ResourcePoolSizeModifier).ChangeType<int>(), provider, lockingProvider, token);
+                if (!anyFailed) anyFailed = failed;
+            }
+          
             return !anyFailed;
         }
 
-        private async Task<bool> RunBenchmarks(int workers, TestProvider provider, ILockingProvider lockingProvider, CancellationToken token)
+        private async Task<bool> RunBenchmarks(int workers, int poolSize, TestProvider provider, ILockingProvider lockingProvider, CancellationToken token)
         {
             Helper.Console.WriteLine(ConsoleColor.DarkGray, $"Benchmarked with {workers} worker(s):");
             Console.WriteLine();
@@ -90,10 +90,10 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             token.ThrowIfCancellationRequested();
 
             // Try lock pool
-            string TryLockPool = $"TryLockAsync - Pool of {_options.ResourcePoolSize}";
+            string TryLockPool = $"TryLockAsync - Pool of {poolSize}";
             using (Helper.Time.CaptureDuration(out duration))
             {
-                lockBenchmarkResults = await BenchmarkTryLock(workers, _options.ResourcePoolSize, lockingProvider, token);
+                lockBenchmarkResults = await BenchmarkTryLock(workers, poolSize, lockingProvider, token);
                 if (!failed) failed = lockBenchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(TryLockPool, provider, duration.Value, lockBenchmarkResults);
@@ -110,10 +110,10 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             token.ThrowIfCancellationRequested();
 
             // Lock pool
-            string LockPool = $"LockAsync - Pool of {_options.ResourcePoolSize}";
+            string LockPool = $"LockAsync - Pool of {poolSize}";
             using (Helper.Time.CaptureDuration(out duration))
             {
-                lockBenchmarkResults = await BenchmarkLock(workers, _options.ResourcePoolSize, lockingProvider, token);
+                lockBenchmarkResults = await BenchmarkLock(workers, poolSize, lockingProvider, token);
                 if (!failed) failed = lockBenchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(LockPool, provider, duration.Value, lockBenchmarkResults);
@@ -130,10 +130,10 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             token.ThrowIfCancellationRequested();
 
             // Mixed lock pool
-            string MixedLockPool = $"TryLockAsync/LockAsync - Pool of {_options.ResourcePoolSize}";
+            string MixedLockPool = $"TryLockAsync/LockAsync - Pool of {poolSize}";
             using (Helper.Time.CaptureDuration(out duration))
             {
-                lockBenchmarkResults = await BenchmarkMixedLock(workers, _options.ResourcePoolSize, lockingProvider, token);
+                lockBenchmarkResults = await BenchmarkMixedLock(workers, poolSize, lockingProvider, token);
                 if (!failed) failed = lockBenchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(MixedLockPool, provider, duration.Value, lockBenchmarkResults);
@@ -144,7 +144,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             const string Get = "GetAsync";
             using (Helper.Time.CaptureDuration(out duration))
             {
-                benchmarkResults = await BenchmarkGet(workers, _options.ResourcePoolSize, lockingProvider, token);
+                benchmarkResults = await BenchmarkGet(workers, poolSize, lockingProvider, token);
                 if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(Get, provider, duration.Value, benchmarkResults);
@@ -154,7 +154,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             const string GetPending = "GetPendingRequestsAsync";
             using (Helper.Time.CaptureDuration(out duration))
             {
-                benchmarkResults = await BenchmarkGetPendingRequests(workers, _options.ResourcePoolSize, lockingProvider, token);
+                benchmarkResults = await BenchmarkGetPendingRequests(workers, poolSize, lockingProvider, token);
                 if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(GetPending, provider, duration.Value, benchmarkResults);
@@ -164,7 +164,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             const string ForceUnlock = "ForceUnlockAsync";
             using (Helper.Time.CaptureDuration(out duration))
             {
-                benchmarkResults = await BenchmarkForceUnlock(workers, _options.ResourcePoolSize, lockingProvider, token);
+                benchmarkResults = await BenchmarkForceUnlock(workers, poolSize, lockingProvider, token);
                 if (!failed) failed = benchmarkResults.Any(x => x.Exception != null);
             }
             PrintResults(ForceUnlock, provider, duration.Value, benchmarkResults);
@@ -490,7 +490,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             var resources = queryResult.Results.Select(x => x.Resource).ToList();
             if (resources.Count < poolSize)
             {
-                await Task.WhenAll(Enumerable.Range(1, poolSize - resources.Count).DivideIntoHashSet(_options.Workers).Select(x => Task.Run(async () =>
+                await Task.WhenAll(Enumerable.Range(1, poolSize - resources.Count).DivideIntoHashSet(_options.Workers.Max()).Select(x => Task.Run(async () =>
                 {
                     _logger.Log($"Resources to benchmark is under the pool size of <{poolSize}>. Creating additional locks");
                     foreach (var number in x)
@@ -570,7 +570,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             var resources = queryResult.Results.Select(x => x.Resource).ToList();
             if (resources.Count < poolSize)
             {
-                await Task.WhenAll(Enumerable.Range(1, poolSize - resources.Count).DivideIntoHashSet(_options.Workers).Select(x => Task.Run(async () =>
+                await Task.WhenAll(Enumerable.Range(1, poolSize - resources.Count).DivideIntoHashSet(_options.Workers.Max()).Select(x => Task.Run(async () =>
                 {
                     _logger.Log($"Resources to benchmark is under the pool size of <{poolSize}>. Creating additional locks");
                     foreach (var number in x)
@@ -656,7 +656,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             var resources = queryResult.Results.Select(x => x.Resource).ToList();
             if (resources.Count < poolSize)
             {
-                await Task.WhenAll(Enumerable.Range(1, poolSize - resources.Count).DivideIntoHashSet(_options.Workers).Select(x => Task.Run(async () =>
+                await Task.WhenAll(Enumerable.Range(1, poolSize - resources.Count).DivideIntoHashSet(_options.Workers.Max()).Select(x => Task.Run(async () =>
                 {
                     _logger.Log($"Resources to benchmark is under the pool size of <{poolSize}>. Creating additional locks");
                     foreach (var number in x)
@@ -737,7 +737,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             var queryResult = await lockingProvider.QueryAsync(x => criteria(x).WithPagination(1, querySize), token);
             if(queryResult.Results.Length < querySize)
             {
-                await Task.WhenAll(Enumerable.Range(1, querySize - queryResult.Results.Length).DivideIntoHashSet(_options.Workers).Select(x => Task.Run(async () =>
+                await Task.WhenAll(Enumerable.Range(1, querySize - queryResult.Results.Length).DivideIntoHashSet(_options.Workers.Max()).Select(x => Task.Run(async () =>
                 {
                     _logger.Log($"Resources to benchmark is under the pool size of <{querySize}>. Creating additional locks");
                     foreach (var number in x)
@@ -922,7 +922,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             Console.WriteLine($"Lock duration min/med/avg/max: {min.RoundTo(2, MidpointRounding.ToPositiveInfinity)}ms/{med.RoundTo(2, MidpointRounding.ToPositiveInfinity)}ms/{avg.RoundTo(2, MidpointRounding.ToPositiveInfinity)}ms/{max.RoundTo(2, MidpointRounding.ToPositiveInfinity)}ms");
             min = acquiredLocks.HasValue() ? acquiredLocks.Min(x => x.UnlockDuration.Value).TotalMilliseconds : 0;
             avg = acquiredLocks.HasValue() ? acquiredLocks.Average(x => x.UnlockDuration.Value.TotalMilliseconds) : 0;
-            med = acquiredLocks.HasValue() ? acquiredLocks.Median(x => x.Duration.TotalMilliseconds) : 0;
+            med = acquiredLocks.HasValue() ? acquiredLocks.Median(x => x.UnlockDuration.Value.TotalMilliseconds) : 0;
             max = acquiredLocks.HasValue() ? acquiredLocks.Max(x => x.UnlockDuration.Value).TotalMilliseconds : 0;
             Console.WriteLine($"Unlock duration min/med/avg/max: {min.RoundTo(2, MidpointRounding.ToPositiveInfinity)}ms/{med.RoundTo(2, MidpointRounding.ToPositiveInfinity)}ms/{avg.RoundTo(2, MidpointRounding.ToPositiveInfinity)}ms/{max.RoundTo(2, MidpointRounding.ToPositiveInfinity)}ms");
             var average = results.HasValue() ? results.GroupAsDictionary(x => x.FinishedDate.ToString("dd/MM/yyyy-HH:mm:ss")).Average(x => x.Value.Count) : 0;
@@ -968,7 +968,7 @@ namespace Sels.DistributedLocking.IntegrationTester.Tests
             var seedSize = _options.StorageSize;
             _logger.Log($"Persisting <{seedSize}> locks before starting benchmark");
 
-            await Task.WhenAll(Enumerable.Range(1, seedSize).DivideIntoHashSet(_options.Workers).Select(x => Task.Run(async () =>
+            await Task.WhenAll(Enumerable.Range(1, seedSize).DivideIntoHashSet(_options.Workers.Max()).Select(x => Task.Run(async () =>
             {
                 foreach (var number in x)
                 {
