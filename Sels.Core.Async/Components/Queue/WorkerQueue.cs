@@ -27,7 +27,7 @@ namespace Sels.Core.Async.Queue
     /// Exposes events that can be handled asynchronously.
     /// </summary>
     /// <typeparam name="T">The type of the elements</typeparam>
-    public class WorkerQueue<T> : IAsyncExposedDisposable, IEnumerable<T>
+    public class WorkerQueue<T> : IAsyncExposedDisposable, IEnumerable<T> where T : class
     {
         // Statics
         private static int Seed = 0;
@@ -35,6 +35,7 @@ namespace Sels.Core.Async.Queue
 
         // Fields
         private readonly List<EventHandlerSubscription> _subscriptions = new List<EventHandlerSubscription>();
+        private readonly List<Func<CancellationToken, Task<T?>>> _interceptors = new List<Func<CancellationToken, Task<T?>>>();
         private readonly ConcurrentQueue<DequeueRequest> _requests = new ConcurrentQueue<DequeueRequest>();
         private readonly ConcurrentQueue<T> _queue = new ConcurrentQueue<T>();
         private readonly SemaphoreSlim _asyncLock = new SemaphoreSlim(1, 1);
@@ -42,7 +43,7 @@ namespace Sels.Core.Async.Queue
         /// Optional logger for tracing.
         /// </summary>
         private readonly ILogger? _logger;
-        private int _eventSequence = 0;
+        private uint _eventSequence = 0;
 
         // Properties
         /// <summary>
@@ -57,6 +58,10 @@ namespace Sels.Core.Async.Queue
         /// How many items are enqueued.
         /// </summary>
         public int Count => _queue.Count;
+        /// <summary>
+        /// How many consumers are waiting for work to be added to the queue.
+        /// </summary>
+        public int PendingRequests => _requests.Count;
         /// <summary>
         /// Task manager used to manage event handlers.
         /// </summary>
@@ -208,7 +213,7 @@ namespace Sels.Core.Async.Queue
             using var methodLogger = _logger.TraceMethod(this);
             if (IsDisposed.HasValue) throw new ObjectDisposedException(GetType().GetDisplayName(false));
 
-            DequeueRequest request = null;
+            // Try dequeue
             await using (await LockAsync(token).ConfigureAwait(false))
             {
                 if (_queue.TryDequeue(out var item))
@@ -217,15 +222,48 @@ namespace Sels.Core.Async.Queue
                     TriggerEvents(false, token);
                     return item;
                 }
-                else
+            }
+
+            // Run interceptors if available
+            if (_interceptors.HasValue())
+            {
+                Func<CancellationToken, Task<T?>>[] interceptors;
+                lock (_interceptors)
                 {
-                    _logger.Log($"Queue is empty. Logging request for caller");
-                    request = new DequeueRequest(token);
-                    _requests.Enqueue(request);
+                    interceptors = _interceptors.ToArray();
+                }
+
+                _logger.Log($"Queue is empty. Trying <{interceptors.Length}> interceptors to fulfil request");
+
+                foreach(var interceptor in interceptors)
+                {
+                    var item = await interceptor(token).ConfigureAwait(false);
+                    if(item != null)
+                    {
+                        _logger.Log($"Item <{item}> was fulfilled by interceptor");
+                        return item;
+                    }
                 }
             }
 
-            return await request.Callback;
+            // Log request
+            DequeueRequest request = null;
+            await using (await LockAsync(token).ConfigureAwait(false))
+            {
+                // Double check if item was added in the meantime
+                if (_queue.TryDequeue(out var item))
+                {
+                    _logger.Log($"Item <{item}> was dequeued");
+                    TriggerEvents(false, token);
+                    return item;
+                }
+
+                _logger.Log($"Queue is empty. Logging request for caller");
+                request = new DequeueRequest(token);
+                _requests.Enqueue(request);
+            }
+
+            return await request.Callback.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -316,6 +354,30 @@ namespace Sels.Core.Async.Queue
             itemHandler.ValidateArgument(nameof(itemHandler));
 
             return new WorkerQueueSubscription<T>(workerAmount, this, itemHandler, cancellationToken);
+        }
+        /// <summary>
+        /// Allows the interception of requests. Before creating a request <paramref name="interceptor"/> will be called to get an item to process for the request. If it returns null a request will be created like always.
+        /// </summary>
+        /// <param name="interceptor">Delegate that will be called to request an item</param>
+        /// <returns>An active subscription to the event. Disposing the object will stop <paramref name="interceptor"/> from being called</returns>
+        public WorkerQueueEventSubscription InterceptRequest(Func<CancellationToken, Task<T?>> interceptor)
+        {
+            interceptor.ValidateArgument(nameof(interceptor));
+            using var methodLogger = _logger.TraceMethod(this);
+            if (IsDisposed.HasValue) throw new ObjectDisposedException(GetType().GetDisplayName(false));
+
+            lock (_interceptors)
+            {
+                _interceptors.Add(interceptor);
+
+                return new WorkerQueueEventSubscription(() =>
+                {
+                    lock (_interceptors)
+                    {
+                        _interceptors.Remove(interceptor);
+                    }
+                });
+            }
         }
 
         private void TriggerEvents(bool queueIncreased, CancellationToken token = default)
@@ -475,7 +537,7 @@ namespace Sels.Core.Async.Queue
             /// <summary>
             /// The unique sequence number for this event.
             /// </summary>
-            public int Sequence { get; set; }
+            public uint Sequence { get; set; }
             /// <summary>
             /// Delegate that dictates whether or not an event needs to be raised.
             /// </summary>

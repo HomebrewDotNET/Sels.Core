@@ -16,7 +16,7 @@ namespace Sels.Core.Async.Queue
     /// An active subscription to items added to a <see cref="WorkerQueue{T}"/>. Manages tasks that will dequeue items asynchronously.
     /// Disposing the subscriptions will cancel the tasks.
     /// </summary>
-    public struct WorkerQueueSubscription<T> : IExposedDisposable
+    public struct WorkerQueueSubscription<T> : IExposedDisposable where T : class
     {
         // Fields
         private readonly CancellationTokenSource _tokenSource;

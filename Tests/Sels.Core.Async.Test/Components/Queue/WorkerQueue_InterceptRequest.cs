@@ -1,37 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Sels.Core.Async.Test.Components.Queue
 {
-    public class WorkerQueue_Subscribe
+    public class WorkerQueue_InterceptRequest
     {
         [Test, Timeout(60000)]
-        public async Task ItemsGetAssignedToSubscriptionDelegate()
+        public async Task RequestIsIntercepted()
         {
             // Arrange
-            const string item = "1998";
             var provider = TestHelper.GetTaskManagerContainer();
             await using var scope = provider.CreateAsyncScope();
             provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
-            string assigned = null;
-            using var subscription = queue.Subscribe(1, (i, t) => {  assigned = i; return Task.CompletedTask; });
 
             // Act
-            await queue.EnqueueAsync(item);
-            await Helper.Async.Sleep(2000);
+            using var subscription = queue.InterceptRequest(x => Task.FromResult(string.Empty));
+            var result = await queue.DequeueAsync();
 
             // Assert
-            Assert.AreEqual(item, assigned);
+            Assert.That(result, Is.EqualTo(string.Empty));
         }
 
         [Test, Timeout(60000)]
-        public async Task CancellingSubscriptionStopsDelegateFromBeingCalled()
+        public async Task SecondInterceptorIsCalledWhenFirstReturnsNull()
         {
             // Arrange
             var provider = TestHelper.GetTaskManagerContainer();
@@ -39,16 +35,14 @@ namespace Sels.Core.Async.Test.Components.Queue
             provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
-            int triggeredAmount = 0;
-            var subscription = queue.Subscribe(1, (i, t) => { lock (provider) { triggeredAmount++; }; return Task.CompletedTask; });
 
             // Act
-            subscription.Dispose();
-            await queue.EnqueueAsync(string.Empty);
-            await Helper.Async.Sleep(2000);
+            using var subscription = queue.InterceptRequest(x => Task.FromResult<string?>(null));
+            using var secondSubscription = queue.InterceptRequest(x => Task.FromResult(string.Empty));
+            var result = await queue.DequeueAsync();
 
             // Assert
-            Assert.AreEqual(0, triggeredAmount);
+            Assert.That(result, Is.EqualTo(string.Empty));
         }
     }
 }

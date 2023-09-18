@@ -18,10 +18,10 @@ namespace Sels.Core.Async.Test.Components.Queue
             await using var scope = provider.CreateAsyncScope();
             provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
-            await using var queue = new WorkerQueue<int>(taskManager, 1);
+            await using var queue = new WorkerQueue<string>(taskManager, 1);
 
             // Act
-            var actual = await queue.TryEnqueueAsync(1);
+            var actual = await queue.TryEnqueueAsync(string.Empty);
 
             // Assert
             Assert.IsTrue(actual);
@@ -34,10 +34,10 @@ namespace Sels.Core.Async.Test.Components.Queue
             await using var scope = provider.CreateAsyncScope();
             provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
-            await using var queue = new WorkerQueue<int>(taskManager);
+            await using var queue = new WorkerQueue<string>(taskManager);
 
             // Act
-            var actual = await queue.TryEnqueueAsync(1);
+            var actual = await queue.TryEnqueueAsync(string.Empty);
 
             // Assert
             Assert.IsTrue(actual);
@@ -50,11 +50,11 @@ namespace Sels.Core.Async.Test.Components.Queue
             await using var scope = provider.CreateAsyncScope();
             provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
-            await using var queue = new WorkerQueue<int>(taskManager, 1);
+            await using var queue = new WorkerQueue<string>(taskManager, 1);
 
             // Act
-            _ = await queue.TryEnqueueAsync(1);
-            var actual = await queue.TryEnqueueAsync(2);
+            _ = await queue.TryEnqueueAsync(string.Empty);
+            var actual = await queue.TryEnqueueAsync("2");
 
             // Assert
             Assert.IsFalse(actual);
@@ -68,12 +68,12 @@ namespace Sels.Core.Async.Test.Components.Queue
             await using var scope = provider.CreateAsyncScope();
             provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
-            await using var queue = new WorkerQueue<int>(taskManager);
+            await using var queue = new WorkerQueue<string>(taskManager);
 
             // Act
             for(int i = 0; i < amount; i++)
             {
-                await queue.TryEnqueueAsync(i);
+                await queue.TryEnqueueAsync($"{i}");
             }
 
             // Assert
@@ -87,7 +87,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             await using var scope = provider.CreateAsyncScope();
             provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
-            await using var queue = new WorkerQueue<int>(taskManager);
+            await using var queue = new WorkerQueue<string>(taskManager);
             var tokenSource = new CancellationTokenSource();
             Exception exception = null;
 
@@ -95,7 +95,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             try
             {
                 tokenSource.Cancel();
-                await queue.TryEnqueueAsync(1, tokenSource.Token);
+                await queue.TryEnqueueAsync(string.Empty, tokenSource.Token);
             }
             catch(Exception ex)
             {
