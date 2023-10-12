@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Conversion.Templates;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 using System;
@@ -16,19 +17,19 @@ namespace Sels.Core.Conversion.Converters.Simple
         /// <summary>
         /// The argument for providing a custom date format.
         /// </summary>
-        public const string FormatArgument = "Format";
+        public const string FormatArgument = "DateTime.Format";
 
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             var convertableType = value.GetType();
 
             return AreTypePair<string, DateTime>(convertableType, convertType);
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
-            string format = arguments.HasValue() && arguments.TryGetValue(FormatArgument, out var formatValue) ? formatValue : null;
+            string format = arguments.HasValue() && arguments.TryGetValue<string>(FormatArgument, out var formatValue) ? formatValue : null;
 
             convertType = Nullable.GetUnderlyingType(convertType) ?? convertType;
 

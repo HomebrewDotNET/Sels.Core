@@ -33,7 +33,15 @@ namespace Sels.DistributedLocking.MySQL.Options
         /// <summary>
         /// If exception from the automatic schema deployment should be ignored.
         /// </summary>
-        public bool IgnoreMigrationExceptions { get; set; } = true; 
+        public bool IgnoreMigrationExceptions { get; set; } = false;
+        /// <summary>
+        /// How long to wait for the deployment lock before failing.
+        /// </summary>
+        public TimeSpan MaxLockWaitTime { get; set; } = TimeSpan.FromMinutes(5);
+        /// <summary>
+        /// The name of the lock to use to synchronize deployments.
+        /// </summary>
+        public string DeploymentLockName { get; set; } = "Deployment";
 
         /// <summary>
         /// The old table names for <see cref="LockTableName"/>. A rename will be executed before any migrations if a table exists with any of the provided names.

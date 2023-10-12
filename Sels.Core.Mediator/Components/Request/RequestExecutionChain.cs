@@ -67,7 +67,7 @@ namespace Sels.Core.Mediator.Request
             }
             finally
             {
-                _logger.Log($"Finished execution pipeline for request <{request}> raised by <{sender}> using <{_handlers}> handlers in <{duration}>");
+                _logger.Log($"Finished execution pipeline for request <{request}> raised by <{sender}> using <{_handlers.Count}> handlers in <{duration.Value}>");
             }
         }
 

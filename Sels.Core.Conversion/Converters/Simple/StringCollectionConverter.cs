@@ -35,17 +35,17 @@ namespace Sels.Core.Conversion.Converters.Simple
         public static ITypeConverter CollectionConverter { get; set; } = GenericConverter.DefaultCollectionConverter;
 
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             var sourceType = value.GetType();
 
             return AreTypePair(sourceType, convertType, x => x.IsString(), x => x.IsContainer());
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             var sourceType = value.GetType();
-            var splitValue = arguments?.GetOrDefault(SplitterArgument);
+            var splitValue = arguments.HasValue() && arguments.TryGetValue<string>(SplitterArgument, out var splitter) ? splitter : null;
 
             // Source is string so we split, convert the elements to the target type and create a instance of the target collection with the elements.
             if (sourceType.IsString())

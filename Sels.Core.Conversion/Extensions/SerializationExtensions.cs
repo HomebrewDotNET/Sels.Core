@@ -147,11 +147,11 @@ namespace Sels.Core.Conversion.Extensions
         /// Serializes <paramref name="value"/> to a Json string.
         /// </summary>
         /// <param name="value">Object to serialize</param>
-        /// <param name="formatting">Formatting option</param>
+        /// <param name="settings">Optional settings for serializing</param>
         /// <returns>Json string</returns>
-        public static string SerializeAsJson(this object value, Formatting formatting = Formatting.None)
+        public static string SerializeAsJson(this object value, JsonSerializerSettings settings = null)
         {
-            return JsonConvert.SerializeObject(value, formatting);
+            return JsonConvert.SerializeObject(value, settings);
         }
 
         /// <summary>
@@ -159,10 +159,11 @@ namespace Sels.Core.Conversion.Extensions
         /// </summary>
         /// <typeparam name="T">Type of object to deserialize to</typeparam>
         /// <param name="value">Json string to deserialize</param>
+        /// <param name="settings">Optional settings for deserializing</param>
         /// <returns>Deserialized Json string</returns>
-        public static T DeserializeFromJson<T>(this string value)
+        public static T DeserializeFromJson<T>(this string value, JsonSerializerSettings settings = null)
         {
-            return value.DeserializeFromJson(typeof(T)).CastTo<T>();
+            return value.DeserializeFromJson(typeof(T), settings).CastTo<T>();
         }
 
         /// <summary>
@@ -170,15 +171,11 @@ namespace Sels.Core.Conversion.Extensions
         /// </summary>
         /// <param name="value">Json string to deserialize</param>
         /// <param name="type">Type of object to deserialize to</param>
+        /// <param name="settings">Optional settings for deserializing</param>
         /// <returns>Deserialized Json string</returns>
-        public static object DeserializeFromJson(this string value, Type type)
+        public static object DeserializeFromJson(this string value, Type type, JsonSerializerSettings settings = null)
         {
             type.ValidateArgument(nameof(type));
-
-            var settings = new JsonSerializerSettings
-            {
-                ObjectCreationHandling = ObjectCreationHandling.Replace
-            };
 
             return JsonConvert.DeserializeObject(value, type, settings);
         }

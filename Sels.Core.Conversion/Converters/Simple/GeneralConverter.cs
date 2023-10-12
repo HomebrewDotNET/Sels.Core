@@ -13,7 +13,7 @@ namespace Sels.Core.Conversion.Converters.Simple
     public class GeneralConverter : BaseTypeConverter
     {
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             var convertableType = value.GetType();
             convertableType = Nullable.GetUnderlyingType(convertableType) ?? convertableType;
@@ -22,7 +22,7 @@ namespace Sels.Core.Conversion.Converters.Simple
             return AreTypePair(convertableType, convertType, x => IsConvertableType(x), x => IsConvertableType(x));
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             convertType = Nullable.GetUnderlyingType(convertType) ?? convertType;
 

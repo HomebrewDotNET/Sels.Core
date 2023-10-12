@@ -45,7 +45,7 @@ namespace Sels.Core.Data.FluentMigrationTool
         /// </summary>
         /// <typeparam name="T">The type of the migration to get the assembly from</typeparam>
         /// <returns>Current builder for method chaining</returns>
-        IMigrationToolBuilder AddMigrationsFrom<T>() where T : IMigration => ConfigureRunner(x => x.ScanIn(typeof(T).Assembly).For.Migrations());
+        IMigrationToolBuilder AddMigrationsFrom<T>() where T : IMigration => ConfigureRunner(x => x.ScanIn(typeof(T).Assembly).For.All());
         /// <summary>
         /// Overwrites the default version table metadata with <typeparamref name="T"/>.
         /// </summary>

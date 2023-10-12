@@ -174,6 +174,39 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="excludedProperties">Optional names of properties to exclude</param>
         /// <returns>Current builder for method chaining</returns>
         TDerived ParametersFrom(int? suffix = null, params string[] excludedProperties) => ParametersFrom<TEntity>(suffix, excludedProperties);
+
+        /// <summary>
+        /// Specifies the values to insert into by using the name of the property selected by the expressionsfrom <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type to select the property from</typeparam>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="properties">Additional expressions that point to the properties to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Parameters<T>(Expression<Func<T, object>> property, params Expression<Func<T, object>>[] properties) => Parameters(Helper.Collection.Enumerate(property, properties).Select(x => x.ExtractProperty(nameof(property)).Name));
+        /// <summary>
+        /// Specifies the columns to insert into by using the name of the property selected by the expressionsfrom <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="properties">Additional expressions that point to the properties to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Parameters(Expression<Func<TEntity, object>> property, params Expression<Func<TEntity, object>>[] properties) => Parameters<TEntity>(property, properties);
+        /// <summary>
+        /// Specifies the values to insert into by using the name of the property selected by the expressionsfrom <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type to select the property from</typeparam>
+        /// <param name="suffix">Suffix that will be added after the parameter name. Useful when inserting multiple rows</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="properties">Additional expressions that point to the properties to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Parameters<T>(int suffix, Expression<Func<T, object>> property, params Expression<Func<T, object>>[] properties) => Parameters(Helper.Collection.Enumerate(property, properties).Select(x => $"{x.ExtractProperty(nameof(property)).Name}{suffix}"));
+        /// <summary>
+        /// Specifies the columns to insert into by using the name of the property selected by the expressionsfrom <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="suffix">Suffix that will be added after the parameter name. Useful when inserting multiple rows</param>
+        /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="properties">Additional expressions that point to the properties to use</param>
+        /// <returns>Current builder for method chaining</returns>
+        TDerived Parameters(int suffix, Expression<Func<TEntity, object>> property, params Expression<Func<TEntity, object>>[] properties) => Parameters<TEntity>(suffix, property, properties);
         #endregion
 
         #region Expression

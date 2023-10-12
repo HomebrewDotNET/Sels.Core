@@ -287,6 +287,70 @@ namespace Sels.Core.Extensions.Collections
             return defaultValueConstructor != null ? defaultValueConstructor() : default(TValue);
         }
 
+        /// <summary>
+        /// Returns the value with key <paramref name="key"/> if it exists in <paramref name="dictionary"/>. Otherwise it will return the value returned by <paramref name="defaultValueConstructor"/> or the default of <typeparamref name="TValue"/> if no delegate is provided.
+        /// </summary>
+        /// <typeparam name="TKey">Type of the dictionary key</typeparam>
+        /// <typeparam name="TValue">Type of the dictionary</typeparam>
+        /// <param name="dictionary">Dictionary to get the value from</param>
+        /// <param name="key">The key of the value to get</param>
+        /// <param name="defaultValueConstructor">Optional delegate to create the value to return if <paramref name="dictionary"/> doesn't contain <paramref name="key"/></param>
+        /// <returns>The value with key <paramref name="key"/> or the default value if <paramref name="dictionary"/> doesn't contain the provided key</returns>
+        public static TValue GetOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> defaultValueConstructor = null)
+        {
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+
+            if (dictionary.ContainsKey(key)) return dictionary[key];
+
+            return defaultValueConstructor != null ? defaultValueConstructor() : default(TValue);
+        }
+
+        /// <summary>
+        /// Tries to get the value of <paramref name="key"/> in <paramref name="dictionary"/> if it exists and is castable to <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the value</typeparam>
+        /// <param name="dictionary">THe dictionary to search</param>
+        /// <param name="key">The key of the value to get</param>
+        /// <param name="value">The value if it exists</param>
+        /// <returns>True if <paramref name="dictionary"/> contains a value with <paramref name="key"/> that can be casted to <typeparamref name="T"/>, otherwise false</returns>
+        public static bool TryGetValue<T>(this IReadOnlyDictionary<string, object> dictionary, string key, out T value)
+        {
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            value = default(T);
+
+            if(dictionary.TryGetValue(key, out var existing) && existing is T castedValue)
+            {
+                value = castedValue;
+                return true;
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// Tries to get the value of <paramref name="key"/> in <paramref name="dictionary"/> if it exists and is castable to <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the value</typeparam>
+        /// <param name="dictionary">THe dictionary to search</param>
+        /// <param name="key">The key of the value to get</param>
+        /// <param name="value">The value if it exists</param>
+        /// <returns>True if <paramref name="dictionary"/> contains a value with <paramref name="key"/> that can be casted to <typeparamref name="T"/>, otherwise false</returns>
+        public static bool TryGetValue<T>(this IDictionary<string, object> dictionary, string key, out T value)
+        {
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+            value = default(T);
+
+            if (dictionary.TryGetValue(key, out var existing) && existing is T castedValue)
+            {
+                value = castedValue;
+                return true;
+            }
+
+            return false;
+        }
+
         #region AddValue
         /// <summary>
         /// Adds <paramref name="value"/> to <paramref name="dictionary"/> if no entry with <paramref name="key"/> exists, otherwise the value is added using <paramref name="key"/>.

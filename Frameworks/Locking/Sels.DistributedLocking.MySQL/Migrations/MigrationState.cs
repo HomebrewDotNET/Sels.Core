@@ -25,6 +25,14 @@ namespace Sels.DistributedLocking.MySQL.Migrations
         /// </summary>
         public static ILogger MigrationLogger { get; set; }
         /// <summary>
+        /// How long to wait for the deployment lock before failing.
+        /// </summary>
+        public static TimeSpan MaxLockWaitTime { get; set; } = TimeSpan.FromMinutes(5);
+        /// <summary>
+        /// The name of the lock to use to synchronize deployments.
+        /// </summary>
+        public static string DeploymentLockName { get; set; } = "Deployment";
+        /// <summary>
         /// The name of the table that contains the lock state.
         /// </summary>
         public static string LockTableName { get => _lockTableName; set => _lockTableName = value.ValidateArgumentNotNullOrWhitespace(nameof(LockTableName)); }
@@ -36,10 +44,10 @@ namespace Sels.DistributedLocking.MySQL.Migrations
         /// <summary>
         /// The old table names for <see cref="LockTableName"/>. A rename will be executed before any migrations if a table exists with any of the provided names.
         /// </summary>
-        public static string[] OldLockTableNames { get => Helper.Collection.Enumerate(nameof(SqlLock), _oldLockTableNames).Where(x => x != null).ToArray(); set => _oldLockTableNames = value; }
+        internal static string[] OldLockTableNames { get => Helper.Collection.Enumerate(nameof(SqlLock), _oldLockTableNames).Where(x => x != null).ToArray(); set => _oldLockTableNames = value; }
         /// <summary>
         /// The old table names for <see cref="LockRequestTableName"/>. A rename will be executed before any migrations if a table exists with any of the provided names.
         /// </summary>
-        public static string[] OldLockRequestTableNames { get => Helper.Collection.Enumerate(nameof(SqlLockRequest), _oldLockRequestTableNames).Where(x => x != null).ToArray(); set => _oldLockRequestTableNames = value; }
+        internal static string[] OldLockRequestTableNames { get => Helper.Collection.Enumerate(nameof(SqlLockRequest), _oldLockRequestTableNames).Where(x => x != null).ToArray(); set => _oldLockRequestTableNames = value; }
     }
 }

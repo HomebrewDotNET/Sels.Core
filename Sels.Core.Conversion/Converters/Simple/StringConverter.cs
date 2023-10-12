@@ -10,12 +10,12 @@ namespace Sels.Core.Conversion.Converters.Simple
     public class StringConverter : BaseTypeConverter
     {
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             return convertType.Equals(typeof(string));
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             return value.ToString();
         }

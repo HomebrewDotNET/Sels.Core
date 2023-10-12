@@ -24,7 +24,7 @@ namespace Sels.Core.Conversion.Attributes.Serialization
         /// <summary>
         /// Arguments for the type converters.
         /// </summary>
-        public IDictionary<string, string> Arguments { get; }
+        public IReadOnlyDictionary<string, object> Arguments { get; }
 
         /// <summary>
         /// Defines arguments that will be supplied to the <see cref="ITypeConverter"/> by serializers that support it.
@@ -35,7 +35,10 @@ namespace Sels.Core.Conversion.Attributes.Serialization
             arguments.ValidateArgumentNotNullOrEmpty(nameof(arguments));
             arguments.Execute((i, x) => x.ValidateArgument(a => a.HasValue() && a.Contains(KeyValueSplitter), $"Argument {i} cannot be null, empty or whitespace and must contain <{KeyValueSplitter}>"));
 
-            arguments.Execute(x => { var key = x.SplitOnFirst(KeyValueSplitter, out var value); Arguments.Add(key.Trim(), value.Trim()); });
+            var dictionary = new Dictionary<string, object>();
+
+            arguments.Execute(x => { var key = x.SplitOnFirst(KeyValueSplitter, out var value); dictionary.Add(key.Trim(), value.Trim()); });
+            Arguments = dictionary;
         }
     }
     /// <summary>
@@ -48,7 +51,7 @@ namespace Sels.Core.Conversion.Attributes.Serialization
         /// </summary>
         /// <param name="source">The member to get the arguments from</param>
         /// <returns>The arguments defined by <see cref="ConverterArgumentAttribute"/> or null if no attribute is found</returns>
-        public static IDictionary<string, string> GetConverterArguments(this MemberInfo source)
+        public static IReadOnlyDictionary<string, object> GetConverterArguments(this MemberInfo source)
         {
             source.ValidateArgument(nameof(source));
 

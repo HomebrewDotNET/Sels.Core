@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Conversion.Templates;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 using System;
@@ -15,15 +16,15 @@ namespace Sels.Core.Conversion.Converters.Simple
         /// <summary>
         /// The argument for providing a custom guid format.
         /// </summary>
-        public const string FormatArgument = "Format";
+        public const string FormatArgument = "Guid.Format";
 
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             return AreTypePair<string, Guid>(value.GetType(), convertType);
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             convertType = Nullable.GetUnderlyingType(convertType) ?? convertType;
 
@@ -35,7 +36,7 @@ namespace Sels.Core.Conversion.Converters.Simple
             // Converting guid to string
             else
             {
-                return value.CastTo<Guid>().ToString(arguments.HasValue() && arguments.ContainsKey(FormatArgument) ? arguments[FormatArgument] : string.Empty);
+                return value.CastTo<Guid>().ToString(arguments.HasValue() && arguments.TryGetValue<string>(FormatArgument, out var format) ? format : string.Empty);
             }            
         }
     }

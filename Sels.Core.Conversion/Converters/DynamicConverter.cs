@@ -10,22 +10,22 @@ namespace Sels.Core.Conversion.Converters
     public class DynamicConverter : ITypeConverter
     {
         // Fields
-        private readonly Func<object, Type, IDictionary<string, string>, object> _convertFunc;
-        private readonly Func<object, Type, IDictionary<string, string>, bool> _canConvertFunc;
+        private readonly Func<object, Type, IReadOnlyDictionary<string, object>, object> _convertFunc;
+        private readonly Func<object, Type, IReadOnlyDictionary<string, object>, bool> _canConvertFunc;
 
         /// <summary>
         /// Converter that uses delegates to convert objects. 
         /// </summary>
-        /// <param name="convertFunc">Func that matches method signiture of <see cref="CanConvert(object, Type, IDictionary{string, string})"/></param>
-        /// <param name="canConvertFunc">Func that matches method signiture of <see cref="ConvertTo(object, Type, IDictionary{string, string})"/></param>
-        public DynamicConverter(Func<object, Type, IDictionary<string, string>, object> convertFunc, Func<object, Type, IDictionary<string, string>, bool> canConvertFunc = null)
+        /// <param name="convertFunc">Func that matches method signiture of <see cref="CanConvert(object, Type, IReadOnlyDictionary{string, object})"/></param>
+        /// <param name="canConvertFunc">Func that matches method signiture of <see cref="ConvertTo(object, Type, IReadOnlyDictionary{string, object})"/></param>
+        public DynamicConverter(Func<object, Type, IReadOnlyDictionary<string, object>, object> convertFunc, Func<object, Type, IReadOnlyDictionary<string, object>, bool> canConvertFunc = null)
         {
             _convertFunc = convertFunc.ValidateArgument(nameof(convertFunc));
             _canConvertFunc = canConvertFunc;
         }
 
         /// <inheritdoc/>
-        public bool CanConvert(object value, Type convertType, IDictionary<string, string> arguments = null)
+        public bool CanConvert(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             value.ValidateArgument(nameof(value));
             convertType.ValidateArgument(nameof(convertType));
@@ -33,7 +33,7 @@ namespace Sels.Core.Conversion.Converters
             return _canConvertFunc == null || _canConvertFunc(value, convertType, arguments);
         }
         /// <inheritdoc/>
-        public object ConvertTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        public object ConvertTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             value.ValidateArgument(nameof(value));
             convertType.ValidateArgument(nameof(convertType));

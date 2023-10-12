@@ -13,14 +13,14 @@ namespace Sels.Core.Conversion.Converters.Simple
     public class DirectoryInfoConverter : BaseTypeConverter
     {
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             var convertableType = value.GetType();
 
             return AreTypePair<string, DirectoryInfo>(convertableType, convertType);
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             if (value.GetType().Is<DirectoryInfo>())
             {

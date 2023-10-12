@@ -363,6 +363,19 @@ namespace Sels.Core.Extensions
         }
 
         /// <summary>
+        /// Validates if argument is not null and is not an interface or abstract class.
+        /// </summary>
+        /// <param name="argument">Method/Constructor argument</param>
+        /// <param name="parameterName">Method/Constructor parameter name</param>
+        /// <returns><paramref name="argument"/></returns>
+        public static Type ValidateArgumentInstanceable(this Type argument, string parameterName)
+        {
+            if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
+
+            return argument.ValidateArgument(x => argument != null && !argument.IsInterface && !argument.IsAbstract, $"{parameterName} cannot be null, can't be an interface or abstract class");
+        }
+
+        /// <summary>
         /// Validates if an instance can be constructed from <paramref name="argument"/> using the supplied <paramref name="parameterTypes"/>.
         /// </summary>
         /// <param name="argument">Method/Constructor argument</param>

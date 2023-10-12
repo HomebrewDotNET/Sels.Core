@@ -10,14 +10,14 @@ namespace Sels.Core.Command.Linux.Commands.FileSystem
     internal class DfFileSizeConverter : BaseTypeConverter
     {
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IDictionary<string, string>? arguments = null)
+        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object>? arguments = null)
         {
             var convertableType = value.GetType();
 
             return convertableType.Is<string>() && convertType.IsAssignableTo<FileSize>();
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string>? arguments = null)
+        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object>? arguments = null)
         {
             var kiloBytes = value.ToString().TrimEnd('K').ConvertTo<decimal>();
             var kiloByteSize = FileSize.CreateFromSize<KibiByte>(kiloBytes);

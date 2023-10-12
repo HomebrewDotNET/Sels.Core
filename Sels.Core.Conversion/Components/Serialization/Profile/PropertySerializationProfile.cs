@@ -33,7 +33,7 @@ namespace Sels.Core.Conversion.Components.Serialization.Profile
         /// <summary>
         /// Optional arguments for <see cref="Converters"/>.
         /// </summary>
-        public IDictionary<string,string> ConverterArguments { get; }
+        public IReadOnlyDictionary<string, object> ConverterArguments { get; }
         /// <summary>
         /// Any custom filters defined for modifying the string value after serialization or before serialization.
         /// </summary>

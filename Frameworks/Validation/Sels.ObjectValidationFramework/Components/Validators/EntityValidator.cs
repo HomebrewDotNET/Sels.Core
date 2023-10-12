@@ -76,7 +76,7 @@ namespace Sels.ObjectValidationFramework.Validators
             {
                 property.ValidateArgument(nameof(property));
                 valueSelector.ValidateArgument(nameof(valueSelector));
-                if (!property.TryExtractProperty(out var propertyInfo) || !propertyInfo.ReflectedType.IsAssignableTo<TEntity>())
+                if (!property.TryExtractProperty(out var propertyInfo) || !typeof(TEntity).IsAssignableTo(propertyInfo.DeclaringType))
                 {
                     throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
                 }
@@ -90,7 +90,7 @@ namespace Sels.ObjectValidationFramework.Validators
             using (_logger.TraceMethod(this))
             {
                 property.ValidateArgument(nameof(property));
-                if (!property.TryExtractProperty(out var propertyInfo) || !typeof(TEntity).IsAssignableTo(propertyInfo.ReflectedType))
+                if (!property.TryExtractProperty(out var propertyInfo) || !typeof(TEntity).IsAssignableTo(propertyInfo.DeclaringType))
                 {
                     throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
                 }
@@ -105,7 +105,7 @@ namespace Sels.ObjectValidationFramework.Validators
             {
                 property.ValidateArgument(nameof(property));
                 valueSelector.ValidateArgument(nameof(valueSelector));
-                if (!property.TryExtractProperty(out var propertyInfo) || !propertyInfo.ReflectedType.IsAssignableTo<TEntity>())
+                if (!property.TryExtractProperty(out var propertyInfo) || !typeof(TEntity).IsAssignableTo(propertyInfo.DeclaringType))
                 {
                     throw new ArgumentException($"{nameof(property)} must select a property on {typeof(TEntity)}");
                 }

@@ -18,7 +18,7 @@ namespace Sels.Core.Conversion.Extensions
         /// <param name="value">Object to convert</param>
         /// <param name="arguments">Arguments for conversion</param>
         /// <returns>Converted object</returns>
-        public static T ConvertTo<T>(this object value, IDictionary<string, string> arguments)
+        public static T ConvertTo<T>(this object value, IReadOnlyDictionary<string, object> arguments)
         {
             if (value.HasValue())
             {
@@ -35,7 +35,7 @@ namespace Sels.Core.Conversion.Extensions
         /// <param name="value">Object to convert</param>
         /// <param name="arguments">Optional arguments for conversion</param>
         /// <returns>Converted object</returns>
-        public static T ConvertTo<T>(this object value, params (string Argument, string Value)[] arguments)
+        public static T ConvertTo<T>(this object value, params (string Argument, object Value)[] arguments)
         {
             return value.ConvertTo<T>(arguments.HasValue() ? arguments.ToDictionary(x => x.Argument, x => x.Value) : null);
         }
@@ -46,7 +46,7 @@ namespace Sels.Core.Conversion.Extensions
         /// <param name="value">Object to convert</param>
         /// <param name="arguments">Optional arguments for conversion</param>
         /// <returns>Converted object or default of <typeparamref name="T"/> if the conversion fails</returns>
-        public static T ConvertToOrDefault<T>(this object value, IDictionary<string, string> arguments)
+        public static T ConvertToOrDefault<T>(this object value, IReadOnlyDictionary<string, object> arguments)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace Sels.Core.Conversion.Extensions
         /// <param name="value">Object to convert</param>
         /// <param name="arguments">Optional arguments for conversion</param>
         /// <returns>Converted object or default of <typeparamref name="T"/> if the conversion fails</returns>
-        public static T ConvertToOrDefault<T>(this object value, params (string Argument, string Value)[] arguments)
+        public static T ConvertToOrDefault<T>(this object value, params (string Argument, object Value)[] arguments)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace Sels.Core.Conversion.Extensions
         /// <param name="converted">The converted value</param>
         /// <param name="arguments">Optional argument for the converters</param>
         /// <returns>True if <paramref name="value"/> was succesfully converted, otherwise false</returns>
-        public static bool TryConvertTo<T>(this object value, out T converted, IDictionary<string, string> arguments)
+        public static bool TryConvertTo<T>(this object value, out T converted, IReadOnlyDictionary<string, object> arguments)
         {
             return TypeConverterExtensions.TryConvertTo<T>(GenericConverter.DefaultConverter, value, out converted, arguments);
         }
@@ -98,7 +98,7 @@ namespace Sels.Core.Conversion.Extensions
         /// <param name="converted">The converted value</param>
         /// <param name="arguments">Optional argument for the converters</param>
         /// <returns>True if <paramref name="value"/> was succesfully converted, otherwise false</returns>
-        public static bool TryConvertTo<T>(this object value, out T converted, params (string Argument, string Value)[] arguments)
+        public static bool TryConvertTo<T>(this object value, out T converted, params (string Argument, object Value)[] arguments)
         {
             return TryConvertTo<T>(value, out converted, arguments.HasValue() ? arguments.ToDictionary(x => x.Argument, x => x.Value) : null);
         }

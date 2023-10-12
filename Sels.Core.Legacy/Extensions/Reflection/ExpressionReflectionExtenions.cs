@@ -198,5 +198,48 @@ namespace Sels.Core.Extensions.Reflection
             return null;
         }
         #endregion
+
+        #region  MethodExpression
+        /// <summary>
+        /// Attempts to extract <see cref="MethodCallExpression"/> from <paramref name="expression"/>.
+        /// </summary>
+        /// <typeparam name="T">The delegate type</typeparam>
+        /// <param name="expression">The expression to extract the method call from</param>
+        /// <returns>The method call expression extracted from <paramref name="expression"/></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static MethodCallExpression ExtractMethodCall<T>(this Expression<T> expression)
+        {
+            expression.ValidateArgument(nameof(expression));
+
+            if(expression.Body != null)
+            {
+                return expression.Body.ExtractMethodCall();
+            }
+
+            throw new InvalidOperationException($"Expression does not point to a method call");
+        }
+
+        /// <summary>
+        /// Attempts to extract <see cref="MethodCallExpression"/> from <paramref name="expression"/>.
+        /// </summary>
+        /// <param name="expression">The expression to extract the method call from</param>
+        /// <returns>The method call expression extracted from <paramref name="expression"/></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static MethodCallExpression ExtractMethodCall(this System.Linq.Expressions.Expression expression)
+        {
+            expression.ValidateArgument(nameof(expression));
+
+            if(expression is MethodCallExpression callExpression)
+            {
+                return callExpression;
+            }
+            else if (expression is UnaryExpression unaryExpression)
+            {
+                return unaryExpression.Operand.ExtractMethodCall();
+            }
+
+            throw new InvalidOperationException($"Expression does not point to a method call");
+        }
+        #endregion
     }
 }

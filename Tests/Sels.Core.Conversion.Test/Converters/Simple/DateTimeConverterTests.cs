@@ -62,7 +62,7 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             // Arrange
             var date = DateTime.ParseExact(dateString, format, null);
             var converter = new DateTimeConverter();
-            var arguments = new Dictionary<string, string>();
+            var arguments = new Dictionary<string, object>();
             arguments.Add(DateTimeConverter.FormatArgument, format);
 
             // Act
@@ -79,7 +79,7 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             // Arrange
             var date = DateTime.ParseExact(dateString, format, null);
             var converter = new DateTimeConverter();
-            var arguments = new Dictionary<string, string>();
+            var arguments = new Dictionary<string, object>();
             arguments.Add(DateTimeConverter.FormatArgument, format);
 
             // Act

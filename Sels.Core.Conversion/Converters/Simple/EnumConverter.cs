@@ -11,13 +11,13 @@ namespace Sels.Core.Conversion.Converters.Simple
     public class EnumConverter : BaseTypeConverter
     {
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             var convertableType = value.GetType();
             return AreTypePair(convertableType, convertType, x => x.IsAssignableTo<Enum>(), x => x.IsAssignableTo<string>() || x.IsAssignableTo<int>());
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             convertType = Nullable.GetUnderlyingType(convertType) ?? convertType;
 

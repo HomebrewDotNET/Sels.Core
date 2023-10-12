@@ -13,7 +13,7 @@ namespace Sels.Core.Conversion.Templates
     {
         #region Conversion
         /// <inheritdoc/>
-        public virtual bool CanConvert(object value, Type convertType, IDictionary<string, string> arguments = null)
+        public virtual bool CanConvert(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             convertType.ValidateArgument(nameof(convertType));
             if (value == null) return false;
@@ -21,17 +21,17 @@ namespace Sels.Core.Conversion.Templates
             return CanConvertObject(value, convertType, arguments);
         }
         /// <inheritdoc/>
-        public virtual object ConvertTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        public virtual object ConvertTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             value.ValidateArgument(x => CanConvert(x, convertType, arguments), $"Converter <{this}> cannot convert using the provided value. Call <{nameof(CanConvert)}> first");
 
             return ConvertObjectTo(value, convertType, arguments);
         }
 
-        /// <inheritdoc cref="ITypeConverter.CanConvert(object, Type, IDictionary{string, string})"/>
-        protected abstract bool CanConvertObject(object value, Type convertType, IDictionary<string, string> arguments = null);
-        /// <inheritdoc cref="ITypeConverter.ConvertTo(object, Type, IDictionary{string, string})"/>
-        protected abstract object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null);
+        /// <inheritdoc cref="ITypeConverter.CanConvert(object, Type, IReadOnlyDictionary{string, object})"/>
+        protected abstract bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null);
+        /// <inheritdoc cref="ITypeConverter.ConvertTo(object, Type, IReadOnlyDictionary{string, object})"/>
+        protected abstract object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null);
         #endregion
 
         #region Helper

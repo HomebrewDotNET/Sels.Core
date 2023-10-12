@@ -107,6 +107,22 @@ namespace Sels.Core.Extensions.Text
             return source;
         }
 
+        /// <summary>
+        /// Checks if <paramref name="value"/> is equal to <paramref name="other"/> using <see cref="StringComparison.OrdinalIgnoreCase"/>.
+        /// </summary>
+        /// <param name="value">The value to compare to <paramref name="other"/></param>
+        /// <param name="other">The value to compare to <paramref name="value"/></param>
+        /// <returns>True if <paramref name="value"/> is equal to <paramref name="other"/>, otherwise false</returns>
+        public static bool EqualsNoCase(this string value, string other)
+        {
+            if(value == null)
+            {
+                return other == null;
+            }
+
+            return value.Equals(other, StringComparison.OrdinalIgnoreCase);
+        }
+
         #region Contains
         /// <summary>
         /// Checks if <paramref name="value"/> contains one of the chars in <paramref name="chars"/>.

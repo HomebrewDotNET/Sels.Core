@@ -13,7 +13,7 @@ namespace Sels.Core.Conversion.Converters.Simple
     public class CollectionConverter : ITypeConverter
     {
         /// <inheritdoc/>
-        public bool CanConvert(object value, Type convertType, IDictionary<string, string> arguments = null)
+        public bool CanConvert(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             convertType.ValidateArgument(nameof(convertType));
             if (value == null) return false;
@@ -27,7 +27,7 @@ namespace Sels.Core.Conversion.Converters.Simple
             return false;
         }
         /// <inheritdoc/>
-        public object ConvertTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        public object ConvertTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             value.ValidateArgument(x => CanConvert(x, convertType, arguments), $"Converter <{this}> cannot convert using the provided value. Call <{nameof(CanConvert)}> first");
 

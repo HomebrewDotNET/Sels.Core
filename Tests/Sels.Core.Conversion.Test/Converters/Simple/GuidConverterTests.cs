@@ -64,7 +64,7 @@ namespace Sels.Core.Conversion.Test.Converters.Simple
             // Arrange
             var guid = Guid.NewGuid();
             var converter = new GuidConverter();
-            var arguments = new Dictionary<string, string>();
+            var arguments = new Dictionary<string, object>();
             arguments.Add(GuidConverter.FormatArgument, format);
 
             // Act

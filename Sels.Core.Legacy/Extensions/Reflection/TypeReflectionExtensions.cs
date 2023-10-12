@@ -3,6 +3,7 @@ using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -234,6 +235,20 @@ namespace Sels.Core.Extensions.Reflection
             type.ValidateArgument(nameof(type));
 
             return type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(x => x.IsLiteral && !x.IsInitOnly);
+        }
+
+        /// <summary>
+        /// Returns the actual type for <paramref name="type"/> taking into account nullable.
+        /// </summary>
+        /// <param name="type">The type to get the actual type for</param>
+        /// <returns>The actual type for <paramref name="type"/></returns>
+        public static Type GetActualType(this Type type)
+        {
+            type.ValidateArgument(nameof(type));
+
+            var underlyingType = Nullable.GetUnderlyingType(type);
+
+            return underlyingType ?? type;
         }
 
         #region DisplayName

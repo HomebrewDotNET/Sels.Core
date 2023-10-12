@@ -12,7 +12,7 @@ namespace Sels.Core.Conversion.Converters.Simple
     public class XmlConverter : BaseTypeConverter
     {
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             var convertableType = value.GetType();
 
@@ -30,7 +30,7 @@ namespace Sels.Core.Conversion.Converters.Simple
             return false;
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
 
             var convertableType = value.GetType();

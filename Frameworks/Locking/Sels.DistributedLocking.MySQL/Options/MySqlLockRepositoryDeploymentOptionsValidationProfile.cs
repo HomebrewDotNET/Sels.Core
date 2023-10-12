@@ -19,6 +19,8 @@ namespace Sels.DistributedLocking.MySQL.Options
                 .ForProperty(x => x.LockRequestTableName)
                     .CannotBeNullOrWhitespace()
                 .ForProperty(x => x.VersionTableName)
+                    .CannotBeNullOrWhitespace()
+                .ForProperty(x => x.DeploymentLockName)
                     .CannotBeNullOrWhitespace();
         }
     }

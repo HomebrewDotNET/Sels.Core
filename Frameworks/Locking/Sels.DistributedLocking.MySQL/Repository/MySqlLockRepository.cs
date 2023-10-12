@@ -424,6 +424,8 @@ namespace Sels.DistributedLocking.MySQL.Repository
                         _logger.Log($"Setting migration state");
                         MigrationState.LockTableName = options.LockTableName;
                         MigrationState.LockRequestTableName = options.LockRequestTableName;
+                        MigrationState.MaxLockWaitTime = options.MaxLockWaitTime;
+                        MigrationState.DeploymentLockName = options.DeploymentLockName;
 
                         try
                         {

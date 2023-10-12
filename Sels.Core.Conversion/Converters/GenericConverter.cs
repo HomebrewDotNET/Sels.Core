@@ -45,13 +45,13 @@ namespace Sels.Core.Conversion.Converters
 
         #region Conversion
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             var convertableType = value.GetType();
             return convertableType.Equals(convertType) || (_converters.HasValue() && _converters.Any(x => x.CanConvert(value, convertType, arguments)));
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IDictionary<string, string> arguments = null)
+        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
             var convertableType = value.GetType();
 
@@ -117,10 +117,10 @@ namespace Sels.Core.Conversion.Converters
         /// <summary>
         /// Adds a sub converter with the supplied delegates that the <see cref="GenericConverter"/> can use.
         /// </summary>
-        /// <param name="convertFunc">Func that matches method signiture of <see cref="ITypeConverter.ConvertTo(object, Type, IDictionary{string, string})"/></param>
-        /// <param name="canConvertFunc">Func that matches method signiture of <see cref="ITypeConverter.CanConvert(object, Type, IDictionary{string, string})"/></param>
+        /// <param name="convertFunc">Func that matches method signiture of <see cref="ITypeConverter.ConvertTo(object, Type, IReadOnlyDictionary{string, object})"/></param>
+        /// <param name="canConvertFunc">Func that matches method signiture of <see cref="ITypeConverter.CanConvert(object, Type, IReadOnlyDictionary{string, object})"/></param>
         /// <returns>Self</returns>
-        public GenericConverter AddConverter(Func<object, Type, IDictionary<string, string>, object> convertFunc, Func<object, Type, IDictionary<string, string>, bool> canConvertFunc = null)
+        public GenericConverter AddConverter(Func<object, Type, IReadOnlyDictionary<string, object>, object> convertFunc, Func<object, Type, IReadOnlyDictionary<string, object>, bool> canConvertFunc = null)
         {
             convertFunc.ValidateArgument(nameof(convertFunc));
 
@@ -158,11 +158,11 @@ namespace Sels.Core.Conversion.Converters
         /// <summary>
         /// Adds a sub converter with the supplied delegates that the <see cref="GenericConverter"/> can use and adds it before the first converter with type <paramref name="type"/>.
         /// </summary>
-        /// <param name="convertFunc">Func that matches method signiture of <see cref="ITypeConverter.ConvertTo(object, Type, IDictionary{string, string})"/></param>
-        /// <param name="canConvertFunc">Func that matches method signiture of <see cref="ITypeConverter.CanConvert(object, Type, IDictionary{string, string})"/></param>
+        /// <param name="convertFunc">Func that matches method signiture of <see cref="ITypeConverter.ConvertTo(object, Type, IReadOnlyDictionary{string, object})"/></param>
+        /// <param name="canConvertFunc">Func that matches method signiture of <see cref="ITypeConverter.CanConvert(object, Type, IReadOnlyDictionary{string, object})"/></param>
         /// <param name="type">Type of converter to insert before</param>
         /// <returns>Self</returns>
-        public GenericConverter AddConverter(Type type, Func<object, Type, IDictionary<string, string>, object> convertFunc, Func<object, Type, IDictionary<string, string>, bool> canConvertFunc = null)
+        public GenericConverter AddConverter(Type type, Func<object, Type, IReadOnlyDictionary<string, object>, object> convertFunc, Func<object, Type, IReadOnlyDictionary<string, object>, bool> canConvertFunc = null)
         {
             type.ValidateArgument(nameof(type));
             convertFunc.ValidateArgument(nameof(convertFunc));
