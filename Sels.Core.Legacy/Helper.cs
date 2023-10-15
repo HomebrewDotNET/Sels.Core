@@ -1097,6 +1097,7 @@ namespace Sels.Core
             {
                 while(DateTime.Now < sleepTime)
                 {
+                    if (token.IsCancellationRequested) return;
                     var waitTime = DateTime.Now - sleepTime;
 
                     await Sleep(waitTime, token).ConfigureAwait(false);

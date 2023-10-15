@@ -139,7 +139,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="parameters">The list of sql parameters to compare to</param>
         /// <returns>Current builder for creating more conditions</returns>
-        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> Parameters(IEnumerable<string> parameters) => Values(parameters.ValidateArgument(nameof(parameters)).Select(x => new SqlParameterExpression(x)));
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> Parameters(IEnumerable<string> parameters) => Expression(new ListExpression(parameters.ValidateArgument(nameof(parameters)).Select(x => new SqlParameterExpression(x))));
         #endregion
     }
 

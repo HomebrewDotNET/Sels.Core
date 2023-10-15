@@ -34,6 +34,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             {
                 builder.Append(Sql.Null);
             }
+            else if (type.Is<bool>())
+            {
+                var boolean = Value.CastTo<bool>();
+                builder.Append(boolean ? 1 : 0);
+            }
             else if (type.IsAssignableTo<Enum>())
             {
                 builder.Append(options.HasFlag(ExpressionCompileOptions.EnumAsString) ? Value : Value.ChangeType<int>());
