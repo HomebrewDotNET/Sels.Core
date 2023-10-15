@@ -17,5 +17,9 @@ namespace Sels.Core.Async.TaskManagement
         /// The (unique) name of the task. Can be null.
         /// </summary>
         string? Name { get; }
+        /// <summary>
+        /// If the task is a global task. Only used if <see cref="Name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <see cref="Owner"/>.
+        /// </summary>
+        bool IsGlobal { get; }
     }
 }

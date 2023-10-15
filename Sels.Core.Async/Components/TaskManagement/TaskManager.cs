@@ -21,6 +21,7 @@ using Sels.Core.Async.TaskManagement;
 using Sels.Core.Async.TaskManagement.Queue;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.Extensions.Linq;
+using Sels.Core.Extensions.Text;
 
 namespace Sels.Core.Async.TaskManagement
 {
@@ -32,7 +33,7 @@ namespace Sels.Core.Async.TaskManagement
         private readonly object _managedLock = new object();
         private readonly HashSet<ManagedAnonymousTask> _anonymousTasks = new HashSet<ManagedAnonymousTask>();
         private readonly HashSet<ManagedTask> _managedTasks = new HashSet<ManagedTask>();
-        private readonly Dictionary<string, ManagedTask> _nameIndex = new Dictionary<string, ManagedTask>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, ManagedTask> _globalNameIndex = new Dictionary<string, ManagedTask>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<object, List<ManagedTask>> _ownerIndex = new Dictionary<object, List<ManagedTask>>();
         private readonly Dictionary<string, GlobalManagedTaskQueue> _globalQueues = new Dictionary<string, GlobalManagedTaskQueue>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<object, List<LocalManagedTaskQueue>> _localQueues = new Dictionary<object, List<LocalManagedTaskQueue>>();
@@ -92,7 +93,7 @@ namespace Sels.Core.Async.TaskManagement
             return ScheduleUnnamed(owner, taskOptions, token);
         }
         /// <inheritdoc/>
-        public virtual IManagedTask TrySchedule<TOutput>(object owner, string? name, Func<CancellationToken, Task<TOutput>> action, Action<IManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
+        public virtual IManagedTask TrySchedule<TOutput>(object owner, string? name, bool isGlobal, Func<CancellationToken, Task<TOutput>> action, Action<IManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
         {
             owner.ValidateArgument(nameof(owner));
             action.ValidateArgument(nameof(action));
@@ -103,10 +104,10 @@ namespace Sels.Core.Async.TaskManagement
             options?.Invoke(builder);
             var taskOptions = builder.BuildOptions(this, action);
 
-            return TryScheduleNamed(owner, name, taskOptions, token);
+            return TryScheduleNamed(owner, name, isGlobal, taskOptions, token);
         }
         /// <inheritdoc/>
-        public virtual Task<IManagedTask> ScheduleAsync<TOutput>(object owner, string? name, Func<CancellationToken, Task<TOutput>> action, Action<INamedManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
+        public virtual Task<IManagedTask> ScheduleAsync<TOutput>(object owner, string? name, bool isGlobal, Func<CancellationToken, Task<TOutput>> action, Action<INamedManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
         {
             owner.ValidateArgument(nameof(owner));
             action.ValidateArgument(nameof(action));
@@ -119,7 +120,7 @@ namespace Sels.Core.Async.TaskManagement
 
             try
             {
-                return ScheduleNamed(owner, name, taskOptions, token);
+                return ScheduleNamed(owner, name, isGlobal, taskOptions, token);
             }
             catch (Exception ex)
             {
@@ -259,7 +260,7 @@ namespace Sels.Core.Async.TaskManagement
             _logger.Log($"Fetching managed task with name <{name}>");
             lock (_managedLock)
             {
-                if (_nameIndex.TryGetValue(name, out var task) && !task.Task.IsCompleted)
+                if (_globalNameIndex.TryGetValue(name, out var task) && !task.Task.IsCompleted)
                 {
                     return task;
                 }
@@ -432,7 +433,7 @@ namespace Sels.Core.Async.TaskManagement
 
             lock (_managedLock)
             {
-                var task = new ManagedTask(owner, null, taskOptions, cancellationToken);
+                var task = new ManagedTask(owner, null, false, taskOptions, cancellationToken);
                 // Use continuation to handle completion
                 _ = task.OnExecuted.ContinueWith(x => CompleteTask(task), TaskContinuationOptions.AttachedToParent);
 
@@ -448,17 +449,18 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance the created task will be tied to</param>
         /// <param name="name">The unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="taskOptions">The options for this task</param>
         /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
         /// <returns>Task that completes when the task was scheduled</returns>
-        protected virtual async Task<IManagedTask> ScheduleNamed(object owner, string name, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken)
+        protected virtual async Task<IManagedTask> ScheduleNamed(object owner, string name, bool isGlobal, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken)
         {
             owner.ValidateArgument(nameof(owner));
             taskOptions.ValidateArgument(nameof(taskOptions));
 
             _logger.Log($"Trying to schedule new managed task with name <{name}> for <{owner}>");
 
-            var (wasScheduled, scheduledTask) = TryStartNamed(owner, name, taskOptions, cancellationToken);
+            var (wasScheduled, scheduledTask) = TryStartNamed(owner, name, isGlobal, taskOptions, cancellationToken);
 
             while (!wasScheduled)
             {
@@ -492,7 +494,7 @@ namespace Sels.Core.Async.TaskManagement
                         throw new NotSupportedException($"Policy <{taskOptions.NamePolicy}> is not known");
                 }
 
-                (wasScheduled, scheduledTask) = TryStartNamed(owner, name, taskOptions, cancellationToken);
+                (wasScheduled, scheduledTask) = TryStartNamed(owner, name, isGlobal, taskOptions, cancellationToken);
             }
 
             return scheduledTask;
@@ -502,17 +504,18 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance the created task will be tied to</param>
         /// <param name="name">The unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="taskOptions">The options for this task</param>
         /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
         /// <returns>Task that completes when the task was scheduled</returns>
-        protected virtual ManagedTask TryScheduleNamed(object owner, string name, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken)
+        protected virtual ManagedTask TryScheduleNamed(object owner, string name, bool isGlobal, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken)
         {
             owner.ValidateArgument(nameof(owner));
             taskOptions.ValidateArgument(nameof(taskOptions));
 
             _logger.Log($"Trying to schedule new managed task with name <{name}> for <{owner}>");
 
-            var (wasScheduled, scheduledTask) = TryStartNamed(owner, name, taskOptions, cancellationToken);
+            var (wasScheduled, scheduledTask) = TryStartNamed(owner, name, isGlobal, taskOptions, cancellationToken);
 
             if (!wasScheduled)
             {
@@ -526,10 +529,11 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance the created task will be tied to</param>
         /// <param name="name">The unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="taskOptions">The options for this task</param>
         /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
         /// <returns>If the named task was scheduled or not</returns>
-        protected virtual (bool WasScheduled, ManagedTask Scheduled) TryStartNamed(object owner, string name, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken)
+        protected virtual (bool WasScheduled, ManagedTask Scheduled) TryStartNamed(object owner, string name, bool isGlobal, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken)
         {
             owner.ValidateArgument(nameof(owner));
             taskOptions.ValidateArgument(nameof(taskOptions));
@@ -539,10 +543,20 @@ namespace Sels.Core.Async.TaskManagement
             _logger.Debug($"Trying to start managed task with name <{name}>");
             lock (_managedLock)
             {
-                if (!_nameIndex.TryGetValue(name, out var existingTask))
+                ManagedTask existingTask = null;
+                if (isGlobal && _globalNameIndex.TryGetValue(name, out var existingGlobalTask))
+                {
+                    existingTask = existingGlobalTask;
+                }
+                else if(_ownerIndex.TryGetValue(owner, out var tasks))
+                {
+                    existingTask = tasks.FirstOrDefault(x => x.Name.EqualsNoCase(name));
+                }
+
+                if (existingTask == null)
                 {
                     // Create new
-                    var task = new ManagedTask(owner, name, taskOptions, cancellationToken);
+                    var task = new ManagedTask(owner, name, isGlobal, taskOptions, cancellationToken);
                     // Use continuation to handle completion
                     _ = task.OnExecuted.ContinueWith(x => CompleteTask(task), TaskContinuationOptions.AttachedToParent);
 
@@ -550,7 +564,7 @@ namespace Sels.Core.Async.TaskManagement
 
                     // Update index
                     _ownerIndex.AddValueToList(owner, task);
-                    _nameIndex.Add(name, task);
+                    if(task.IsGlobal) _globalNameIndex.Add(name, task);
                     _logger.Debug($"Scheduled {task}");
                     return (true, task);
                 }
@@ -628,7 +642,7 @@ namespace Sels.Core.Async.TaskManagement
                     var ownerIndex = _ownerIndex[task.Owner];
                     ownerIndex.Remove(task);
                     if (!ownerIndex.HasValue()) _ownerIndex.Remove(task.Owner);
-                    if (task.Name.HasValue()) _nameIndex.Remove(task.Name);
+                    if (task.IsGlobal && task.Name.HasValue()) _globalNameIndex.Remove(task.Name);
 
                     _logger.Debug($"Finalized {task}");
                 }
@@ -640,14 +654,14 @@ namespace Sels.Core.Async.TaskManagement
                     {
                         _logger.Log(LogLevel.Debug, exception, $"{task} has keep alive enabled and failed with an exception. Restarting task");
 
-                        if (task.Name.HasValue()) await ScheduleNamed(task.Owner, task.Name, task.TaskOptions, task.Token).ConfigureAwait(false);
+                        if (task.Name.HasValue()) await ScheduleNamed(task.Owner, task.Name, task.IsGlobal, task.TaskOptions, task.Token).ConfigureAwait(false);
                         else ScheduleUnnamed(task.Owner, task.TaskOptions, task.Token);
                     }
                     else if (task.Options.HasFlag(ManagedTaskOptions.AutoRestart) && !(task.Result is Exception))
                     {
                         _logger.Log(LogLevel.Debug, $"{task} has keep auto restart enabled and executed successfully. Restarting task");
 
-                        if (task.Name.HasValue()) await ScheduleNamed(task.Owner, task.Name, task.TaskOptions, task.Token).ConfigureAwait(false);
+                        if (task.Name.HasValue()) await ScheduleNamed(task.Owner, task.Name, task.IsGlobal, task.TaskOptions, task.Token).ConfigureAwait(false);
                         else ScheduleUnnamed(task.Owner, task.TaskOptions, task.Token);
                     }
                 }

@@ -34,22 +34,24 @@ namespace Sels.Core.Async.TaskManagement
         /// <typeparam name="TOutput">The output returned by the task</typeparam>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        IManagedTask TrySchedule<TOutput>(object owner, string? name, Func<CancellationToken, Task<TOutput>> action, Action<IManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default);
+        IManagedTask TrySchedule<TOutput>(object owner, string? name, bool isGlobal, Func<CancellationToken, Task<TOutput>> action, Action<IManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default);
         /// <summary>
         /// Schedules a new named managed task tied to <paramref name="owner"/>.
         /// </summary>
         /// <typeparam name="TOutput">The output returned by the task</typeparam>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same instance</param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        Task<IManagedTask> ScheduleAsync<TOutput>(object owner, string? name, Func<CancellationToken, Task<TOutput>> action, Action<INamedManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default);
+        Task<IManagedTask> ScheduleAsync<TOutput>(object owner, string? name, bool isGlobal, Func<CancellationToken, Task<TOutput>> action, Action<INamedManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default);
         /// <summary>
         /// Schedules a new managed anonymous task.
         /// </summary>
@@ -77,7 +79,7 @@ namespace Sels.Core.Async.TaskManagement
         IManagedTaskGlobalQueue CreateOrGetGlobalQueue(string name, int maxConcurrency);
 
         /// <summary>
-        /// Gets the managed task with <see cref="IManagedTask.Name"/> set to <paramref name="name"/> if it exists and is still running.
+        /// Gets the global managed task with <see cref="IManagedTask.Name"/> set to <paramref name="name"/> if it exists and is still running.
         /// </summary>
         /// <param name="name">The name of the managed task to get</param>
         /// <param name="token">Optional token to cancel the request</param>
@@ -227,15 +229,16 @@ namespace Sels.Core.Async.TaskManagement
         /// <typeparam name="TOutput">The output returned by the task</typeparam>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        IManagedTask TrySchedule<TOutput>(object owner, string name, Func<CancellationToken, TOutput> action, Action<IManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
+        IManagedTask TrySchedule<TOutput>(object owner, string name, bool isGlobal, Func<CancellationToken, TOutput> action, Action<IManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return TrySchedule(owner, name, (t) => {
+            return TrySchedule(owner, name, isGlobal, (t) => {
                 return action(t).ToTaskResult();
             }, options, token);
         }
@@ -245,15 +248,16 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        IManagedTask TryScheduleAction(object owner, string name, Action<CancellationToken> action, Action<IManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
+        IManagedTask TryScheduleAction(object owner, string name, bool isGlobal, Action<CancellationToken> action, Action<IManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return TrySchedule(owner, name, (t) => {
+            return TrySchedule(owner, name, isGlobal, (t) => {
                 action(t);
                 return Task.FromResult(Null.Value);
             }, options, token);
@@ -263,15 +267,16 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        IManagedTask TryScheduleAction(object owner, string name, Func<CancellationToken, Task> action, Action<IManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
+        IManagedTask TryScheduleAction(object owner, string name, bool isGlobal, Func<CancellationToken, Task> action, Action<IManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return TrySchedule<Null>(owner, name, async (t) =>
+            return TrySchedule<Null>(owner, name, isGlobal, async (t) =>
             {
                 await action(t).ConfigureAwait(false);
                 return Null.Value;
@@ -284,15 +289,16 @@ namespace Sels.Core.Async.TaskManagement
         /// <typeparam name="TOutput">The output returned by the task</typeparam>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        IManagedTask TrySchedule<TOutput>(object owner, string name, Func<TOutput> action, Action<IManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
+        IManagedTask TrySchedule<TOutput>(object owner, string name, bool isGlobal, Func<TOutput> action, Action<IManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return TrySchedule(owner, name, (t) => {
+            return TrySchedule(owner, name, isGlobal, (t) => {
                 return action().ToTaskResult();
             }, options, token);
         }
@@ -302,15 +308,16 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        IManagedTask TryScheduleAction(object owner, string name, Action action, Action<IManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
+        IManagedTask TryScheduleAction(object owner, string name, bool isGlobal, Action action, Action<IManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return TrySchedule(owner, name, (t) => {
+            return TrySchedule(owner, name, isGlobal, (t) => {
                 action();
                 return Task.FromResult(Null.Value);
             }, options, token);
@@ -320,15 +327,16 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        IManagedTask TryScheduleAction(object owner, string name, Func<Task> action, Action<IManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
+        IManagedTask TryScheduleAction(object owner, string name, bool isGlobal, Func<Task> action, Action<IManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return TrySchedule<Null>(owner, name, async (t) =>
+            return TrySchedule<Null>(owner, name, isGlobal, async (t) =>
             {
                 await action().ConfigureAwait(false);
                 return Null.Value;
@@ -343,15 +351,16 @@ namespace Sels.Core.Async.TaskManagement
         /// <typeparam name="TOutput">The output returned by the task</typeparam>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        Task<IManagedTask> ScheduleAsync<TOutput>(object owner, string? name, Func<CancellationToken, TOutput> action, Action<INamedManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
+        Task<IManagedTask> ScheduleAsync<TOutput>(object owner, string? name, bool isGlobal, Func<CancellationToken, TOutput> action, Action<INamedManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return ScheduleAsync(owner, name, (t) => {
+            return ScheduleAsync(owner, name, isGlobal, (t) => {
                 return action(t).ToTaskResult();
             }, options, token);
         }
@@ -361,15 +370,16 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        Task<IManagedTask> ScheduleActionAsync(object owner, string? name, Action<CancellationToken> action, Action<INamedManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
+        Task<IManagedTask> ScheduleActionAsync(object owner, string? name, bool isGlobal, Action<CancellationToken> action, Action<INamedManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return ScheduleAsync(owner, name, (t) => {
+            return ScheduleAsync(owner, name, isGlobal, (t) => {
                 action(t);
                 return Task.FromResult(Null.Value);
             }, options, token);
@@ -379,15 +389,16 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        Task<IManagedTask> ScheduleActionAsync(object owner, string? name, Func<CancellationToken, Task> action, Action<INamedManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
+        Task<IManagedTask> ScheduleActionAsync(object owner, string? name, bool isGlobal, Func<CancellationToken, Task> action, Action<INamedManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return ScheduleAsync(owner, name, async (t) => {
+            return ScheduleAsync(owner, name, isGlobal, async (t) => {
                 await action(t).ConfigureAwait(false);
                 return Null.Value;
             }, options, token);
@@ -399,15 +410,16 @@ namespace Sels.Core.Async.TaskManagement
         /// <typeparam name="TOutput">The output returned by the task</typeparam>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        Task<IManagedTask> ScheduleAsync<TOutput>(object owner, string? name, Func<TOutput> action, Action<INamedManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
+        Task<IManagedTask> ScheduleAsync<TOutput>(object owner, string? name, bool isGlobal, Func<TOutput> action, Action<INamedManagedTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return ScheduleAsync(owner, name, (t) => {
+            return ScheduleAsync(owner, name, isGlobal, (t) => {
                 return action().ToTaskResult();
             }, options, token);
         }
@@ -417,15 +429,16 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        Task<IManagedTask> ScheduleActionAsync(object owner, string? name, Action action, Action<INamedManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
+        Task<IManagedTask> ScheduleActionAsync(object owner, string? name, bool isGlobal, Action action, Action<INamedManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return ScheduleAsync(owner, name, (t) => {
+            return ScheduleAsync(owner, name, isGlobal, (t) => {
                 action();
                 return Task.FromResult(Null.Value);
             }, options, token);
@@ -435,15 +448,16 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="owner">The instance to tie the task to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="action">Delegate that will be executed by the managed task</param>
         /// <param name="options">Optional delegate for configuring the options for the managed task</param>
         /// <param name="token">Optional token to cancel the request / managed task</param>
         /// <returns>The managed task that was scheduled</returns>
-        Task<IManagedTask> ScheduleActionAsync(object owner, string? name, Func<Task> action, Action<INamedManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
+        Task<IManagedTask> ScheduleActionAsync(object owner, string? name, bool isGlobal, Func<Task> action, Action<INamedManagedTaskCreationOptions<Null>>? options = null, CancellationToken token = default)
         {
             action.ValidateArgument(nameof(action));
 
-            return ScheduleAsync(owner, name, async (t) => {
+            return ScheduleAsync(owner, name, isGlobal, async (t) => {
                 await action().ConfigureAwait(false);
                 return Null.Value;
             }, options, token);

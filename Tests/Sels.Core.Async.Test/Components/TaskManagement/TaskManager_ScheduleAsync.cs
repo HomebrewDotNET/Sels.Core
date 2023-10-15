@@ -22,7 +22,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             bool executed = false;
 
             // Act
-            var scheduledTask = await taskManager.ScheduleAsync(this, ScheduledName, () => executed = true);
+            var scheduledTask = await taskManager.ScheduleAsync(this, ScheduledName, false, () => executed = true);
 
             // Assert
             Assert.IsNotNull(scheduledTask);
@@ -48,7 +48,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
-            var scheduledTask = await taskManager.ScheduleAsync(this, ScheduledName, () => output);
+            var scheduledTask = await taskManager.ScheduleAsync(this, ScheduledName, false, () => output);
 
             // Assert
             Assert.IsNotNull(scheduledTask);
@@ -70,7 +70,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => throw new DivideByZeroException());
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => throw new DivideByZeroException());
 
             // Assert
             Assert.IsNotNull(scheduledTask);
@@ -95,7 +95,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Exception exception = null;
 
             // Act
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => Task.Delay(TimeSpan.FromMinutes(1), tokenSource.Token), token: tokenSource.Token);
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => Task.Delay(TimeSpan.FromMinutes(1), tokenSource.Token), token: tokenSource.Token);
             tokenSource.Cancel();
 
             // Assert
@@ -122,7 +122,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             bool postExecuted = false;
 
             // Act
-            var scheduledTask = await taskManager.ScheduleAsync(this, ScheduledName, () => executed = true, x => x.ExecuteFirst(() => preExecuted = true).ExecuteAfter(() => postExecuted = true));
+            var scheduledTask = await taskManager.ScheduleAsync(this, ScheduledName, false, () => executed = true, x => x.ExecuteFirst(() => preExecuted = true).ExecuteAfter(() => postExecuted = true));
 
             // Assert
             Assert.IsNotNull(scheduledTask);
@@ -145,7 +145,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => Task.CompletedTask, x => x.ExecuteFirst(() => throw new AbandonedMutexException()));
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => Task.CompletedTask, x => x.ExecuteFirst(() => throw new AbandonedMutexException()));
 
             // Assert
             Assert.IsNotNull(scheduledTask);
@@ -168,7 +168,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => Task.CompletedTask, x => x.ExecuteAfter(() => throw new AbandonedMutexException()));
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => Task.CompletedTask, x => x.ExecuteAfter(() => throw new AbandonedMutexException()));
 
             // Assert
             Assert.IsNotNull(scheduledTask);
@@ -194,7 +194,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => Task.CompletedTask, x => x.WithCreationOptions(creationOptions));
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => Task.CompletedTask, x => x.WithCreationOptions(creationOptions));
 
             // Assert
             Assert.IsNotNull(scheduledTask);
@@ -215,7 +215,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => Task.CompletedTask, x => x.WithManagedOptions(taskOptions));
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => Task.CompletedTask, x => x.WithManagedOptions(taskOptions));
 
             // Assert
             Assert.IsNotNull(scheduledTask);
@@ -234,9 +234,9 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             IManagedTask managedTask = null;
 
             // Act
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => Task.CompletedTask, x => x.ContinueWith((s, m, r, c) =>
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => Task.CompletedTask, x => x.ContinueWith((s, m, r, c) =>
             {
-                managedTask = s.TryScheduleAction(this, ScheduledName, () => Task.CompletedTask);
+                managedTask = s.TryScheduleAction(this, ScheduledName, false, () => Task.CompletedTask);
                 return managedTask;
             }));
 
@@ -261,9 +261,9 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             IManagedTask managedTask = null;
 
             // Act
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => Task.CompletedTask, x => x.ContinueWith(async (s, m, r, c) =>
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => Task.CompletedTask, x => x.ContinueWith(async (s, m, r, c) =>
             {
-                managedTask = await s.ScheduleActionAsync(this, TaskName, () => Task.CompletedTask, x => x.WithPolicy(NamedManagedTaskPolicy.WaitAndStart));
+                managedTask = await s.ScheduleActionAsync(this, TaskName, false, () => Task.CompletedTask, x => x.WithPolicy(NamedManagedTaskPolicy.WaitAndStart));
                 return managedTask;
             }));
 
@@ -288,7 +288,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             IManagedAnonymousTask managedTask = null;
 
             // Act
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => Task.CompletedTask, x => x.ContinueWith((s, m, r, c) =>
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => Task.CompletedTask, x => x.ContinueWith((s, m, r, c) =>
             {
                 managedTask = s.ScheduleAnonymousAction(() => Task.CompletedTask);
                 return managedTask;
@@ -321,7 +321,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Exception exception = null;
 
             // Act
-            var firstTask = taskManager.TryScheduleAction(this, ScheduledName, async t =>
+            var firstTask = taskManager.TryScheduleAction(this, ScheduledName, false, async t =>
             {
                 try
                 {
@@ -333,7 +333,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
                     throw;
                 }
             });
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => executed = true, x => x.WithPolicy(policy));
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => executed = true, x => x.WithPolicy(policy));
 
             // Assert
             Assert.IsNotNull(scheduledTask);
@@ -361,7 +361,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Exception exception = null;
 
             // Act
-            var firstTask = taskManager.TryScheduleAction(this, ScheduledName, async t =>
+            var firstTask = taskManager.TryScheduleAction(this, ScheduledName, false, async t =>
             {
                 try
                 {
@@ -373,7 +373,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
                     throw;
                 }
             });
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, () => executed = true, x => x.WithPolicy(NamedManagedTaskPolicy.WaitAndStart));
+            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => executed = true, x => x.WithPolicy(NamedManagedTaskPolicy.WaitAndStart));
 
             // Assert
             Assert.IsNotNull(scheduledTask);
@@ -398,10 +398,10 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Exception exception = null;
 
             // Act
-            var firstTask = taskManager.TryScheduleAction(this, ScheduledName, t => Task.Delay(TimeSpan.FromHours(1), t));
+            var firstTask = taskManager.TryScheduleAction(this, ScheduledName, false, t => Task.Delay(TimeSpan.FromHours(1), t));
             try
             {
-                _ = await taskManager.ScheduleActionAsync(this, ScheduledName, () => Task.CompletedTask, x => x.WithPolicy(NamedManagedTaskPolicy.Exception));
+                _ = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => Task.CompletedTask, x => x.WithPolicy(NamedManagedTaskPolicy.Exception));
             }
             catch(Exception ex)
             {
@@ -411,6 +411,117 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             // Assert
             Assert.IsNotNull(exception);
             Assert.That(exception, Is.AssignableTo<InvalidOperationException>());   
+        }
+
+        [TestCase(NamedManagedTaskPolicy.GracefulCancelAndStart)]
+        [TestCase(NamedManagedTaskPolicy.CancelAndStart)]
+        [Timeout(60000)]
+        public async Task NamedPolicyWithCancellationIsCorrectlyAppliedForGlobalTask(NamedManagedTaskPolicy policy)
+        {
+            // Arrange
+            const string ScheduledName = "MainTask";
+            var provider = TestHelper.GetTaskManagerContainer(x =>
+            {
+                x.GracefulCancellationWaitTime = TimeSpan.FromSeconds(1);
+                x.LongRunningGracefulCancellationWaitTime = TimeSpan.FromSeconds(1);
+            });
+            await using var scope = provider.CreateAsyncScope();
+            provider = scope.ServiceProvider;
+            var taskManager = provider.GetRequiredService<ITaskManager>();
+            bool executed = false;
+            Exception exception = null;
+
+            // Act
+            var firstTask = taskManager.TryScheduleAction(new object(), ScheduledName, true, async t =>
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromHours(1), t);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                    throw;
+                }
+            });
+            var scheduledTask = await taskManager.ScheduleActionAsync(new object(), ScheduledName, true, () => executed = true, x => x.WithPolicy(policy));
+
+            // Assert
+            Assert.IsNotNull(scheduledTask);
+            Assert.IsNotNull(scheduledTask.OnExecuted);
+            await scheduledTask.OnExecuted;
+            Assert.IsTrue(executed);
+            Assert.IsNotNull(exception);
+            Assert.That(exception, Is.AssignableTo<OperationCanceledException>());
+        }
+
+        [Test, Timeout(60000)]
+        public async Task WaitAndStartPolicyIsAppliedForGlobalTask()
+        {
+            // Arrange
+            const string ScheduledName = "MainTask";
+            var provider = TestHelper.GetTaskManagerContainer(x =>
+            {
+                x.GracefulCancellationWaitTime = TimeSpan.FromSeconds(1);
+                x.LongRunningGracefulCancellationWaitTime = TimeSpan.FromSeconds(1);
+            });
+            await using var scope = provider.CreateAsyncScope();
+            provider = scope.ServiceProvider;
+            var taskManager = provider.GetRequiredService<ITaskManager>();
+            bool executed = false;
+            Exception exception = null;
+
+            // Act
+            var firstTask = taskManager.TryScheduleAction(new object(), ScheduledName, true, async t =>
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(100), t);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                    throw;
+                }
+            });
+            var scheduledTask = await taskManager.ScheduleActionAsync(new object(), ScheduledName, true, () => executed = true, x => x.WithPolicy(NamedManagedTaskPolicy.WaitAndStart));
+
+            // Assert
+            Assert.IsNotNull(scheduledTask);
+            Assert.IsNotNull(scheduledTask.OnExecuted);
+            await scheduledTask.OnExecuted;
+            Assert.IsTrue(executed);
+            Assert.IsNull(exception);
+        }
+        [Test, Timeout(60000)]
+        public async Task ExceptionPolicyIsAppliedForGlobalTask()
+        {
+            // Arrange
+            const string ScheduledName = "MainTask";
+            var provider = TestHelper.GetTaskManagerContainer(x =>
+            {
+                x.GracefulCancellationWaitTime = TimeSpan.FromSeconds(1);
+                x.LongRunningGracefulCancellationWaitTime = TimeSpan.FromSeconds(1);
+            });
+            await using var scope = provider.CreateAsyncScope();
+            provider = scope.ServiceProvider;
+            var taskManager = provider.GetRequiredService<ITaskManager>();
+            Exception exception = null;
+
+            // Act
+            var firstTask = taskManager.TryScheduleAction(new object(), ScheduledName, true, t => Task.Delay(TimeSpan.FromHours(1), t));
+            try
+            {
+                _ = await taskManager.ScheduleActionAsync(new object(), ScheduledName, true, () => Task.CompletedTask, x => x.WithPolicy(NamedManagedTaskPolicy.Exception));
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+            }
+
+            // Assert
+            Assert.IsNotNull(exception);
+            Assert.That(exception, Is.AssignableTo<InvalidOperationException>());
         }
     }
 }

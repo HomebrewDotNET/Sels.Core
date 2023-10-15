@@ -29,10 +29,6 @@ namespace Sels.Core.Async.Queue
     /// <typeparam name="T">The type of the elements</typeparam>
     public class WorkerQueue<T> : IAsyncExposedDisposable, IEnumerable<T> where T : class
     {
-        // Statics
-        private static int Seed = 0;
-        private static object SeedLock = new object();
-
         // Fields
         private readonly List<EventHandlerSubscription> _subscriptions = new List<EventHandlerSubscription>();
         private readonly List<Func<CancellationToken, Task<T?>>> _interceptors = new List<Func<CancellationToken, Task<T?>>>();
@@ -46,10 +42,6 @@ namespace Sels.Core.Async.Queue
         private uint _eventSequence = 0;
 
         // Properties
-        /// <summary>
-        /// The unique id of the queue.
-        /// </summary>
-        public int Id { get; }
         /// <summary>
         /// The maximum amount of items that can be enqueued. When set to null there isn't any limit.
         /// </summary>
@@ -89,11 +81,6 @@ namespace Sels.Core.Async.Queue
 
             MaxSize = maxSize.HasValue ? maxSize.Value.ValidateArgumentLargerOrEqual(nameof(maxSize), 1) : (int?)null;
             initalItems.ValidateArgument(nameof(initalItems));
-
-            lock (SeedLock)
-            {
-                Id = ++Seed;
-            }
 
             initalItems.Execute(x => _queue.Enqueue(x));
         }
@@ -280,14 +267,14 @@ namespace Sels.Core.Async.Queue
             canTrigger.ValidateArgument(nameof(canTrigger));
             handler.ValidateArgument(nameof(handler));
 
-            _logger.Log($"Adding new subscription to queue changes for worker queue <{Id}>");
+            _logger.Log($"Adding new subscription to queue changes for worker queue");
             lock (_subscriptions)
             {
                 var sequence = ++_eventSequence;
                 var subscription = new EventHandlerSubscription()
                 {
                     Sequence = sequence,
-                    Name = $"WorkerQueue({Id}).Event.{sequence}",
+                    Name = $"WorkerQueue.Event.{sequence}",
                     CanTrigger = canTrigger,
                     EventHandler = handler,
                     EnsureTrigger = ensureTrigger
@@ -394,7 +381,7 @@ namespace Sels.Core.Async.Queue
             foreach (var handler in subscriptions.Where(x => x.CanTrigger(Count, queueIncreased)))
             {
                 _logger.Debug($"Triggering handler <{handler.Name}>");
-                _ = TaskManager.ScheduleActionAsync(this, handler.Name, handler.EventHandler, x => x.ExecuteFirst(() => _logger.Debug($"Executing handler <{handler.Name}>"))
+                _ = TaskManager.ScheduleActionAsync(this, handler.Name, false, handler.EventHandler, x => x.ExecuteFirst(() => _logger.Debug($"Executing handler <{handler.Name}>"))
                                                                                                     .ExecuteAfter(() => _logger.Debug($"Executed handler <{handler.Name}>"))
                                                                                                     .WithPolicy(handler.EnsureTrigger ? NamedManagedTaskPolicy.WaitAndStart : NamedManagedTaskPolicy.TryStart)
                                                    , token);
@@ -422,22 +409,22 @@ namespace Sels.Core.Async.Queue
             using (new ExecutedAction(x => IsDisposed = x))
             {
                 var exceptions = new List<Exception>();
-                _logger.Log($"Disposing worker queue <{Id}>");
+                _logger.Log($"Disposing worker queue");
 
                 // Cancel events
                 try
                 {
-                    _logger.Debug($"Stopping tasks tied to worker queue <{Id}>");
+                    _logger.Debug($"Stopping tasks tied to worker queue");
 
                     await TaskManager.StopAllForAsync(this).ConfigureAwait(false);
                 }
                 catch (AggregateException aggrEx) when (aggrEx.InnerExceptions.All(x => x.IsAssignableTo<OperationCanceledException>()))
                 {
-                    _logger.Debug($"All tasks cancelled for worker queue <{Id}>");
+                    _logger.Debug($"All tasks cancelled for worker queue");
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log($"Something went wrong stopping tasks for worker queue <{Id}>", ex);
+                    _logger.Log($"Something went wrong stopping tasks for worker queue", ex);
                     exceptions.Add(ex);
                 }
 
@@ -478,7 +465,7 @@ namespace Sels.Core.Async.Queue
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"WorkerQueue<{typeof(T).GetDisplayName(false)}>({Id}): Pending items: {(MaxSize.HasValue ? $"{Count}/{MaxSize}" : Count.ToString())} | Waiting callers: {_requests.Count}";
+            return $"WorkerQueue<{typeof(T).GetDisplayName(false)}>: Pending items: {(MaxSize.HasValue ? $"{Count}/{MaxSize}" : Count.ToString())} | Waiting callers: {_requests.Count}";
         }
 
         #region Request

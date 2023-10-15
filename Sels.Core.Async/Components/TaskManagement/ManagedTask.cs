@@ -17,12 +17,14 @@ namespace Sels.Core.Async.TaskManagement
         /// <inheritdoc cref="ManagedTask"/>
         /// <param name="owner">The instance the managed task is tied to</param>
         /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="taskOptions">The options for this task</param>
         /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
-        public ManagedTask(object owner, string? name, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken) : base(taskOptions, cancellationToken)
+        public ManagedTask(object owner, string? name, bool isGlobal, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken) : base(taskOptions, cancellationToken)
         {
             Owner = owner.ValidateArgument(nameof(owner));
             Name = name;
+            IsGlobal = isGlobal;
             TaskOptions = taskOptions.ValidateArgument(nameof(taskOptions));
 
             _startSource.SetResult(true);
@@ -37,6 +39,8 @@ namespace Sels.Core.Async.TaskManagement
         public object Owner { get; }
         /// <inheritdoc/>
         public string? Name { get; }
+        /// <inheritdoc/>
+        public bool IsGlobal { get; }
 
         /// <inheritdoc/>
         protected override async Task TriggerContinuations()
@@ -69,7 +73,7 @@ namespace Sels.Core.Async.TaskManagement
         {
             var totalContinuations = TaskOptions.ContinuationFactories.Length + TaskOptions.AnonymousContinuationFactories.Length;
             var currentContinuations = Continuations.Length + AnonymousContinuations.Length;
-            return $"{(Name != null ? $"Managed task <{Name}>" : "Unnamed managed task")} owned by <{Owner}> <{Task.Id}>({Task.Status}){(totalContinuations > 0 ? $"[{currentContinuations}/{totalContinuations}]" : string.Empty)}: {TaskOptions.TaskCreationOptions} | {TaskOptions.ManagedTaskOptions} | {TaskOptions.NamePolicy}";
+            return $"{(Name != null ? IsGlobal ? $"Global managed task <{Name}>" : $"Managed task <{Name}>" : "Unnamed managed task")} owned by <{Owner}> <{Task.Id}>({Task.Status}){(totalContinuations > 0 ? $"[{currentContinuations}/{totalContinuations}]" : string.Empty)}: {TaskOptions.TaskCreationOptions} | {TaskOptions.ManagedTaskOptions} | {TaskOptions.NamePolicy}";
         }
     }
 }

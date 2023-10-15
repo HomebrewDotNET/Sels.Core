@@ -845,7 +845,6 @@ namespace Sels.Core
                 if (!methodExpression.TryExtractMethod(out var method)) throw new InvalidOperationException($"{nameof(methodExpression)} does not point to a method");
                 return method;
             }
-
             /// <summary>
             /// Returns the method info extracted from <paramref name="methodExpression"/>
             /// </summary>
@@ -858,6 +857,77 @@ namespace Sels.Core
 
                 if (!methodExpression.TryExtractMethod(out var method)) throw new InvalidOperationException($"{nameof(methodExpression)} does not point to a method");
                 return method;
+            }
+            /// <summary>
+            /// Returns the method info extracted from <paramref name="methodExpression"/>
+            /// </summary>
+            /// <param name="methodExpression">The expression that selects the method</param>
+            /// <returns>The MethodInfo in <paramref name="methodExpression"/></returns>
+            public static MethodInfo GetMethod(Expression<Func<object>> methodExpression)
+            {
+                methodExpression.ValidateArgument(nameof(methodExpression));
+
+                if (!methodExpression.TryExtractMethod(out var method)) throw new InvalidOperationException($"{nameof(methodExpression)} does not point to a method");
+                return method;
+            }
+            /// <summary>
+            /// Returns the method info extracted from <paramref name="methodExpression"/>
+            /// </summary>
+            /// <param name="methodExpression">The expression that selects the method</param>
+            /// <returns>The MethodInfo in <paramref name="methodExpression"/></returns>
+            public static MethodInfo GetMethod(Expression<Action> methodExpression)
+            {
+                methodExpression.ValidateArgument(nameof(methodExpression));
+
+                if (!methodExpression.TryExtractMethod(out var method)) throw new InvalidOperationException($"{nameof(methodExpression)} does not point to a method");
+                return method;
+            }
+
+            /// <summary>
+            /// Returns the method call expression extracted from <paramref name="methodExpression"/>
+            /// </summary>
+            /// <typeparam name="T">Type to select the method from</typeparam>
+            /// <param name="methodExpression">The expression that selects the method</param>
+            /// <returns>The MethodCallExpression in <paramref name="methodExpression"/></returns>
+            public static MethodCallExpression GetMethodCallExpression<T>(Expression<Func<T, object>> methodExpression)
+            {
+                methodExpression.ValidateArgument(nameof(methodExpression));
+
+                return methodExpression.ExtractMethodCall();
+            }
+            /// <summary>
+            /// Returns the method call expression extracted from <paramref name="methodExpression"/>
+            /// </summary>
+            /// <typeparam name="T">Type to select the method from</typeparam>
+            /// <param name="methodExpression">The expression that selects the method</param>
+            /// <returns>The MethodCallExpression in <paramref name="methodExpression"/></returns>
+            public static MethodCallExpression GetMethodCallExpression<T>(Expression<Action<T>> methodExpression)
+            {
+                methodExpression.ValidateArgument(nameof(methodExpression));
+
+                return methodExpression.ExtractMethodCall();
+            }
+            /// <summary>
+            /// Returns the method call expression extracted from <paramref name="methodExpression"/>
+            /// </summary>
+            /// <param name="methodExpression">The expression that selects the method</param>
+            /// <returns>The MethodCallExpression in <paramref name="methodExpression"/></returns>
+            public static MethodCallExpression GetMethodCallExpression(Expression<Func<object>> methodExpression)
+            {
+                methodExpression.ValidateArgument(nameof(methodExpression));
+
+                return methodExpression.ExtractMethodCall();
+            }
+            /// <summary>
+            /// Returns the method call expression extracted from <paramref name="methodExpression"/>
+            /// </summary>
+            /// <param name="methodExpression">The expression that selects the method</param>
+            /// <returns>The MethodCallExpression in <paramref name="methodExpression"/></returns>
+            public static MethodCallExpression GetMethodCallExpression(Expression<Action> methodExpression)
+            {
+                methodExpression.ValidateArgument(nameof(methodExpression));
+
+                return methodExpression.ExtractMethodCall();
             }
 
             /// <summary>

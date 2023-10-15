@@ -248,7 +248,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             // Act
             var scheduledTask = taskManager.ScheduleAction(this, () => Task.CompletedTask, x => x.ContinueWith(async (s, m, r, c) =>
             {
-                managedTask = await s.ScheduleActionAsync(this, TaskName, () => Task.CompletedTask, x => x.WithPolicy(NamedManagedTaskPolicy.WaitAndStart));
+                managedTask = await s.ScheduleActionAsync(this, TaskName, false, () => Task.CompletedTask, x => x.WithPolicy(NamedManagedTaskPolicy.WaitAndStart));
                 return managedTask;
             }));
 

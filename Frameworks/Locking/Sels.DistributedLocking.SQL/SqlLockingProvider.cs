@@ -90,13 +90,13 @@ namespace Sels.DistributedLocking.SQL
             _ = OptionsMonitor.CurrentValue;
 
             // Start workers
-            taskManager.TrySchedule(this, MaintenanceWorkerName, RunMaintenanceAsync, x => x.ExecuteFirst(() => _logger.Debug($"Running maintenance in <{OptionsMonitor.CurrentValue.MaintenanceInterval}>"))
+            taskManager.TrySchedule(this, MaintenanceWorkerName, true, RunMaintenanceAsync, x => x.ExecuteFirst(() => _logger.Debug($"Running maintenance in <{OptionsMonitor.CurrentValue.MaintenanceInterval}>"))
                                                                                             .DelayStartBy(() => OptionsMonitor.CurrentValue.MaintenanceInterval)
                                                                                             .WithManagedOptions(ManagedTaskOptions.KeepRunning));
-            taskManager.TrySchedule(this, AssignmentWorkerName, AssignPendingRequestsAsync, x => x.ExecuteFirst(() => _logger.Debug($"Assigning pending requests in <{OptionsMonitor.CurrentValue.RequestAssignmentInterval}>"))
+            taskManager.TrySchedule(this, AssignmentWorkerName, true, AssignPendingRequestsAsync, x => x.ExecuteFirst(() => _logger.Debug($"Assigning pending requests in <{OptionsMonitor.CurrentValue.RequestAssignmentInterval}>"))
                                                                                                   .DelayStartBy(() => OptionsMonitor.CurrentValue.RequestAssignmentInterval)
                                                                                                   .WithManagedOptions(ManagedTaskOptions.KeepRunning)
-                                                                                                  .ContinueWith((m, t, o, c) => m.TrySchedule(this, CompletionWorkerName, CompletePendingRequestsAsync))
+                                                                                                  .ContinueWith((m, t, o, c) => m.TrySchedule(this, CompletionWorkerName, true, CompletePendingRequestsAsync))
                                                                                                   );
         }
 
