@@ -19,7 +19,7 @@ namespace Sels.Core.Mediator.Request
 
         // Properties
         /// <inheritdoc/>
-        public uint? Priority { get; set; }
+        public ushort? Priority { get; set; }
 
         /// <inheritdoc cref="DelegateRequestHandler{TRequest, TResponse}"/>
         /// <param name="func">Delegate used to repond to calls to <see cref="IRequestHandler{TRequest, TResponse}.TryRespondAsync(IRequestHandlerContext, TRequest, CancellationToken)"/></param>
@@ -42,7 +42,7 @@ namespace Sels.Core.Mediator.Request
 
         // Properties
         /// <inheritdoc/>
-        public uint? Priority { get; set; }
+        public ushort? Priority { get; set; }
 
         /// <inheritdoc cref="DelegateRequestHandler{TRequest, TResponse}"/>
         /// <param name="func">Delegate used to repond to calls to <see cref="IRequestHandler{TRequest}.TryAcknowledgeAsync(IRequestHandlerContext, TRequest, CancellationToken)"/></param>

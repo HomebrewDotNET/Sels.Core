@@ -61,14 +61,14 @@ namespace Sels.Core.Mediator.Event
             }
         }
         /// <inheritdoc/>
-        public EventSubscription Subscribe<TEvent>(Delegates.Async.AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction, uint? priority = null)
+        public EventSubscription Subscribe<TEvent>(Delegates.Async.AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction, ushort? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
             subscriberAction.ValidateArgument(nameof(subscriberAction));
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                return scope.ServiceProvider.GetRequiredService<IEventSubscriber<TEvent>>().Subscribe(subscriberAction);
+                return scope.ServiceProvider.GetRequiredService<IEventSubscriber<TEvent>>().Subscribe(subscriberAction, priority);
             }
         }
 
@@ -84,7 +84,7 @@ namespace Sels.Core.Mediator.Event
             return new EventSubscription(listener, null, () => Unsubscribe(listener));
         }
         /// <inheritdoc/>
-        public EventSubscription Subscribe(Delegates.Async.AsyncAction<IEventListenerContext, object, CancellationToken> subscriberAction, uint? priority = null)
+        public EventSubscription Subscribe(Delegates.Async.AsyncAction<IEventListenerContext, object, CancellationToken> subscriberAction, ushort? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
             subscriberAction.ValidateArgument(nameof(subscriberAction));
@@ -136,7 +136,7 @@ namespace Sels.Core.Mediator.Event
             return new EventSubscription(listener, typeof(TEvent), () => Unsubscribe(listener));
         }
         /// <inheritdoc/>
-        public EventSubscription Subscribe(Delegates.Async.AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction, uint? priority = null)
+        public EventSubscription Subscribe(Delegates.Async.AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction, ushort? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
             return Subscribe(new DelegateEventListener<TEvent>(subscriberAction) { Priority = priority });

@@ -49,7 +49,7 @@ namespace Sels.Core.Mediator.Request
             }
         }
         /// <inheritdoc />
-        public RequestSubscription Subscribe(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> subscriberAction, uint? priority = null)
+        public RequestSubscription Subscribe(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> subscriberAction, ushort? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
             subscriberAction.ValidateArgument(nameof(subscriberAction));
@@ -107,7 +107,7 @@ namespace Sels.Core.Mediator.Request
             }
         }
         /// <inheritdoc />
-        public RequestAcknowledgementSubscription Subscribe(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> subscriberAction, uint? priority = null)
+        public RequestAcknowledgementSubscription Subscribe(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> subscriberAction, ushort? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
             subscriberAction.ValidateArgument(nameof(subscriberAction));

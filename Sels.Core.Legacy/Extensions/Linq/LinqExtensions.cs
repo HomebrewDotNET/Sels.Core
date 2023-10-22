@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sels.Core.Extensions.Collections;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,33 @@ namespace Sels.Core.Extensions.Linq
             }
 
             return source.Count();
+        }
+        /// <summary>
+        /// Checks how many items are in <paramref name="source"/>. Checks common collection types first to avoid having to enumerate <paramref name="source"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of items in <paramref name="source"/></typeparam>
+        /// <param name="source">Enumerator to check</param>
+        /// <returns>Item count of <paramref name="source"/></returns>
+        public static int GetCount(this IEnumerable source)
+        {
+            source.ValidateArgument(nameof(source));
+
+            if (source is Array array)
+            {
+                return array.Length;
+            }
+
+            if (source is IList list)
+            {
+                return list.Count;
+            }
+
+            if (source is ICollection collection)
+            {
+                return collection.Count;
+            }
+
+            return source.Enumerate().Count();
         }
         #endregion
 

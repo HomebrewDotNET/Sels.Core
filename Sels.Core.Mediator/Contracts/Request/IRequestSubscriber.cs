@@ -31,7 +31,7 @@ namespace Sels.Core.Mediator.Request
         /// <param name="subscriberAction">Delegate that will be called to respond to requests</param>
         /// <param name="priority"><inheritdoc cref="IMessageHandler.Priority"/></param>
         /// <returns>The active subscription to the request. Disposing the subscription will stop <paramref name="subscriberAction"/> from receiving requests</returns>
-        RequestSubscription Subscribe(AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> subscriberAction, uint? priority = null);
+        RequestSubscription Subscribe(AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> subscriberAction, ushort? priority = null);
     }
 
     /// <summary>
@@ -58,6 +58,6 @@ namespace Sels.Core.Mediator.Request
         /// <param name="subscriberAction">Delegate that will be called to respond to requests</param>
         /// <param name="priority"><inheritdoc cref="IMessageHandler.Priority"/></param>
         /// <returns>The active subscription to the request. Disposing the subscription will stop <paramref name="subscriberAction"/> from receiving requests</returns>
-        RequestAcknowledgementSubscription Subscribe(AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> subscriberAction, uint? priority = null);
+        RequestAcknowledgementSubscription Subscribe(AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> subscriberAction, ushort? priority = null);
     }
 }

@@ -58,7 +58,7 @@ namespace Sels.Core.Mediator.Request
             }
         }
         /// <inheritdoc/>
-        public RequestSubscription Subscribe<TRequest, TResponse>(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> subscriberAction, uint? priority = null)
+        public RequestSubscription Subscribe<TRequest, TResponse>(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> subscriberAction, ushort? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
             using (var scope = _serviceProvider.CreateScope())
@@ -78,7 +78,7 @@ namespace Sels.Core.Mediator.Request
             }
         }
         /// <inheritdoc/>
-        public RequestAcknowledgementSubscription Subscribe<TRequest>(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> subscriberAction, uint? priority = null)
+        public RequestAcknowledgementSubscription Subscribe<TRequest>(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> subscriberAction, ushort? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
             using (var scope = _serviceProvider.CreateScope())

@@ -27,6 +27,7 @@ using Sels.Core.Extensions.IO;
 using Sels.Core.Extensions.Threading;
 using Sels.Core.Extensions.DateTimes;
 using Sels.Core.Extensions.Text;
+using System.Runtime.InteropServices;
 
 namespace Sels.Core
 {
@@ -267,7 +268,36 @@ namespace Sels.Core
 
                 // Used for published configs
                 Directory.SetCurrentDirectory(baseDir);
-            }           
+            }     
+            
+            /// <summary>
+            /// Returns the current os platform.
+            /// </summary>
+            /// <returns>The current os platform</returns>
+            /// <exception cref="NotSupportedException"></exception>
+            public static OSPlatform GetCurrentOsPlatform()
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    return OSPlatform.OSX;
+                }
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    return OSPlatform.Linux;
+                }
+#if NET6_0_OR_GREATER
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
+                {
+                    return OSPlatform.FreeBSD;
+                }
+#endif
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    return OSPlatform.Windows;
+                }
+
+                throw new NotSupportedException($"Could not determine the current os platform");
+            }
         }
         #endregion
 

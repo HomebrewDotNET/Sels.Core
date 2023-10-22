@@ -4,6 +4,7 @@ using Sels.Core.Extensions.Linq;
 using Sels.ObjectValidationFramework.Configurators;
 using Sels.ObjectValidationFramework.Rules;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 // Adjusted so extensions are available when using the ValidationProfile
@@ -28,7 +29,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> CannotBeEmpty<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -49,7 +50,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> CannotBeEmpty<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
 
@@ -70,7 +71,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> MustBeEmpty<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -91,7 +92,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> MustBeEmpty<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
 
@@ -113,7 +114,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> MustContain<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, int count, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -136,7 +137,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> MustContain<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator, int count)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             count.ValidateArgumentLarger(nameof(count), 0);
@@ -159,7 +160,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> MustContainAtMax<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, int count, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -182,7 +183,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> MustContainAtMax<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator, int count)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             count.ValidateArgumentLargerOrEqual(nameof(count), 0);
@@ -205,7 +206,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> MustContainAtLeast<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, int count, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -228,7 +229,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> MustContainAtLeast<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator, int count)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             count.ValidateArgumentLargerOrEqual(nameof(count), 0);
@@ -252,7 +253,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> MustContainInRange<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, int minCount, int maxCount, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -277,7 +278,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> MustContainInRange<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator, int minCount, int maxCount)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             minCount.ValidateArgumentLargerOrEqual(nameof(minCount), 0);
@@ -302,7 +303,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> MustContainInBetween<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, int minCount, int maxCount, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
@@ -327,7 +328,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> MustContainInBetween<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator, int minCount, int maxCount)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             minCount.ValidateArgumentLargerOrEqual(nameof(minCount), 0);
@@ -350,12 +351,12 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> AllMustBeUnique<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, TValue> configurator, Func<IValidationRuleContext<TEntity, TInfo, TTargetContext, TValue>, TError> errorConstructor) 
             where TTargetContext : TBaseContext 
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
             errorConstructor.ValidateArgument(nameof(errorConstructor));
 
-            return configurator.ValidIf(info => info.Value.AreAllUnique(), errorConstructor);
+            return configurator.ValidIf(info => info.Value.Enumerate().AreAllUnique(), errorConstructor);
         }
 
         /// <summary>
@@ -371,11 +372,11 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <returns>Current configurator</returns>
         public static IValidationRuleConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> AllMustBeUnique<TEntity, TBaseContext, TInfo, TTargetContext, TValue>(this IValidationTargetConfigurator<TEntity, string, TBaseContext, TInfo, TTargetContext, TValue> configurator)
             where TTargetContext : TBaseContext
-            where TValue : IEnumerable<object>
+            where TValue : IEnumerable
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            return configurator.ValidIf(info => info.Value.AreAllUnique(), info => $"Must all be unique.");
+            return configurator.ValidIf(info => info.Value.Enumerate().AreAllUnique(), info => $"Must all be unique");
         }
     }
 }

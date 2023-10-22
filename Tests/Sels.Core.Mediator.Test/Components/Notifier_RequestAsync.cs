@@ -114,7 +114,7 @@ namespace Sels.Core.Mediator.Test.Components
         public async Task RequestHandlersAreCalledInTheCorrectOrder()
         {
             // Arrange
-            var priorities = new uint?[] { null, 10, 3, 4, 0, 1, null };
+            var priorities = new ushort?[] { null, 10, 3, 4, 0, 1, null };
             var expected = new uint?[] { 0, 1, 3, 4, 10, null, null };
             var results = new List<uint?>();
             var request = "Hi I'm a request";

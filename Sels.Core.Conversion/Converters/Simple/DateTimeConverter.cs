@@ -13,7 +13,7 @@ namespace Sels.Core.Conversion.Converters.Simple
     /// </summary>
     public class DateTimeConverter : BaseTypeConverter
     {
-        //Constants
+        // Constants
         /// <summary>
         /// The argument for providing a custom date format.
         /// </summary>

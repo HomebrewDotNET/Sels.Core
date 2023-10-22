@@ -1,5 +1,8 @@
-﻿using Sels.Core.Conversion.Converters;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Sels.Core.Conversion.Converters;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Collections;
+using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 using System;
 using System.Collections.Generic;
@@ -26,6 +29,27 @@ namespace Sels.Core.Conversion.Templates
             value.ValidateArgument(x => CanConvert(x, convertType, arguments), $"Converter <{this}> cannot convert using the provided value. Call <{nameof(CanConvert)}> first");
 
             return ConvertObjectTo(value, convertType, arguments);
+        }
+
+        /// <summary>
+        /// Tries to get cache settings from <paramref name="arguments"/> if they were passed down by the caller.
+        /// </summary>
+        /// <param name="arguments">The arguments passed down by the caller</param>
+        /// <param name="cacheSettings">The configured cache settings in <paramref name="arguments"/> if they were provided</param>
+        /// <returns>True if cache setting were included in <paramref name="arguments"/>, otherwise false</returns>
+        protected bool TryGetCache(IReadOnlyDictionary<string, object> arguments, out (IMemoryCache Cache, string CacheKeyPrefix, TimeSpan? Retention) cacheSettings)
+        {
+            cacheSettings = default;
+            if(arguments == null) return false;
+
+            var cache = arguments.ContainsKey(ConversionConstants.Converters.CacheArgument) ? arguments[ConversionConstants.Converters.CacheArgument].CastTo<IMemoryCache>() : null;
+            if (cache == null) return false;
+
+            var cachePrefix = arguments.ContainsKey(ConversionConstants.Converters.CacheKeyPrefixArgument) ? arguments[ConversionConstants.Converters.CacheKeyPrefixArgument].CastTo<string>() : null;
+            var cacheRetention = arguments.ContainsKey(ConversionConstants.Converters.CacheRetentionArgument) ? arguments[ConversionConstants.Converters.CacheRetentionArgument].CastTo<TimeSpan>() : (TimeSpan?)null;
+
+            cacheSettings = (cache, cachePrefix, cacheRetention);
+            return true;
         }
 
         /// <inheritdoc cref="ITypeConverter.CanConvert(object, Type, IReadOnlyDictionary{string, object})"/>

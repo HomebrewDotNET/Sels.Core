@@ -195,6 +195,7 @@ namespace Sels.Core.Conversion.Converters
                                                                         .AddConverter<DateTimeConverter>()
                                                                         .AddConverter<EnumConverter>()
                                                                         .AddConverter<GuidConverter>()
+                                                                        .AddConverter<TypeConverter>()
                                                                         .AddConverter<GeneralConverter>()
                                                                         .AddConverter<CollectionConverter>()
                                                                         .AddConverter<ArrayConverter>()
