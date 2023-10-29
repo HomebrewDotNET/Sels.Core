@@ -1,4 +1,5 @@
-﻿using Sels.Core.Conversion.Converters.Simple;
+﻿using Microsoft.Extensions.Primitives;
+using Sels.Core.Conversion.Converters.Simple;
 using Sels.Core.Conversion.Templates;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Collections;
@@ -12,7 +13,7 @@ namespace Sels.Core.Conversion.Converters
     /// <summary>
     /// Converter that can be configured with other converters. Converter will use first sub converter that can convert between the supplied types. 
     /// </summary>
-    public class GenericConverter : BaseTypeConverter
+    public class GenericConverter : ITypeConverter
     {
         // Fields
         private readonly List<ITypeConverter> _converters = new List<ITypeConverter>();
@@ -45,14 +46,26 @@ namespace Sels.Core.Conversion.Converters
 
         #region Conversion
         /// <inheritdoc/>
-        protected override bool CanConvertObject(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
+        public bool CanConvert(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
+            value.ValidateArgument(nameof(value));
+            convertType.ValidateArgument(nameof(convertType));
+
             var convertableType = value.GetType();
             return convertableType.Equals(convertType) || (_converters.HasValue() && _converters.Any(x => x.CanConvert(value, convertType, arguments)));
         }
         /// <inheritdoc/>
-        protected override object ConvertObjectTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
+        public object ConvertTo(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
         {
+            value.ValidateArgument(nameof(value));
+            convertType.ValidateArgument(nameof(convertType));
+
+            if (!CanConvert(value, convertType, arguments))
+            {
+                if (Settings.HasFlag(GenericConverterSettings.IgnoreUnconvertable)) return convertType.GetDefaultValue();
+                throw new NotSupportedException($"No converters available that can convert <{value}> to type <{convertType}>");
+            }
+
             var convertableType = value.GetType();
 
             try
@@ -148,9 +161,9 @@ namespace Sels.Core.Conversion.Converters
         public GenericConverter InsertConverter(Type type, ITypeConverter converter)
         {
             type.ValidateArgument(nameof(type));
-            converter.ValidateArgument(nameof(converter));         
+            converter.ValidateArgument(nameof(converter));
 
-            _converters.InsertBefore(x => x.HasValue() && x.GetType().Equals(type) ,converter);
+            _converters.InsertBefore(x => x.HasValue() && x.GetType().Equals(type), converter);
 
             return this;
         }
@@ -195,6 +208,7 @@ namespace Sels.Core.Conversion.Converters
                                                                         .AddConverter<DateTimeConverter>()
                                                                         .AddConverter<EnumConverter>()
                                                                         .AddConverter<GuidConverter>()
+                                                                        .AddConverter<TimeSpanConverter>()
                                                                         .AddConverter<TypeConverter>()
                                                                         .AddConverter<GeneralConverter>()
                                                                         .AddConverter<CollectionConverter>()
