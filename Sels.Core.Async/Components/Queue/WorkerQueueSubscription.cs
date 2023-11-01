@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Dispose;
 using Sels.Core.Scope.Actions;
+using Microsoft.Extensions.Logging;
+using Sels.Core.Extensions.Logging;
 
 namespace Sels.Core.Async.Queue
 {
@@ -44,14 +46,32 @@ namespace Sels.Core.Async.Queue
 
             Enumerable.Range(0, workerAmount).Execute(x =>
             {
+                var workerId = x;
                 _ = queue.TaskManager.ScheduleAnonymousAction(async (t) =>
                 {
+                    queue.Logger.Log($"Worker <{workerId}> waiting to handle items from <{queue}>");
                     while (!t.IsCancellationRequested)
                     {
                         var item = await queue.DequeueAsync(t).ConfigureAwait(false);
-                        await itemHandler(item, t).ConfigureAwait(false);
+                        queue.Logger.Debug($"Worker <{workerId}> got item <{item}> to handle from <{queue}>");
+                        try
+                        {
+                            await itemHandler(item, t).ConfigureAwait(false);
+                            queue.Logger.Debug($"Worker <{workerId}> handled item <{item}> from <{queue}>");
+                        }
+                        catch(OperationCanceledException cancelledEx)
+                        {
+                            if (t.IsCancellationRequested) break;
+                            queue.Logger.Log($"Could not handle item <{item}>", cancelledEx);
+                        }
+                        catch(Exception ex)
+                        {
+                            queue.Logger.Log($"Could not handle item <{item}>", ex);
+                        }
                     }
-                }, x => x.WithManagedOptions(ManagedTaskOptions.KeepAlive), tokenSource.Token);
+                    queue.Logger.Log($"Worker <{workerId}> cancelled. Won't handle items comming from <{queue}> anymore");
+
+                }, x => x.WithManagedOptions(ManagedTaskOptions.KeepAlive | ManagedTaskOptions.GracefulCancellation).WithCreationOptions(TaskCreationOptions.LongRunning), tokenSource.Token);
             });
         }
 

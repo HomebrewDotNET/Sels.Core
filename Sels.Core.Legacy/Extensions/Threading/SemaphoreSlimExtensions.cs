@@ -30,12 +30,13 @@ namespace Sels.Core.Extensions.Threading
         /// <param name="semaphore">The semaphore to use for the locking</param>
         /// <param name="lockScope">The scope if the lock was acquired. Disposing will release the lock</param>
         /// <param name="maxWaitTime">How long to wait on the lock. When set to null the method will wait at most 1ms</param>
+        /// <param name="token">Optional token to cancel the request</param>
         /// <returns>True if <paramref name="semaphore"/> was locked, otherwise false</returns>
-        public static bool TryLock(this SemaphoreSlim semaphore, out IDisposable lockScope, TimeSpan? maxWaitTime = null)
+        public static bool TryLock(this SemaphoreSlim semaphore, out IDisposable lockScope, TimeSpan? maxWaitTime = null, CancellationToken token = default)
         {
             semaphore.ValidateArgument(nameof(semaphore));
             lockScope = null;
-            if (semaphore.Wait(maxWaitTime ?? TimeSpan.FromMilliseconds(1)))
+            if (semaphore.Wait(maxWaitTime ?? TimeSpan.FromMilliseconds(1), token))
             {
                 lockScope = new ScopedAction(() => { }, () => semaphore.Release());
                 return true;

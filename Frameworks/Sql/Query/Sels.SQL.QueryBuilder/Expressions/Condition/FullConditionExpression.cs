@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using Sels.Core.Extensions.Text;
+using Sels.Core.Attributes.Enumeration.Value;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
@@ -37,7 +38,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
 
             subBuilder(builder, Expression);
 
-            if (LogicOperator.HasValue) builder.AppendSpace().Append(LogicOperator.Value);
+            if (LogicOperator.HasValue) builder.AppendSpace().Append(LogicOperator.Value.GetStringValue());
         }
     }
 }

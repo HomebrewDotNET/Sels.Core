@@ -59,6 +59,10 @@ namespace Sels.Core.Async.Queue
         /// </summary>
         public ITaskManager TaskManager { get; }
         /// <summary>
+        /// The logger used for tracing.
+        /// </summary>
+        public ILogger Logger => _logger;
+        /// <summary>
         /// Optional delegate that can be used to release any remaining items in the queue if the queue itself gets disposed.
         /// </summary>
         public Func<T, Task> OnDisposeHandler { get; set; } = async (t) =>
@@ -414,18 +418,36 @@ namespace Sels.Core.Async.Queue
                 // Cancel events
                 try
                 {
-                    _logger.Debug($"Stopping tasks tied to worker queue");
+                    _logger.Debug($"Cancelling all tasks tied to worker queue");
 
-                    await TaskManager.StopAllForAsync(this).ConfigureAwait(false);
-                }
-                catch (AggregateException aggrEx) when (aggrEx.InnerExceptions.All(x => x.IsAssignableTo<OperationCanceledException>()))
-                {
-                    _logger.Debug($"All tasks cancelled for worker queue");
+                    TaskManager.CancelAllFor(this);
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log($"Something went wrong stopping tasks for worker queue", ex);
+                    _logger.Log($"Something went wrong cancelling tasks for worker queue", ex);
                     exceptions.Add(ex);
+                }
+
+                // Release requests
+                _logger.Debug($"Getting lock to release any pending requests");
+                await using (await LockAsync().ConfigureAwait(false))
+                {
+                    _logger.Debug($"There are <{PendingRequests}> pending requests");
+
+                    while (_requests.TryDequeue(out var request))
+                    {
+                        _logger.Debug($"Cancelling request <{request}>");
+
+                        try
+                        {
+                            request.Cancel();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Log($"Something went wrong cancelling request <{request}>", ex);
+                            exceptions.Add(ex);
+                        }
+                    }
                 }
 
                 // Release items
@@ -451,6 +473,23 @@ namespace Sels.Core.Async.Queue
                             exceptions.Add(ex);
                         }
                     }
+                }
+
+                // Wait for events
+                try
+                {
+                    _logger.Debug($"Stopping tasks tied to worker queue");
+
+                    await TaskManager.StopAllForAsync(this).ConfigureAwait(false);
+                }
+                catch (AggregateException aggrEx) when (aggrEx.InnerExceptions.All(x => x.IsAssignableTo<OperationCanceledException>()))
+                {
+                    _logger.Debug($"All tasks cancelled for worker queue");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Something went wrong stopping tasks for worker queue", ex);
+                    exceptions.Add(ex);
                 }
 
                 // Throw on issues

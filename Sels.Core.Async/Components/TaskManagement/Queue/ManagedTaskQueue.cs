@@ -86,7 +86,7 @@ namespace Sels.Core.Async.TaskManagement.Queue
             if (IsDisposed.HasValue) throw new ObjectDisposedException(GetType().GetDisplayName(false));
             schedulerAction.ValidateArgument(nameof(schedulerAction));
 
-            var pendingTask = new PendingManagedTask(schedulerAction);
+            var pendingTask = new PendingManagedTask(schedulerAction, token);
             await _queue.EnqueueAsync(pendingTask, token);
             return pendingTask;
         }
@@ -106,18 +106,37 @@ namespace Sels.Core.Async.TaskManagement.Queue
             if (IsDisposed.HasValue) throw new ObjectDisposedException(GetType().GetDisplayName(false));
             schedulerAction.ValidateArgument(nameof(schedulerAction));
 
-            var pendingTask = new PendingAnonymousTask(schedulerAction);
+            var pendingTask = new PendingAnonymousTask(schedulerAction, token);
             await _queue.EnqueueAsync(pendingTask, token);
             return pendingTask;
         }
 
         private async Task EnqueuePending(PendingTask pending, CancellationToken token)
         {
-            _logger.Debug($"Enqueueing next pending task");
-            var task = await pending.ScheduleTask(_taskManager, token).ConfigureAwait(false);
-            _logger.Log($"Scheduled <{task}>. Waiting for completion");
-            await task.OnFinalized.ConfigureAwait(false);
-            _logger.Log($"Task <{task}> finished executing. Checking queue");
+            using var pendingScope = pending;
+            try
+            {
+                if (pending.IsCancelled) return;
+
+                var cancellationSource = new CancellationTokenSource();
+                using var workerRegistration = token.Register(cancellationSource.Cancel);
+                using var pendingRegistration = pending.CancellationToken.Register(cancellationSource.Cancel);
+
+                _logger.Debug($"Enqueueing next pending task");
+                var task = await pending.ScheduleTask(_taskManager, cancellationSource.Token).ConfigureAwait(false);
+                _logger.Log($"Scheduled <{task}>. Waiting for completion");
+                await Helper.Async.WaitOn(task.OnFinalized, cancellationSource.Token).ConfigureAwait(false);
+                _logger.Log($"Task <{task}> finished executing. Checking queue");
+            }
+            catch (OperationCanceledException)
+            {
+                if(pending.IsCancelled) return;
+                pending.Cancel();
+            }
+            catch(Exception ex)
+            {
+                pending.Error(ex);
+            }
         }
 
         /// <summary>
@@ -189,16 +208,25 @@ namespace Sels.Core.Async.TaskManagement.Queue
             // Fields
             private readonly TaskCompletionSource<IManagedTask> _taskSource = new TaskCompletionSource<IManagedTask>(TaskCreationOptions.RunContinuationsAsynchronously);
             private readonly Func<ITaskManager, CancellationToken, Task<IManagedTask>> _scheduleAction;
+            private readonly CancellationToken _token;
+            private readonly CancellationTokenRegistration _registration;
 
             // Properties
             /// <inheritdoc/>
             public DateTime Created { get; } = DateTime.Now;
             /// <inheritdoc/>
             public Task<IManagedTask> Callback => _taskSource.Task;
+            /// <inheritdoc/>
+            public override bool IsCancelled => _taskSource.Task.IsCanceled;
+            /// <inheritdoc/>
+            public override CancellationToken CancellationToken => _token;
 
-            public PendingManagedTask(Func<ITaskManager, CancellationToken, Task<IManagedTask>> scheduleAction)
+            public PendingManagedTask(Func<ITaskManager, CancellationToken, Task<IManagedTask>> scheduleAction, CancellationToken token)
             {
                 _scheduleAction = scheduleAction.ValidateArgument(nameof(scheduleAction));
+
+                _token = token;
+                _registration = token.Register(Cancel);
             }
             /// <inheritdoc/>
             public override async Task<IManagedAnonymousTask> ScheduleTask(ITaskManager taskManager, CancellationToken cancellationToken)
@@ -218,7 +246,24 @@ namespace Sels.Core.Async.TaskManagement.Queue
                 }
             }
             /// <inheritdoc/>
-            public override void Cancel() => _taskSource.SetCanceled();
+            public override void Cancel()
+            {
+                lock (_taskSource)
+                {
+                    if (!_taskSource.Task.IsCompleted && _taskSource.Task.Status != TaskStatus.Running) _taskSource.SetCanceled();
+                }
+            }
+            /// <inheritdoc/>
+            public override void Error(Exception exception)
+            {
+                lock (_taskSource)
+                {
+                    if (!_taskSource.Task.IsCompleted && _taskSource.Task.Status != TaskStatus.Running) _taskSource.SetException(exception);
+                }
+            }
+
+            /// <inheritdoc/>
+            public override void Dispose() => _registration.Dispose();
         }
 
         private class PendingAnonymousTask : PendingTask, IPendingTask<IManagedAnonymousTask>
@@ -226,16 +271,24 @@ namespace Sels.Core.Async.TaskManagement.Queue
             // Fields
             private readonly TaskCompletionSource<IManagedAnonymousTask> _taskSource = new TaskCompletionSource<IManagedAnonymousTask>(TaskCreationOptions.RunContinuationsAsynchronously);
             private readonly Func<ITaskManager, CancellationToken, IManagedAnonymousTask> _scheduleAction;
+            private readonly CancellationToken _token;
+            private readonly CancellationTokenRegistration _registration;
 
             // Properties
             /// <inheritdoc/>
             public DateTime Created { get; } = DateTime.Now;
             /// <inheritdoc/>
             public Task<IManagedAnonymousTask> Callback => _taskSource.Task;
+            /// <inheritdoc/>
+            public override bool IsCancelled => _taskSource.Task.IsCanceled;
+            /// <inheritdoc/>
+            public override CancellationToken CancellationToken => _token;
 
-            public PendingAnonymousTask(Func<ITaskManager, CancellationToken, IManagedAnonymousTask> scheduleAction)
+            public PendingAnonymousTask(Func<ITaskManager, CancellationToken, IManagedAnonymousTask> scheduleAction, CancellationToken token)
             {
                 _scheduleAction = scheduleAction.ValidateArgument(nameof(scheduleAction));
+                _token = token;
+                _registration = token.Register(Cancel);
             }
 
             /// <inheritdoc/>
@@ -256,13 +309,34 @@ namespace Sels.Core.Async.TaskManagement.Queue
                 }
             }
             /// <inheritdoc/>
-            public override void Cancel() => _taskSource.SetCanceled();
+            public override void Dispose() => _registration.Dispose();
+
+            /// <inheritdoc/>
+            public override void Cancel() {
+                lock (_taskSource)
+                {
+                    if (!_taskSource.Task.IsCompleted && _taskSource.Task.Status != TaskStatus.Running) _taskSource.SetCanceled();
+                }
+            }
+            /// <inheritdoc/>
+            public override void Error(Exception exception)
+            {
+                lock (_taskSource)
+                {
+                    if (!_taskSource.Task.IsCompleted && _taskSource.Task.Status != TaskStatus.Running) _taskSource.SetException(exception);
+                }
+            }
         }
 
-        private abstract class PendingTask
+        private abstract class PendingTask : IDisposable
         {
             public abstract Task<IManagedAnonymousTask> ScheduleTask(ITaskManager taskManager, CancellationToken cancellationToken);
             public abstract void Cancel();
+            public abstract void Error(Exception exception);
+            public abstract bool IsCancelled { get; }
+            public abstract CancellationToken CancellationToken { get; }
+
+            public abstract void Dispose();
         }
     }
 }

@@ -67,28 +67,29 @@ namespace Sels.Core.Async.TaskManagement
                     {
                         using (Helper.Time.CaptureDuration(x => Duration = x))
                         {
-                            return await taskOptions.ExecuteDelegate(_cancellationSource.Token); 
+                            return await taskOptions.ExecuteDelegate(_cancellationSource.Token);
                         }
                     }
                     finally
                     {
                         FinishedDate = DateTime.Now;
                     }
-                }, _cancellationSource.Token, taskOptions.TaskCreationOptions, TaskScheduler.Default);
+                }, _cancellationSource.Token, taskOptions.TaskCreationOptions &~ TaskCreationOptions.AttachedToParent, TaskScheduler.Default);
 
                 // Handle task result using continuation
-                scheduledTask.ContinueWith(OnCompleted, TaskContinuationOptions.AttachedToParent);
+                scheduledTask.ContinueWith(OnCompleted);
 
                 Task = scheduledTask;
             }
         }
 
         /// <inheritdoc/>
+        /// 
         public CancellationToken Token { get; }
         /// <inheritdoc/>
         public Task Task { get; }
         /// <inheritdoc/>
-        public bool CancellationRequested => _cancellationSource.IsCancellationRequested;
+        public bool CancellationRequested { get { lock (_cancellationSource) { return _cancellationSource.IsCancellationRequested; } } }
         /// <inheritdoc/>
         public ManagedTaskOptions Options => _taskOptions.ManagedTaskOptions;
         /// <inheritdoc/>
@@ -115,9 +116,9 @@ namespace Sels.Core.Async.TaskManagement
         public IManagedAnonymousTask[] AnonymousContinuations => _anonymousContinuations?.ToArray() ?? Array.Empty<IManagedAnonymousTask>();
 
         /// <inheritdoc/>
-        public void Cancel() => _cancellationSource.Cancel();
+        public void Cancel() { lock (_cancellationSource) { _cancellationSource.Cancel(); } }
         /// <inheritdoc/>
-        public void CancelAfter(TimeSpan delay) => _cancellationSource.CancelAfter(delay);
+        public void CancelAfter(TimeSpan delay) { lock (_cancellationSource) { _cancellationSource.CancelAfter(delay); } }
         /// <summary>
         /// Completes <see cref="OnFinalized"/>.
         /// </summary>
@@ -142,7 +143,7 @@ namespace Sels.Core.Async.TaskManagement
             // Trigger continuations
             try
             {
-                await TriggerContinuations();
+                await TriggerContinuations().ConfigureAwait(false);
             }
             catch
             {
@@ -150,8 +151,14 @@ namespace Sels.Core.Async.TaskManagement
             }
             finally
             {
-                await _cancellationRegistration.DisposeAsync().ConfigureAwait(false);
-                _callbackSource.SetResult(true);
+                try
+                {
+                    await _cancellationRegistration.DisposeAsync().ConfigureAwait(false);
+                }
+                finally
+                {
+                    _callbackSource.SetResult(true);
+                }               
             }
         }
 

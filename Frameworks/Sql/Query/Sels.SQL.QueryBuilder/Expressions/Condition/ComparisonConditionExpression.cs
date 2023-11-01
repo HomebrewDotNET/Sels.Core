@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Text;
 using Sels.Core.Extensions.Text;
+using Sels.Core.Attributes.Enumeration.Value;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
@@ -56,7 +57,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
                 if (i != expressions.Length - 1) builder.AppendSpace();
             });
 
-            if(LogicOperator.HasValue) builder.AppendSpace().Append(LogicOperator.Value);
+            if(LogicOperator.HasValue) builder.AppendSpace().Append(LogicOperator.Value.GetStringValue());
         }
     }
 }

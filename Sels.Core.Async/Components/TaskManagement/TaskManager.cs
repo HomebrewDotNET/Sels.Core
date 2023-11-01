@@ -206,7 +206,7 @@ namespace Sels.Core.Async.TaskManagement
                     {
                         try
                         {
-                            await queue.DisposeAsync();
+                            await queue.DisposeAsync().ConfigureAwait(false);
                         }
                         catch(Exception ex)
                         {
@@ -241,7 +241,7 @@ namespace Sels.Core.Async.TaskManagement
                     {
                         try
                         {
-                            await queue.DisposeAsync();
+                            await queue.DisposeAsync().ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {
@@ -338,7 +338,20 @@ namespace Sels.Core.Async.TaskManagement
             // Wait for callbacks
             try
             {
-                await Task.WhenAll(managedTasks.Select(x => x.OnFinalized)).ConfigureAwait(false);
+                try
+                {
+                    await Helper.Async.WaitOn(Task.WhenAll(managedTasks.Select(x => x.OnFinalized)), _optionsMonitor.CurrentValue.DeadlockWaitTime, token).ConfigureAwait(false);
+                }
+                catch(TimeoutException exception)
+                {
+                    var deadLockedTasks = managedTasks.Where(x => !x.OnFinalized.IsCompleted).ToArray();
+                    if (deadLockedTasks.HasValue())
+                    {
+                        _logger.Log(LogLevel.Error, $"Could not stop all managed tasks for <{instance}> within <{_optionsMonitor.CurrentValue.DeadlockWaitTime}>. Detected <{deadLockedTasks.Length}> deadlocked tasks", exception);
+
+                        throw new ManagedTaskDeadlockedException(deadLockedTasks);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -409,10 +422,11 @@ namespace Sels.Core.Async.TaskManagement
             _logger.Debug($"Scheduling new anonymous task");
             lock (_anonymousLock)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var task = new ManagedAnonymousTask(taskOptions, cancellationToken);
 
                 // Use continuation to handle completion
-                _ = task.OnExecuted.ContinueWith(x => CompleteTask(task), TaskContinuationOptions.AttachedToParent);
+                _ = task.OnExecuted.ContinueWith(x => CompleteTask(task));
                 _anonymousTasks.Add(task);
                 return task;
             }
@@ -433,9 +447,10 @@ namespace Sels.Core.Async.TaskManagement
 
             lock (_managedLock)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var task = new ManagedTask(owner, null, false, taskOptions, cancellationToken);
                 // Use continuation to handle completion
-                _ = task.OnExecuted.ContinueWith(x => CompleteTask(task), TaskContinuationOptions.AttachedToParent);
+                _ = task.OnExecuted.ContinueWith(x => CompleteTask(task));
 
                 _managedTasks.Add(task);
 
@@ -464,6 +479,7 @@ namespace Sels.Core.Async.TaskManagement
 
             while (!wasScheduled)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 _logger.Debug($"Managed task with name <{name}> is already running. Using policy <{taskOptions.NamePolicy}>");
                 switch (taskOptions.NamePolicy)
                 {
@@ -474,18 +490,18 @@ namespace Sels.Core.Async.TaskManagement
                         _logger.Debug($"Already running managed task with name <{name}> will be cancelled instantly. After which we try to start");
                         scheduledTask.Cancel();
                         // Wait for cancellation
-                        await scheduledTask.OnFinalized.ConfigureAwait(false);
+                        await Helper.Async.WaitOn(scheduledTask.OnFinalized, cancellationToken).ConfigureAwait(false);
                         break;
                     case NamedManagedTaskPolicy.GracefulCancelAndStart:
                         _logger.Debug($"Already running managed task with name <{name}> will be cancelled gracefully. After which we try to start");
                         CancelTasks(scheduledTask.AsEnumerable());
                         // Wait for cancellation
-                        await scheduledTask.OnFinalized.ConfigureAwait(false);
+                        await Helper.Async.WaitOn(scheduledTask.OnFinalized, cancellationToken).ConfigureAwait(false);
                         break;
                     case NamedManagedTaskPolicy.WaitAndStart:
                         _logger.Debug($"Waiting until already running managed task with name <{name}> finishes executing. After which we try to start");
                         // Wait for task to finish
-                        await scheduledTask.OnFinalized.ConfigureAwait(false);
+                        await Helper.Async.WaitOn(scheduledTask.OnFinalized, cancellationToken).ConfigureAwait(false);
                         break;
                     case NamedManagedTaskPolicy.Exception:
                         _logger.Debug($"Managed task with name <{name}> is already running. Throwing exception");
@@ -543,6 +559,7 @@ namespace Sels.Core.Async.TaskManagement
             _logger.Debug($"Trying to start managed task with name <{name}>");
             lock (_managedLock)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ManagedTask existingTask = null;
                 if (isGlobal && _globalNameIndex.TryGetValue(name, out var existingGlobalTask))
                 {
@@ -558,7 +575,7 @@ namespace Sels.Core.Async.TaskManagement
                     // Create new
                     var task = new ManagedTask(owner, name, isGlobal, taskOptions, cancellationToken);
                     // Use continuation to handle completion
-                    _ = task.OnExecuted.ContinueWith(x => CompleteTask(task), TaskContinuationOptions.AttachedToParent);
+                    _ = task.OnExecuted.ContinueWith(x => CompleteTask(task));
 
                     _managedTasks.Add(task);
 

@@ -24,5 +24,12 @@ namespace Sels.Core.Async.TaskManagement
         /// How long to wait for <see cref="IManagedTaskGlobalQueue"/> or <see cref="IManagedTaskLocalQueue"/> to process all items before cancelling the pending tasks.
         /// </summary>
         public TimeSpan GracefulQueueStopTime { get; set; } = TimeSpan.FromSeconds(5);
+
+        /// <summary>
+        /// How long to gracefully wait for managed tasks to stop.
+        /// Sometimes tasks won't be able to stop and deadlock the method.
+        /// 
+        /// </summary>
+        public TimeSpan DeadlockWaitTime { get; set; } = TimeSpan.FromSeconds(30);
     }
 }

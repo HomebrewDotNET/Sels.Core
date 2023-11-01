@@ -58,7 +58,7 @@ namespace Sels.Core.Scope
         public async Task<IAsyncDisposable> StartAsync(CancellationToken token = default)
         {
             _token = token;
-            await _startAction(_token);
+            await _startAction(_token).ConfigureAwait(false);
             return this;
         }
 
@@ -68,7 +68,7 @@ namespace Sels.Core.Scope
         /// <returns>Task to await the result</returns>
         public async ValueTask DisposeAsync()
         {
-            await _endAction(_token);
+            await _endAction(_token).ConfigureAwait(false);
         }
     }
 }

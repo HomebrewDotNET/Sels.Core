@@ -600,7 +600,7 @@ namespace Sels.Core
                         while (!process.HasExited)
                         {
                             timedLogger.Log((time, log) => log.LogMessage(LogLevel.Trace, $"Waiting for process {process.Id} to exit ({time.PrintTotalMs()})"));
-                            await Task.Delay(100);
+                            await Task.Delay(100).ConfigureAwait(false);
 
                             // Wait for process to exit
                             if (token.IsCancellationRequested)
@@ -617,7 +617,7 @@ namespace Sels.Core
                                 else
                                 {
                                     timedLogger.Log((time, log) => log.LogMessage(LogLevel.Debug, $"Killed process {process.Id} exited gracefully ({time.PrintTotalMs()})"));
-                                    await killTask;
+                                    await killTask.ConfigureAwait(false);
                                     break;
                                 }
                             }
@@ -717,7 +717,7 @@ namespace Sels.Core
 
                 try
                 {
-                    await entryMethod();
+                    await entryMethod().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -1073,7 +1073,7 @@ namespace Sels.Core
             {
                 file.ValidateArgumentExists(nameof(file));
 
-                return JObject.Parse(await file.ReadAsync());
+                return JObject.Parse(await file.ReadAsync().ConfigureAwait(false));
             }
             #endregion
         }
@@ -1096,7 +1096,7 @@ namespace Sels.Core
 
                 try
                 {
-                    await Task.Delay(waitTime, token);
+                    await Task.Delay(waitTime, token).ConfigureAwait(false);
                 }
                 catch (TaskCanceledException) { }
             }
@@ -1256,6 +1256,93 @@ namespace Sels.Core
                         }
                     }, cancellationSource.Token);
 
+
+                    // Wait for callback
+                    return await taskSource.Task.ConfigureAwait(false);
+                }
+            }
+
+            /// <summary>
+            /// Waits for the completion of <paramref name="task"/> or until <paramref name="token"/> gets cancelled.
+            /// </summary>
+            /// <param name="task">The task to wait on</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <returns>Task that gets completed when either <paramref name="task"/> finishes or when <paramref name="token"/> gets cancelled</returns>
+            /// <exception cref="TaskCanceledException"></exception>
+            /// <exception cref="TimeoutException"></exception>
+            public static async Task WaitOn(Task task, CancellationToken token = default)
+            {
+                _ = task.ValidateArgument(nameof(task));
+
+                var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var cancellationSource = new CancellationTokenSource();
+
+                // Use caller token to cancel our token.
+                using (token.Register(() =>
+                {
+                    cancellationSource.Cancel();
+                    taskSource.SetCanceled();
+                }))
+                {
+                    if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
+                    // Run continuation to complete callback task
+                    var completionTask = task.ContinueWith(x =>
+                    {
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x);
+                        }
+                    }, cancellationSource.Token);
+
+                    // Check if task is completed before starting the timeout task
+                    if (task.IsCompleted)
+                    {
+                        await task.ConfigureAwait(false);
+                        return;
+                    }
+
+                    // Wait for callback
+                    await taskSource.Task.ConfigureAwait(false);
+                    return;
+                }
+            }
+
+            /// <summary>
+            /// Waits for the completion of <paramref name="task"/> or until <paramref name="token"/> gets cancelled.
+            /// </summary>
+            /// <param name="task">The task to wait on</param>
+            /// <param name="token">Optional token to cancel the request</param>
+            /// <returns>Task that gets completed when either <paramref name="task"/> finishes or when <paramref name="token"/> gets cancelled</returns>
+            /// <exception cref="TaskCanceledException"></exception>
+            /// <exception cref="TimeoutException"></exception>
+            public static async Task<T> WaitOn<T>(Task<T> task, CancellationToken token = default)
+            {
+                _ = task.ValidateArgument(nameof(task));
+
+                var taskSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var cancellationSource = new CancellationTokenSource();
+
+                // Use caller token to cancel our token. 
+                using (token.Register(() => {
+                    cancellationSource.Cancel();
+                    taskSource.SetCanceled();
+                }))
+                {
+                    if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
+                    // Run continuation to complete callback task
+                    var completionTask = task.ContinueWith(x =>
+                    {
+                        lock (taskSource)
+                        {
+                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x);
+                        }
+                    }, cancellationSource.Token);
+
+                    // Check if task is completed before starting the timeout task
+                    if (task.IsCompleted)
+                    {
+                        return await task.ConfigureAwait(false);
+                    }
 
                     // Wait for callback
                     return await taskSource.Task.ConfigureAwait(false);

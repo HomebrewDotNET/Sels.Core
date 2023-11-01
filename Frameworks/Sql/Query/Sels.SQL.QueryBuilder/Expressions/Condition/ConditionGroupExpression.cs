@@ -4,6 +4,7 @@ using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
 using Sels.SQL.QueryBuilder.Builder.Statement;
 using Sels.Core.Extensions.Text;
+using Sels.Core.Attributes.Enumeration.Value;
 
 namespace Sels.SQL.QueryBuilder.Builder.Expressions
 {
@@ -49,7 +50,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Expressions
             });
             if (_isGrouped) builder.Append(')');
 
-            if (LogicOperator.HasValue) builder.AppendSpace().Append(LogicOperator.Value);
+            if (LogicOperator.HasValue) builder.AppendSpace().Append(LogicOperator.Value.GetStringValue());
         }
     }
 }
