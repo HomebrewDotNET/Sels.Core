@@ -22,6 +22,7 @@ using Sels.Core.Async.TaskManagement.Queue;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Text;
+using Newtonsoft.Json.Linq;
 
 namespace Sels.Core.Async.TaskManagement
 {
@@ -29,14 +30,10 @@ namespace Sels.Core.Async.TaskManagement
     public class TaskManager : ITaskManager, IAsyncExposedDisposable
     {
         // Fields
-        private readonly object _anonymousLock = new object();
-        private readonly object _managedLock = new object();
         private readonly HashSet<ManagedAnonymousTask> _anonymousTasks = new HashSet<ManagedAnonymousTask>();
-        private readonly HashSet<ManagedTask> _managedTasks = new HashSet<ManagedTask>();
-        private readonly Dictionary<string, ManagedTask> _globalNameIndex = new Dictionary<string, ManagedTask>(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<object, List<ManagedTask>> _ownerIndex = new Dictionary<object, List<ManagedTask>>();
-        private readonly Dictionary<string, GlobalManagedTaskQueue> _globalQueues = new Dictionary<string, GlobalManagedTaskQueue>(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<object, List<LocalManagedTaskQueue>> _localQueues = new Dictionary<object, List<LocalManagedTaskQueue>>();
+        private readonly ConcurrentDictionary<string, ManagedTask> _globalManagedTasks;
+        private readonly ConcurrentDictionary<object, OwnedTasks> _ownedTasks;
+        private readonly ConcurrentDictionary<string, GlobalManagedTaskQueue> _globalQueues;
         private readonly ILoggerFactory? _loggerFactory;
         private readonly ILogger? _logger;
         private readonly IOptionsMonitor<TaskManagerOptions> _optionsMonitor;
@@ -55,6 +52,11 @@ namespace Sels.Core.Async.TaskManagement
             _optionsMonitor = optionsMonitor.ValidateArgument(nameof(optionsMonitor));
             _loggerFactory = loggerFactory;
             _logger = logger;
+
+            var concurrencyLevel = _optionsMonitor.CurrentValue.ConcurrencyLevel;
+            _globalManagedTasks = new ConcurrentDictionary<string, ManagedTask>(concurrencyLevel, 11, StringComparer.OrdinalIgnoreCase);
+            _ownedTasks = new ConcurrentDictionary<object, OwnedTasks>(concurrencyLevel, 11);
+            _globalQueues = new ConcurrentDictionary<string, GlobalManagedTaskQueue>(concurrencyLevel, 11, StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -136,14 +138,16 @@ namespace Sels.Core.Async.TaskManagement
 
             _logger.Log($"Creating local queue for <{instance}> with <{maxConcurrency}> workers");
 
-            lock (_localQueues)
+            var owned = GetOrCreateOwned(instance);
+
+            lock (owned)
             {
                 LocalManagedTaskQueue localQueue = null;
                 localQueue = new LocalManagedTaskQueue(instance, () => Release(localQueue), this, maxConcurrency, _loggerFactory?.CreateLogger<LocalManagedTaskQueue>())
                 {
                     GracefulStopTime = _optionsMonitor.CurrentValue.GracefulQueueStopTime
                 };
-                _localQueues.AddValueToList(instance, localQueue);
+                owned.Queues.Add(localQueue);
                 localQueue.TrackReference();
                 return localQueue;
             }
@@ -156,31 +160,39 @@ namespace Sels.Core.Async.TaskManagement
 
             _logger.Log($"Trying to create global queue <{name}> with <{maxConcurrency}> workers");
 
-            lock (_globalQueues)
-            {
-                GlobalManagedTaskQueue globalQueue = null;
+            GlobalManagedTaskQueue globalQueue = null;
 
-                if(!_globalQueues.TryGetValue(name, out globalQueue))
+            if (!_globalQueues.TryGetValue(name, out globalQueue))
+            {
+                _logger.Log($"Global queue with name <{name}> does not exist yet. Creating new");
+
+                while(globalQueue == null)
                 {
-                    _logger.Log($"Global queue with name <{name}> does not exist yet. Creating new");
-                    globalQueue = new GlobalManagedTaskQueue(name, () => Release(globalQueue), this, maxConcurrency, _loggerFactory?.CreateLogger<GlobalManagedTaskQueue>())
+                    var queue = new GlobalManagedTaskQueue(name, () => Release(globalQueue), this, maxConcurrency, _loggerFactory?.CreateLogger<GlobalManagedTaskQueue>())
                     {
                         GracefulStopTime = _optionsMonitor.CurrentValue.GracefulQueueStopTime
                     };
-                    _globalQueues.Add(name, globalQueue);
-                }
-                else
-                {
-                    _logger.Log($"Global queue with name <{name}> already exists. Returning existing");
-                }
-
-                globalQueue.TrackReference();
-                return globalQueue;
+                    if(_globalQueues.TryAdd(name, queue))
+                    {
+                        queue.TrackReference();
+                        globalQueue = queue;
+                    }
+                    else
+                    {
+                        _globalQueues.TryGetValue(name, out globalQueue);
+                    }
+                }            
             }
+            else
+            {
+                _logger.Log($"Global queue with name <{name}> already exists. Returning existing");
+            }
+
+            return globalQueue;
         }
 
         /// <summary>
-        /// Tries to dispose <paramref name="queue"/> if it can be cleaned up.
+        /// Tries to trigger the dispose of <paramref name="queue"/> if it can be cleaned up.
         /// </summary>
         /// <param name="queue">The queue to dispose</param>
         protected virtual void Release(LocalManagedTaskQueue queue)
@@ -189,35 +201,25 @@ namespace Sels.Core.Async.TaskManagement
 
             _logger.Log($"Trying to release <{queue}>");
 
-            lock (_localQueues)
+            if (queue.CurrentReferences == 0 && queue.Pending == 0 && queue.Processing == 0)
             {
-                if(queue.CurrentReferences == 0 && queue.Pending == 0)
+                _logger.Log($"Queue <{queue}> is not referenced anymore and does not contain work. Triggering asynchronous cleanup");
+
+                Self.ScheduleAnonymousAction(async t =>
                 {
-                    _logger.Log($"Queue <{queue}> is not referenced anymore and does not contain work. Triggering asynchronous cleanup");
-
-                    if(_localQueues.TryGetValue(queue.Owner, out var queues))
+                    try
                     {
-                        queues.Remove(queue);
-
-                        if (!queues.HasValue()) _localQueues.Remove(queue.Owner);
+                        await TryDispose(queue).ConfigureAwait(false);
                     }
-
-                    Self.ScheduleAnonymousAction(async t =>
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            await queue.DisposeAsync().ConfigureAwait(false);
-                        }
-                        catch(Exception ex)
-                        {
-                            _logger.Log($"Something went wrong disposing queue <{queue}>", ex);
-                        }
-                    });
-                }
+                        _logger.Log($"Something went wrong disposing queue <{queue}>", ex);
+                    }
+                });
             }
         }
         /// <summary>
-        /// Tries to dispose <paramref name="queue"/> if it can be cleaned up.
+        /// Tries to trigger the dispose of <paramref name="queue"/> if it can be cleaned up.
         /// </summary>
         /// <param name="queue">The queue to dispose</param>
         protected virtual void Release(GlobalManagedTaskQueue queue)
@@ -228,16 +230,11 @@ namespace Sels.Core.Async.TaskManagement
 
             lock (_globalQueues)
             {
-                if (queue.CurrentReferences == 0 && queue.Pending == 0)
+                if (queue.CurrentReferences == 0 && queue.Pending == 0 && queue.Processing == 0)
                 {
-                    _logger.Log($"Queue <{queue}> is not referenced anymore and does not contain work. Triggering asynchronous cleanup");
+                    _logger.Log($"Queue <{queue}> is not referenced anymore and does not contain work. Starting cleanup task");
 
-                    if (_globalQueues.ContainsKey(queue.Name))
-                    {
-                        _globalQueues.Remove(queue.Name);
-                    }
-
-                    Self.ScheduleAnonymousAction(async t =>
+                    Self.TryScheduleAction(this, $"CleanupQueue.{queue.Name}", false, async t =>
                     {
                         try
                         {
@@ -251,6 +248,62 @@ namespace Sels.Core.Async.TaskManagement
                 }
             }
         }
+        /// <summary>
+        /// Tries to dispose <paramref name="queue"/> if it can be cleaned up.
+        /// </summary>
+        /// <param name="queue">The queue to dispose</param>
+        protected virtual async Task TryDispose(LocalManagedTaskQueue queue)
+        {
+            queue.ValidateArgument(nameof(queue));
+            if (queue.CurrentReferences == 0 && queue.Pending == 0 && queue.Processing == 0)
+            {
+                _logger.Debug($"Cannot dispose local queue <{queue}> because it is still active");
+                return;
+            }
+
+            var disposeTask = queue.DisposeAsync();
+
+            if (_ownedTasks.TryGetValue(queue.Owner, out var owned))
+            {
+                lock(owned)
+                {
+                    owned.Queues.Remove(queue);
+                }
+            }
+
+            await disposeTask.ConfigureAwait(false);
+        }
+        /// <summary>
+        /// Tries to dispose <paramref name="queue"/> if it can be cleaned up.
+        /// Will sleep until queue
+        /// </summary>
+        /// <param name="queue">The queue to dispose</param>
+        /// <param name="token">Optional token to cancel the request</param>
+        protected virtual async Task Dispose(GlobalManagedTaskQueue queue, CancellationToken token)
+        {
+            queue.ValidateArgument(nameof(queue));
+
+            do
+            {
+                do
+                {
+                    var sleepTime = (queue.LastProcessed ?? DateTime.Now).Add(_optionsMonitor.CurrentValue.GlobalQueueCleanupDelay);
+                    _logger.Debug($"Sleeping until <{sleepTime}> to try dispose global queue <{queue}> if it is inactive");
+                    await Helper.Async.SleepUntil(sleepTime, token).ConfigureAwait(false);
+                    if (token.IsCancellationRequested) return;
+                }
+                while (queue.CurrentReferences != 0 || queue.Pending != 0 || queue.Processing != 0);
+
+                _globalQueues.TryRemove(queue.Name, out _);
+
+                // Try and sleep just in case of race condition
+                await Helper.Async.Sleep(TimeSpan.FromMilliseconds(100), token).ConfigureAwait(false);
+                if (token.IsCancellationRequested) return;
+            }
+            while (queue.CurrentReferences != 0 || queue.Pending != 0 || queue.Processing != 0);
+
+            await queue.DisposeAsync().ConfigureAwait(false);
+        }
 
         /// <inheritdoc/>
         public virtual IManagedTask GetByName(string name, CancellationToken token = default)
@@ -258,14 +311,11 @@ namespace Sels.Core.Async.TaskManagement
             name.ValidateArgument(nameof(name));
 
             _logger.Log($"Fetching managed task with name <{name}>");
-            lock (_managedLock)
+            if (_globalManagedTasks.TryGetValue(name, out var task))
             {
-                if (_globalNameIndex.TryGetValue(name, out var task) && !task.Task.IsCompleted)
-                {
-                    return task;
-                }
-                return null;
+                return task;
             }
+            return null;
         }
         /// <inheritdoc/>
         public virtual IManagedTask[] GetOwnedBy(object instance, CancellationToken token = default)
@@ -273,14 +323,14 @@ namespace Sels.Core.Async.TaskManagement
             instance.ValidateArgument(nameof(instance));
 
             _logger.Log($"Fetching all managed tasks owned by <{instance}>");
-            lock (_managedLock)
+            if (_ownedTasks.TryGetValue(instance, out var owned))
             {
-                if (_ownerIndex.TryGetValue(instance, out var tasks))
+                lock (owned)
                 {
-                    return tasks.Where(x => !x.Task.IsCompleted).ToArray();
+                    return owned.Tasks.ToArray();
                 }
-                return Array.Empty<IManagedTask>();
             }
+            return Array.Empty<IManagedTask>();
         }
         /// <inheritdoc/>
         public virtual IManagedTask[] CancelAllFor(object instance, CancellationToken token = default)
@@ -302,61 +352,63 @@ namespace Sels.Core.Async.TaskManagement
         {
             instance.ValidateArgument(nameof(instance));
             var exceptions = new List<Exception>();
+            var tasks = new List<IManagedTask>();
 
-            // Get queues to stop
-            _logger.Log($"Stopping all queues owned by <{instance}>");
-            LocalManagedTaskQueue[] localQueues = null;
-            lock (_localQueues)
+            while(_ownedTasks.TryGetValue(instance, out var owned))
             {
-                if (_localQueues.ContainsKey(instance))
+                lock (owned)
                 {
-                    localQueues = _localQueues[instance].ToArray();
-                    _localQueues.Remove(instance);
+                    if (owned.Tasks.Count == 0 && owned.Queues.Count == 0) break;
                 }
-            }
 
-            // Trigger stop
-            if (localQueues.HasValue())
-            {
-                _logger.Debug($"Disposing <{localQueues.Length}> queues tied to <{instance}>");
+                // Get queues to stop
+                _logger.Log($"Stopping all queues owned by <{instance}>");
+                LocalManagedTaskQueue[] localQueues = null;
+                lock (owned)
+                {
+                    localQueues = owned.Queues.ToArray();
+                }
+
+                // Trigger stop
+                if (localQueues.HasValue())
+                {
+                    _logger.Debug($"Disposing <{localQueues.Length}> queues tied to <{instance}>");
+                    try
+                    {
+                        await StopQueues(localQueues).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                }
+
+                // Trigger cancellation
+                _logger.Log($"Cancelling all tasks owned by <{instance}>");
+                var managedTasks = CancelAllFor(instance, token);
+                tasks.AddRange(managedTasks);
+                _logger.Log($"Waiting on all queues and tasks to stop for <{instance}>");
+
+                // Wait for callbacks
                 try
                 {
-                    await StopQueues(localQueues).ConfigureAwait(false);
+                    await WaitOnTasks(tasks).ConfigureAwait(false);
                 }
-                catch(Exception ex)
+                catch(ManagedTaskDeadlockedException deadlockEx)
+                {
+                    exceptions.Add(deadlockEx);
+                    lock (owned)
+                    {
+                        deadlockEx.Tasks.OfType<ManagedTask>().Execute(x => owned.Tasks.Remove(x));
+                    }
+                }
+                catch (Exception ex)
                 {
                     exceptions.Add(ex);
                 }
             }
 
-            // Trigger cancellation
-            _logger.Log($"Cancelling all tasks owned by <{instance}>");
-            var managedTasks = CancelAllFor(instance, token);
-
-            _logger.Log($"Waiting on all queues and tasks to stop for <{instance}>");
-
-            // Wait for callbacks
-            try
-            {
-                try
-                {
-                    await Helper.Async.WaitOn(Task.WhenAll(managedTasks.Select(x => x.OnFinalized)), _optionsMonitor.CurrentValue.DeadlockWaitTime, token).ConfigureAwait(false);
-                }
-                catch(TimeoutException exception)
-                {
-                    var deadLockedTasks = managedTasks.Where(x => !x.OnFinalized.IsCompleted).ToArray();
-                    if (deadLockedTasks.HasValue())
-                    {
-                        _logger.Log(LogLevel.Error, $"Could not stop all managed tasks for <{instance}> within <{_optionsMonitor.CurrentValue.DeadlockWaitTime}>. Detected <{deadLockedTasks.Length}> deadlocked tasks", exception);
-
-                        throw new ManagedTaskDeadlockedException(deadLockedTasks);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                exceptions.Add(ex);
-            }
+            _ownedTasks.TryRemove(instance, out _);
 
             // Throw on issues
             if (exceptions.HasValue())
@@ -365,7 +417,7 @@ namespace Sels.Core.Async.TaskManagement
                 if (exceptionsToThrow.HasValue()) throw new AggregateException(exceptionsToThrow);
             }
 
-            return managedTasks;
+            return tasks.ToArray();
         }
         /// <summary>
         /// Sends cancellation request to all tasks returned by <paramref name="tasks"/>.
@@ -396,7 +448,30 @@ namespace Sels.Core.Async.TaskManagement
                 }
             }
         }
+        /// <summary>
+        /// Waits for <paramref name="tasks"/> to get finalized.
+        /// </summary>
+        /// <param name="tasks">The task to wait on</param>
+        /// <param name="token">Optional token to cancel the request</param>
+        protected virtual async Task WaitOnTasks(IEnumerable<IManagedAnonymousTask> tasks, CancellationToken token = default)
+        {
+            tasks.ValidateArgument(nameof(tasks));
 
+            try
+            {
+                await Helper.Async.WaitOn(Task.WhenAll(tasks.Select(x => x.OnFinalized)), _optionsMonitor.CurrentValue.DeadlockWaitTime, token).ConfigureAwait(false);
+            }
+            catch (TimeoutException exception)
+            {
+                var deadLockedTasks = tasks.Where(x => !x.OnFinalized.IsCompleted).ToArray();
+                if (deadLockedTasks.HasValue())
+                {
+                    _logger.Log(LogLevel.Error, $"Could not stop all managed tasks within <{_optionsMonitor.CurrentValue.DeadlockWaitTime}>. Detected <{deadLockedTasks.Length}> deadlocked tasks", exception);
+
+                    throw new ManagedTaskDeadlockedException(deadLockedTasks);
+                }
+            }
+        }
         /// <summary>
         /// Gracefully tries to dispose <paramref name="queues"/>.
         /// </summary>
@@ -420,14 +495,13 @@ namespace Sels.Core.Async.TaskManagement
             taskOptions.ValidateArgument(nameof(taskOptions));
 
             _logger.Debug($"Scheduling new anonymous task");
-            lock (_anonymousLock)
+            lock (_anonymousTasks)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var task = new ManagedAnonymousTask(taskOptions, cancellationToken);
+                var task = new ManagedAnonymousTask(taskOptions, x => { CompleteTask(x); return Task.CompletedTask; }, cancellationToken);
 
-                // Use continuation to handle completion
-                _ = task.OnExecuted.ContinueWith(x => CompleteTask(task));
                 _anonymousTasks.Add(task);
+                task.Start();
                 return task;
             }
         }
@@ -445,17 +519,14 @@ namespace Sels.Core.Async.TaskManagement
 
             _logger.Debug($"Scheduling new unnamed managed task for <{owner}>");
 
-            lock (_managedLock)
+            var owned = GetOrCreateOwned(owner);
+            lock (owned)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var task = new ManagedTask(owner, null, false, taskOptions, cancellationToken);
-                // Use continuation to handle completion
-                _ = task.OnExecuted.ContinueWith(x => CompleteTask(task));
+                var task = new ManagedTask(owner, null, false, taskOptions, x => CompleteTask(x), cancellationToken);
 
-                _managedTasks.Add(task);
-
-                // Update index
-                _ownerIndex.AddValueToList(owner, task);
+                owned.Tasks.Add(task);
+                task.Start();
                 return task;
             }
         }
@@ -501,7 +572,7 @@ namespace Sels.Core.Async.TaskManagement
                     case NamedManagedTaskPolicy.WaitAndStart:
                         _logger.Debug($"Waiting until already running managed task with name <{name}> finishes executing. After which we try to start");
                         // Wait for task to finish
-                        await Helper.Async.WaitOn(scheduledTask.OnFinalized, cancellationToken).ConfigureAwait(false);
+                        await Helper.Async.WaitOn(scheduledTask.OnExecuted, cancellationToken).ConfigureAwait(false);
                         break;
                     case NamedManagedTaskPolicy.Exception:
                         _logger.Debug($"Managed task with name <{name}> is already running. Throwing exception");
@@ -557,40 +628,53 @@ namespace Sels.Core.Async.TaskManagement
             if (!name.HasValue()) return (true, ScheduleUnnamed(owner, taskOptions, cancellationToken));
 
             _logger.Debug($"Trying to start managed task with name <{name}>");
-            lock (_managedLock)
+            cancellationToken.ThrowIfCancellationRequested();
+
+            ManagedTask existingTask = null;
+            if (isGlobal)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                ManagedTask existingTask = null;
-                if (isGlobal && _globalNameIndex.TryGetValue(name, out var existingGlobalTask))
+                if(_globalManagedTasks.TryGetValue(name, out var existingGlobalTask))
                 {
                     existingTask = existingGlobalTask;
-                }
-                else if(_ownerIndex.TryGetValue(owner, out var tasks))
+                }              
+            }
+            else if (_ownedTasks.TryGetValue(owner, out var owned))
+            {
+                lock(owned)
                 {
-                    existingTask = tasks.FirstOrDefault(x => x.Name.EqualsNoCase(name));
+                    existingTask = owned.Tasks.FirstOrDefault(x => x.Name.EqualsNoCase(name));
                 }
+            }
 
-                if (existingTask == null)
+            if (existingTask == null)
+            {
+                // Create new
+                var task = new ManagedTask(owner, name, isGlobal, taskOptions, x => CompleteTask(x), cancellationToken);
+
+                // Store
+                if (isGlobal)
                 {
-                    // Create new
-                    var task = new ManagedTask(owner, name, isGlobal, taskOptions, cancellationToken);
-                    // Use continuation to handle completion
-                    _ = task.OnExecuted.ContinueWith(x => CompleteTask(task));
-
-                    _managedTasks.Add(task);
-
-                    // Update index
-                    _ownerIndex.AddValueToList(owner, task);
-                    if(task.IsGlobal) _globalNameIndex.Add(name, task);
-                    _logger.Debug($"Scheduled {task}");
-                    return (true, task);
+                    if (_globalManagedTasks.TryAdd(name, task))
+                    {
+                        task.Start();
+                    }
                 }
                 else
                 {
-                    _logger.Warning($"{existingTask} already running");
-                    return (false, existingTask);
+                    var owned = GetOrCreateOwned(owner);
+                    lock (owned)
+                    {
+                        owned.Tasks.Add(task);
+                        task.Start();
+                    }
                 }
+
+                _logger.Debug($"Scheduled {task}");
+                return (true, task);
             }
+
+            _logger.Warning($"{(existingTask != null ? existingTask.ToString() : $"Named task <{name}>")} already running");
+            return (false, existingTask);
         }
 
         /// <summary>
@@ -598,17 +682,16 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="task">The task to finalize</param>
         /// <returns>Task that will complete when <paramref name="task"/> is finalized</returns>
-        protected virtual void CompleteTask(ManagedAnonymousTask task)
+        protected virtual async void CompleteTask(ManagedAnonymousTask task)
         {
             _logger.Debug($"Waiting for anonymous lock to finalize {task}");
 
             try
             {
+                await using var taskScope = task;
                 // Finalize task
-                lock (_anonymousLock)
+                lock (_anonymousTasks)
                 {
-                    _logger.Debug($"Got anonymous lock to finalize {task}");
-
                     // Remove current task
                     _anonymousTasks.Remove(task);
 
@@ -630,10 +713,13 @@ namespace Sels.Core.Async.TaskManagement
                     }
                 }
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             finally
             {
                 _logger.Log($"{task} created at <{task.CreatedDate}> was picked up by the Thread Pool at <{task.StartedDate}> running for <{task.Duration}> stopping at <{task.FinishedDate}>");
-                task.FinalizeTask();
             }
         }
         /// <summary>
@@ -647,21 +733,21 @@ namespace Sels.Core.Async.TaskManagement
 
             try
             {
+                await using var taskScope = task;
                 // Finalize
-                lock (_managedLock)
+                if (task.IsGlobal)
                 {
-                    _logger.Debug($"Got managed lock to finalize {task}");
+                    _globalManagedTasks.TryRemove(task.Name, out _);
+                }
+                else if (_ownedTasks.TryGetValue(task.Owner, out var owned))
+                {
+                    lock(owned)
+                    {
+                        // Remove current task
+                        owned.Tasks.Remove(task);
 
-                    // Remove current task
-                    _managedTasks.Remove(task);
-
-                    // Update indexes
-                    var ownerIndex = _ownerIndex[task.Owner];
-                    ownerIndex.Remove(task);
-                    if (!ownerIndex.HasValue()) _ownerIndex.Remove(task.Owner);
-                    if (task.IsGlobal && task.Name.HasValue()) _globalNameIndex.Remove(task.Name);
-
-                    _logger.Debug($"Finalized {task}");
+                        _logger.Debug($"Finalized {task}");
+                    }
                 }
 
                 // Check if restart is needed
@@ -683,11 +769,31 @@ namespace Sels.Core.Async.TaskManagement
                     }
                 }
             }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
             finally
             {
                 _logger.Log($"{task} created at <{task.CreatedDate}> was picked up by the Thread Pool at <{task.StartedDate}> running for <{task.Duration}> stopping at <{task.FinishedDate}>");
-                task.FinalizeTask();
             }
+        }
+
+        private OwnedTasks GetOrCreateOwned(object instance)
+        {
+            instance.ValidateArgument(nameof(instance));
+
+            OwnedTasks owned = null;
+
+            while(owned == null)
+            {
+                if (!_ownedTasks.TryGetValue(instance, out owned))
+                {
+                    _ownedTasks.TryAdd(instance, new OwnedTasks(instance));
+                }
+            }
+
+            return owned;
         }
 
         /// <inheritdoc/>
@@ -698,71 +804,106 @@ namespace Sels.Core.Async.TaskManagement
             {
                 _logger.Log($"Disposing task manager");
 
-                // Queues
-                _logger.Log($"Stopping all queues");
-                while(_globalQueues.HasValue() || _localQueues.HasValue())
+                while(_globalQueues.HasValue() || _anonymousTasks.HasValue() || _ownedTasks.HasValue() || _globalManagedTasks.HasValue())
                 {
-                    var queues = new List<ManagedTaskQueue>();
+                    // Globl queues
+                    _logger.Log($"Stopping all global queues");
+                    while (_globalQueues.HasValue())
+                    {
+                        var queues = new List<ManagedTaskQueue>();
 
-                    lock (_localQueues)
-                    {
-                        _logger.Log($"Sending cancellation to <{_localQueues.Values.SelectMany(x => x).Count()}> local queues");
-                        queues.AddRange(_localQueues.Values.SelectMany(x => x));
-                        _localQueues.Clear();
-                    }
+                        lock (_globalQueues)
+                        {
+                            _logger.Log($"Sending cancellation to <{_globalQueues.Values.Count()}> global queues");
+                            queues.AddRange(_globalQueues.Values);
+                            _globalQueues.Clear();
+                        }
 
-                    lock (_globalQueues)
-                    {
-                        _logger.Log($"Sending cancellation to <{_globalQueues.Values.Count()}> global queues");
-                        queues.AddRange(_globalQueues.Values);
-                        _globalQueues.Clear();
-                    }
-
-                    // Wait for cancellation
-                    try
-                    {
-                        _logger.Log($"Waiting for <{queues.Count}> queues to stop");
-                        await StopQueues(queues).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Log($"Not all queues stopped gracefully", ex);
-                    }
-                }
-
-                // Tasks
-                _logger.Log($"Stopping all managed tasks");
-                while (_anonymousTasks.HasValue() || _managedTasks.HasValue())
-                {
-                    var pending = new HashSet<IManagedAnonymousTask>();
-                    // Get tasks to cancel
-                    lock (_anonymousLock)
-                    {
-                        _logger.Log($"Sending cancellation to <{_anonymousTasks.Count}> anonymous tasks");
-                        pending.Intersect(_anonymousTasks.Where(x => !x.CancellationRequested));
-                        var completed = _anonymousTasks.Where(x => x.Task.IsCompleted).ToHashSet();
-                        completed.Execute(x => _anonymousTasks.Remove(x));
-                    }
-                    lock (_managedLock)
-                    {
-                        _logger.Log($"Sending cancellation to <{_managedTasks.Count}> managed tasks");
-                        pending.Intersect(_managedTasks.Where(x => !x.CancellationRequested));
-                        var completed = _managedTasks.Where(x => x.Task.IsCompleted).ToHashSet();
-                        completed.Execute(x => _managedTasks.Remove(x));
+                        // Wait for cancellation
+                        try
+                        {
+                            _logger.Log($"Waiting for <{queues.Count}> queues to stop");
+                            await StopQueues(queues).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Log($"Not all queues stopped gracefully", ex);
+                        }
                     }
 
-                    // Trigger cancellation
-                    CancelTasks(pending);
+                    // Anonymous tasks
+                    _logger.Log($"Stopping all anonymous and global managed tasks");
+                    while (_anonymousTasks.HasValue() && _globalManagedTasks.HasValue())
+                    {
+                        var pending = new HashSet<IManagedAnonymousTask>();
+                        // Get tasks to cancel
+                        lock (_anonymousTasks)
+                        {
+                            _logger.Log($"Sending cancellation to <{_anonymousTasks.Count}> anonymous tasks");
+                            pending.Intersect(_anonymousTasks.Where(x => !x.CancellationRequested));
+                        }
 
-                    // Wait for cancellation
-                    try
-                    {
-                        _logger.Log($"Waiting for <{pending.Count}> managed (anonymous) tasks to cancel");
-                        await Task.WhenAll(pending.Where(x => x.CancellationRequested).Select(x => x.OnFinalized)).ConfigureAwait(false);
+                        var globalTasks = _globalManagedTasks.Values;
+                        _logger.Log($"Sending cancellation to <{globalTasks.Count}> global managed tasks");
+                        pending.Intersect(globalTasks.Where(x => !x.CancellationRequested));
+
+                        // Trigger cancellation
+                        CancelTasks(pending);
+
+                        // Wait for cancellation
+                        try
+                        {
+                            _logger.Log($"Waiting for <{pending.Count}> managed (anonymous) tasks to cancel");
+                            await WaitOnTasks(pending.Where(x => x.CancellationRequested)).ConfigureAwait(false);
+                        }
+                        catch (ManagedTaskDeadlockedException deadlockEx)
+                        {
+                            _logger.Log($"Not all managed anonymous tasks cancelled gracefully", deadlockEx);
+
+                            lock(_anonymousTasks)
+                            {
+                                deadlockEx.Tasks.OfType<ManagedAnonymousTask>().Execute(x => _anonymousTasks.Remove(x));
+                            }
+
+                            deadlockEx.Tasks.OfType<ManagedTask>().Execute(x => _globalManagedTasks.TryRemove(x.Name, out _));
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Log($"Not all managed anonymous tasks cancelled gracefully", ex);
+                        }
                     }
-                    catch (Exception ex)
+
+                    // Owned
+                    _logger.Log($"Stopping all managed tasks");
+                    while (_globalManagedTasks.HasValue())
                     {
-                        _logger.Log($"Not all managed (anonymous) tasks cancelled gracefully", ex);
+                        var pending = new HashSet<IManagedAnonymousTask>();
+
+                        var ownedTasks = _ownedTasks.Values;
+
+                        // Trigger cancellation
+                        ownedTasks.Execute(x =>
+                        {
+                            lock (x)
+                            {
+                                CancelTasks(x.Tasks);
+                            }
+                        });
+
+                        foreach(var owned in ownedTasks)
+                        {
+                            // Wait for cancellation
+                            try
+                            {
+                                _logger.Log($"Cancelling all managed tasks and queues owned by <{owned.Owner}>");
+
+                                await StopAllForAsync(owned.Owner).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Log($"Not all managed tasks and queues owned by <{owned.Owner}> cancelled gracefully", ex);
+                            }
+                        }       
                     }
                 }
             }
@@ -1006,6 +1147,20 @@ namespace Sels.Core.Async.TaskManagement
                 };
                 SetOptions(options, taskManager, action);
                 return options;
+            }
+        }
+        #endregion
+
+        #region Classes
+        private class OwnedTasks
+        {
+            public object Owner { get; }
+            public List<ManagedTask> Tasks { get; } = new List<ManagedTask>();
+            public List<LocalManagedTaskQueue> Queues { get; } = new List<LocalManagedTaskQueue>();
+
+            public OwnedTasks(object owner)
+            {
+                Owner = owner.ValidateArgument(nameof(owner));
             }
         }
         #endregion

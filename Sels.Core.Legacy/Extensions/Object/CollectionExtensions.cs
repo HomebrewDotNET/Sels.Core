@@ -1,4 +1,5 @@
-﻿using Sels.Core.Extensions.Linq;
+﻿using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -304,6 +305,42 @@ namespace Sels.Core.Extensions.Collections
             if (dictionary.ContainsKey(key)) return dictionary[key];
 
             return defaultValueConstructor != null ? defaultValueConstructor() : default(TValue);
+        }
+
+        /// <summary>
+        /// Returns the value with key <paramref name="key"/> if it exists in <paramref name="dictionary"/>. Otherwise it will return the value returned by <paramref name="defaultValueConstructor"/> or the default of <typeparamref name="T"/> if no delegate is provided.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the value</typeparam>
+        /// <param name="dictionary">Dictionary to get the value from</param>
+        /// <param name="key">The key of the value to get</param>
+        /// <param name="defaultValueConstructor">Optional delegate to create the value to return if <paramref name="dictionary"/> doesn't contain <paramref name="key"/></param>
+        /// <returns>The value with key <paramref name="key"/> or the default value if <paramref name="dictionary"/> doesn't contain the provided key</returns>
+        public static T GetOrDefault<T>(this IDictionary<string, object> dictionary, string key, Func<T> defaultValueConstructor = null)
+        {
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+
+            if (dictionary.ContainsKey(key)) return dictionary[key].CastTo<T>();
+
+            return defaultValueConstructor != null ? defaultValueConstructor() : default(T);
+        }
+
+        /// <summary>
+        /// Returns the value with key <paramref name="key"/> if it exists in <paramref name="dictionary"/>. Otherwise it will return the value returned by <paramref name="defaultValueConstructor"/> or the default of <typeparamref name="T"/> if no delegate is provided.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the value</typeparam>
+        /// <param name="dictionary">Dictionary to get the value from</param>
+        /// <param name="key">The key of the value to get</param>
+        /// <param name="defaultValueConstructor">Optional delegate to create the value to return if <paramref name="dictionary"/> doesn't contain <paramref name="key"/></param>
+        /// <returns>The value with key <paramref name="key"/> or the default value if <paramref name="dictionary"/> doesn't contain the provided key</returns>
+        public static T GetOrDefault<T>(this IReadOnlyDictionary<string, object> dictionary, string key, Func<T> defaultValueConstructor = null)
+        {
+            dictionary.ValidateArgument(nameof(dictionary));
+            key.ValidateArgument(nameof(key));
+
+            if (dictionary.ContainsKey(key)) return dictionary[key].CastTo<T>();
+
+            return defaultValueConstructor != null ? defaultValueConstructor() : default(T);
         }
 
         /// <summary>

@@ -6,23 +6,18 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Sels.Core.Delegates.Async;
 
 namespace Sels.Core.Async.TaskManagement
 {
     /// <summary>
     /// Base class for creating managed task wrappers.
     /// </summary>
-    public abstract class BaseManagedTask : IManagedAnonymousTask
+    public abstract class BaseManagedTask : IManagedAnonymousTask, IAsyncDisposable
     {
         // Fields
         private readonly ManagedTaskCreationSharedOptions _taskOptions;
         private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
-        private readonly TaskCompletionSource<bool> _callbackSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        private readonly TaskCompletionSource<bool> _finalizeSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-        /// <summary>
-        /// Used to signal the task that it can start running.
-        /// </summary>
-        protected readonly TaskCompletionSource<bool> _startSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         // State
         /// <summary>
@@ -45,21 +40,21 @@ namespace Sels.Core.Async.TaskManagement
             // Register to cancellation
             Token = cancellationToken;
             _cancellationRegistration = cancellationToken.Register(Cancel);
+        }
 
-            // Set task in faulted state
-            if (cancellationToken.IsCancellationRequested)
+        /// <summary>
+        /// Schedules the task on the thread pool.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        public virtual void Start()
+        {
+            lock (_cancellationSource)
             {
-                var exception = new TaskCanceledException();
-                Result = exception;
-                Task = Task.FromException(exception);
-                _callbackSource.SetResult(true);
-            }
-            else
-            {
+                if (Task != null) throw new InvalidOperationException($"Task already started");
+
                 // Schedule work on thread pool
                 var scheduledTask = Task.Factory.StartNew(async () =>
                 {
-                    await _startSource.Task;
                     _cancellationSource.Token.ThrowIfCancellationRequested();
                     StartedDate = DateTime.Now;
 
@@ -67,19 +62,18 @@ namespace Sels.Core.Async.TaskManagement
                     {
                         using (Helper.Time.CaptureDuration(x => Duration = x))
                         {
-                            return await taskOptions.ExecuteDelegate(_cancellationSource.Token);
+                            return await _taskOptions.ExecuteDelegate(_cancellationSource.Token);
                         }
                     }
                     finally
                     {
                         FinishedDate = DateTime.Now;
                     }
-                }, _cancellationSource.Token, taskOptions.TaskCreationOptions &~ TaskCreationOptions.AttachedToParent, TaskScheduler.Default);
-
-                // Handle task result using continuation
-                scheduledTask.ContinueWith(OnCompleted);
+                }, _cancellationSource.Token, _taskOptions.TaskCreationOptions & ~TaskCreationOptions.AttachedToParent, TaskScheduler.Default).Unwrap();
 
                 Task = scheduledTask;
+                // Handle task result using continuation
+                OnExecuted = scheduledTask.ContinueWith(OnCompleted);
             }
         }
 
@@ -87,7 +81,7 @@ namespace Sels.Core.Async.TaskManagement
         /// 
         public CancellationToken Token { get; }
         /// <inheritdoc/>
-        public Task Task { get; }
+        public Task Task { get; private set; }
         /// <inheritdoc/>
         public bool CancellationRequested { get { lock (_cancellationSource) { return _cancellationSource.IsCancellationRequested; } } }
         /// <inheritdoc/>
@@ -95,9 +89,9 @@ namespace Sels.Core.Async.TaskManagement
         /// <inheritdoc/>
         public IReadOnlyDictionary<string, object> Properties => _taskOptions.Properties;
         /// <inheritdoc/>
-        public Task OnExecuted => _callbackSource.Task;
+        public Task OnExecuted { get; private set; }
         /// <inheritdoc/>
-        public Task OnFinalized => _finalizeSource.Task;
+        public Task OnFinalized { get; protected set; }
         /// <inheritdoc/>
         public object? Result { get; private set; }
         /// <inheritdoc/>
@@ -119,19 +113,14 @@ namespace Sels.Core.Async.TaskManagement
         public void Cancel() { lock (_cancellationSource) { _cancellationSource.Cancel(); } }
         /// <inheritdoc/>
         public void CancelAfter(TimeSpan delay) { lock (_cancellationSource) { _cancellationSource.CancelAfter(delay); } }
-        /// <summary>
-        /// Completes <see cref="OnFinalized"/>.
-        /// </summary>
-        public void FinalizeTask() => _finalizeSource.SetResult(true);
 
-        private async Task OnCompleted(Task<Task<object>> completedTask)
+        private async Task OnCompleted(Task<object> completedTask)
         {
             // Get task result
             object result = null;
             try
             {
-                var task = await completedTask.ConfigureAwait(false);
-                var taskResult = await task.ConfigureAwait(false);
+                var taskResult = await completedTask.ConfigureAwait(false);
                 if (taskResult != null && taskResult != Null.Value) result = taskResult;
             }
             catch (Exception ex)
@@ -140,31 +129,23 @@ namespace Sels.Core.Async.TaskManagement
             }
             Result = result;
 
-            // Trigger continuations
-            try
-            {
-                await TriggerContinuations().ConfigureAwait(false);
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                try
-                {
-                    await _cancellationRegistration.DisposeAsync().ConfigureAwait(false);
-                }
-                finally
-                {
-                    _callbackSource.SetResult(true);
-                }               
-            }
-        }
+            await TriggerContinuations().ConfigureAwait(false);
+        } 
 
         /// <summary>
         /// Trigger the continuations for this task if there are any defined.
         /// </summary>
         protected abstract Task TriggerContinuations();
+        
+        /// <inheritdoc/>
+        public ValueTask DisposeAsync()
+        {
+            lock (_cancellationSource)
+            {
+                if (!_cancellationSource.IsCancellationRequested) _cancellationSource.Cancel();
+            }
+
+            return _cancellationRegistration.DisposeAsync();
+        }
     }
 }

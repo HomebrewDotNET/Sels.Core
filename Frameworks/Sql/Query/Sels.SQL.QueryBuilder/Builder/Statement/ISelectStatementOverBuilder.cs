@@ -18,7 +18,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// </summary>
     /// <typeparam name="TEntity">The main entity to create the query for</typeparam>
     public interface ISelectStatementOverBuilder<TEntity> : 
-        IOrderByBuilder<TEntity, 
+        IStatementOrderByBuilder<TEntity, 
         ISelectStatementOverBuilder<TEntity>>
     {
         #region Partition

@@ -26,7 +26,6 @@ namespace Sels.Core.Mediator.Event
         private readonly Notifier _parent;
         private readonly ILogger _logger;
         private readonly Dictionary<object, List<(object Sender, IMessageHandler Listener, AsyncAction<IEventListenerContext, CancellationToken> ExecuteAsync)>> _enlistedListeners = new Dictionary<object, List<(object Sender, IMessageHandler Listener, AsyncAction<IEventListenerContext, CancellationToken> ExecuteAsync)>>();
-        private readonly TaskCompletionSource<object> _transactionSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
 
         // State
         private Queue<(object Sender, IMessageHandler Listener, object Event, AsyncAction<IEventListenerContext, CancellationToken> ExecuteAsync)> _pending;
@@ -124,6 +123,13 @@ namespace Sels.Core.Mediator.Event
                 return 0;
             }
 
+            var transactionSource = runInParallel ? new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously) : null;
+
+            CancellationTokenRegistration registration = default;
+            if(transactionSource != null) registration = token.Register(() => { lock (transactionSource) { if (!transactionSource.Task.IsCompleted) transactionSource.SetCanceled(); } });
+
+            using var scope = registration;
+
             _logger.Log($"Executing <{Pending.Count}> event listeners for <{_enlistedListeners.Keys.Count}> events in a transaction");
 
             Ref<TimeSpan> duration;
@@ -139,20 +145,21 @@ namespace Sels.Core.Mediator.Event
                             {
                                 token.ThrowIfCancellationRequested();
                                 _logger.Debug($"Executing listeners <{pending.Listener}> with <{pending.Event}>");
-                                var context = new EventExecutionContext(this, pending);
+                                var context = new EventExecutionContext(this, transactionSource, pending);
                                 _executing.Add(context);
 
-                                // Execute listener
-                                context.StartExecution(token);
-                                if (!runInParallel)
+                                
+                                if (runInParallel)
                                 {
-                                    // Wait for listener to execute
-                                    _logger.Debug($"Waiting on callback from listener <{pending.Listener}>");
-                                    await context.Callback.ConfigureAwait(false);
+                                    // Execute listener
+                                    context.StartExecution(token);
+                                }
+                                else{
+                                    await context.ExecuteAsync(token).ConfigureAwait(false);
                                 }
                             }
 
-                            // Wait for all callback if running in parallel
+                            // Wait for all callbacks if running in parallel
                             if (runInParallel)
                             {
                                 _logger.Debug($"Parallel execution enabled. Waiting for callbacks");
@@ -162,11 +169,14 @@ namespace Sels.Core.Mediator.Event
 
                         // Complete transaction
                         _logger.Log($"All event listeners are ready to commit. Completing transaction");
-                        lock (_transactionSource)
+                        if (transactionSource != null)
                         {
-                            if (!_transactionSource.Task.IsCompleted)
+                            lock (transactionSource)
                             {
-                                _transactionSource.SetResult(null);
+                                if (!transactionSource.Task.IsCompleted)
+                                {
+                                    transactionSource.SetResult(null);
+                                }
                             }
                         }
                     }
@@ -174,11 +184,13 @@ namespace Sels.Core.Mediator.Event
                     {
                         _logger.Log($"Could not execute all event listeners successfully. Cancelling any waiting on transaction", ex);
 
-                        lock (_transactionSource)
+                        if (transactionSource != null)
                         {
-                            if (!_transactionSource.Task.IsCompleted)
-                            {
-                                _transactionSource.SetException(ex);
+                            lock (transactionSource) {
+                                if (!transactionSource.Task.IsCompleted)
+                                {
+                                    transactionSource.SetException(ex);
+                                }
                             }
                         }
 
@@ -224,18 +236,20 @@ namespace Sels.Core.Mediator.Event
             // Fields
             private readonly ILogger _logger;
             private readonly EventOrchestrator _parent;
-            private readonly TaskCompletionSource<object> _callbackSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+            private readonly TaskCompletionSource<object> _transactionSource;
+            private TaskCompletionSource<object> _callbackSource;
+            private Task _result;
 
             // Properties
             public (object Sender, IMessageHandler Listener, object Event, AsyncAction<IEventListenerContext, CancellationToken> ExecuteAsync) ListenerContext { get; }
             /// <summary>
             /// Completed when either the event listener executes successfully or is waiting for the transaction to commit.
             /// </summary>
-            public Task Callback => _callbackSource.Task;
+            public Task Callback => _callbackSource?.Task ?? Task.CompletedTask;
             /// <summary>
             /// Task containing the event listener execution state.
             /// </summary>
-            public Task Result { get; private set; }
+            public Task Result => _result ?? Task.CompletedTask;
             /// <inheritdoc/>
             public object Sender => ListenerContext.Sender;
             /// <inheritdoc/>
@@ -249,11 +263,12 @@ namespace Sels.Core.Mediator.Event
                 } 
             }
 
-            public EventExecutionContext(EventOrchestrator parent, (object Sender, IMessageHandler Listener, object Event, AsyncAction<IEventListenerContext, CancellationToken> ExecuteAsync) listener)
+            public EventExecutionContext(EventOrchestrator parent, TaskCompletionSource<object> transactionSource, (object Sender, IMessageHandler Listener, object Event, AsyncAction<IEventListenerContext, CancellationToken> ExecuteAsync) listener)
             {
                 _parent = parent.ValidateArgument(nameof(parent));
                 _logger = parent._logger;
                 ListenerContext = listener;
+                _transactionSource = transactionSource;
             }
             /// <inheritdoc/>
             public void EnlistEvent<TEvent>(TEvent @event)
@@ -262,38 +277,55 @@ namespace Sels.Core.Mediator.Event
                 _parent._parent.Enlist(_parent, ListenerContext.Listener, @event);
             }
             /// <inheritdoc/>
-            public Task WaitForCommitAsync()
+            public async Task WaitForCommitAsync()
             {
                 CompleteCallback();
-                return _parent._transactionSource.Task;
+                if (_transactionSource != null) await _transactionSource.Task.ConfigureAwait(false);
+                else return;
+            }
+
+            /// <summary>
+            /// Starts the execition current event listener.
+            /// </summary>
+            /// <param name="token">Token that can be cancelled by the caller</param>
+            public void StartExecution(CancellationToken token)
+            {
+                _callbackSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+                _logger.Log($"Starting executing for <{ListenerContext.Listener}> who has a priority of <{(ListenerContext.Listener.Priority.HasValue ? ListenerContext.Listener.Priority.Value.ToString() : "NULL")}>");
+                _result = ListenerContext.ExecuteAsync(this, token);
+
+                // Let orchestrator return if listener executes without transaction
+                _result.ContinueWith(x => CompleteCallback(x));
+                _logger.Log($"Started executing for <{ListenerContext.Listener}> who has a priority of <{(ListenerContext.Listener.Priority.HasValue ? ListenerContext.Listener.Priority.Value.ToString() : "NULL")}>");
             }
 
             /// <summary>
             /// Executes the current event listener.
             /// </summary>
             /// <param name="token">Token that can be cancelled by the caller</param>
-            public void StartExecution(CancellationToken token)
+            public async Task ExecuteAsync(CancellationToken token)
             {
-                _logger.Log($"Starting executing for <{ListenerContext.Listener}> who has a priority of <{(ListenerContext.Listener.Priority.HasValue ? ListenerContext.Listener.Priority.Value.ToString() : "NULL")}>");
-                Result = ListenerContext.ExecuteAsync(this, token);
+                _logger.Log($"Executing <{ListenerContext.Listener}> who has a priority of <{(ListenerContext.Listener.Priority.HasValue ? ListenerContext.Listener.Priority.Value.ToString() : "NULL")}>");
+                 await ListenerContext.ExecuteAsync(this, token).ConfigureAwait(false);
 
-                // Let orchestrator return if listener executes without transaction
-                Result.ContinueWith(x => CompleteCallback(x));
                 _logger.Log($"Started executing for <{ListenerContext.Listener}> who has a priority of <{(ListenerContext.Listener.Priority.HasValue ? ListenerContext.Listener.Priority.Value.ToString() : "NULL")}>");
             }
 
             void CompleteCallback(Task result = null)
             {
-                lock (_callbackSource)
+                if(_callbackSource != null)
                 {
-                    if (!_callbackSource.Task.IsCompleted)
+                    lock (_callbackSource)
                     {
-                        _logger.Log($"Completing callback for <{ListenerContext.Listener}>");
+                        if (!_callbackSource.Task.IsCompleted)
+                        {
+                            _logger.Log($"Completing callback for <{ListenerContext.Listener}>");
 
-                        if (result != null) _callbackSource.SetFrom(result);
-                        else _callbackSource.SetResult(null);
+                            if (result != null) _callbackSource.SetFrom(result);
+                            else _callbackSource.SetResult(null);
+                        }
                     }
-                }
+                }             
             }
         }
     }

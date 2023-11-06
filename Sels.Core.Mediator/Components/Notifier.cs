@@ -107,7 +107,6 @@ namespace Sels.Core.Mediator
 
             var ignoreExceptions = eventOptions.Options.HasFlag(EventOptions.IgnoreExceptions);
             var allowParallelExecution = eventOptions.Options.HasFlag(EventOptions.AllowParallelExecution);
-
             try
             {
                 _logger.Log($"Executing event transaction for event <{@event}> created by <{sender}> with any enlisted event listeners");

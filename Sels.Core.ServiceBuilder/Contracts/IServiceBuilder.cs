@@ -152,6 +152,11 @@ namespace Sels.Core.ServiceBuilder
         /// </summary>
         /// <returns>Current builder for method chaining</returns>
         IServiceBuilder<T, TImpl> AddIfMissing() => WithBehaviour(RegisterBehaviour.TryAdd);
+        /// <summary>
+        /// <inheritdoc cref="RegisterBehaviour.TryAddImplementation"/>
+        /// </summary>
+        /// <returns>Current builder for method chaining</returns>
+        IServiceBuilder<T, TImpl> AddIfImplementationMissing() => WithBehaviour(RegisterBehaviour.TryAddImplementation);
         #endregion
 
         #region Register
@@ -167,6 +172,12 @@ namespace Sels.Core.ServiceBuilder
         /// </summary>
         /// <returns>The service collection that the service built using this builder was added to</returns>
         IServiceCollection TryRegister() => AddIfMissing().Register();
+        /// <summary>
+        /// <inheritdoc cref="IServiceBuilder.Register"/>
+        /// Sets the register behaviour to <see cref="RegisterBehaviour.TryAddImplementation"/>.
+        /// </summary>
+        /// <returns>The service collection that the service built using this builder was added to</returns>
+        IServiceCollection TryRegisterImplementation() => AddIfImplementationMissing().Register();
         #endregion
 
         #region Events

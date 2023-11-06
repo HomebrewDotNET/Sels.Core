@@ -180,27 +180,6 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(actual, Is.AssignableTo<AbandonedMutexException>());
         }
 
-        [TestCase(TaskCreationOptions.PreferFairness)]
-        [TestCase(TaskCreationOptions.LongRunning | TaskCreationOptions.HideScheduler)]
-        [TestCase(TaskCreationOptions.RunContinuationsAsynchronously | TaskCreationOptions.DenyChildAttach)]
-        [Timeout(60000)]
-        public async Task TaskIsScheduledWithExpectedTaskCreationOptions(TaskCreationOptions creationOptions)
-        {
-            // Arrange
-            const string ScheduledName = "MainTask";
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
-            var taskManager = provider.GetRequiredService<ITaskManager>();
-
-            // Act
-            var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => Task.CompletedTask, x => x.WithCreationOptions(creationOptions));
-
-            // Assert
-            Assert.IsNotNull(scheduledTask);
-            Assert.AreEqual(creationOptions, scheduledTask.Task.CreationOptions);
-        }
-
         [TestCase(ManagedTaskOptions.GracefulCancellation)]
         [TestCase(ManagedTaskOptions.AutoRestart | ManagedTaskOptions.KeepAlive)]
         [TestCase(ManagedTaskOptions.None)]

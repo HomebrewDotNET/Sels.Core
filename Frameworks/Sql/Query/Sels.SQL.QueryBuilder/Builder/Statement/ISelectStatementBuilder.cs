@@ -25,7 +25,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         IStatementConditionBuilder<TEntity, TDerived>,
         IStatementHavingBuilder<TEntity, TDerived>,
         IStatementJoinBuilder<TEntity, TDerived>,
-        IOrderByBuilder<TEntity, TDerived>
+        IStatementOrderByBuilder<TEntity, TDerived>
     {
         #region Keywords
         /// <summary>

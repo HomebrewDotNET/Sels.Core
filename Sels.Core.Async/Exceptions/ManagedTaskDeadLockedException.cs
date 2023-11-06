@@ -16,16 +16,16 @@ namespace Sels.Core.Async
         /// <summary>
         /// The task that was deadlocked.
         /// </summary>
-        public IManagedTask[] Tasks { get; }
+        public IManagedAnonymousTask[] Tasks { get; }
 
         /// <inheritdoc cref="ManagedTaskDeadlockedException"/>
         /// <param name="tasks"><inheritdoc cref="Tasks"/></param>
-        public ManagedTaskDeadlockedException(IEnumerable<IManagedTask> tasks) : base(CreateMessage(tasks))
+        public ManagedTaskDeadlockedException(IEnumerable<IManagedAnonymousTask> tasks) : base(CreateMessage(tasks))
         {
             Tasks = tasks.ValidateArgumentNotNullOrEmpty(nameof(tasks)).ToArray();
         }
 
-        private static string CreateMessage(IEnumerable<IManagedTask> tasks)
+        private static string CreateMessage(IEnumerable<IManagedAnonymousTask> tasks)
         {
             tasks.ValidateArgumentNotNullOrEmpty(nameof(tasks));
             var message = new StringBuilder();

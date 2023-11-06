@@ -1348,6 +1348,24 @@ namespace Sels.Core
                     return await taskSource.Task.ConfigureAwait(false);
                 }
             }
+
+            /// <summary>
+            /// Returns a task that will only complete when<paramref name="token"/> is cancelled.
+            /// </summary>
+            /// <param name="token">The token to wait on</param>
+            /// <returns>Task that will only complete when<paramref name="token"/> is cancelled</returns>
+            public static async Task WaitUntilCancellation(CancellationToken token)
+            {
+                if (!token.CanBeCanceled) throw new InvalidOperationException($"CancellationToken can't be cancelled");
+
+                if (token.IsCancellationRequested) return;
+                var taskSource = new TaskCompletionSource<bool>();
+                using(token.Register(() => taskSource.SetResult(true)))
+                {
+                    if (token.IsCancellationRequested) return;
+                    await taskSource.Task.ConfigureAwait(false);
+                }
+            }
         }
         /// <summary>
         /// Contains static helper methods when coding with tasks synchronously.

@@ -112,7 +112,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// </summary>
         /// <param name="values">List of values that the expression should be compared to</param>
         /// <returns>Current builder for creating more conditions</returns>
-        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> Values(IEnumerable<object> values) => Expression(new ListExpression(values.ValidateArgument(nameof(values)).Select(x => new SqlConstantExpression(x))));
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> Values<T>(IEnumerable<T> values) => Expression(new ListExpression(values.ValidateArgument(nameof(values)).Select(x => new SqlConstantExpression(x))));
         /// <summary>
         /// Compares an expression to a list of values.
         /// </summary>
@@ -126,7 +126,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="value">The first value in the list of values to compare to</param>
         /// <param name="values">Any additional values to compare to</param>
         /// <returns>Current builder for creating more conditions</returns>
-        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> Values(object value, params object[] values) => Values(Helper.Collection.Enumerate(value, values));
+        IChainedBuilder<TEntity, IStatementConditionExpressionBuilder<TEntity>> Values<T>(T value, params T[] values) => Values(Helper.Collection.Enumerate(value, values));
         /// <summary>
         /// Compares an expression to a list of sql parameters.
         /// </summary>

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Sels.Core.Delegates.Async;
 
 namespace Sels.Core.Async.TaskManagement
 {
@@ -15,22 +16,34 @@ namespace Sels.Core.Async.TaskManagement
     /// </summary>
     public class ManagedAnonymousTask : BaseManagedTask
     {
-        /// <inheritdoc cref="ManagedAnonymousTask"/>
-        /// <param name="taskOptions">The options for this task</param>
-        /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
-        public ManagedAnonymousTask(ManagedAnonymousTaskCreationOptions taskOptions, CancellationToken cancellationToken) : base(taskOptions, cancellationToken)
-        {
-            TaskOptions = taskOptions.ValidateArgument(nameof(taskOptions));
-
-            _startSource.SetResult(true);
-        }
+        // Fields
+        private AsyncAction<ManagedAnonymousTask> _finalizeAction;
 
         // Properties
         /// <summary>
         /// The options used to create the current instance.
         /// </summary>
         public ManagedAnonymousTaskCreationOptions TaskOptions { get; }
-       
+
+        /// <inheritdoc cref="ManagedAnonymousTask"/>
+        /// <param name="taskOptions">The options for this task</param>
+        /// <param name="finalizeAction">The delegate to call to finalize the task</param>
+        /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
+        public ManagedAnonymousTask(ManagedAnonymousTaskCreationOptions taskOptions, AsyncAction<ManagedAnonymousTask> finalizeAction, CancellationToken cancellationToken) : base(taskOptions, cancellationToken)
+        {
+            _finalizeAction = finalizeAction.ValidateArgument(nameof(finalizeAction));
+            TaskOptions = taskOptions.ValidateArgument(nameof(taskOptions));
+
+            
+        }
+
+        /// <inheritdoc/>
+        public override void Start()
+        {
+            base.Start();
+            OnFinalized = OnExecuted.ContinueWith(x => _finalizeAction(this));
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {

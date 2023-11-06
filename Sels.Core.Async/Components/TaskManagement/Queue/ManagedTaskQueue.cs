@@ -43,6 +43,12 @@ namespace Sels.Core.Async.TaskManagement.Queue
         /// <inheritdoc/>
         public int Pending => _queue.Count;
         /// <inheritdoc/>
+        public int Processing { get; private set; }
+        /// <inheritdoc/>
+        public DateTime? LastProcessed { get; set; }
+        /// <inheritdoc/>
+        public ulong Processed { get; set; }
+        /// <inheritdoc/>
         public bool? IsDisposed { get; private set; }
         /// <summary>
         /// How long to wait pending work in a queue to be processed before cancelling the pending items.
@@ -75,6 +81,13 @@ namespace Sels.Core.Async.TaskManagement.Queue
                 TryRelease();
                 return Task.CompletedTask;
             }, true);
+
+            _queue.InterceptRequest(t =>
+            {
+                _logger.Debug($"Idle worker for queue. Trying to release");
+                TryRelease();
+                return Task.FromResult<PendingTask?>(null);
+            });
 
             _ = _queue.Subscribe(Concurrency, EnqueuePending);
         }
@@ -113,6 +126,10 @@ namespace Sels.Core.Async.TaskManagement.Queue
 
         private async Task EnqueuePending(PendingTask pending, CancellationToken token)
         {
+            lock (_lock)
+            {
+                Processing++;
+            }
             using var pendingScope = pending;
             try
             {
@@ -136,6 +153,15 @@ namespace Sels.Core.Async.TaskManagement.Queue
             catch(Exception ex)
             {
                 pending.Error(ex);
+            }
+            finally
+            {
+                lock (_lock)
+                {
+                    Processing--;
+                    LastProcessed = DateTime.Now;
+                    Processed++;
+                }
             }
         }
 
@@ -162,6 +188,10 @@ namespace Sels.Core.Async.TaskManagement.Queue
                 else if (Pending > 0)
                 {
                     _logger.Debug($"Queue still has pending work. Can't release");
+                }
+                else if (Processing > 0)
+                {
+                    _logger.Debug($"Queue is still processing. Can't release");
                 }
                 else
                 {

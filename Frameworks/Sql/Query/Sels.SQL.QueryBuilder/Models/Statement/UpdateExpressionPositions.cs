@@ -38,6 +38,14 @@
         /// </summary>
         Where,
         /// <summary>
+        /// Expression should be located after the conditions.
+        /// </summary>
+        AfterWhere,
+        /// <summary>
+        /// Expression should be located with the order by statements.
+        /// </summary>
+        OrderBy,
+        /// <summary>
         /// Expression should be located after all other expressions.
         /// </summary>
         After

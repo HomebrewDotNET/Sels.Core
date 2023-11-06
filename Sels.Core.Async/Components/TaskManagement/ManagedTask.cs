@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Sels.Core.Extensions;
 using Sels.Core.Models;
+using static Sels.Core.Delegates.Async;
 
 namespace Sels.Core.Async.TaskManagement
 {
@@ -14,21 +15,8 @@ namespace Sels.Core.Async.TaskManagement
     /// </summary>
     public class ManagedTask : BaseManagedTask, IManagedTask
     {
-        /// <inheritdoc cref="ManagedTask"/>
-        /// <param name="owner">The instance the managed task is tied to</param>
-        /// <param name="name">Optional unique name for the task</param>
-        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
-        /// <param name="taskOptions">The options for this task</param>
-        /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
-        public ManagedTask(object owner, string? name, bool isGlobal, ManagedTaskCreationOptions taskOptions, CancellationToken cancellationToken) : base(taskOptions, cancellationToken)
-        {
-            Owner = owner.ValidateArgument(nameof(owner));
-            Name = name;
-            IsGlobal = isGlobal;
-            TaskOptions = taskOptions.ValidateArgument(nameof(taskOptions));
-
-            _startSource.SetResult(true);
-        }
+        // Fields
+        private readonly AsyncAction<ManagedTask> _finalizeAction;
 
         // Properties
         /// <summary>
@@ -41,6 +29,29 @@ namespace Sels.Core.Async.TaskManagement
         public string? Name { get; }
         /// <inheritdoc/>
         public bool IsGlobal { get; }
+
+        /// <inheritdoc cref="ManagedTask"/>
+        /// <param name="owner">The instance the managed task is tied to</param>
+        /// <param name="name">Optional unique name for the task</param>
+        /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
+        /// <param name="finalizeAction">The delegate to call to finalize the task</param>
+        /// <param name="taskOptions">The options for this task</param>
+        /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
+        public ManagedTask(object owner, string? name, bool isGlobal, ManagedTaskCreationOptions taskOptions, AsyncAction<ManagedTask> finalizeAction, CancellationToken cancellationToken) : base(taskOptions, cancellationToken)
+        {
+            _finalizeAction = finalizeAction.ValidateArgument(nameof(finalizeAction));
+            Owner = owner.ValidateArgument(nameof(owner));
+            Name = name;
+            IsGlobal = isGlobal;
+            TaskOptions = taskOptions.ValidateArgument(nameof(taskOptions));
+        }
+
+        /// <inheritdoc/>
+        public override void Start()
+        {
+            base.Start();
+            OnFinalized = OnExecuted.ContinueWith(x => _finalizeAction(this));
+        }
 
         /// <inheritdoc/>
         protected override async Task TriggerContinuations()

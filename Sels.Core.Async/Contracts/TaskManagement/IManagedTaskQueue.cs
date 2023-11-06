@@ -22,6 +22,19 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         int Pending { get; }
         /// <summary>
+        /// How many tasks are currently being processed by the queue.
+        /// </summary>
+        int Processing { get; }
+        /// <summary>
+        /// The date when the last item was processed by the queue. Will be null if the queue never processed anything.
+        /// </summary>
+        DateTime? LastProcessed { get; }
+        /// <summary>
+        /// How many tasks were processed by the queue.
+        /// </summary>
+        ulong Processed { get; }
+
+        /// <summary>
         /// Uses <paramref name="schedulerAction"/> to create the task to schedule on the queue.
         /// </summary>
         /// <param name="schedulerAction">Delegate used to create the managed task to schedule</param>

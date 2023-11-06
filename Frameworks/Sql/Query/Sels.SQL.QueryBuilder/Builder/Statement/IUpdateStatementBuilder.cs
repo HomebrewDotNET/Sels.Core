@@ -8,7 +8,12 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// </summary>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
     /// <typeparam name="TEntity">The main entity to update</typeparam>
-    public interface IUpdateStatementBuilder<TEntity, out TDerived> : IStatementQueryBuilder<TEntity, UpdateExpressionPositions, TDerived>, IStatementSetBuilder<TEntity, ISharedExpressionBuilder<TEntity, TDerived>>, IStatementConditionBuilder<TEntity, TDerived>, IStatementJoinBuilder<TEntity, TDerived>
+    public interface IUpdateStatementBuilder<TEntity, out TDerived> : 
+        IStatementQueryBuilder<TEntity, UpdateExpressionPositions, TDerived>, 
+        IStatementSetBuilder<TEntity, ISharedExpressionBuilder<TEntity, TDerived>>, 
+        IStatementConditionBuilder<TEntity, TDerived>, 
+        IStatementJoinBuilder<TEntity, TDerived>,
+        IStatementOrderByBuilder<TEntity, TDerived>
     {
         #region Table
         /// <summary>

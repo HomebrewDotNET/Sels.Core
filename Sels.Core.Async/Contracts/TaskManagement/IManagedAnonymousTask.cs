@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Sels.Core.Extensions.Conversion;
+using Sels.Core.Extensions.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -62,7 +64,7 @@ namespace Sels.Core.Async.TaskManagement
         DateTime? FinishedDate { get; }
 
         /// <summary>
-        /// If this task hould be kept alive if it fails with an exception.
+        /// If this task should be kept alive if it fails with an exception.
         /// </summary>
         bool KeepAlive => Options.HasFlag(ManagedTaskOptions.KeepAlive);
         /// <summary>
@@ -88,5 +90,31 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         /// <param name="delay">How long to wait before cancelling</param>
         void CancelAfter(TimeSpan delay);
+
+        /// <summary>
+        /// Returns the result of the executed task.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the result</typeparam>
+        /// <returns><see cref="Result"/> of the executed task casted to <typeparamref name="T"/></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public T GetResult<T>()
+        {
+            if (!OnExecuted.IsCompleted) throw new InvalidOperationException($"Managed task is not executed yet");
+
+            if(Result is Exception exception) exception.Rethrow();
+            return Result.CastTo<T>();
+        }
+
+        /// <summary>
+        /// Waits for the task to execute and returns the result of the executed task.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the result</typeparam>
+        /// <param name="token">Optional token to cancel the request</param>
+        /// <returns><see cref="Result"/> of the executed task casted to <typeparamref name="T"/></returns>
+        public async Task<T> GetResultAsync<T>(CancellationToken token = default)
+        {
+            await Helper.Async.WaitOn(OnExecuted, token).ConfigureAwait(false);
+            return GetResult<T>();
+        }
     }
 }

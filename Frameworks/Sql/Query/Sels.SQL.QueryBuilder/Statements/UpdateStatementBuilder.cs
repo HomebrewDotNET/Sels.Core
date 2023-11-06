@@ -85,6 +85,13 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
 
             return this;
         }
+
+        /// <inheritdoc/>
+        public IUpdateStatementBuilder<TEntity> OrderBy(IExpression expression)
+        {
+            expression.ValidateArgument(nameof(expression));
+            return Expression(expression, UpdateExpressionPositions.OrderBy);
+        }
         #endregion
 
         /// <inheritdoc/>

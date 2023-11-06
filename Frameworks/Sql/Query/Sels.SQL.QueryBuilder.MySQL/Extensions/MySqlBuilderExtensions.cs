@@ -92,7 +92,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// Limits the amount of rows returned.
         /// </summary>
         /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-        /// <typeparam name="TEntity">The main entity to insert</typeparam>
+        /// <typeparam name="TEntity">The main entity to select</typeparam>
         /// <param name="builder">The builder to add the expression to</param>
         /// <param name="limit">Object containing the amount of rows to limit by</param>
         /// <returns>Current builder for method chaining</returns>
@@ -107,7 +107,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// Limits the amount of rows returned.
         /// </summary>
         /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
-        /// <typeparam name="TEntity">The main entity to insert</typeparam>
+        /// <typeparam name="TEntity">The main entity to select</typeparam>
         /// <param name="builder">The builder to add the expression to</param>
         /// <param name="offset">Optional offset containing the amount of rows to skip</param>
         /// <param name="limit">Object containing the amount of rows to limit by</param>
@@ -133,6 +133,100 @@ namespace Sels.SQL.QueryBuilder.MySQL
             else
             {
                 return builder.Expression(new LimitOffsetExpression(limitExpression, offsetExprresion), SelectExpressionPositions.After, 0);
+            }
+        }
+        /// <summary>
+        /// Limits the amount of rows updated.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to update</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="limit">Object containing the amount of rows to limit by</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived Limit<TEntity, TDerived>(this IUpdateStatementBuilder<TEntity, TDerived> builder, object limit)
+        {
+            builder.ValidateArgument(nameof(builder));
+            limit.ValidateArgument(nameof(limit));
+
+            return Limit(builder, null, limit);
+        }
+        /// <summary>
+        /// Limits the amount of rows updated.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to update</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="offset">Optional offset containing the amount of rows to skip</param>
+        /// <param name="limit">Object containing the amount of rows to limit by</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived Limit<TEntity, TDerived>(this IUpdateStatementBuilder<TEntity, TDerived> builder, object offset, object limit)
+        {
+            builder.ValidateArgument(nameof(builder));
+            limit.ValidateArgument(nameof(limit));
+
+            var limitExpression = limit is IExpression lE ? lE : new ConstantExpression(limit);
+            var offsetExprresion = offset != null ? offset is IExpression oE ? oE : new ConstantExpression(offset) : null;
+
+            var expression = builder.InnerExpressions.FirstOrDefault(x => x is LimitOffsetExpression).CastToOrDefault<LimitOffsetExpression>();
+
+            // Update existing expression
+            if (expression != null)
+            {
+                expression.LimitExpression = limitExpression;
+                expression.OffsetExpression = offsetExprresion;
+                return builder.Instance;
+            }
+            // Add new expression
+            else
+            {
+                return builder.Expression(new LimitOffsetExpression(limitExpression, offsetExprresion), UpdateExpressionPositions.After, 0);
+            }
+        }
+        /// <summary>
+        /// Limits the amount of rows deleted.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to delete</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="limit">Object containing the amount of rows to limit by</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived Limit<TEntity, TDerived>(this IDeleteStatementBuilder<TEntity, TDerived> builder, object limit)
+        {
+            builder.ValidateArgument(nameof(builder));
+            limit.ValidateArgument(nameof(limit));
+
+            return Limit(builder, null, limit);
+        }
+        /// <summary>
+        /// Limits the amount of rows deleted.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to delete</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="offset">Optional offset containing the amount of rows to skip</param>
+        /// <param name="limit">Object containing the amount of rows to limit by</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived Limit<TEntity, TDerived>(this IDeleteStatementBuilder<TEntity, TDerived> builder, object offset, object limit)
+        {
+            builder.ValidateArgument(nameof(builder));
+            limit.ValidateArgument(nameof(limit));
+
+            var limitExpression = limit is IExpression lE ? lE : new ConstantExpression(limit);
+            var offsetExprresion = offset != null ? offset is IExpression oE ? oE : new ConstantExpression(offset) : null;
+
+            var expression = builder.InnerExpressions.FirstOrDefault(x => x is LimitOffsetExpression).CastToOrDefault<LimitOffsetExpression>();
+
+            // Update existing expression
+            if (expression != null)
+            {
+                expression.LimitExpression = limitExpression;
+                expression.OffsetExpression = offsetExprresion;
+                return builder.Instance;
+            }
+            // Add new expression
+            else
+            {
+                return builder.Expression(new LimitOffsetExpression(limitExpression, offsetExprresion), DeleteExpressionPositions.After, 0);
             }
         }
         #endregion

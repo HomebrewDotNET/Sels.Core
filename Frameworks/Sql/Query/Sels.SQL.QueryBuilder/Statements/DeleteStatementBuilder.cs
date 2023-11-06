@@ -29,6 +29,13 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         public override IDeleteStatementBuilder<TEntity> Instance => this;
 
         /// <inheritdoc/>
+        public IDeleteStatementBuilder<TEntity> OrderBy(IExpression expression)
+        {
+            expression.ValidateArgument(nameof(expression));
+            return Expression(expression, DeleteExpressionPositions.OrderBy);
+        }
+
+        /// <inheritdoc/>
         public override IDeleteStatementBuilder<TEntity> Clone()
         {
             return new DeleteStatementBuilder<TEntity>(this);

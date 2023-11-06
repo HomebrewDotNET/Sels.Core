@@ -14,6 +14,10 @@
         /// </summary>
         TryAdd,
         /// <summary>
+        /// Service will be registered if no registrations exist for the service type and implementation type.
+        /// </summary>
+        TryAddImplementation,
+        /// <summary>
         /// Any existing registrations for the service type will be removed and replaced with the new service.
         /// </summary>
         Replace

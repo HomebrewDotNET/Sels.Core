@@ -8,7 +8,11 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// </summary>
     /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
     /// <typeparam name="TEntity">The main entity to delete</typeparam>
-    public interface IDeleteStatementBuilder<TEntity, out TDerived> : IStatementQueryBuilder<TEntity, DeleteExpressionPositions, TDerived>, IStatementConditionBuilder<TEntity, TDerived>, IStatementJoinBuilder<TEntity, TDerived>
+    public interface IDeleteStatementBuilder<TEntity, out TDerived> : 
+        IStatementQueryBuilder<TEntity, DeleteExpressionPositions, TDerived>, 
+        IStatementConditionBuilder<TEntity, TDerived>, 
+        IStatementJoinBuilder<TEntity, TDerived>,
+        IStatementOrderByBuilder<TEntity, TDerived>
     {
         #region From
         /// <summary>

@@ -14,7 +14,7 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
     /// </summary>
     /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
     /// <typeparam name="TDerived">The type inheriting the interface</typeparam>
-    public interface IOrderByBuilder<TEntity, out TDerived>
+    public interface IStatementOrderByBuilder<TEntity, out TDerived>
     {
         /// <summary>
         /// Adds <paramref name="expression"/> that contains the value to order by.

@@ -71,7 +71,7 @@ namespace Sels.Core.Async.Queue
                     }
                     queue.Logger.Log($"Worker <{workerId}> cancelled. Won't handle items comming from <{queue}> anymore");
 
-                }, x => x.WithManagedOptions(ManagedTaskOptions.KeepAlive | ManagedTaskOptions.GracefulCancellation).WithCreationOptions(TaskCreationOptions.LongRunning), tokenSource.Token);
+                }, x => x.WithManagedOptions(ManagedTaskOptions.KeepAlive | ManagedTaskOptions.GracefulCancellation), tokenSource.Token);
             });
         }
 

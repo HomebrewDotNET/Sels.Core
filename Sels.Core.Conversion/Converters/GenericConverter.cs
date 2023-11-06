@@ -47,9 +47,9 @@ namespace Sels.Core.Conversion.Converters
         #region Conversion
         /// <inheritdoc/>
         public bool CanConvert(object value, Type convertType, IReadOnlyDictionary<string, object> arguments = null)
-        {
-            value.ValidateArgument(nameof(value));
+        {            
             convertType.ValidateArgument(nameof(convertType));
+            if (value == null) return false;
 
             var convertableType = value.GetType();
             return convertableType.Equals(convertType) || (_converters.HasValue() && _converters.Any(x => x.CanConvert(value, convertType, arguments)));

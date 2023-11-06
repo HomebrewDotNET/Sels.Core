@@ -327,7 +327,7 @@ namespace Sels.Core.Mediator.Test.Components
             {
                 foreach (var i in Enumerable.Range(1, amount))
                 {
-                    x.AddEventListener((c, e, t) => Task.CompletedTask);
+                    x.AddEventListener((c, e, t) => c.WaitForCommitAsync());
                 }
             });
             var notifier = provider.GetRequiredService<INotifier>();
