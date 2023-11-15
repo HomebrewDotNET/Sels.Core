@@ -390,7 +390,7 @@ namespace Sels.Core.Data.MySQL
                     {
                         parameters.AddParameter($"{property.Name}[{i}]", values[i]);
                     }
-                    return builder.Column(dataSet, property.Name.TrimEnd('s')).In.Values(LinqExtensions.Select(values, (x, i) => new ParameterExpression($"{property.Name}[{i}]")));
+                    return builder.Column(dataSet, property.Name.TrimEnd('s')).In.Values(values.Select((x, i) => new ParameterExpression($"{property.Name}[{i}]")));
                 }
                 else
                 {

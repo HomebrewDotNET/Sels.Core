@@ -821,7 +821,7 @@ namespace Sels.Core
             {
                 lock(_threadLock)
                 {
-                    return new SystemRandom(++_threadSeed);
+                    return new SystemRandom(++_threadSeed+ Environment.TickCount);
                 }
             });
             /// <summary>

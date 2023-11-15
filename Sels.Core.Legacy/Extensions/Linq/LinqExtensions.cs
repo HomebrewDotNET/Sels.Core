@@ -112,28 +112,6 @@ namespace Sels.Core.Extensions.Linq
                 }
             }
         }
-
-        /// <summary>
-        /// Selects a new value of type <typeparamref name="TSelect"/> from <typeparamref name="T"/> for each element in <paramref name="source"/>.
-        /// </summary>
-        /// <typeparam name="T">The type to select a new value from</typeparam>
-        /// <typeparam name="TSelect">The type selected from <typeparamref name="T"/></typeparam>
-        /// <param name="source">Enumerator with the elements to select a new value from</param>
-        /// <param name="selector">The func that selects the new value of type <typeparamref name="TSelect"/> from <typeparamref name="T"/>. First arg is the index, second arg is the element</param>
-        /// <returns>An enumerator returning all selected values of type <typeparamref name="TSelect"/> from all elements of type  <typeparamref name="T"/> in <paramref name="source"/></returns>
-        public static IEnumerable<TSelect> Select<TSelect, T>(this IEnumerable<T> source, Func<int, T, TSelect> selector)
-        {
-            source.ValidateArgument(nameof(source));
-            selector.ValidateArgument(nameof(selector));
-
-            var counter = 0;
-            foreach (var item in source)
-            {
-                yield return selector(counter, item);
-
-                counter++;
-            }
-        }
         #endregion
 
         #region ForceSelect
