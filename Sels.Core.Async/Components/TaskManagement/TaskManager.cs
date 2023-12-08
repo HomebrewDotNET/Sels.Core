@@ -466,7 +466,7 @@ namespace Sels.Core.Async.TaskManagement
                 var deadLockedTasks = tasks.Where(x => !x.OnFinalized.IsCompleted).ToArray();
                 if (deadLockedTasks.HasValue())
                 {
-                    _logger.Log(LogLevel.Error, $"Could not stop all managed tasks within <{_optionsMonitor.CurrentValue.DeadlockWaitTime}>. Detected <{deadLockedTasks.Length}> deadlocked tasks", exception);
+                    _logger.LogException(LogLevel.Error, $"Could not stop all managed tasks within <{_optionsMonitor.CurrentValue.DeadlockWaitTime}>. Detected <{deadLockedTasks.Length}> deadlocked tasks", exception);
 
                     throw new ManagedTaskDeadlockedException(deadLockedTasks);
                 }
@@ -703,12 +703,12 @@ namespace Sels.Core.Async.TaskManagement
                 {
                     if (task.Options.HasFlag(ManagedTaskOptions.KeepAlive) && task.Result is Exception exception && !(exception is OperationCanceledException))
                     {
-                        _logger.Log(LogLevel.Debug, exception, $"{task} has keep alive enabled and failed with an exception. Restarting task");
+                        _logger.LogException(LogLevel.Debug, $"{task} has keep alive enabled and failed with an exception. Restarting task", exception);
                         ScheduleAnonymous(task.TaskOptions, task.Token);
                     }
                     else if (task.Options.HasFlag(ManagedTaskOptions.AutoRestart) && !(task.Result is Exception))
                     {
-                        _logger.Log(LogLevel.Debug, $"{task} has keep auto restart enabled and executed successfully. Restarting task");
+                        _logger.LogMessage(LogLevel.Debug, $"{task} has keep auto restart enabled and executed successfully. Restarting task");
                         ScheduleAnonymous(task.TaskOptions, task.Token);
                     }
                 }
@@ -755,14 +755,14 @@ namespace Sels.Core.Async.TaskManagement
                 {
                     if (task.Options.HasFlag(ManagedTaskOptions.KeepAlive) && task.Result is Exception exception)
                     {
-                        _logger.Log(LogLevel.Debug, exception, $"{task} has keep alive enabled and failed with an exception. Restarting task");
+                        _logger.LogException(LogLevel.Debug, $"{task} has keep alive enabled and failed with an exception. Restarting task", exception);
 
                         if (task.Name.HasValue()) await ScheduleNamed(task.Owner, task.Name, task.IsGlobal, task.TaskOptions, task.Token).ConfigureAwait(false);
                         else ScheduleUnnamed(task.Owner, task.TaskOptions, task.Token);
                     }
                     else if (task.Options.HasFlag(ManagedTaskOptions.AutoRestart) && !(task.Result is Exception))
                     {
-                        _logger.Log(LogLevel.Debug, $"{task} has keep auto restart enabled and executed successfully. Restarting task");
+                        _logger.LogMessage(LogLevel.Debug, $"{task} has keep auto restart enabled and executed successfully. Restarting task");
 
                         if (task.Name.HasValue()) await ScheduleNamed(task.Owner, task.Name, task.IsGlobal, task.TaskOptions, task.Token).ConfigureAwait(false);
                         else ScheduleUnnamed(task.Owner, task.TaskOptions, task.Token);

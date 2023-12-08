@@ -226,6 +226,55 @@ namespace Sels.Core.Extensions.Conversion
 
             return source.GroupAsDictionary(keySelector, x => x);
         }
+        /// <summary>
+        /// Creates new dictionary by grouping the items in <paramref name="source"/>. <paramref name="keySelector"/> will select the key for each item and <paramref name="valueSelector"/> will select the value for each item.
+        /// </summary>
+        /// <typeparam name="TKey">Key type for dictionary</typeparam>
+        /// <typeparam name="TValue">Value type for dictionary</typeparam>
+        /// <typeparam name="T">Collection type of <paramref name="source"/></typeparam>
+        /// <param name="source">Items to group</param>
+        /// <param name="keySelector">Func that selects key for each item</param>
+        /// <param name="valueSelector">Func that selects value for each item</param>
+        /// <param name="equalityComparer">The equality comparer to use when comparing keys</param>
+        /// <returns>Dictionary with grouped items from <paramref name="source"/></returns>
+        public static Dictionary<TKey, List<TValue>> GroupAsDictionary<TKey, TValue, T>(this IEnumerable<T> source, Func<T, TKey> keySelector, Func<T, TValue> valueSelector, IEqualityComparer<TKey> equalityComparer)
+        {
+            keySelector.ValidateArgument(nameof(keySelector));
+            valueSelector.ValidateArgument(nameof(keySelector));
+            equalityComparer.ValidateArgument(nameof(equalityComparer));
+
+            Dictionary<TKey, List<TValue>> dictionary = new Dictionary<TKey, List<TValue>>(equalityComparer);
+
+            if (source.HasValue())
+            {
+                foreach (var item in source)
+                {
+                    var key = keySelector(item);
+                    var value = valueSelector(item);
+
+                    dictionary.AddValueToList(key, value);
+                }
+            }
+
+            return dictionary;
+        }
+
+        /// <summary>
+        /// Creates new dictionary by grouping the items in <paramref name="source"/>. <paramref name="keySelector"/> will select the key for each item.
+        /// </summary>
+        /// <typeparam name="TKey">Key type for dictionary</typeparam>
+        /// <typeparam name="T">Collection type of <paramref name="source"/></typeparam>
+        /// <param name="source">Items to group</param>
+        /// <param name="keySelector">Func that selects key for each item</param>
+        /// <param name="equalityComparer">The equality comparer to use when comparing keys</param>
+        /// <returns>Dictionary with grouped items from <paramref name="source"/></returns>
+        public static Dictionary<TKey, List<T>> GroupAsDictionary<TKey, T>(this IEnumerable<T> source, Func<T, TKey> keySelector, IEqualityComparer<TKey> equalityComparer)
+        {
+            keySelector.ValidateArgument(nameof(keySelector));
+            equalityComparer.ValidateArgument(nameof(equalityComparer));
+
+            return source.GroupAsDictionary(keySelector, x => x, equalityComparer);
+        }
         #endregion
 
         #region DivideInto
