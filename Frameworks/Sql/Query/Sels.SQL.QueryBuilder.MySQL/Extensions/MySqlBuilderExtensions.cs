@@ -31,6 +31,19 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
             return builder.InnerExpressions.Any(x => x is ForUpdateExpression) ? builder.Instance : builder.Expression(ForUpdateExpression.Instance, SelectExpressionPositions.After, 1);
         }
+        /// <summary>
+        /// Locks the selected rows for updating within the same transaction but skip rows that are already locked.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to select</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived ForUpdateSkipLocked<TEntity, TDerived>(this ISelectStatementBuilder<TEntity, TDerived> builder)
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            return builder.InnerExpressions.Any(x => x is ForUpdateExpressionSkipLocked) ? builder.Instance : builder.Expression(ForUpdateExpressionSkipLocked.Instance, SelectExpressionPositions.After, 1);
+        }
 
         #region OnDuplicateKeyUpdate
         /// <summary>

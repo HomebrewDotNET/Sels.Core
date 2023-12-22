@@ -23,6 +23,7 @@ using Sels.Core.Extensions.Reflection;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Text;
 using Newtonsoft.Json.Linq;
+using Sels.Core.Async.Components.TaskManagement;
 
 namespace Sels.Core.Async.TaskManagement
 {
@@ -30,6 +31,7 @@ namespace Sels.Core.Async.TaskManagement
     public class TaskManager : ITaskManager, IAsyncExposedDisposable
     {
         // Fields
+        private readonly CancellationTokenSource _cancelSource = new CancellationTokenSource();
         private readonly HashSet<ManagedAnonymousTask> _anonymousTasks = new HashSet<ManagedAnonymousTask>();
         private readonly ConcurrentDictionary<string, ManagedTask> _globalManagedTasks;
         private readonly ConcurrentDictionary<object, OwnedTasks> _ownedTasks;
@@ -128,6 +130,29 @@ namespace Sels.Core.Async.TaskManagement
             {
                 return Task.FromException<IManagedTask>(ex);
             }
+        }
+        /// <inheritdoc/>
+        public virtual IDelayedPendingTask<IManagedTask> ScheduleDelayed(TimeSpan delay, Func<ITaskManager, CancellationToken, Task<IManagedTask>> schedulerAction)
+        {
+            schedulerAction.ValidateArgument(nameof(schedulerAction));
+
+            _logger.Log($"Scheduling new managed task with a delay of <{delay}>");
+            return new DelayedPendingManagedTask(schedulerAction, this, delay, _cancelSource.Token);
+        }
+        /// <inheritdoc/>
+        public virtual IDelayedPendingTask<IManagedTask> ScheduleDelayed(TimeSpan delay, Func<ITaskManager, CancellationToken, IManagedTask> schedulerAction)
+        {
+            schedulerAction.ValidateArgument(nameof(schedulerAction));
+            _logger.Log($"Scheduling new managed task with a delay of <{delay}>");
+            return new DelayedPendingManagedTask(schedulerAction, this, delay, _cancelSource.Token);
+        }
+        /// <inheritdoc/>
+        public virtual IDelayedPendingTask<IManagedAnonymousTask> ScheduleDelayed(TimeSpan delay, Func<ITaskManager, CancellationToken, IManagedAnonymousTask> schedulerAction)
+        {
+            schedulerAction.ValidateArgument(nameof(schedulerAction));
+
+            _logger.Log($"Scheduling new anonymous task with a delay of <{delay}>");
+            return new DelayedPendingAnonymousTask(schedulerAction, this, delay, _cancelSource.Token);
         }
 
         /// <inheritdoc/>
@@ -498,7 +523,7 @@ namespace Sels.Core.Async.TaskManagement
             lock (_anonymousTasks)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var task = new ManagedAnonymousTask(taskOptions, x => { CompleteTask(x); return Task.CompletedTask; }, cancellationToken);
+                var task = new ManagedAnonymousTask(taskOptions, x => { CompleteTask(x); return Task.CompletedTask; }, _optionsMonitor.CurrentValue.DeadlockWaitTime, cancellationToken);
 
                 _anonymousTasks.Add(task);
                 task.Start();
@@ -523,7 +548,7 @@ namespace Sels.Core.Async.TaskManagement
             lock (owned)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var task = new ManagedTask(owner, null, false, taskOptions, x => CompleteTask(x), cancellationToken);
+                var task = new ManagedTask(owner, null, false, taskOptions, x => CompleteTask(x), _optionsMonitor.CurrentValue.DeadlockWaitTime, cancellationToken);
 
                 owned.Tasks.Add(task);
                 task.Start();
@@ -649,7 +674,7 @@ namespace Sels.Core.Async.TaskManagement
             if (existingTask == null)
             {
                 // Create new
-                var task = new ManagedTask(owner, name, isGlobal, taskOptions, x => CompleteTask(x), cancellationToken);
+                var task = new ManagedTask(owner, name, isGlobal, taskOptions, x => CompleteTask(x), _optionsMonitor.CurrentValue.DeadlockWaitTime, cancellationToken);
 
                 // Store
                 if (isGlobal)
@@ -803,6 +828,11 @@ namespace Sels.Core.Async.TaskManagement
             using (new ExecutedAction(x => IsDisposed = x))
             {
                 _logger.Log($"Disposing task manager");
+
+                // Cancel pending tasks first
+                lock(_cancelSource){
+                    _cancelSource.Cancel();
+                }
 
                 while(_globalQueues.HasValue() || _anonymousTasks.HasValue() || _ownedTasks.HasValue() || _globalManagedTasks.HasValue())
                 {

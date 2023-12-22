@@ -46,7 +46,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sels.Core.Processing\Sels.Core.Processing.csproj" />
-	<PackageReference Include="NCrontab.Signed" Version="3.3.2" />
+	<PackageReference Include="NCrontab.Signed" Version="3.3.3" />
   </ItemGroup>
 
 </Project>

@@ -19,7 +19,7 @@ namespace Sels.Core.Mediator.Event
     {
         // Fields
         private readonly ILogger _logger;
-        private readonly SynchronizedCollection<IEventListener> _listeners = new SynchronizedCollection<IEventListener>();
+        private readonly List<IEventListener> _listeners = new List<IEventListener>();
         private readonly IServiceProvider _serviceProvider;
 
         /// <inheritdoc cref="EventSubscriptionManager"/>
@@ -36,7 +36,7 @@ namespace Sels.Core.Mediator.Event
         {
             using var methodLogger = _logger.TraceMethod(this);
 
-            lock (_listeners.SyncRoot)
+            lock (_listeners)
             {
                 return _listeners.ToArray();
             }
@@ -107,7 +107,7 @@ namespace Sels.Core.Mediator.Event
     {
         // Fields
         private readonly ILogger _logger;
-        private readonly SynchronizedCollection<IEventListener<TEvent>> _listeners = new SynchronizedCollection<IEventListener<TEvent>>();
+        private readonly List<IEventListener<TEvent>> _listeners = new List<IEventListener<TEvent>>();
 
         /// <inheritdoc cref="EventSubscriptionManager{TEvent}"/>
         /// <param name="logger">Optional logger for tracing</param>
@@ -120,7 +120,7 @@ namespace Sels.Core.Mediator.Event
         public IEventListener<TEvent>[] GetAllListeners() 
         {
             using var methodLogger = _logger.TraceMethod(this);
-            lock (_listeners.SyncRoot)
+            lock (_listeners)
             {
                 return _listeners.ToArray();
             }

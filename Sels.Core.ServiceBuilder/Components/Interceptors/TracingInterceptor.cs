@@ -30,7 +30,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         private ExceptionTracer _exceptionTracer;
 
         /// <inheritdoc cref="TracingInterceptor"/>
-        /// <param name="logger">Optional logger for tracing</param>
+        /// <param name="logger">Optionall logger for tracing</param>
         public TracingInterceptor(ILogger<TracingInterceptor> logger = null)
         {
             _logger = logger;

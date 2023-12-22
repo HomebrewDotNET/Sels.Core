@@ -1,11 +1,13 @@
 ﻿using Sels.Core.Async.TaskManagement;
 using Sels.Core.Extensions;
+using Sels.Core.Extensions.Conversion;
 using Sels.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using static Sels.Core.Delegates.Async;
 
 namespace Sels.Core.Async.TaskManagement
@@ -16,6 +18,8 @@ namespace Sels.Core.Async.TaskManagement
     public abstract class BaseManagedTask : IManagedAnonymousTask, IAsyncDisposable
     {
         // Fields
+        private readonly TimeSpan _maxCancelTime;
+        private readonly TaskCompletionSource<bool> _onExecutedSource = new TaskCompletionSource<bool>();
         private readonly ManagedTaskCreationSharedOptions _taskOptions;
         private readonly CancellationTokenSource _cancellationSource = new CancellationTokenSource();
 
@@ -29,17 +33,22 @@ namespace Sels.Core.Async.TaskManagement
         /// </summary>
         protected List<IManagedAnonymousTask> _anonymousContinuations;
         private CancellationTokenRegistration _cancellationRegistration;
+        private CancellationTokenRegistration _cancellingRegistration;
+        private System.Timers.Timer _deadlockTimer;
 
         /// <inheritdoc cref="BaseManagedTask"/>
         /// <param name="taskOptions">The options for this task</param>
+        /// <param name="maxCancelTime">How long a task is allowed to be cancelling before being declared deadlocked</param>
         /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
-        public BaseManagedTask(ManagedTaskCreationSharedOptions taskOptions, CancellationToken cancellationToken)
+        public BaseManagedTask(ManagedTaskCreationSharedOptions taskOptions, TimeSpan maxCancelTime, CancellationToken cancellationToken)
         {
             _taskOptions = taskOptions.ValidateArgument(nameof(taskOptions));
+            _maxCancelTime = maxCancelTime;
 
             // Register to cancellation
             Token = cancellationToken;
             _cancellationRegistration = cancellationToken.Register(Cancel);
+            _cancellingRegistration = _cancellationSource.Token.Register(StartDeadlockTimer);
         }
 
         /// <summary>
@@ -73,7 +82,7 @@ namespace Sels.Core.Async.TaskManagement
 
                 Task = scheduledTask;
                 // Handle task result using continuation
-                OnExecuted = scheduledTask.ContinueWith(OnCompleted);
+                scheduledTask.ContinueWith(OnCompleted);
             }
         }
 
@@ -89,7 +98,7 @@ namespace Sels.Core.Async.TaskManagement
         /// <inheritdoc/>
         public IReadOnlyDictionary<string, object> Properties => _taskOptions.Properties;
         /// <inheritdoc/>
-        public Task OnExecuted { get; private set; }
+        public Task OnExecuted => _onExecutedSource.Task;
         /// <inheritdoc/>
         public Task OnFinalized { get; protected set; }
         /// <inheritdoc/>
@@ -116,21 +125,56 @@ namespace Sels.Core.Async.TaskManagement
 
         private async Task OnCompleted(Task<object> completedTask)
         {
-            // Get task result
-            object result = null;
             try
             {
-                var taskResult = await completedTask.ConfigureAwait(false);
-                if (taskResult != null && taskResult != Null.Value) result = taskResult;
-            }
-            catch (Exception ex)
-            {
-                result = ex;
-            }
-            Result = result;
+                // Get task result
+                object result = null;
+                try
+                {
+                    var taskResult = await completedTask.ConfigureAwait(false);
+                    if (taskResult != null && taskResult != Null.Value) result = taskResult;
+                }
+                catch (Exception ex)
+                {
+                    result = ex;
+                }
+                Result = result;
 
-            await TriggerContinuations().ConfigureAwait(false);
+                await TriggerContinuations().ConfigureAwait(false);
+            }
+            finally
+            {
+                lock(_onExecutedSource)
+                {
+                    _onExecutedSource.TrySetResult(true);
+                }
+            }
         } 
+
+        private void StartDeadlockTimer()
+        {
+            lock(_cancellationSource)
+            {
+                _deadlockTimer = new System.Timers.Timer();
+                _deadlockTimer.Elapsed += (s, a) => TryDeclareDeadlocked();
+                _deadlockTimer.Interval = _maxCancelTime.TotalMilliseconds;
+                _deadlockTimer.AutoReset = false;
+                _deadlockTimer.Start();
+            }
+        }
+
+        private void TryDeclareDeadlocked()
+        {
+            lock (_cancellationSource)
+            {
+                if (Task == null || Task.IsCompleted) return;
+
+                lock (_onExecutedSource)
+                {
+                    _onExecutedSource.TrySetException(new ManagedTaskDeadlockedException(this.AsEnumerable()));
+                }
+            }
+        }
 
         /// <summary>
         /// Trigger the continuations for this task if there are any defined.
@@ -142,7 +186,18 @@ namespace Sels.Core.Async.TaskManagement
         {
             lock (_cancellationSource)
             {
+                _cancellingRegistration.Dispose();
                 if (!_cancellationSource.IsCancellationRequested) _cancellationSource.Cancel();
+            }
+
+            lock (_onExecutedSource)
+            {
+                _onExecutedSource.TrySetException(new ObjectDisposedException(GetType().Name));
+            }
+
+            lock (_cancellationSource)
+            {
+                _deadlockTimer?.Dispose();
             }
 
             return _cancellationRegistration.DisposeAsync();

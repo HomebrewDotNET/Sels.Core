@@ -36,8 +36,9 @@ namespace Sels.Core.Async.TaskManagement
         /// <param name="isGlobal">If the task is a global task. Only used if <paramref name="name"/> is set. Global task names are shared among all instances, otherwise the names are shared within the same <paramref name="owner"/></param>
         /// <param name="finalizeAction">The delegate to call to finalize the task</param>
         /// <param name="taskOptions">The options for this task</param>
+        /// <param name="maxCancelTime">How long a task is allowed to be cancelling before being declared deadlocked</param>
         /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
-        public ManagedTask(object owner, string? name, bool isGlobal, ManagedTaskCreationOptions taskOptions, AsyncAction<ManagedTask> finalizeAction, CancellationToken cancellationToken) : base(taskOptions, cancellationToken)
+        public ManagedTask(object owner, string? name, bool isGlobal, ManagedTaskCreationOptions taskOptions, AsyncAction<ManagedTask> finalizeAction, TimeSpan maxCancelTime, CancellationToken cancellationToken) : base(taskOptions, maxCancelTime, cancellationToken)
         {
             _finalizeAction = finalizeAction.ValidateArgument(nameof(finalizeAction));
             Owner = owner.ValidateArgument(nameof(owner));

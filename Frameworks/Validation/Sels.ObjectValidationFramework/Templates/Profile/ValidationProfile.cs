@@ -357,7 +357,7 @@ namespace Sels.ObjectValidationFramework.Profile
                     {
                         _logger.Debug($"Root object <{objectToValidate}> is a collection. Triggering validation for the elements");
                         var counter = 0;
-                        foreach (var element in objectToValidate.CastTo<IEnumerable>())
+                        foreach (var element in objectToValidate.CastTo<IEnumerable>().Enumerate().Where(x => x != null))
                         {
                             await ValidateObject(executionContext, element, counter).ConfigureAwait(false);
                             counter++;
@@ -436,7 +436,7 @@ namespace Sels.ObjectValidationFramework.Profile
                                     // Loop over elements in collection and trigger validation for the elements
                                     _logger.Debug($"Property {property.Name} on <{objectToValidate}> is a collection. Triggering validation for the elements");
                                     var counter = 0;
-                                    foreach (var element in value.CastTo<IEnumerable>())
+                                    foreach (var element in value.CastTo<IEnumerable>().Enumerate().Where(x => x != null))
                                     {
                                         await ValidateObject(executionContext, element, counter).ConfigureAwait(false);
                                         counter++;
@@ -472,6 +472,7 @@ namespace Sels.ObjectValidationFramework.Profile
             return _ignoredPropertyConditions[type].Any(x => x((value, property, context)));
         }
         #endregion
+
         /// <summary>
         /// Contains the state of validation executed by a validation profile.
         /// </summary>

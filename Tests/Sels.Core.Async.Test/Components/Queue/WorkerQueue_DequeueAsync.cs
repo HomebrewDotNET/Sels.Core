@@ -28,7 +28,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             var dequeued = await queue.DequeueAsync();
 
             // Assert
-            Assert.AreEqual(item, dequeued);
+            Assert.That(dequeued, Is.EqualTo(item));
         }
         [Test, Timeout(60000)]
         public async Task CallbackTaskBlocksWhenQueueIsEmpty()
@@ -45,8 +45,8 @@ namespace Sels.Core.Async.Test.Components.Queue
             await Helper.Async.Sleep(1000);
 
             // Assert
-            Assert.IsNotNull(task);
-            Assert.IsFalse(task.IsCompleted);
+            Assert.That(task, Is.Not.Null);
+            Assert.That(task.IsCompleted, Is.False);
         }
         [Test, Timeout(60000)]
         public async Task ItemGetsAssignedToRequestAndNotQueue()
@@ -66,7 +66,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             // Assert
             Assert.IsNotNull(task);
             var actual = await task;
-            Assert.AreEqual(item, actual);
+            Assert.That(actual, Is.EqualTo(item));
             Assert.AreEqual(0, queue.Count);
         }
         [Test, Timeout(60000)]

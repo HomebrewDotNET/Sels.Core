@@ -28,8 +28,9 @@ namespace Sels.Core.Async.TaskManagement
         /// <inheritdoc cref="ManagedAnonymousTask"/>
         /// <param name="taskOptions">The options for this task</param>
         /// <param name="finalizeAction">The delegate to call to finalize the task</param>
+        /// <param name="maxCancelTime">How long a task is allowed to be cancelling before being declared deadlocked</param>
         /// <param name="cancellationToken">Token that the caller can use to cancel the managed task</param>
-        public ManagedAnonymousTask(ManagedAnonymousTaskCreationOptions taskOptions, AsyncAction<ManagedAnonymousTask> finalizeAction, CancellationToken cancellationToken) : base(taskOptions, cancellationToken)
+        public ManagedAnonymousTask(ManagedAnonymousTaskCreationOptions taskOptions, AsyncAction<ManagedAnonymousTask> finalizeAction, TimeSpan maxCancelTime, CancellationToken cancellationToken) : base(taskOptions, maxCancelTime, cancellationToken)
         {
             _finalizeAction = finalizeAction.ValidateArgument(nameof(finalizeAction));
             TaskOptions = taskOptions.ValidateArgument(nameof(taskOptions));

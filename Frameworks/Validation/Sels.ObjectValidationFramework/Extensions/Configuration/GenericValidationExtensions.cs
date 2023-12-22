@@ -286,7 +286,7 @@ namespace Sels.ObjectValidationFramework.Profile
         /// <typeparam name="TTargetContext">Type of the validation context used by the current validation target</typeparam>
         /// <param name="configurator">Configurator to configure validation</param>
         /// <returns>Current configurator</returns>
-        public static IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, string> WhenNotNullOrEmpty<TEntity, TError, TBaseContext, TInfo, TTargetContext>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, string> configurator)
+        public static IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, string> NextWhenNotNullOrEmpty<TEntity, TError, TBaseContext, TInfo, TTargetContext>(this IValidationTargetConfigurator<TEntity, TError, TBaseContext, TInfo, TTargetContext, string> configurator)
         where TTargetContext : TBaseContext
         {
             configurator.ValidateArgument(nameof(configurator));

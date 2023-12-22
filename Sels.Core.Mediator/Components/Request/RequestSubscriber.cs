@@ -5,7 +5,6 @@ using Sels.Core.Mediator.Event;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Threading;
 
@@ -16,7 +15,7 @@ namespace Sels.Core.Mediator.Request
     {
         // Fields
         private readonly ILogger _logger;
-        private readonly SynchronizedCollection<IRequestHandler<TRequest, TResponse>> _handlers = new SynchronizedCollection<IRequestHandler<TRequest, TResponse>>();
+        private readonly List<IRequestHandler<TRequest, TResponse>> _handlers = new List<IRequestHandler<TRequest, TResponse>>();
 
         /// <inheritdoc cref="RequestSubscriber{TRequest, TResponse}"/>
         /// <param name="logger">Optional logger for tracing</param>
@@ -29,7 +28,7 @@ namespace Sels.Core.Mediator.Request
         public IRequestHandler<TRequest, TResponse>[] GetHandlers()
         {
             using var methodLogger = _logger.TraceMethod(this);
-            lock (_handlers.SyncRoot)
+            lock (_handlers)
             {
                 return _handlers.ToArray();
             }
@@ -40,7 +39,7 @@ namespace Sels.Core.Mediator.Request
             using var methodLogger = _logger.TraceMethod(this);
             handler.ValidateArgument(nameof(handler));
 
-            lock ( _handlers.SyncRoot)
+            lock ( _handlers)
             {
                 var subscription = new RequestSubscription(handler, typeof(TRequest), typeof(TResponse), () => Unsubscribe(handler));
                 _handlers.Add(handler);
@@ -74,7 +73,7 @@ namespace Sels.Core.Mediator.Request
     {
         // Fields
         private readonly ILogger _logger;
-        private readonly SynchronizedCollection<IRequestHandler<TRequest>> _handlers = new SynchronizedCollection<IRequestHandler<TRequest>>();
+        private readonly List<IRequestHandler<TRequest>> _handlers = new List<IRequestHandler<TRequest>>();
 
         /// <inheritdoc cref="RequestSubscriber{TRequest}"/>
         /// <param name="logger">Optional logger for tracing</param>
@@ -87,7 +86,7 @@ namespace Sels.Core.Mediator.Request
         public IRequestHandler<TRequest>[] GetHandlers()
         {
             using var methodLogger = _logger.TraceMethod(this);
-            lock (_handlers.SyncRoot)
+            lock (_handlers)
             {
                 return _handlers.ToArray();
             }
@@ -98,7 +97,7 @@ namespace Sels.Core.Mediator.Request
             using var methodLogger = _logger.TraceMethod(this);
             handler.ValidateArgument(nameof(handler));
 
-            lock (_handlers.SyncRoot)
+            lock (_handlers)
             {
                 var subscription = new RequestAcknowledgementSubscription(handler, typeof(TRequest), () => Unsubscribe(handler));
                 _handlers.Add(handler);

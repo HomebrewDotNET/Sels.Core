@@ -10,11 +10,12 @@ using System.Linq;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.Extensions.DependencyInjection;
 using Sels.Core.Extensions.Conversion;
+using Sels.Core.ServiceBuilder.Template;
 
 namespace Sels.Core.ServiceBuilder
 {
     /// <inheritdoc cref="IServiceBuilder{T, TImpl}"/>
-    public class ServiceBuilder<T, TImpl> : IServiceBuilder<T, TImpl>
+    public class ServiceBuilder<T, TImpl> : BaseProxyGenerator<T, TImpl, IServiceBuilder<T, TImpl>>, IServiceBuilder<T, TImpl>
         where TImpl : class, T
         where T : class
     {
@@ -35,7 +36,6 @@ namespace Sels.Core.ServiceBuilder
         // State
         private Func<IServiceProvider, TImpl> _factory;
         private ServiceLifetime _scope = ServiceLifetime.Scoped;
-        private readonly List<Func<IServiceProvider, IEnumerable<IInterceptor>>> _interceptorFactories = new List<Func<IServiceProvider, IEnumerable<IInterceptor>>>();
         private RegisterBehaviour _behaviour = RegisterBehaviour.Default;
 
         // Properties
@@ -49,6 +49,8 @@ namespace Sels.Core.ServiceBuilder
         public Type ImplementationType => typeof(TImpl);
         /// <inheritdoc/>
         public IServiceCollection Collection => _collection;
+        /// <inheritdoc/>
+        protected override IServiceBuilder<T, TImpl> Self => this;
 
         /// <inheritdoc cref="ServiceBuilder{T, TImpl}"/>
         /// <param name="collection"><inheritdoc cref="_collection"/></param>
@@ -98,16 +100,6 @@ namespace Sels.Core.ServiceBuilder
             _scope = scope;
             return this;
         }
-
-        /// <inheritdoc/>
-        public IServiceBuilder<T, TImpl> UsingInterceptors(Func<IServiceProvider, IEnumerable<IInterceptor>> factory)
-        {
-            factory.ValidateArgument(nameof(factory));
-
-            _interceptorFactories.Add(factory);
-
-            return this;
-        }
         /// <inheritdoc/>
         public IServiceBuilder<T, TImpl> WithBehaviour(RegisterBehaviour behaviour)
         {
@@ -150,15 +142,13 @@ namespace Sels.Core.ServiceBuilder
                             }
                         });
                         var instance = instanceFactory(p);
-
-                        // Create using defined factories
-                        var interceptors = _interceptorFactories.Select(x => x(p)).Where(x => x != null).SelectMany(x => x).Where(x => x != null);
                         var generator = p.GetRequiredService<ProxyGenerator>();
 
                         // Trigger created because proxy is not an instance of TImpl
                         OnCreatedEvent?.Invoke(p, instance);
 
-                        return generator.CreateInterfaceProxyWithTargetInterface<T>(instance, interceptors.ToArray());
+
+                        return GenerateProxy(p, generator, instance);
                     });
                 }
                 else
@@ -179,12 +169,9 @@ namespace Sels.Core.ServiceBuilder
                             }
                         });
                         var instance = instanceFactory(p);
-
-                        // Create using defined factories
-                        var interceptors = _interceptorFactories.Select(x => x(p)).Where(x => x != null).SelectMany(x => x).Where(x => x != null);
                         var generator = p.GetRequiredService<ProxyGenerator>();
 
-                        return generator.CreateClassProxyWithTarget(instance, interceptors.ToArray());
+                        return GenerateProxy(p, generator, instance);
                     });
                 }                            
             }
@@ -204,7 +191,7 @@ namespace Sels.Core.ServiceBuilder
             return _collection;
         }
 
-        private void RegisterServiceWithFactory<TInstance>(Func<IServiceProvider, TInstance> factory) where TInstance : class,T
+        private void RegisterServiceWithFactory<TInstance>(Func<IServiceProvider, TInstance> factory) where TInstance : class, T
         { 
             if(_behaviour == RegisterBehaviour.Replace)
             {

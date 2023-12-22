@@ -55,6 +55,7 @@ namespace Sels.Core.Async.TaskManagement
                 .ForProperty(x => x.DeadlockWaitTime)
                     .ValidIf(x => x.Value > x.Source.GracefulCancellationWaitTime, x => $"Must be larger than {nameof(x.Source.GracefulCancellationWaitTime)}")
                     .ValidIf(x => x.Value > x.Source.LongRunningGracefulCancellationWaitTime, x => $"Must be larger than {nameof(x.Source.LongRunningGracefulCancellationWaitTime)}")
+                    .MustBeLargerThan(TimeSpan.Zero)
                 .ForProperty(x => x.ConcurrencyLevel)
                     .MustBeLargerOrEqualTo(1);
         }

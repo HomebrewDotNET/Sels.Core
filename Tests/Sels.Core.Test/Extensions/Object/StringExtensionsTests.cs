@@ -18,7 +18,7 @@ namespace Sels.Core.Test.Extensions.Object
             var actual = format.ExtractFromFormat(parameter, value, otherParameters);
 
             // Assert
-            Assert.AreEqual(expected, actual);
+            Assert.That(expected, Is.EqualTo(actual));
         }
     }
 }

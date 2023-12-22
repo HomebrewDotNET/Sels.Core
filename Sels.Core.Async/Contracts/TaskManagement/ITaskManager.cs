@@ -63,6 +63,28 @@ namespace Sels.Core.Async.TaskManagement
         IManagedAnonymousTask ScheduleAnonymous<TOutput>(Func<CancellationToken, Task<TOutput>> action, Action<IManagedAnonymousTaskCreationOptions<TOutput>>? options = null, CancellationToken token = default);
 
         /// <summary>
+        /// Uses <paramref name="schedulerAction"/> to create the task to schedule after a delay of <paramref name="delay"/>.
+        /// </summary>
+        /// <param name="delay">How much to delay the scheduling by</param>
+        /// <param name="schedulerAction">Delegate used to create the managed task to schedule</param>
+        /// <returns><inheritdoc cref="IDelayedPendingTask{T}"/></returns>
+        IDelayedPendingTask<IManagedTask> ScheduleDelayed(TimeSpan delay, Func<ITaskManager, CancellationToken, Task<IManagedTask>> schedulerAction);
+        /// <summary>
+        /// Uses <paramref name="schedulerAction"/> to create the task to schedule after a delay of <paramref name="delay"/>.
+        /// </summary>
+        /// <param name="delay">How much to delay the scheduling by</param>
+        /// <param name="schedulerAction">Delegate used to create the managed task to schedule</param>
+        /// <returns><inheritdoc cref="IDelayedPendingTask{T}"/></returns>
+        IDelayedPendingTask<IManagedTask> ScheduleDelayed(TimeSpan delay, Func<ITaskManager, CancellationToken, IManagedTask> schedulerAction);
+        /// <summary>
+        /// Uses <paramref name="schedulerAction"/> to create the task to schedule after a delay of <paramref name="delay"/>.
+        /// </summary>
+        /// <param name="delay">How much to delay the scheduling by</param>
+        /// <param name="schedulerAction">Delegate used to create the managed task to schedule</param>
+        /// <returns><inheritdoc cref="IDelayedPendingTask{T}"/></returns>
+        IDelayedPendingTask<IManagedAnonymousTask> ScheduleDelayed(TimeSpan delay, Func<ITaskManager, CancellationToken, IManagedAnonymousTask> schedulerAction);
+
+        /// <summary>
         /// Creates a local queue tied to <paramref name="instance"/> that can be used to schedule throttled managed (anonymous) tasks.
         /// </summary>
         /// <param name="instance">The instance to tie the queue to</param>
@@ -563,6 +585,45 @@ namespace Sels.Core.Async.TaskManagement
                 await action().ConfigureAwait(false);
                 return Null.Value;
             }, options, token);
+        }
+        #endregion
+
+        #region Delay
+        /// <summary>
+        /// Uses <paramref name="schedulerAction"/> to create the task to schedule after <paramref name="scheduleTime"/>.
+        /// </summary>
+        /// <param name="scheduleTime">The date after which the pending task can be scheduled</param>
+        /// <param name="schedulerAction">Delegate used to create the managed task to schedule</param>
+        /// <returns><inheritdoc cref="IDelayedPendingTask{T}"/></returns>
+        IDelayedPendingTask<IManagedTask> ScheduleDelayed(DateTime scheduleTime, Func<ITaskManager, CancellationToken, Task<IManagedTask>> schedulerAction)
+        {
+            var delay = scheduleTime - DateTime.Now;
+
+            return ScheduleDelayed(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, schedulerAction);
+        }
+        /// <summary>
+        /// Uses <paramref name="schedulerAction"/> to create the task to schedule after <paramref name="scheduleTime"/>.
+        /// </summary>
+        /// <param name="scheduleTime">The date after which the pending task can be scheduled</param>
+        /// <param name="schedulerAction">Delegate used to create the managed task to schedule</param>
+        /// <returns><inheritdoc cref="IDelayedPendingTask{T}"/></returns>
+        IDelayedPendingTask<IManagedTask> ScheduleDelayed(DateTime scheduleTime, Func<ITaskManager, CancellationToken, IManagedTask> schedulerAction)
+        {
+            var delay = scheduleTime - DateTime.Now;
+
+            return ScheduleDelayed(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, schedulerAction);
+        }
+        /// <summary>
+        /// Uses <paramref name="schedulerAction"/> to create the task to schedule after <paramref name="scheduleTime"/>.
+        /// </summary>
+        /// <param name="scheduleTime">The date after which the pending task can be scheduled</param>
+        /// <param name="schedulerAction">Delegate used to create the managed task to schedule</param>
+        /// <returns><inheritdoc cref="IDelayedPendingTask{T}"/></returns>
+        IDelayedPendingTask<IManagedAnonymousTask> ScheduleDelayed(DateTime scheduleTime, Func<ITaskManager, CancellationToken, IManagedAnonymousTask> schedulerAction)
+        {
+            var delay = scheduleTime - DateTime.Now;
+
+            return ScheduleDelayed(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, schedulerAction);
         }
         #endregion
     }
