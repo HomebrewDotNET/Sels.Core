@@ -28,6 +28,9 @@ using Sels.Core.Extensions.Threading;
 using Sels.Core.Extensions.DateTimes;
 using Sels.Core.Extensions.Text;
 using System.Runtime.InteropServices;
+using Sels.Core.Text.Token;
+using System.Text;
+using Sels.Core.Extensions.Conversion;
 
 namespace Sels.Core
 {
@@ -352,6 +355,152 @@ namespace Sels.Core
                 values.ValidateArgument(nameof(values));
 
                 return values.JoinStringTab();
+            }
+
+            /// <summary>
+            /// Attempts to format a log message using <paramref name="template"/> parameterized by <paramref name="parameters"/>/
+            /// </summary>
+            /// <param name="template">String template that can contain parameters (e.g. {MyParameter})</param>
+            /// <param name="parameters">Optional objects that act as parameters for <paramref name="template"/></param>
+            /// <returns></returns>
+            public static string FormatAsLog(string template, params object[] parameters)
+            {
+                template.ValidateArgument(nameof(template));
+                var builder = new StringBuilder();
+
+                var tokenEnumerator = Tokenize(template).GetEnumerator();
+                var parameterPositions = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                parameters = parameters != null ? parameters : Array.Empty<object>();
+
+                while (tokenEnumerator.MoveNext())
+                {
+                    var token = tokenEnumerator.Current;
+
+                    if(token is TextToken textToken)
+                    {
+                        builder.Append(textToken.Text);
+                    }
+                    else if (token is ParameterStartToken)
+                    {
+                        TextToken parameterName = null;
+                        ParameterEndToken parameterEnd = null;
+                        // Parse
+                        if(tokenEnumerator.MoveNext())
+                        {
+                            var nextToken = tokenEnumerator.Current;
+                            // Start token is escaped
+                            if (nextToken is ParameterStartToken startToken)
+                            {
+                                builder.Append(startToken.Value);
+                                continue;
+                            }
+
+                            parameterName = nextToken.CastToOrDefault<TextToken>() ?? throw new FormatException($"Expected text token after parameter start token but got <{token}>");
+
+                            if (tokenEnumerator.MoveNext())
+                            {
+                                var lastToken = tokenEnumerator.Current;
+                                parameterEnd = lastToken.CastToOrDefault<ParameterEndToken>() ?? throw new FormatException($"Expected parameter end token after text token but got <{token}>");
+                            }
+                        }
+
+                        // Validate
+                        if( parameterName == null) throw new FormatException($"Expected text token after parameter start token but got nothing");
+                        if (!parameterName.Text.HasValue() || parameterName.Text.ContainsWhitespace()) throw new FormatException($"Parameter cannot contain whitespace characters or contain only whitespace characters");
+                        if(parameterEnd == null) throw new FormatException($"Expected parameter end token after text token but got nothing");
+
+                        // Resolve
+                        int position;
+                        if (parameterPositions.ContainsKey(parameterName.Text))
+                        {
+                            position = parameterPositions[parameterName.Text];
+                        }
+                        else
+                        {
+                            position = parameterPositions.Count;
+                            parameterPositions.Add(parameterName.Text, position);
+                        }
+
+                        if (position >= parameters.Length) throw new FormatException($"Template requires parameter in position <{position}> but only <{parameters.Length}> parameters were provided");
+                        builder.Append(parameters[position] ?? "NULL");
+                    } 
+                    else if (token is ParameterEndToken)
+                    {
+                        if (tokenEnumerator.MoveNext())
+                        {
+                            var nextToken = tokenEnumerator.Current;
+                            // Escaped end token
+                            if(nextToken is ParameterEndToken endToken)
+                            {
+                                builder.Append(endToken.Value);
+                                continue;
+                            }
+                        }
+
+                        throw new FormatException($"Unexpected parameter end token without start token");
+                    }
+                    else
+                    {
+                        throw new NotSupportedException($"Token <{token}> is not supported");
+                    }
+                }
+
+                return builder.ToString();
+            }
+
+            private static IEnumerable<object> Tokenize(string template)
+            {
+                const char ParameterStart = '{';
+                const char ParameterEnd = '}';
+                var currentPosition = 0;
+                var buffer = new List<char>();
+
+                while(currentPosition < template.Length)
+                {
+                    var currentChar = template[currentPosition];
+
+                    if (currentChar.Equals(ParameterStart))
+                    {
+                        if (TryFlushBuffer(out var textToken))
+                        {
+                            yield return textToken;
+                        }
+                        yield return new ParameterStartToken(ParameterStart.ToString());
+                        currentPosition++;
+                        continue;
+                    }
+                    else if (currentChar.Equals(ParameterEnd))
+                    {
+                        if (TryFlushBuffer(out var textToken))
+                        {
+                            yield return textToken;
+                        }
+                        yield return new ParameterEndToken(ParameterEnd.ToString());
+                        currentPosition++;
+                        continue;
+                    }
+
+                    buffer.Add(currentChar);
+                    currentPosition++;
+                }
+
+                if(TryFlushBuffer(out var lastTextToken))
+                {
+                    yield return lastTextToken;
+                }
+
+                bool TryFlushBuffer(out TextToken token)
+                {
+                    token = null;
+                    if (buffer.HasValue())
+                    {
+                        var textToken = new TextToken(buffer);
+                        buffer.Clear();
+                        token = textToken;
+                        return true;
+                    }
+                    return false;
+                }
             }
         }
         #endregion

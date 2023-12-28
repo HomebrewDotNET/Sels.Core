@@ -101,21 +101,24 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// Adds a sql parameter expression.
         /// </summary>
         /// <param name="parameter">The name of the sql parameter</param>
+        /// <param name="index">Optional index number to append after the name. Useful when using multiple entities in the same query.</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Parameter(string parameter) => Expression(new SqlParameterExpression(parameter.ValidateArgumentNotNullOrWhitespace(nameof(parameter))));
+        TReturn Parameter(string parameter, int? index = null) => Expression(new SqlParameterExpression(parameter.ValidateArgumentNotNullOrWhitespace(nameof(parameter)), index));
         /// <summary>
         /// Adds a sql parameter expression where the parameter name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type to select the property from</typeparam>
         /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="index">Optional index number to append after the name. Useful when using multiple entities in the same query.</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Parameter<T>(Expression<Func<T, object>> property) => Parameter(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name);
+        TReturn Parameter<T>(Expression<Func<T, object>> property, int? index = null) => Parameter(property.ValidateArgument(nameof(property)).ExtractProperty(nameof(property)).Name, index);
         /// <summary>
         /// Adds a sql parameter expression where the parameter name is taken from the property name selected by <paramref name="property"/> from <typeparamref name="TEntity"/>.
         /// </summary>
         /// <param name="property">The expression that points to the property to use</param>
+        /// <param name="index">Optional index number to append after the name. Useful when using multiple entities in the same query.</param>
         /// <returns>Builder for creating more expressions</returns>
-        TReturn Parameter(Expression<Func<TEntity, object>> property) => Parameter<TEntity>(property);
+        TReturn Parameter(Expression<Func<TEntity, object>> property, int? index = null) => Parameter<TEntity>(property, index);
         #endregion
 
         #region Variable

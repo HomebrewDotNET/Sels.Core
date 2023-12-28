@@ -52,7 +52,7 @@ namespace Sels.Core.Async.Templates.TaskManagement
 
             _timer = new System.Timers.Timer();
             _timer.AutoReset = false;
-            _timer.Interval = Delay.TotalMilliseconds;
+            _timer.Interval = Delay.TotalMilliseconds == 0 ? 1 : Delay.TotalMilliseconds;
             _timer.Elapsed += (s, a) => Trigger();
             _timer.Enabled = true;
             ScheduleTime = DateTime.Now.Add(Delay);

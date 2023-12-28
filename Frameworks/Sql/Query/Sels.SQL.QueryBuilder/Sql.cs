@@ -5,6 +5,10 @@ using Sels.SQL.QueryBuilder.Builder;
 using System.Text;
 using System;
 using Sels.Core.Extensions.Text;
+using Sels.SQL.QueryBuilder.Builder.Expressions;
+using Sels.SQL.QueryBuilder.Builder.Statement;
+using Sels.Core.Models;
+using Sels.SQL.QueryBuilder.Expressions;
 
 namespace Sels.SQL.QueryBuilder
 {
@@ -404,6 +408,37 @@ namespace Sels.SQL.QueryBuilder
             });
 
             return stringBuilder.ToString();
+        }
+        #endregion
+
+        #region Expression
+        /// <summary>
+        /// Contains helper methods for creating common sql expression.
+        /// </summary>
+        public static class Expressions
+        {
+            /// <inheritdoc cref="RawExpression"/>
+            /// <param name="sql">Object that will be converted to sql using <see cref="object.ToString"/></param>
+            /// <returns>A new instance of <see cref="RawExpression"/></returns>
+            public static RawExpression Raw(object sql) => new RawExpression(sql.ValidateArgument(nameof(sql)));
+            /// <inheritdoc cref="ParameterExpression"/>
+            /// <param name="name">The name of the sql parameter</param>
+            /// <param name="index">Optional index number to append after the name. Useful when using multiple entities in the same query</param>
+            /// <returns>A new instance of <see cref="ParameterExpression"/></returns>
+            public static ParameterExpression Parameter(string name, int? index = null) => new ParameterExpression(name.ValidateArgument(nameof(name)), index);
+            /// <summary>
+            /// Creates a new expression created using <paramref name="builder"/>.
+            /// </summary>
+            /// <typeparam name="T">The main entity to create the expression for</typeparam>
+            /// <param name="builder">The delegate that creates the expression to return</param>
+            /// <returns>The expression created by <paramref name="builder"/></returns>
+            public static IExpression FromBuilder<T>(Action<ISharedExpressionBuilder<T, Null>> builder) => new ExpressionBuilder<T>(builder.ValidateArgument(nameof(builder))).Expression;
+            /// <summary>
+            /// Creates a new expression created using <paramref name="builder"/>.
+            /// </summary>
+            /// <param name="builder">The delegate that creates the expression to return</param>
+            /// <returns>The expression created by <paramref name="builder"/></returns>
+            public static IExpression FromBuilder(Action<ISharedExpressionBuilder<Null, Null>> builder) => FromBuilder<Null>(builder);
         }
         #endregion
     }
