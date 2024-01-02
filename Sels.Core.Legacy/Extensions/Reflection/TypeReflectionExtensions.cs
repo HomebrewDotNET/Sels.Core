@@ -548,5 +548,111 @@ namespace Sels.Core.Extensions.Reflection
             return target;
         }
         #endregion
+
+        #region FindMethod
+        /// <summary>
+        /// Searches for a method on type <paramref name="type"/> with name <paramref name="methodName"/>.
+        /// </summary>
+        /// <param name="type">The type to search the method on</param>
+        /// <param name="methodName">The name of the method to search for</param>
+        /// <param name="genericTypes">The generic types for the method if it is generic</param>
+        /// <param name="parameterTypes">The types of the method parameters if the target method has them</param>
+        /// <param name="throwOnAmbigious">True to thorw <see cref="AmbiguousMatchException"/> when multiple matching methods are found</param>
+        /// <returns>The method if it could be found or null if nothing matched</returns>
+        /// <exception cref="AmbiguousMatchException"></exception>
+        public static MethodInfo FindMethod(this Type type, string methodName, IEnumerable<Type> genericTypes, IEnumerable<Type> parameterTypes, bool throwOnAmbigious = true)
+        {
+            type.ValidateArgument(nameof(type));
+            methodName.ValidateArgumentNotNullOrWhitespace(nameof(methodName));
+
+            var methods = type.GetMethods().Where(x =>
+            {
+                // Check name
+                if (!x.Name.Equals(methodName)) return false;
+
+                // Check generic
+                if (genericTypes.HasValue())
+                {
+                    if(!x.IsGenericMethodDefinition)
+                    {
+                        return false;
+                    }
+
+                    if(x.GetGenericArguments().Length != genericTypes.GetCount())
+                    {
+                        return false;
+                    }
+                }
+                else if(x.IsGenericMethodDefinition)
+                {
+                    return false;
+                }
+
+                // Check parameters
+                var parameters = x.GetParameters();
+                if(parameters.Length != (parameterTypes?.GetCount() ?? 0))
+                {
+                    return false;
+                }
+                // Check if types are correct
+                if (parameterTypes.HasValue())
+                {
+                    foreach(var (index, parameterType) in parameterTypes.Select((i, p) => (p, i)))
+                    {
+                        var parameter = parameters[index];
+
+                        Type fullType = parameter.ParameterType.TryGetFullType(x.DeclaringType.GetGenericArguments(), genericTypes);
+
+                        if (!parameterType.Equals(fullType))
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }).ToArray();
+
+            if (methods.Length == 0) return null;
+            if (methods.Length == 1) return methods[0];
+            if (!throwOnAmbigious) return methods[0];
+            else throw new AmbiguousMatchException($"Found multiple overloads for method {methodName}");
+        }
+
+        private static Type TryGetFullType(this Type currentType, IEnumerable<Type> classGenericTypes, IEnumerable<Type> methodGenericTypes)
+        {
+            currentType.ValidateArgument(nameof(currentType));
+
+            if (currentType.IsGenericParameter)
+            {
+                if (currentType.DeclaringMethod == null)
+                {
+                    var actualType = classGenericTypes?.Skip(currentType.GenericParameterPosition).FirstOrDefault();
+
+                    if (actualType == null) throw new NotSupportedException($"Generic type argument in position <{currentType.GenericParameterPosition}> coming from class is not supplied. Cannot determine full type");
+                    return actualType;
+                }
+                else
+                {
+                    var actualType = methodGenericTypes?.Skip(currentType.GenericParameterPosition).FirstOrDefault();
+
+                    if (actualType == null) throw new NotSupportedException($"Generic type argument in position <{currentType.GenericParameterPosition}> coming from method is not supplied. Cannot determine full type");
+                    return actualType;
+                }
+            }
+            else if (currentType.ContainsGenericParameters)
+            {
+                List<Type> genericArguments = new List<Type>();
+                foreach (var genericArgument in currentType.GetGenericArguments())
+                {
+                    var actualType = genericArgument.TryGetFullType(classGenericTypes, methodGenericTypes);
+                    genericArguments.Add(actualType);
+                }
+                return currentType.GetGenericTypeDefinition().MakeGenericType(genericArguments.ToArray());
+            }
+
+            return currentType;
+        }
+        #endregion
     }
 }

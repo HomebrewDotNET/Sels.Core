@@ -21,7 +21,21 @@ namespace Sels.Core.Extensions.Threading
         /// <returns>Scope that will release the lock when disposed</returns>
         public static Task<IAsyncDisposable> LockAsync(this SemaphoreSlim semaphore, CancellationToken token = default)
         {
+            semaphore.ValidateArgument(nameof(semaphore));
+
             return AsyncLockAction.LockAsync(semaphore, token);
+        }
+
+        /// <summary>
+        /// Places a lock using <paramref name="semaphore"/>. Thread will block until lock is acquired. Disposing will release the lock.
+        /// </summary>
+        /// <param name="semaphore">The semaphore to use for the locking</param>
+        /// <param name="token">Optional token to cancel the operation</param>
+        /// <returns>Scope that will release the lock when disposed</returns>
+        public static IDisposable Lock(this SemaphoreSlim semaphore, CancellationToken token = default)
+        {
+            semaphore.ValidateArgument(nameof(semaphore));
+            return new ScopedAction(() => semaphore.Wait(), () => semaphore.Release());
         }
 
         /// <summary>

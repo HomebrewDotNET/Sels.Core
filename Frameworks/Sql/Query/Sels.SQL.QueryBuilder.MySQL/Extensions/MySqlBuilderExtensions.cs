@@ -342,5 +342,18 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
             return builder.ColumnExpression(b => b.Expression((sb, o) => sb.Append(MySql.Functions.LastInsertId).Append("()")));
         }
+        /// <summary>
+        /// Adds a method call to <see cref="MySql.Functions.RowCount"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <returns>Builder for creating more expressions</returns>
+        public static TReturn RowCount<TEntity, TReturn>(this ISharedExpressionBuilder<TEntity, TReturn> builder)
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            return builder.Expression(Sql.Expressions.Raw($"{MySql.Functions.RowCount}()"));
+        }
     }
 }

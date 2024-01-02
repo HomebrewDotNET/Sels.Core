@@ -215,6 +215,10 @@ namespace Sels.SQL.QueryBuilder.MySQL
             /// Function that returns the last inserted id.
             /// </summary>
             public const string LastInsertId = "LAST_INSERT_ID";
+            /// <summary>
+            /// Function that returns how many rows were inserted, updated or deleted by the previous statement.
+            /// </summary>
+            public const string RowCount = "ROW_COUNT";
         }
     }
 }
