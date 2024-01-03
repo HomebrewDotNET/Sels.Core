@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Sels.Core.Extensions.Linq;
 using Sels.Core;
+using Sels.Core.Models;
+using Sels.SQL.QueryBuilder.Expressions;
 
 namespace Sels.SQL.QueryBuilder.MySQL
 {
@@ -241,6 +243,102 @@ namespace Sels.SQL.QueryBuilder.MySQL
             {
                 return builder.Expression(new LimitOffsetExpression(limitExpression, offsetExprresion), DeleteExpressionPositions.After, 0);
             }
+        }
+
+        /// <summary>
+        /// Limits the amount of rows returned.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to select</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="limitBuilder">Builder that returns the expression containing the amount of rows to limit by</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived Limit<TEntity, TDerived>(this ISelectStatementBuilder<TEntity, TDerived> builder, Action<ISharedExpressionBuilder<TEntity, Null>> limitBuilder)
+        {
+            builder.ValidateArgument(nameof(builder));
+            limitBuilder.ValidateArgument(nameof(limitBuilder));
+
+            return Limit(builder, new ExpressionBuilder<TEntity>(limitBuilder).Expression);
+        }
+        /// <summary>
+        /// Limits the amount of rows returned.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to select</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="offsetBuilder">Builder that returns the expression containing the amount of rows to skip</param>
+        /// <param name="limitBuilder">Builder that returns the expression containing the amount of rows to limit by</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived Limit<TEntity, TDerived>(this ISelectStatementBuilder<TEntity, TDerived> builder, Action<ISharedExpressionBuilder<TEntity, Null>> offsetBuilder, Action<ISharedExpressionBuilder<TEntity, Null>> limitBuilder)
+        {
+            offsetBuilder.ValidateArgument(nameof(offsetBuilder));
+            limitBuilder.ValidateArgument(nameof(limitBuilder));
+
+            return Limit(builder, new ExpressionBuilder<TEntity>(offsetBuilder).Expression, new ExpressionBuilder<TEntity>(limitBuilder).Expression);
+        }
+        /// <summary>
+        /// Limits the amount of rows updated.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to update</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="limitBuilder">Builder that returns the expression containing the amount of rows to limit by</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived Limit<TEntity, TDerived>(this IUpdateStatementBuilder<TEntity, TDerived> builder, Action<ISharedExpressionBuilder<TEntity, Null>> limitBuilder)
+        {
+            builder.ValidateArgument(nameof(builder));
+            limitBuilder.ValidateArgument(nameof(limitBuilder));
+
+            return Limit(builder, new ExpressionBuilder<TEntity>(limitBuilder).Expression);
+        }
+        /// <summary>
+        /// Limits the amount of rows updated.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to update</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="offsetBuilder">Builder that returns the expression containing the amount of rows to skip</param>
+        /// <param name="limitBuilder">Builder that returns the expression containing the amount of rows to limit by</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived Limit<TEntity, TDerived>(this IUpdateStatementBuilder<TEntity, TDerived> builder, Action<ISharedExpressionBuilder<TEntity, Null>> offsetBuilder, Action<ISharedExpressionBuilder<TEntity, Null>> limitBuilder)
+        {
+            builder.ValidateArgument(nameof(builder));
+            offsetBuilder.ValidateArgument(nameof(offsetBuilder));
+            limitBuilder.ValidateArgument(nameof(limitBuilder));
+
+            return Limit(builder, new ExpressionBuilder<TEntity>(offsetBuilder).Expression, new ExpressionBuilder<TEntity>(limitBuilder).Expression);
+        }
+        /// <summary>
+        /// Limits the amount of rows deleted.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to delete</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="limitBuilder">Builder that returns the expression containing the amount of rows to limit by</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived Limit<TEntity, TDerived>(this IDeleteStatementBuilder<TEntity, TDerived> builder, Action<ISharedExpressionBuilder<TEntity, Null>> limitBuilder)
+        {
+            builder.ValidateArgument(nameof(builder));
+            limitBuilder.ValidateArgument(nameof(limitBuilder));
+
+            return Limit(builder, new ExpressionBuilder<TEntity>(limitBuilder).Expression);
+        }
+        /// <summary>
+        /// Limits the amount of rows deleted.
+        /// </summary>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
+        /// <typeparam name="TEntity">The main entity to delete</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="offsetBuilder">Builder that returns the expression containing the amount of rows to skip</param>
+        /// <param name="limitBuilder">Builder that returns the expression containing the amount of rows to limit by</param>
+        /// <returns>Current builder for method chaining</returns>
+        public static TDerived Limit<TEntity, TDerived>(this IDeleteStatementBuilder<TEntity, TDerived> builder, Action<ISharedExpressionBuilder<TEntity, Null>> offsetBuilder, Action<ISharedExpressionBuilder<TEntity, Null>> limitBuilder)
+        {
+            builder.ValidateArgument(nameof(builder));
+            offsetBuilder.ValidateArgument(nameof(offsetBuilder));
+            limitBuilder.ValidateArgument(nameof(limitBuilder));
+
+            return Limit(builder, new ExpressionBuilder<TEntity>(offsetBuilder).Expression, new ExpressionBuilder<TEntity>(limitBuilder).Expression);
         }
         #endregion
 
