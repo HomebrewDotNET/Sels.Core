@@ -7,7 +7,7 @@ namespace Sels.Core.ServiceBuilder.Template.Interceptors
     /// <summary>
     /// Base class for creating interceptors where the result of the method isn't needed.
     /// </summary>
-    public abstract class BaseResultlessInterceptor : BaseInterceptor
+    public abstract class BaseResultlessInterceptor : AsyncInterceptorBase
     {
         /// <inheritdoc/>
         protected override async Task<TResult> InterceptAsync<TResult>(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task<TResult>> proceed)

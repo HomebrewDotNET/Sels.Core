@@ -50,7 +50,7 @@ namespace Sels.Core.ServiceBuilder.Template
         {
             serviceProvider.ValidateArgument(nameof(serviceProvider));
             generator.ValidateArgument(nameof(generator));
-            generator.ValidateArgument(nameof(target));
+            target.ValidateArgument(nameof(target));
 
             var interceptors = _interceptorFactories.Select(x => x(serviceProvider)).Where(x => x != null).SelectMany(x => x).Where(x => x != null).ToArray();
             if (typeof(TProxy).IsInterface)

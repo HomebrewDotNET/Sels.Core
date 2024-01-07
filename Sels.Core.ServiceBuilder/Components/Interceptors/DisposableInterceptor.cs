@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Sels.Core.Extensions.Logging;
-using Sels.Core.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using Sels.Core.Extensions.Reflection;
 
@@ -39,9 +38,9 @@ namespace Sels.Core.ServiceBuilder.Interceptors
         {
             if(invocation.InvocationTarget is IDisposableState disposable)
             {
-                if(invocation.MethodInvocationTarget.AreEqual(DisposeMethod) || invocation.MethodInvocationTarget.AreEqual(DisposeAsyncMethod))
+                if(invocation.Method.AreEqual(DisposeMethod) || invocation.Method.AreEqual(DisposeAsyncMethod))
                 {
-                    _logger.Log($"Method target is the dispose method ({invocation.MethodInvocationTarget.Name}). Allowing execution");
+                    _logger.Log($"Method target is the dispose method ({invocation.Method.Name}). Allowing execution");
                 }
                 else if (disposable.IsDisposed.HasValue)
                 {

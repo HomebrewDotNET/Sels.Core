@@ -11,6 +11,7 @@ using Sels.Core.ServiceBuilder.Interceptors.Caching;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Castle.DynamicProxy;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -59,7 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var interceptor = useFactory ? new TracingInterceptor(x.GetService<ILoggerFactory>()) : new TracingInterceptor(x.GetService<ILogger<TracingInterceptor>>());
                 interceptorBuilder(x, interceptor);
-                return interceptor;
+                return interceptor.ToInterceptor();
             });
         }
         #endregion
@@ -104,7 +105,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var provider = new MemoryCachingProvider(x.GetRequiredService<IMemoryCache>(), x.GetService<ILogger<MemoryCachingProvider>>());
                 var interceptor = new CachingInterceptor<TImpl, IMemoryCacheOptions>(provider, x.GetService<ITypeConverter>(), x.GetService<ILoggerFactory>(), x.GetService<ILogger<CachingInterceptor<TImpl, IMemoryCacheOptions>>>());
                 interceptorBuilder(x, interceptor);
-                return interceptor;
+                return interceptor.ToInterceptor();
             });
         }
         /// <summary>
@@ -148,7 +149,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var provider = new DistributedCachingProvider<TEncoding>(x.GetRequiredService<IDistributedCache>(), x.GetService<ILogger<DistributedCachingProvider<TEncoding>>>());
                 var interceptor = new CachingInterceptor<TImpl, IDistributedCacheOptions>(provider, x.GetService<ITypeConverter>(), x.GetService<ILoggerFactory>(), x.GetService<ILogger<CachingInterceptor<TImpl, IDistributedCacheOptions>>>());
                 interceptorBuilder(x, interceptor);
-                return interceptor;
+                return interceptor.ToInterceptor();
             });
         }
 
@@ -182,7 +183,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TImpl : class, T, IDisposableState
             where T : class
         {
-            return builder.InterceptedBy(x => new DisposableInterceptor(x.GetService<ILogger<DisposableInterceptor>>()));
+            return builder.InterceptedBy(x => new DisposableInterceptor(x.GetService<ILogger<DisposableInterceptor>>()).ToInterceptor());
         }
         #endregion
     }

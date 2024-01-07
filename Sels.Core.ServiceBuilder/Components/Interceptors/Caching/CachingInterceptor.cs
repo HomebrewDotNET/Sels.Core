@@ -57,7 +57,7 @@ namespace Sels.Core.ServiceBuilder.Interceptors.Caching
             var logger = GetLoggerFor(invocation);
 
             var cacher = _cachers.FirstOrDefault(x => x.CanCache(invocation));
-            var methodName = invocation.MethodInvocationTarget.GetDisplayName(true);
+            var methodName = invocation.Method.GetDisplayName(true);
 
             if (cacher != null)
             {

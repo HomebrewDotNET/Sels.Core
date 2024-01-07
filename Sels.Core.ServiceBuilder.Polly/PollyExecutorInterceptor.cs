@@ -91,8 +91,9 @@ namespace Sels.Core.ServiceBuilder.Polly
         protected override Task InterceptAsync(IInvocation invocation, IInvocationProceedInfo proceedInfo, Func<IInvocation, IInvocationProceedInfo, Task> proceed)
         {
             var isAsync = invocation.Method.CanRunAsync();
+            var methodName = invocation.Method.GetDisplayName();
 
-            if(isAsync)
+            if (isAsync)
             {
                 var policyTargets = _asyncPolicies.Where(x => x.Target == null || x.Target.AreEqual(invocation.Method));
 
@@ -100,10 +101,10 @@ namespace Sels.Core.ServiceBuilder.Polly
                 {
                     var policies = policyTargets.SelectMany(x => x.Policies).ToArray();
                     IAsyncPolicy policy = null;
-                    if (policies.Length == 0) throw new InvalidOperationException($"Expected policies to be configured for method <{invocation.Method.GetDisplayName()}>");
+                    if (policies.Length == 0) throw new InvalidOperationException($"Expected policies to be configured for method <{methodName}>");
                     else if (policies.Length > 1)
                     {
-                        _logger.Debug($"<{policies.Length}> policies are configured for method <{invocation.Method.GetDisplayName()}>. Creating wrapper");
+                        _logger.Debug($"<{policies.Length}> policies are configured for method <{methodName}>. Creating wrapper");
                         policy = Policy.WrapAsync(policies.OrderBy(x => x.Order).Select(x => x.Policy).ToArray());
                     }
                     else
@@ -111,12 +112,12 @@ namespace Sels.Core.ServiceBuilder.Polly
                         policy = policies.First().Policy;
                     }
 
-                    _logger.Log($"Intercepting async method <{invocation.Method.GetDisplayName()}> using <{policies.Length}> policies");
+                    _logger.Log($"Intercepting async method <{methodName}> using <{policies.Length}> policies");
                     return policy.ExecuteAsync(() => proceed(invocation, proceedInfo));
                 }
                 else
                 {
-                    _logger.Debug($"Method <{invocation.Method.GetDisplayName()}> does not have any policies configured. Running normally");
+                    _logger.Debug($"Method <{methodName}> does not have any policies configured. Running normally");
                 }
             }
             else
@@ -127,10 +128,10 @@ namespace Sels.Core.ServiceBuilder.Polly
                 {
                     var policies = policyTargets.SelectMany(x => x.Policies).ToArray();
                     ISyncPolicy policy = null;
-                    if (policies.Length == 0) throw new InvalidOperationException($"Expected policies to be configured for method <{invocation.Method.GetDisplayName()}>");
+                    if (policies.Length == 0) throw new InvalidOperationException($"Expected policies to be configured for method <{methodName}>");
                     else if (policies.Length > 1)
                     {
-                        _logger.Debug($"<{policies.Length}> policies are configured for method <{invocation.Method.GetDisplayName()}>. Creating wrapper");
+                        _logger.Debug($"<{policies.Length}> policies are configured for method <{methodName}>. Creating wrapper");
                         policy = Policy.Wrap(policies.OrderBy(x => x.Order).Select(x => x.Policy).ToArray());
                     }
                     else
@@ -138,12 +139,12 @@ namespace Sels.Core.ServiceBuilder.Polly
                         policy = policies.First().Policy;
                     }
 
-                    _logger.Log($"Intercepting sync method <{invocation.Method.GetDisplayName()}> using <{policies.Length}> policies");
+                    _logger.Log($"Intercepting sync method <{methodName}> using <{policies.Length}> policies");
                     return policy.Execute(() => proceed(invocation, proceedInfo));
                 }
                 else
                 {
-                    _logger.Debug($"Method <{invocation.Method.GetDisplayName()}> does not have any policies configured. Running normally");
+                    _logger.Debug($"Method <{methodName}> does not have any policies configured. Running normally");
                 }
             }
             return proceed(invocation, proceedInfo);

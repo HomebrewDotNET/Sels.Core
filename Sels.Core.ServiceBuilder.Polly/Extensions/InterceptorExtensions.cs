@@ -13,6 +13,7 @@ using Sels.Core.ServiceBuilder.Polly;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Castle.DynamicProxy;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -27,10 +28,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
         /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
         /// <returns>Current builder for method chaining</returns>
-        public static IServiceBuilder<T, TImpl> ExecuteWithPolly<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<IServiceProvider, IRootPolicyInterceptorBuilder<T>, object> interceptorBuilder)
+        public static TDerived ExecuteWithPolly<T, TImpl, TDerived>(this IProxyBuilder<T, TImpl, TDerived> builder, Func<IServiceProvider, IRootPolicyInterceptorBuilder<T>, object> interceptorBuilder)
             where TImpl : class, T
             where T : class
         {
@@ -40,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder.InterceptedBy(x => {
                 var interceptor = new PollyExecutorInterceptor<T>(x.GetService<ILogger<PollyExecutorInterceptor<T>>>());
                 interceptorBuilder(x, interceptor);
-                return interceptor;
+                return interceptor.ToInterceptor();
             });
         }
         /// <summary>
@@ -48,10 +50,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="T">The service type that can be resolved as dependency</typeparam>
         /// <typeparam name="TImpl">The implementation type for <typeparamref name="T"/></typeparam>
+        /// <typeparam name="TDerived">The type to return for the fluent syntax</typeparam>
         /// <param name="builder">Builder to add the interceptor to</param>
         /// <param name="interceptorBuilder">Builder for creating the interceptor</param>
         /// <returns>Current builder for method chaining</returns>
-        public static IServiceBuilder<T, TImpl> ExecuteWithPolly<T, TImpl>(this IServiceBuilder<T, TImpl> builder, Func<IRootPolicyInterceptorBuilder<T>, object> interceptorBuilder)
+        public static TDerived ExecuteWithPolly<T, TImpl, TDerived>(this IProxyBuilder<T, TImpl, TDerived> builder, Func<IRootPolicyInterceptorBuilder<T>, object> interceptorBuilder)
             where TImpl : class, T
             where T : class
         {
