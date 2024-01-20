@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         var options = p.GetRequiredService<IOptions<MySqlCompilerOptions>>();
                         return b.Duration.OfAll.WithDurationThresholds(options.Value.PerformanceWarningDurationThreshold, options.Value.PerformanceErrorDurationThreshold);
                     })
-                    .AsScoped()
+                    .AsSingleton()
                     .TryRegister();
 
             return services;

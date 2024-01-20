@@ -32,6 +32,7 @@ namespace Sels.Core.Async.Queue
         // Fields
         private readonly List<EventHandlerSubscription> _subscriptions = new List<EventHandlerSubscription>();
         private readonly List<Func<CancellationToken, Task<T?>>> _interceptors = new List<Func<CancellationToken, Task<T?>>>();
+        private readonly List<Func<CancellationToken, Task>> _requestCreatedHandlers = new List<Func<CancellationToken, Task>>();
         private readonly ConcurrentQueue<DequeueRequest> _requests = new ConcurrentQueue<DequeueRequest>();
         private readonly ConcurrentQueue<T> _queue = new ConcurrentQueue<T>();
         private readonly SemaphoreSlim _asyncLock = new SemaphoreSlim(1, 1);
@@ -226,10 +227,10 @@ namespace Sels.Core.Async.Queue
 
                 _logger.Log($"Queue is empty. Trying <{interceptors.Length}> interceptors to fulfil request");
 
-                foreach(var interceptor in interceptors)
+                foreach (var interceptor in interceptors)
                 {
                     var item = await interceptor(token).ConfigureAwait(false);
-                    if(item != null)
+                    if (item != null)
                     {
                         _logger.Log($"Item <{item}> was fulfilled by interceptor");
                         return item;
@@ -252,6 +253,23 @@ namespace Sels.Core.Async.Queue
                 _logger.Log($"Queue is empty. Logging request for caller");
                 request = new DequeueRequest(token);
                 _requests.Enqueue(request);
+            }
+
+            // Run handlers if available
+            if (_requestCreatedHandlers.HasValue())
+            {
+                Func<CancellationToken, Task>[] handlers;
+                lock (_requestCreatedHandlers)
+                {
+                    handlers = _requestCreatedHandlers.ToArray();
+                }
+
+                _logger.Log($"Request created. Calling <{handlers.Length}> handlers");
+
+                foreach (var handler in handlers)
+                {
+                    await handler(token).ConfigureAwait(false);
+                }
             }
 
             return await request.Callback.ConfigureAwait(false);
@@ -366,6 +384,30 @@ namespace Sels.Core.Async.Queue
                     lock (_interceptors)
                     {
                         _interceptors.Remove(interceptor);
+                    }
+                });
+            }
+        }
+        /// <summary>
+        /// Registers a handler that will be called when a request is created for the current queue.
+        /// </summary>
+        /// <param name="handler">Delegate that will be called when a request was created</param>
+        /// <returns>An active subscription to the event. Disposing the object will stop <paramref name="handler"/> from being called</returns>
+        public WorkerQueueEventSubscription OnRequestCreated(Func<CancellationToken, Task> handler)
+        {
+            handler.ValidateArgument(nameof(handler));
+            using var methodLogger = _logger.TraceMethod(this);
+            if (IsDisposed.HasValue) throw new ObjectDisposedException(GetType().GetDisplayName(false));
+
+            lock (_requestCreatedHandlers)
+            {
+                _requestCreatedHandlers.Add(handler);
+
+                return new WorkerQueueEventSubscription(() =>
+                {
+                    lock (_requestCreatedHandlers)
+                    {
+                        _requestCreatedHandlers.Remove(handler);
                     }
                 });
             }

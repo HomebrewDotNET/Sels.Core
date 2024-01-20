@@ -384,6 +384,10 @@ namespace Sels.SQL.QueryBuilder
         /// The command used to set something to a new value.
         /// </summary>
         public const string Set = "SET";
+        /// <summary>
+        /// The separator used to separate sql statements.
+        /// </summary>
+        public const char Separator = ';';
         #endregion
 
         #region Helpers
@@ -421,6 +425,10 @@ namespace Sels.SQL.QueryBuilder
             /// <param name="sql">Object that will be converted to sql using <see cref="object.ToString"/></param>
             /// <returns>A new instance of <see cref="RawExpression"/></returns>
             public static RawExpression Raw(object sql) => new RawExpression(sql.ValidateArgument(nameof(sql)));
+            /// <inheritdoc cref="ConstantExpression"/>
+            /// <param name="value"><inheritdoc cref="ConstantExpression.Value"/></param>
+            /// <returns>A new instance of <see cref="ConstantExpression"/></returns>
+            public static ConstantExpression Value(object value) => new ConstantExpression(value);
             /// <inheritdoc cref="ParameterExpression"/>
             /// <param name="name">The name of the sql parameter</param>
             /// <param name="index">Optional index number to append after the name. Useful when using multiple entities in the same query</param>

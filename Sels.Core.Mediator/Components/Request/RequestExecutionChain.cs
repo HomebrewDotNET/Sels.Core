@@ -61,7 +61,7 @@ namespace Sels.Core.Mediator.Request
                         }
                     }
 
-                    _logger.Warning($"Could not get a response of type <{typeof(TResponse)}> for request <{request}> using <{_handlers.Count}> handlers");
+                    _logger.Log($"Could not get a response of type <{typeof(TResponse)}> for request <{request}> using <{_handlers.Count}> handlers");
                     return RequestResponse<TResponse>.Reject();
                 }
             }

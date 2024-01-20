@@ -2,6 +2,7 @@
 using Sels.SQL.QueryBuilder.Builder;
 using Sels.SQL.QueryBuilder.Builder.Expressions;
 using Sels.SQL.QueryBuilder.Builder.Statement;
+using Sels.SQL.QueryBuilder.MySQL.Expressions;
 using Sels.SQL.QueryBuilder.Statements;
 using System.Collections;
 using System.Reflection;
@@ -193,7 +194,6 @@ namespace Sels.SQL.QueryBuilder.MySQL
             /// </summary>
             public const string VariableAssignmentOperator = ":=";
         }
-
         /// <summary>
         /// Contains static values related to MySQL/MariaDB specific functions.
         /// </summary>
@@ -219,6 +219,40 @@ namespace Sels.SQL.QueryBuilder.MySQL
             /// Function that returns how many rows were inserted, updated or deleted by the previous statement.
             /// </summary>
             public const string RowCount = "ROW_COUNT";
+            /// <summary>
+            /// Function that places an user level lock on an identifier.
+            /// </summary>
+            public const string GetLock = "GET_LOCK";
+            /// <summary>
+            /// Function that releases an user level lock from an identifier.
+            /// </summary>
+            public const string ReleaseLock = "RELEASE_LOCK";
+        }
+
+        /// <summary>
+        /// Contains static values related to MySql specific statements.
+        /// </summary>
+        public static class Statements 
+        {
+            /// <summary>
+            /// The MySql statement for raising errors.
+            /// </summary>
+            public static class Signal
+            {
+                /// <summary>
+                /// The name of the signal statement.
+                /// </summary>
+                public const string Name = "SIGNAL";
+                /// <summary>
+                /// The expression for raising a custom sql state in an error.
+                /// </summary>
+                public const string SqlState = "SQLSTATE";
+
+                /// <summary>
+                /// The value for <see cref="SqlState"/> to return for a generic error.
+                /// </summary>
+                public const string UnhandledUserDefinedExceptionState = "45000";
+            }
         }
     }
 }

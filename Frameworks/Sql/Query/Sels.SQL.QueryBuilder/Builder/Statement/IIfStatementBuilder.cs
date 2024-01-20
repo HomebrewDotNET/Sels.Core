@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Sels.Core.Extensions;
+using Sels.Core.Models;
+using Sels.SQL.QueryBuilder.Expressions;
 
 
 namespace Sels.SQL.QueryBuilder.Builder.Statement
@@ -67,6 +69,20 @@ namespace Sels.SQL.QueryBuilder.Builder.Statement
         /// <param name="isFullStatement">Whether or not <paramref name="expression"/> compiles to a full sql statement. Is used to handle compilation options like <see cref="ExpressionCompileOptions.AppendSeparator"/> and <see cref="ExpressionCompileOptions.Format"/></param>
         /// <returns>Current builder for method chaining</returns>
         IIfFullStatementBuilder Then(IExpression expression, bool isFullStatement = true) => Then(b => b.Append(expression.ValidateArgument(nameof(expression)), isFullStatement));
+        /// <summary>
+        /// Adds the expression created by <paramref name="expressionBuilder"/> so it can be compiled into sql.
+        /// </summary>
+        /// <param name="expressionBuilder">Delegate used to configure the expression to add</param>
+        /// <param name="isFullStatement">Whether or not the expression created by <paramref name="expressionBuilder"/> compiles to a full sql statement. Is used to handle compilation options like <see cref="ExpressionCompileOptions.AppendSeparator"/> and <see cref="ExpressionCompileOptions.Format"/></param>
+        /// <returns>Current builder for method chaining</returns>
+        IIfFullStatementBuilder Then<TEntity>(Action<ISharedExpressionBuilder<TEntity, Null>> expressionBuilder, bool isFullStatement = true) => Then(new ExpressionBuilder<TEntity>(expressionBuilder.ValidateArgument(nameof(expressionBuilder))), isFullStatement);
+        /// <summary>
+        /// Adds the expression created by <paramref name="expressionBuilder"/> so it can be compiled into sql.
+        /// </summary>
+        /// <param name="expressionBuilder">Delegate used to configure the expression to add</param>
+        /// <param name="isFullStatement">Whether or not the expression created by <paramref name="expressionBuilder"/> compiles to a full sql statement. Is used to handle compilation options like <see cref="ExpressionCompileOptions.AppendSeparator"/> and <see cref="ExpressionCompileOptions.Format"/></param>
+        /// <returns>Current builder for method chaining</returns>
+        IIfFullStatementBuilder Then(Action<ISharedExpressionBuilder<Null, Null>> expressionBuilder, bool isFullStatement = true) => Then<Null>(expressionBuilder, isFullStatement);
         /// <summary>
         /// Adds <paramref name="rawSql"/> as the raw SQL to execute when the previously defined condition is evaluted to true.
         /// </summary>

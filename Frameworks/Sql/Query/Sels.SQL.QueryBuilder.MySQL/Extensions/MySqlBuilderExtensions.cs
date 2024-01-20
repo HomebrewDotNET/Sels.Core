@@ -63,7 +63,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
             var expression = builder.InnerExpressions.FirstOrDefault(x => x is OnDuplicateKeyUpdateExpression<TEntity>).CastToOrDefault<OnDuplicateKeyUpdateExpression<TEntity>>();
 
-            if(expression != null)
+            if (expression != null)
             {
                 expression.Build(expressionBuilder);
                 return builder.Instance;
@@ -90,11 +90,11 @@ namespace Sels.SQL.QueryBuilder.MySQL
                 var insertColumns = builder.Expressions.FirstOrDefault(x => x.Key == InsertExpressionPositions.Columns);
                 if (!insertColumns.Value.HasValue()) throw new InvalidOperationException($"No columns to insert into defined");
 
-                for(int i = 0; i < insertColumns.Value.Length; i++)
+                for (int i = 0; i < insertColumns.Value.Length; i++)
                 {
                     var column = insertColumns.Value[i].Expression;
                     // Skip primary key columns
-                    if(primaryKeyColumnIndexes.Contains(i)) continue;
+                    if (primaryKeyColumnIndexes.Contains(i)) continue;
 
                     b = b.Set.Expression(column).To.Values(column).And;
                 }
@@ -401,7 +401,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         /// <param name="builder">The builder to add the cte to</param>
         /// <param name="name">The name of the cte</param>
         /// <returns>Builder for creating the cte expression</returns>
-        public static ICteExpressionBuilder<T> RecursiveCte<T>(this ICteStatementBuilder builder , string name)
+        public static ICteExpressionBuilder<T> RecursiveCte<T>(this ICteStatementBuilder builder, string name)
         {
             builder.ValidateArgument(nameof(builder));
             name.ValidateArgumentNotNullOrWhitespace(nameof(name));
@@ -427,6 +427,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
         public static ICteExpressionBuilder<object> RecursiveCte(this ICteStatementBuilder builder, string name) => RecursiveCte<object>(builder, name);
         #endregion
 
+        #region LastInsertedId
         /// <summary>
         /// Selects the last inserted id.
         /// </summary>
@@ -438,8 +439,23 @@ namespace Sels.SQL.QueryBuilder.MySQL
         {
             builder.ValidateArgument(nameof(builder));
 
-            return builder.ColumnExpression(b => b.Expression((sb, o) => sb.Append(MySql.Functions.LastInsertId).Append("()")));
+            return builder.ColumnExpression(b => b.LastInsertedId());
         }
+        /// <summary>
+        /// Adds a method call to <see cref="MySql.Functions.LastInsertId"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <returns>Builder for creating more expressions</returns>
+        public static TReturn LastInsertedId<TEntity, TReturn>(this ISharedExpressionBuilder<TEntity, TReturn> builder)
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            return builder.Expression(Sql.Expressions.Raw($"{MySql.Functions.LastInsertId}()"));
+        }
+        #endregion
+
         /// <summary>
         /// Adds a method call to <see cref="MySql.Functions.RowCount"/>.
         /// </summary>
@@ -453,5 +469,123 @@ namespace Sels.SQL.QueryBuilder.MySQL
 
             return builder.Expression(Sql.Expressions.Raw($"{MySql.Functions.RowCount}()"));
         }
+
+        #region GetLock
+        /// <summary>
+        /// Adds a method call to <see cref="MySql.Functions.GetLock"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="identifierBuilder">Builder that returns the expression for <see cref="GetLockExpression.IdentifierExpression"/></param>
+        /// <param name="timeoutBuilder">Builder that returns the expression for <see cref="GetLockExpression.TimeoutExpression"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        public static TReturn GetLock<TEntity, TReturn>(this ISharedExpressionBuilder<TEntity, TReturn> builder, Action<ISharedExpressionBuilder<TEntity, Null>> identifierBuilder, Action<ISharedExpressionBuilder<TEntity, Null>> timeoutBuilder)
+        {
+            builder.ValidateArgument(nameof(builder));
+            identifierBuilder.ValidateArgument(nameof(identifierBuilder));
+            timeoutBuilder.ValidateArgument(nameof(timeoutBuilder));
+
+            return builder.Expression(new GetLockExpression(new ExpressionBuilder<TEntity>(identifierBuilder).Expression, new ExpressionBuilder<TEntity>(timeoutBuilder).Expression));
+        }
+        /// <summary>
+        /// Adds a method call to <see cref="MySql.Functions.GetLock"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="identifier">The identifier to place the lock on</param>
+        /// <param name="timeoutSeconds">The timeout in seconds on how long to wait for the lock</param>
+        /// <returns>Builder for creating more expressions</returns>
+        public static TReturn GetLock<TEntity, TReturn>(this ISharedExpressionBuilder<TEntity, TReturn> builder, string identifier, double timeoutSeconds)
+        {
+            builder.ValidateArgument(nameof(builder));
+            identifier.ValidateArgumentNotNullOrWhitespace(nameof(identifier));
+
+            return builder.GetLock(x => x.Value(identifier), x => x.Value(timeoutSeconds));
+        }
+        #endregion
+
+        #region ReleaseLock
+        /// <summary>
+        /// Adds a method call to <see cref="MySql.Functions.ReleaseLock"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="identifierBuilder">Builder that returns the expression for <see cref="ReleaseLockExpression.IdentifierExpression"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        public static TReturn ReleaseLock<TEntity, TReturn>(this ISharedExpressionBuilder<TEntity, TReturn> builder, Action<ISharedExpressionBuilder<TEntity, Null>> identifierBuilder)
+        {
+            builder.ValidateArgument(nameof(builder));
+            identifierBuilder.ValidateArgument(nameof(identifierBuilder));
+
+            return builder.Expression(new ReleaseLockExpression(new ExpressionBuilder<TEntity>(identifierBuilder).Expression));
+        }
+
+        /// <summary>
+        /// Adds a method call to <see cref="MySql.Functions.ReleaseLock"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="identifier">The identifier to release the lock from</param>
+        /// <returns>Builder for creating more expressions</returns>
+        public static TReturn ReleaseLock<TEntity, TReturn>(this ISharedExpressionBuilder<TEntity, TReturn> builder, string identifier)
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            return builder.ReleaseLock(x => x.Value(identifier));
+        }
+        #endregion
+
+        #region Signal
+        /// <summary>
+        /// Creates an expression that represents a <see cref="MySql.Statements.Signal"/> expression.
+        /// </summary>
+        /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="sqlStateBuilderBuilder">Builder that returns the expression for <see cref="SignalStatementExpression.SqlStateExpression"/></param>
+        /// <param name="informationSetter">Optional delegate that can be used to configure <see cref="SignalStatementExpression.ConditionInformation"/></param>
+        /// <returns>Builder for creating more expressions</returns>
+        public static TReturn Signal<TEntity, TReturn>(this ISharedExpressionBuilder<TEntity, TReturn> builder, Action<ISharedExpressionBuilder<TEntity, Null>> sqlStateBuilderBuilder, Action<SignalConditionInformation> informationSetter = null)
+        {
+            builder.ValidateArgument(nameof(builder));
+            sqlStateBuilderBuilder.ValidateArgument(nameof(sqlStateBuilderBuilder));
+
+            return builder.Expression(new SignalStatementExpression(new ExpressionBuilder<TEntity>(sqlStateBuilderBuilder), informationSetter));
+        }
+        /// <summary>
+        /// Creates an expression that represents a <see cref="MySql.Statements.Signal"/> expression.
+        /// </summary>
+        /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="sqlState">The value to use for <inheritdoc cref="MySql.Statements.Signal.SqlState"/></param>
+        /// <param name="message">The error message to set</param>
+        /// <returns>Builder for creating more expressions</returns>
+        public static TReturn Signal<TEntity, TReturn>(this ISharedExpressionBuilder<TEntity, TReturn> builder, string sqlState, string message)
+        {
+            builder.ValidateArgument(nameof(builder));
+            sqlState.ValidateArgumentNotNullOrWhitespace(nameof(sqlState));
+
+            return builder.Signal(x => x.Expression(new SqlStateExpression(sqlState)), x => x.MessageText = message);
+        }
+        /// <summary>
+        /// Creates an expression that represents a <see cref="MySql.Statements.Signal"/> expression using sql state <see cref="MySql.Statements.Signal.UnhandledUserDefinedExceptionState"/>.
+        /// </summary>
+        /// <typeparam name="TEntity">The main entity to build the query for</typeparam>
+        /// <typeparam name="TReturn">The type to return for the fluent syntax</typeparam>
+        /// <param name="builder">The builder to add the expression to</param>
+        /// <param name="message">The error message to set</param>
+        /// <returns>Builder for creating more expressions</returns>
+        public static TReturn Signal<TEntity, TReturn>(this ISharedExpressionBuilder<TEntity, TReturn> builder, string message = null)
+        {
+            builder.ValidateArgument(nameof(builder));
+
+            return builder.Signal(MySql.Statements.Signal.UnhandledUserDefinedExceptionState, message);
+        }
+        #endregion
     }
 }

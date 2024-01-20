@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         var options = p.GetRequiredService<IOptions<SqlQueryProviderOptions>>();
                         return b.Duration.OfAll.WithDurationThresholds(options.Value.PerformanceWarningDurationThreshold, options.Value.PerformanceErrorDurationThreshold);
                     })
-                    .AsScoped()
+                    .AsSingleton()
                     .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
                     .Register();
 
@@ -81,7 +81,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         var options = p.GetRequiredService<IOptions<SqlQueryProviderOptions>>();
                         return b.Duration.OfAll.WithDurationThresholds(options.Value.PerformanceWarningDurationThreshold, options.Value.PerformanceErrorDurationThreshold);
                     })
-                    .AsScoped()
+                    .AsSingleton()
                     .WithBehaviour(overwrite ? services.IsReadOnly ? RegisterBehaviour.Default : RegisterBehaviour.Replace : RegisterBehaviour.TryAdd)
                     .Register();
 
