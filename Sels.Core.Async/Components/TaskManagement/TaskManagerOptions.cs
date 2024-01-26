@@ -12,7 +12,10 @@ namespace Sels.Core.Async.TaskManagement
     public class TaskManagerOptions
     {
         /// <summary>
-        /// The concurrency level to use for the internal concurrent dictionaries.
+        /// Determines how many paritions will be created.
+        /// Tasks will be assigned a parition.
+        /// Locking is performed within each bucket.
+        /// More buckets means less concurrency issues.
         /// </summary>
         public int ConcurrencyLevel { get; set; } = Environment.ProcessorCount * 2;
 
@@ -38,9 +41,13 @@ namespace Sels.Core.Async.TaskManagement
         public TimeSpan DeadlockWaitTime { get; set; } = TimeSpan.FromSeconds(30);
 
         /// <summary>
-        /// How long to wait before cleaning up a global queue once it loses all references and contains no work.
+        /// How long to sleep for while waiting for tasks/queues to cancel/stop.
         /// </summary>
-        public TimeSpan GlobalQueueCleanupDelay { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan DisposeSleepTime { get; set; } = TimeSpan.FromSeconds(1);
+        /// <summary>
+        /// The maximum amount of time to wait for tasks/queues to cancel/stop while disposing.
+        /// </summary>
+        public TimeSpan MaxDisposeTime { get; set; } = TimeSpan.FromMinutes(1);
     }
 
     /// <summary>

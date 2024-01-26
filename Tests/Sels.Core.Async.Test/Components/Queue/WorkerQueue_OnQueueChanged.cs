@@ -12,13 +12,13 @@ namespace Sels.Core.Async.Test.Components.Queue
         [TestCase(2u)]
         [TestCase(5u)]
         [TestCase(8u)]
-        [Timeout(60000)]
+        [Timeout(10000)]
         public async Task GetsTriggeredWhenQueueSizeGoesAbove(uint size)
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, size.ChangeType<int>());
             int triggeredAmount = 0;
@@ -39,13 +39,13 @@ namespace Sels.Core.Async.Test.Components.Queue
         [TestCase(2u)]
         [TestCase(5u)]
         [TestCase(8u)]
-        [Timeout(60000)]
+        [Timeout(10000)]
         public async Task GetsTriggeredWhenQueueSizeGoesBelow(uint size)
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, size.ChangeType<int>()+1);
             int triggeredAmount = 0;
@@ -66,13 +66,13 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.AreEqual(1, triggeredAmount);
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task CancellingSubscriptionStopsDelegateFromBeingCalled()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
             int triggeredAmount = 0;

@@ -31,7 +31,7 @@ namespace Sels.Core.Async
             var message = new StringBuilder();
 
             message.AppendLine($"The following managed tasks are deadlocked:");
-            foreach (IManagedTask task in tasks)
+            foreach (var task in tasks)
             {
                 message.AppendLine(task.ToString());
             }

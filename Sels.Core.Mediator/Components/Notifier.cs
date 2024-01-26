@@ -75,7 +75,8 @@ namespace Sels.Core.Mediator
             @event.ValidateArgument(nameof(@event));
 
             _logger.Log($"Raising event <{@event}> created by <{sender}>");
-            await using (var scope = _serviceProvider.CreateAsyncScope())
+            var scope = _serviceProvider.CreateAsyncScope();
+            try
             {
                 var provider = scope.ServiceProvider;
                 var orchestrator = new EventOrchestrator(this, provider, _loggerFactory?.CreateLogger<EventOrchestrator>());
@@ -89,13 +90,27 @@ namespace Sels.Core.Mediator
                 if (options.Options.HasFlag(EventOptions.FireAndForget))
                 {
                     _logger.Debug($"Fire and forget enabled for event <{@event}> raised by <{sender}>. Scheduling task");
-                    await _strategy.FireAndForget<TEvent>(t => RaiseEventAsync(orchestrator, sender, @event, options, t), token);
+                    await _strategy.FireAndForget<TEvent>(async t =>
+                    {
+                        await using (scope)
+                        {
+                            _ = await RaiseEventAsync(orchestrator, sender, @event, options, t).ConfigureAwait(false);
+                        }
+                    }, token);
                     return 0;
                 }
 
                 // Execute
-                return await RaiseEventAsync(orchestrator, sender, @event, options, token).ConfigureAwait(false);
+                await using (scope)
+                {
+                    return await RaiseEventAsync(orchestrator, sender, @event, options, token).ConfigureAwait(false);
+                }               
             }
+            catch (Exception)
+            {
+                await scope.DisposeAsync().ConfigureAwait(false);
+                throw;
+            }           
         }
 
         private async Task<int> RaiseEventAsync<TEvent>(EventOrchestrator orchestrator, object sender, TEvent @event, NotifierEventOptions<TEvent> eventOptions, CancellationToken token)
@@ -111,6 +126,13 @@ namespace Sels.Core.Mediator
             {
                 _logger.Log($"Executing event transaction for event <{@event}> created by <{sender}> with any enlisted event listeners");
                 return await orchestrator.ExecuteAsync(allowParallelExecution, token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
+            {
+                _logger.Warning($"Raising event <{@event}> created by <{sender}> was cancelled");
+
+                if (!ignoreExceptions) throw;
+                return 0;
             }
             catch (Exception ex)
             {

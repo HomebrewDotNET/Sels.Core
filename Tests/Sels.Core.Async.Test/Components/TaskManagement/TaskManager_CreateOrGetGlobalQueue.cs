@@ -10,13 +10,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
     {
         private const string GlobalQueueName = "UnitTests";
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task AnonymousTaskIsScheduledAndExecuted()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             using var queue = taskManager.CreateOrGetGlobalQueue(GlobalQueueName, 1);
             bool executed = false;
@@ -33,13 +33,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             await scheduledTask.OnExecuted;
             Assert.IsTrue(executed);
         }
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task ManagedTaskIsScheduledAndExecuted()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             using var queue = taskManager.CreateOrGetGlobalQueue(GlobalQueueName, 1);
             bool executed = false;

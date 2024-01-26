@@ -87,7 +87,6 @@ namespace Sels.Core.Async.TaskManagement
         }
 
         /// <inheritdoc/>
-        /// 
         public CancellationToken Token { get; }
         /// <inheritdoc/>
         public Task Task { get; private set; }

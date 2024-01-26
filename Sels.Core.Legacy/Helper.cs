@@ -1327,25 +1327,22 @@ namespace Sels.Core
                     return;
                 }
 
-                var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var waitHandle = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var cancellationSource = new CancellationTokenSource();
 
                 // Use caller token to cancel our token. This should make the task throw TaskCanceledException instead of the timeout
                 using(token.Register(() =>
                 {
                     cancellationSource.Cancel();
-                    taskSource.SetCanceled();
+                    waitHandle.TrySetCanceled();
                 }))
                 {
                     if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
                     // Run continuation to complete callback task
                     var completionTask = task.ContinueWith(x =>
                     {
-                        lock (taskSource)
-                        {
-                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x); 
-                        }
-                    }, cancellationSource.Token);
+                        waitHandle.TrySetResult(null);
+                    }, cancellationSource.Token, TaskContinuationOptions.RunContinuationsAsynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
 
                     // Check if task is completed before starting the timeout task
                     if (task.IsCompleted)
@@ -1360,15 +1357,14 @@ namespace Sels.Core
                         await Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
                         if (cancellationSource.Token.IsCancellationRequested) return;
 
-                        lock (taskSource)
-                        {
-                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>")); 
-                        }
+                        waitHandle.TrySetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>"));
                     }, cancellationSource.Token);
 
 
                     // Wait for callback
-                    await taskSource.Task.ConfigureAwait(false);
+                    _ = await waitHandle.Task.ConfigureAwait(false);
+                    // No exception so get result from task
+                    await task.ConfigureAwait(false);
                     return;
                 }
             }
@@ -1392,24 +1388,21 @@ namespace Sels.Core
                     return await task.ConfigureAwait(false);
                 }
 
-                var taskSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var waitHandle = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var cancellationSource = new CancellationTokenSource();
 
                 // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
                 using (token.Register(() => {
                     cancellationSource.Cancel();
-                    taskSource.SetCanceled();
+                    waitHandle.TrySetCanceled();
                 }))
                 {
                     if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
                     // Run continuation to complete callback task
                     var completionTask = task.ContinueWith(x =>
                     {
-                        lock (taskSource)
-                        {
-                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x); 
-                        }
-                    }, cancellationSource.Token);
+                        waitHandle.TrySetResult(null);
+                    }, cancellationSource.Token, TaskContinuationOptions.RunContinuationsAsynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
 
                     // Check if task is completed before starting the timeout task
                     if (task.IsCompleted)
@@ -1423,15 +1416,14 @@ namespace Sels.Core
                         await Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
                         if (cancellationSource.Token.IsCancellationRequested) return;
 
-                        lock (taskSource)
-                        {
-                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>")); 
-                        }
+                        waitHandle.TrySetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>"));
                     }, cancellationSource.Token);
 
 
                     // Wait for callback
-                    return await taskSource.Task.ConfigureAwait(false);
+                    _ = await waitHandle.Task.ConfigureAwait(false);
+                    // No exception so get result from task
+                    return await task.ConfigureAwait(false);
                 }
             }
 
@@ -1447,25 +1439,22 @@ namespace Sels.Core
             {
                 _ = task.ValidateArgument(nameof(task));
 
-                var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var waitHandle = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var cancellationSource = new CancellationTokenSource();
 
                 // Use caller token to cancel our token.
                 using (token.Register(() =>
                 {
                     cancellationSource.Cancel();
-                    taskSource.SetCanceled();
+                    waitHandle.TrySetCanceled();
                 }))
                 {
                     if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
                     // Run continuation to complete callback task
                     var completionTask = task.ContinueWith(x =>
                     {
-                        lock (taskSource)
-                        {
-                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x);
-                        }
-                    }, cancellationSource.Token);
+                        waitHandle.TrySetResult(null);
+                    }, cancellationSource.Token, TaskContinuationOptions.RunContinuationsAsynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
 
                     // Check if task is completed before starting the timeout task
                     if (task.IsCompleted)
@@ -1475,7 +1464,9 @@ namespace Sels.Core
                     }
 
                     // Wait for callback
-                    await taskSource.Task.ConfigureAwait(false);
+                    await waitHandle.Task.ConfigureAwait(false);
+                    // No exception so get result from task
+                    await task.ConfigureAwait(false);
                     return;
                 }
             }
@@ -1492,33 +1483,32 @@ namespace Sels.Core
             {
                 _ = task.ValidateArgument(nameof(task));
 
-                var taskSource = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var waitHandle = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var cancellationSource = new CancellationTokenSource();
 
                 // Use caller token to cancel our token. 
                 using (token.Register(() => {
                     cancellationSource.Cancel();
-                    taskSource.SetCanceled();
+                    waitHandle.TrySetCanceled();
                 }))
                 {
                     if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
                     // Run continuation to complete callback task
                     var completionTask = task.ContinueWith(x =>
                     {
-                        lock (taskSource)
-                        {
-                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x);
-                        }
-                    }, cancellationSource.Token);
+                        waitHandle.TrySetResult(null);
+                    }, cancellationSource.Token, TaskContinuationOptions.RunContinuationsAsynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
 
-                    // Check if task is completed before starting the timeout task
+                    // Check if task is completed before waiting
                     if (task.IsCompleted)
                     {
                         return await task.ConfigureAwait(false);
                     }
 
                     // Wait for callback
-                    return await taskSource.Task.ConfigureAwait(false);
+                    await waitHandle.Task.ConfigureAwait(false);
+                    // No exception so get result from task
+                    return await task.ConfigureAwait(false);
                 }
             }
 
@@ -1533,7 +1523,7 @@ namespace Sels.Core
 
                 if (token.IsCancellationRequested) return;
                 var taskSource = new TaskCompletionSource<bool>();
-                using(token.Register(() => taskSource.SetResult(true)))
+                using(token.Register(() => taskSource.TrySetResult(true)))
                 {
                     if (token.IsCancellationRequested) return;
                     await taskSource.Task.ConfigureAwait(false);
@@ -1566,22 +1556,19 @@ namespace Sels.Core
                     return;
                 }
 
-                var taskSource = new TaskCompletionSource<object>();
+                var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var cancellationSource = new CancellationTokenSource();
 
                 // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
-                using (token.Register(() => { cancellationSource.Cancel(); taskSource.SetCanceled(); }))
+                using (token.Register(() => { cancellationSource.Cancel(); taskSource.TrySetCanceled(); }))
                 {
                     if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
 
                     // Run continuation to complete callback task
-                    var completionTask = task.ContinueWith(x =>
+                    var completionTask = task.ContinueWith(async x =>
                     {
-                        lock (taskSource)
-                        {
-                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x);
-                        }
-                    }, cancellationSource.Token);
+                        await taskSource.SetFromAsync(x).ConfigureAwait(false);
+                    }, cancellationSource.Token, TaskContinuationOptions.RunContinuationsAsynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
 
                     // Check if task is completed before starting the timeout task
                     if (task.IsCompleted)
@@ -1596,10 +1583,7 @@ namespace Sels.Core
                         await Helper.Async.Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
                         if (cancellationSource.Token.IsCancellationRequested) return;
 
-                        lock (taskSource)
-                        {
-                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>"));
-                        }
+                        taskSource.TrySetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>"));
                     }, cancellationSource.Token);
 
 
@@ -1640,17 +1624,14 @@ namespace Sels.Core
                 var cancellationSource = new CancellationTokenSource();
 
                 // Use caller token to cancel our token. This should make the task throw TaskCancelledException instead of the timeout
-                using (token.Register(() => { cancellationSource.Cancel(); taskSource.SetCanceled(); }))
+                using (token.Register(() => { cancellationSource.Cancel(); taskSource.TrySetCanceled(); }))
                 {
                     if (token.IsCancellationRequested) throw new TaskCanceledException($"Wait on task <{task.Id}> was cancelled");
                     // Run continuation to complete callback task
-                    var completionTask = task.ContinueWith(x =>
+                    var completionTask = task.ContinueWith(async x =>
                     {
-                        lock (taskSource)
-                        {
-                            if (!taskSource.Task.IsCompleted) taskSource.SetFrom(x);
-                        }
-                    }, cancellationSource.Token);
+                        await taskSource.SetFromAsync(x).ConfigureAwait(false);
+                    }, cancellationSource.Token, TaskContinuationOptions.RunContinuationsAsynchronously | TaskContinuationOptions.DenyChildAttach, TaskScheduler.Default);
 
                     // Check if task is completed before starting the timeout task
                     if (task.IsCompleted)
@@ -1664,10 +1645,7 @@ namespace Sels.Core
                         await Helper.Async.Sleep(maxWaitTime, cancellationSource.Token).ConfigureAwait(false);
                         if (cancellationSource.Token.IsCancellationRequested) return;
 
-                        lock (taskSource)
-                        {
-                            if (!taskSource.Task.IsCompleted) taskSource.SetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>"));
-                        }
+                        taskSource.TrySetException(new TimeoutException($"Task <{task.Id}> did not complete within <{maxWaitTime}>"));
                     }, cancellationSource.Token);
 
 
@@ -1753,6 +1731,30 @@ namespace Sels.Core
                     stopwatch.Stop();
                     elapsedHandler(stopwatch.Elapsed);
                 });
+            }
+        }
+        #endregion
+
+
+        #region Bucket
+        /// <summary>
+        /// Contains helper methods for assigning paritions to objects.
+        /// </summary>
+        public static class Paritioning
+        {
+            /// <summary>
+            /// Generates a partition number for <paramref name="number"/>.
+            /// </summary>
+            /// <param name="number">THe number to generate a partition for</param>
+            /// <param name="maxNumberOfParitions">How many partitions to divide into</param>
+            /// <returns>A parition number generated for <paramref name="number"/></returns>
+            public static int Partition(int number, int maxNumberOfParitions)
+            {
+                maxNumberOfParitions.ValidateArgumentLargerOrEqual(nameof(maxNumberOfParitions), 0);
+
+                number = number == int.MinValue ? number+1 : number;
+
+                return Math.Abs(number) % maxNumberOfParitions;
             }
         }
         #endregion

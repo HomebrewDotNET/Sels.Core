@@ -58,7 +58,7 @@ namespace Sels.SQL.QueryBuilder.MySQL
             { UpdateExpressionPositions.Table, (false, null, new string[] {  Constants.Strings.Comma}, null, false) },
             { UpdateExpressionPositions.Join, (true, null, new string[] {  Environment.NewLine}, null, false) },
             { UpdateExpressionPositions.OrderBy, (true, Sql.Clauses.OrderBy, new string[]{ Constants.Strings.Comma }, null, false) },
-            { UpdateExpressionPositions.Set, (true, Sql.Clauses.Set + Constants.Strings.Space, new string[] {  Environment.NewLine , Constants.Strings.Comma }, null, false) },
+            { UpdateExpressionPositions.Set, (true, Sql.Clauses.Set + Constants.Strings.Space, new string[] { Constants.Strings.Comma ,Environment.NewLine }, null, false) },
             { UpdateExpressionPositions.Where, (true, Sql.Clauses.Where + Constants.Strings.Space, new string[] { Constants.Strings.Comma, Sql.LogicOperators.And }, null, false) }
         };
         private static readonly IReadOnlyDictionary<DeleteExpressionPositions, (bool IsNewLine, string Clause, string ExpressionJoinValue, bool IsSingleExpression)> _deletePositionConfigs = new Dictionary<DeleteExpressionPositions, (bool IsNewLine, string Clause, string ExpressionJoinValue, bool IsSingleExpression)>()

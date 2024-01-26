@@ -125,6 +125,25 @@ namespace Sels.Core.Extensions.DateTimes
         {
             return date > DateTime.Now;
         }
+
+        /// <summary>
+        /// Changes <see cref="DateTime.Kind"/> to <see cref="DateTimeKind.Utc"/> on <paramref name="date"/>.
+        /// </summary>
+        /// <param name="date">The date to change the kind on</param>
+        /// <returns><paramref name="date"/> where <see cref="DateTime.Kind"/> is set to <see cref="DateTimeKind.Utc"/></returns>
+        public static DateTime AsUtc(this DateTime date)
+        {
+            return DateTime.SpecifyKind(date, DateTimeKind.Utc);
+        }
+        /// <summary>
+        /// Changes <see cref="DateTime.Kind"/> to <see cref="DateTimeKind.Local"/> on <paramref name="date"/>.
+        /// </summary>
+        /// <param name="date">The date to change the kind on</param>
+        /// <returns><paramref name="date"/> where <see cref="DateTime.Kind"/> is set to <see cref="DateTimeKind.Local"/></returns>
+        public static DateTime AsLocal(this DateTime date)
+        {
+            return DateTime.SpecifyKind(date, DateTimeKind.Local);
+        }
         #endregion
 
         #region Timespan

@@ -175,10 +175,28 @@ namespace Sels.Core.Mediator.Event
                             {
                                 if (!transactionSource.Task.IsCompleted)
                                 {
-                                    transactionSource.SetResult(null);
+                                    transactionSource.TrySetResult(null);
                                 }
                             }
                         }
+                    }
+                    catch (OperationCanceledException) when (token.IsCancellationRequested)
+                    {
+                        _logger.Log(LogLevel.Warning, $"Received cancellation request while raising event. Cancelling any waiting on transaction");
+
+                        if (transactionSource != null)
+                        {
+                            lock (transactionSource)
+                            {
+                                if (!transactionSource.Task.IsCompleted)
+                                {
+                                    transactionSource.TrySetCanceled();
+                                }
+                            }
+                        }
+
+                        if (_executing.HasValue()) await Task.WhenAll(_executing.Select(x => x.Result)).ConfigureAwait(false);
+                        throw;
                     }
                     catch (Exception ex)
                     {
@@ -189,7 +207,7 @@ namespace Sels.Core.Mediator.Event
                             lock (transactionSource) {
                                 if (!transactionSource.Task.IsCompleted)
                                 {
-                                    transactionSource.SetException(ex);
+                                    transactionSource.TrySetException(ex);
                                 }
                             }
                         }

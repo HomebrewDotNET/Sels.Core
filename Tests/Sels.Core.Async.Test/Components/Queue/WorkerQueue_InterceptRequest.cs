@@ -8,13 +8,13 @@ namespace Sels.Core.Async.Test.Components.Queue
 {
     public class WorkerQueue_InterceptRequest
     {
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task RequestIsIntercepted()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
 
@@ -26,13 +26,13 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.That(result, Is.EqualTo(string.Empty));
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task SecondInterceptorIsCalledWhenFirstReturnsNull()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
 

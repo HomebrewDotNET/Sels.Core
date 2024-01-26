@@ -13,13 +13,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
 {
     public class TaskManager_Schedule
     {
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task TaskIsScheduledAndExecuted()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             bool executed = false;
 
@@ -38,13 +38,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
         [TestCase(10)]
         [TestCase(69)]
         [TestCase(420)]
-        [Timeout(60000)]
+        [Timeout(10000)]
         public async Task CorrectOutputIsReturnedFromTask(int output)
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
@@ -62,9 +62,9 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
         public async Task CorrectExceptionIsReturnedFromTask()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
@@ -79,13 +79,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(actual, Is.AssignableTo<DivideByZeroException>());
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task TaskIsCancelledWhenTokenGetsCancelled()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             var tokenSource = new CancellationTokenSource();
             Exception exception = null;
@@ -103,13 +103,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(exception, Is.AssignableTo<OperationCanceledException>());
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task PreAndPostExecutionAreExecuted()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             bool preExecuted = false;
             bool executed = false;
@@ -127,13 +127,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.IsTrue(postExecuted);
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task ExceptionThrownInPreActionIsCaptured()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
@@ -148,13 +148,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(actual, Is.AssignableTo<AbandonedMutexException>());
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task ExceptionThrownInPostActionIsCaptured()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
@@ -172,13 +172,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
         [TestCase(ManagedTaskOptions.GracefulCancellation)]
         [TestCase(ManagedTaskOptions.AutoRestart | ManagedTaskOptions.KeepAlive)]
         [TestCase(ManagedTaskOptions.None)]
-        [Timeout(60000)]
+        [Timeout(10000)]
         public async Task TaskIsScheduledWithExpectedManagedTaskOptions(ManagedTaskOptions taskOptions)
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
 
             // Act
@@ -189,13 +189,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.AreEqual(taskOptions, scheduledTask.Options);
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task ManagedContinuationIsTriggered()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             IManagedTask managedTask = null;
 
@@ -214,14 +214,14 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(scheduledTask.Continuations[0], Is.EqualTo(managedTask));
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task ManagedNamedContinuationIsTriggered()
         {
             // Arrange
             const string TaskName = "Hello";
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             IManagedTask managedTask = null;
 
@@ -241,13 +241,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.That(scheduledTask.Continuations[0].Name, Is.EqualTo(TaskName));
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task AnonymousContinuationIsTriggered()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             IManagedAnonymousTask managedTask = null;
 

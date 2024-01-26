@@ -9,14 +9,14 @@ namespace Sels.Core.Async.Test.Components.Queue
 {
     public class WorkerQueue_Subscribe
     {
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task ItemsGetAssignedToSubscriptionDelegate()
         {
             // Arrange
             const string item = "1998";
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
             string assigned = null;
@@ -30,13 +30,13 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.AreEqual(item, assigned);
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task CancellingSubscriptionStopsDelegateFromBeingCalled()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
             int triggeredAmount = 0;

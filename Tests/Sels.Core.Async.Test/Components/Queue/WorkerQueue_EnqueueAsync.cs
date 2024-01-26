@@ -9,13 +9,13 @@ namespace Sels.Core.Async.Test.Components.Queue
 {
 	public class WorkerQueue_EnqueueAsync
 	{
-		[Test, Timeout(60000)]
+		[Test, Timeout(10000)]
 		public async Task DoesNotThrowWhenQueueIsNotAtMaxSize()
 		{
 			// Arrange
-			var provider = TestHelper.GetTaskManagerContainer();
-			await using var scope = provider.CreateAsyncScope();
-			provider = scope.ServiceProvider;
+			await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+			await using var scope = serviceProvider.CreateAsyncScope();
+			var provider = scope.ServiceProvider;
 			var taskManager = provider.GetRequiredService<ITaskManager>();
 			await using var queue = new WorkerQueue<string>(taskManager, 1);
 			Exception exception = null;
@@ -33,13 +33,13 @@ namespace Sels.Core.Async.Test.Components.Queue
 			// Assert
 			Assert.IsNull(exception);
 		}
-		[Test, Timeout(60000)]
+		[Test, Timeout(10000)]
 		public async Task DoesNotThrowWhenQueueDoesNotHaveMaxSize()
 		{
 			// Arrange
-			var provider = TestHelper.GetTaskManagerContainer();
-			await using var scope = provider.CreateAsyncScope();
-			provider = scope.ServiceProvider;
+			await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+			await using var scope = serviceProvider.CreateAsyncScope();
+			var provider = scope.ServiceProvider;
 			var taskManager = provider.GetRequiredService<ITaskManager>();
 			await using var queue = new WorkerQueue<string>(taskManager);
 			Exception exception = null;
@@ -57,13 +57,13 @@ namespace Sels.Core.Async.Test.Components.Queue
             // Assert
             Assert.IsNull(exception);
         }
-		[Test, Timeout(60000)]
+		[Test, Timeout(10000)]
 		public async Task ThrowsWhenQueueIsAtMaxSize()
 		{
 			// Arrange
-			var provider = TestHelper.GetTaskManagerContainer();
-			await using var scope = provider.CreateAsyncScope();
-			provider = scope.ServiceProvider;
+			await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+			await using var scope = serviceProvider.CreateAsyncScope();
+			var provider = scope.ServiceProvider;
 			var taskManager = provider.GetRequiredService<ITaskManager>();
 			await using var queue = new WorkerQueue<string>(taskManager, 1);
 			Exception exception = null;
@@ -83,14 +83,14 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.IsNotNull(exception);
 			Assert.That(exception, Is.AssignableTo<InvalidOperationException>());
         }
-		[Test, Timeout(60000)]
+		[Test, Timeout(10000)]
 		public async Task AddingToQueueIncreasesCount()
 		{
 			// Arrange
 			const int amount = 5;
-			var provider = TestHelper.GetTaskManagerContainer();
-			await using var scope = provider.CreateAsyncScope();
-			provider = scope.ServiceProvider;
+			await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+			await using var scope = serviceProvider.CreateAsyncScope();
+			var provider = scope.ServiceProvider;
 			var taskManager = provider.GetRequiredService<ITaskManager>();
 			await using var queue = new WorkerQueue<string>(taskManager);
 
@@ -103,13 +103,13 @@ namespace Sels.Core.Async.Test.Components.Queue
 			// Assert
 			Assert.AreEqual(amount, queue.Count);
 		}
-		[Test, Timeout(60000)]
+		[Test, Timeout(10000)]
 		public async Task ThrowsOperationCanceledExceptionWhenTokenIsCancelled()
 		{
 			// Arrange
-			var provider = TestHelper.GetTaskManagerContainer();
-			await using var scope = provider.CreateAsyncScope();
-			provider = scope.ServiceProvider;
+			await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+			await using var scope = serviceProvider.CreateAsyncScope();
+			var provider = scope.ServiceProvider;
 			var taskManager = provider.GetRequiredService<ITaskManager>();
 			await using var queue = new WorkerQueue<string>(taskManager);
 			var tokenSource = new CancellationTokenSource();

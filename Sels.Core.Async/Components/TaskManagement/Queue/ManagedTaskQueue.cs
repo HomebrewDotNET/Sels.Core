@@ -18,7 +18,7 @@ namespace Sels.Core.Async.TaskManagement.Queue
     public abstract class ManagedTaskQueue : IManagedTaskQueue, IAsyncExposedDisposable, IDisposable
     {
         // Fields
-        private readonly object _lock = new object();
+        private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
         private readonly Action _releaseAction;
 
         private readonly WorkerQueue<PendingTask> _queue;
@@ -184,21 +184,22 @@ namespace Sels.Core.Async.TaskManagement.Queue
                 if (CurrentReferences > 0)
                 {
                     _logger.Debug($"Queue is still referenced. Can't release");
+                    return;
                 }
                 else if (Pending > 0)
                 {
                     _logger.Debug($"Queue still has pending work. Can't release");
+                    return;
                 }
                 else if (Processing > 0)
                 {
                     _logger.Debug($"Queue is still processing. Can't release");
-                }
-                else
-                {
-                    _logger.Log($"Releasing queue");
-                    _releaseAction();
+                    return;
                 }
             }
+
+            _logger.Log($"Releasing queue");
+            _releaseAction();
         }
 
         /// <inheritdoc/>
@@ -207,30 +208,40 @@ namespace Sels.Core.Async.TaskManagement.Queue
             _logger.Log($"Removing reference to queue. Trying to release");
             lock (_lock)
             {
-                CurrentReferences--;
-                TryRelease();
+                CurrentReferences--;              
             }
+            TryRelease();
         }
 
         /// <inheritdoc/>
         public async ValueTask DisposeAsync() {
-            if (IsDisposed.HasValue) return;
-            using (new ExecutedAction(x => IsDisposed = x))
+            try
             {
-                _logger.Log($"Waiting up to <{GracefulStopTime}> for pending work to flush from the queue");
-
-                var cancellationSource = new CancellationTokenSource();
-                using(_queue.OnEmptyQueue(t => { cancellationSource.Cancel(); return Task.CompletedTask; }, true))
+                if (IsDisposed.HasValue) return;
+                using (new ExecutedAction(x => IsDisposed = x))
                 {
-                    if(_queue.Count > 0)
-                    {
-                        await Helper.Async.Sleep(GracefulStopTime, cancellationSource.Token);
-                    }
-                }
+                    await using var lockScope = await _lock.LockAsync();
+                    if (IsDisposed.HasValue) return;
 
-                _logger.Log($"Disposing task queue and cancelling any remaining pending tasks");
-                await _queue.DisposeAsync().ConfigureAwait(false);
+                    _logger.Log($"Waiting up to <{GracefulStopTime}> for pending work to flush from the queue");
+
+                    var cancellationSource = new CancellationTokenSource();
+                    using (_queue.OnEmptyQueue(t => { cancellationSource.Cancel(); return Task.CompletedTask; }, true))
+                    {
+                        if (_queue.Count > 0)
+                        {
+                            await Helper.Async.Sleep(GracefulStopTime, cancellationSource.Token);
+                        }
+                    }
+
+                    _logger.Log($"Disposing task queue and cancelling any remaining pending tasks");
+                    await _queue.DisposeAsync().ConfigureAwait(false);                    
+                }
             }
+            finally
+            {
+                TryRelease();
+            }           
         }
 
         private class PendingManagedTask : PendingTask, IPendingTask<IManagedTask>

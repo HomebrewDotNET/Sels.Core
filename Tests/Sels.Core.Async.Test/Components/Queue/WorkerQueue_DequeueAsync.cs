@@ -13,13 +13,13 @@ namespace Sels.Core.Async.Test.Components.Queue
         [TestCase("420")]
         [TestCase("-450459")]
         [TestCase("459234755")]
-        [Timeout(60000)]
+        [Timeout(10000)]
         public async Task ReturnsCorrectItemWhenQueueIsNotEmpty(string item)
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
 
@@ -30,13 +30,13 @@ namespace Sels.Core.Async.Test.Components.Queue
             // Assert
             Assert.That(dequeued, Is.EqualTo(item));
         }
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task CallbackTaskBlocksWhenQueueIsEmpty()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
 
@@ -48,14 +48,14 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.That(task, Is.Not.Null);
             Assert.That(task.IsCompleted, Is.False);
         }
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task ItemGetsAssignedToRequestAndNotQueue()
         {
             // Arrange
             const string item = "56";
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
 
@@ -69,13 +69,13 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.That(actual, Is.EqualTo(item));
             Assert.AreEqual(0, queue.Count);
         }
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task ThrowsOperationCanceledExceptionWhenTokenGetsCancelled()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             await using var queue = new WorkerQueue<string>(taskManager, 1);
             var tokenSource = new CancellationTokenSource();

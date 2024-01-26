@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,10 @@ namespace Sels.Core.Async.Test
 {
     internal static class TestHelper
     {
-        public static IServiceProvider GetTaskManagerContainer(Action<TaskManagerOptions>? configurator = null)
+        public static ServiceProvider GetTaskManagerContainer(Action<TaskManagerOptions>? configurator = null)
         {
             var collection = new ServiceCollection()
+                                 .AddLogging(x => x.SetMinimumLevel(LogLevel.Debug).AddConsole())
                                  .AddTaskManager(configurator);
 
             return collection.BuildServiceProvider();

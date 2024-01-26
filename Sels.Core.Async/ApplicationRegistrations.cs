@@ -27,7 +27,6 @@ namespace Microsoft.Extensions.DependencyInjection
             // Task manager
             services.New<TaskManager>()
                     .AsSingleton()
-                    .Trace(x => x.Duration.OfAll.WithDefaultThresholds())
                     .HandleDisposed()
                     .TryRegister();
 

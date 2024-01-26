@@ -25,17 +25,17 @@ namespace Sels.Core.Extensions.Threading
             try
             {
                 // Can throw
-                await task;
+                await task.ConfigureAwait(false);
 
-                source.SetResult(null);
+                source.TrySetResult(null);
             }
             catch(AggregateException aggEx) when (aggEx.InnerExceptions.Count == 1)
             {
-                source.SetException(aggEx.InnerExceptions.First());
+                source.TrySetException(aggEx.InnerExceptions.First());
             }
             catch (Exception ex)
             {
-                source.SetException(ex);
+                source.TrySetException(ex);
             }
         }
 
@@ -54,15 +54,15 @@ namespace Sels.Core.Extensions.Threading
             try
             {
                 // Can throw
-                source.SetResult(await task);
+                source.TrySetResult(await task);
             }
             catch (AggregateException aggEx) when (aggEx.InnerExceptions.Count == 1)
             {
-                source.SetException(aggEx.InnerExceptions.First());
+                source.TrySetException(aggEx.InnerExceptions.First());
             }
             catch (Exception ex)
             {
-                source.SetException(ex);
+                source.TrySetException(ex);
             }
         }
 
@@ -82,15 +82,15 @@ namespace Sels.Core.Extensions.Threading
                 // Can throw
                 task.GetAwaiter().GetResult();
 
-                source.SetResult(null);
+                source.TrySetResult(null);
             }
             catch (AggregateException aggEx) when (aggEx.InnerExceptions.Count == 1)
             {
-                source.SetException(aggEx.InnerExceptions.First());
+                source.TrySetException(aggEx.InnerExceptions.First());
             }
             catch (Exception ex)
             {
-                source.SetException(ex);
+                source.TrySetException(ex);
             }
         }
 
@@ -109,15 +109,15 @@ namespace Sels.Core.Extensions.Threading
             try
             {
                 // Can throw
-                source.SetResult(task.Result);
+                source.TrySetResult(task.Result);
             }
             catch (AggregateException aggEx) when (aggEx.InnerExceptions.Count == 1)
             {
-                source.SetException(aggEx.InnerExceptions.First());
+                source.TrySetException(aggEx.InnerExceptions.First());
             }
             catch (Exception ex)
             {
-                source.SetException(ex);
+                source.TrySetException(ex);
             }
         }
 

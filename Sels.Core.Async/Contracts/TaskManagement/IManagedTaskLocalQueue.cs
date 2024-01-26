@@ -5,7 +5,7 @@ using System.Text;
 namespace Sels.Core.Async.TaskManagement
 {
     /// <summary>
-    /// <inheritdoc cref="IManagedTaskQueue"/>.
+    /// <inheritdoc cref="IManagedTaskQueue"/>
     /// Local queues are tied to an object.
     /// Disposing the queue will remove the reference to it. When a queue is empty and does not contain any references it will be removed.
     /// </summary>

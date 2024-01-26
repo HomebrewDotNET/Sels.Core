@@ -8,13 +8,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
 {
     public class TaskManager_ScheduleDelayed
     {
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task AnonymousTaskIsScheduledAndExecuted()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             bool executed = false;
 
@@ -30,13 +30,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             await scheduledTask.OnExecuted;
             Assert.IsTrue(executed);
         }
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task ManagedTaskIsScheduledAndExecuted()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             bool executed = false;
 
@@ -53,13 +53,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.IsTrue(executed);
         }
 
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task AnonymousTaskIsScheduledAndExecutedAfterDelay()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             DateTime executed = default;
             var delay = TimeSpan.FromSeconds(5);
@@ -77,13 +77,13 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             await scheduledTask.OnExecuted;
             Assert.That(executed, Is.GreaterThanOrEqualTo(now.Add(delay)));
         }
-        [Test, Timeout(60000)]
+        [Test, Timeout(10000)]
         public async Task ManagedTaskIsScheduledAndExecutedAfterDelay()
         {
             // Arrange
-            var provider = TestHelper.GetTaskManagerContainer();
-            await using var scope = provider.CreateAsyncScope();
-            provider = scope.ServiceProvider;
+            await using var serviceProvider = TestHelper.GetTaskManagerContainer();
+            await using var scope = serviceProvider.CreateAsyncScope();
+            var provider = scope.ServiceProvider;
             var taskManager = provider.GetRequiredService<ITaskManager>();
             DateTime executed = default;
             var delay = TimeSpan.FromSeconds(5);
