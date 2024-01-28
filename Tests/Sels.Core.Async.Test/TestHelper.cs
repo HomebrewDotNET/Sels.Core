@@ -13,7 +13,7 @@ namespace Sels.Core.Async.Test
         public static ServiceProvider GetTaskManagerContainer(Action<TaskManagerOptions>? configurator = null)
         {
             var collection = new ServiceCollection()
-                                 .AddLogging(x => x.SetMinimumLevel(LogLevel.Debug).AddConsole())
+                                 //.AddLogging(x => x.SetMinimumLevel(LogLevel.Debug).AddConsole())
                                  .AddTaskManager(configurator);
 
             return collection.BuildServiceProvider();

@@ -302,15 +302,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             // Act
             var firstTask = taskManager.TryScheduleAction(this, ScheduledName, false, async t =>
             {
-                try
-                {
-                    await Task.Delay(TimeSpan.FromHours(1), t);
-                }
-                catch(Exception ex)
-                {
-                    exception = ex;
-                    throw;
-                }
+                await Task.Delay(TimeSpan.FromHours(1), t);
             });
             var scheduledTask = await taskManager.ScheduleActionAsync(this, ScheduledName, false, () => executed = true, x => x.WithPolicy(policy));
 
@@ -319,6 +311,9 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.IsNotNull(scheduledTask.OnExecuted);
             await scheduledTask.OnExecuted;
             Assert.IsTrue(executed);
+            Assert.IsNotNull(firstTask);
+            Assert.IsNotNull(firstTask.OnExecuted);
+            exception = firstTask.Result.CastToOrDefault<Exception>();
             Assert.IsNotNull(exception);
             Assert.That(exception, Is.AssignableTo<OperationCanceledException>());
         }
