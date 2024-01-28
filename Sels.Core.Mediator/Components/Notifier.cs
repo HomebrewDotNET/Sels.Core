@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sels.Core.Async.TaskManagement;
@@ -7,32 +8,42 @@ using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Linq;
 using Sels.Core.Extensions.Logging;
+using Sels.Core.Extensions.Reflection;
 using Sels.Core.Mediator.Components;
 using Sels.Core.Mediator.Event;
 using Sels.Core.Mediator.Request;
+using Sels.Core.Models;
 using Sels.Core.Models.Disposables;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LinqExpression = System.Linq.Expressions.Expression;
 
 namespace Sels.Core.Mediator
 {
     /// <inheritdoc cref="INotifier"/>
     public class Notifier : INotifier, IAsyncDisposable
     {
+        // Statics
+        private static MethodInfo GenericRequestMethod = Helper.Expression.GetMethod<Notifier>(x => x.RequestAsync<NullRequest, Null>(default, default, default, default)).GetGenericMethodDefinition();
+
         // Fields
+        private readonly IOptionsMonitor<NotifierOptions> _options;
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IEventSubscriber _eventSubscriber;
         private readonly IRequestSubscriptionManager _requestSubscriptionManager;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IMemoryCache _cache;
         private readonly EventFireAndForgetStrategy _strategy;
 
         /// <inheritdoc cref="Notifier"/>
+        /// <param name="cache">Cache used to store invocation delegates</param>
         /// <param name="options">The options for this instance</param>
         /// <param name="taskManager">Manager used to schedule fire and forget events</param>
         /// <param name="eventSubscriber">Manager used to get global listeners</param>
@@ -40,29 +51,31 @@ namespace Sels.Core.Mediator
         /// <param name="serviceProvider">Provider used to resolve typed event and request subscribers</param>
         /// <param name="loggerFactory">Optional factory to create loggers for child instances</param>
         /// <param name="logger">Optional logger for tracing</param>
-        public Notifier(IOptions<NotifierOptions> options, ITaskManager taskManager, IEventSubscriber eventSubscriber, IRequestSubscriptionManager requestSubscriptionManager, IServiceProvider serviceProvider, ILoggerFactory loggerFactory = null, ILogger<Notifier> logger = null)
+        public Notifier(IOptionsMonitor<NotifierOptions> options, ITaskManager taskManager, IEventSubscriber eventSubscriber, IRequestSubscriptionManager requestSubscriptionManager, IServiceProvider serviceProvider, IMemoryCache cache, ILoggerFactory loggerFactory = null, ILogger<Notifier> logger = null)
         {
+            _options = options.ValidateArgument(nameof(options));
             _eventSubscriber = eventSubscriber.ValidateArgument(nameof(eventSubscriber));
             _serviceProvider = serviceProvider.ValidateArgument(nameof(serviceProvider));
             _requestSubscriptionManager = requestSubscriptionManager.ValidateArgument(nameof(requestSubscriptionManager));
             _loggerFactory = loggerFactory;
+            _cache = cache.ValidateArgument(nameof(cache));
             options.ValidateArgument(nameof(options));
             taskManager.ValidateArgument(nameof(taskManager));
             _logger = logger;
 
-            switch(options.Value.FireAndForgetStrategy)
+            switch(options.CurrentValue.FireAndForgetStrategy)
             {
                 case FireAndForgetStrategy.ThreadPool:
                     _strategy = new EventFireAndForgetStrategy(taskManager);
                     break;
                 case FireAndForgetStrategy.GlobalQueue:
-                    _strategy = new GlobalQueueFireAndForgetStrategy(options.Value.GlobalQueueName, options.Value.QueueConcurrency, taskManager);
+                    _strategy = new GlobalQueueFireAndForgetStrategy(options.CurrentValue.GlobalQueueName, options.CurrentValue.QueueConcurrency, taskManager);
                     break;
                 case FireAndForgetStrategy.QueuePerType:
-                    _strategy = new EventQueueFireAndForgetStrategy(options.Value.QueueConcurrency, taskManager);
+                    _strategy = new EventQueueFireAndForgetStrategy(options.CurrentValue.QueueConcurrency, taskManager);
                     break;
                 default:
-                    throw new NotSupportedException($"Strategy <{options.Value.FireAndForgetStrategy}> is not known");
+                    throw new NotSupportedException($"Strategy <{options.CurrentValue.FireAndForgetStrategy}> is not known");
             }
         }
 
@@ -177,7 +190,44 @@ namespace Sels.Core.Mediator
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResponse<TResponse>> RequestAsync<TRequest, TResponse>(object sender, TRequest request, Action<INotifierRequestOptions<TRequest>> requestOptions, CancellationToken token = default)
+        public Task<RequestResponse<TResponse>> RequestAsync<TResponse>(object sender, IRequest<TResponse> request, Action<INotifierRequestOptions> requestOptions, CancellationToken token = default)
+        {
+            using var methodLogger = _logger.TraceMethod(this);
+            sender.ValidateArgument(nameof(sender));
+            requestOptions.ValidateArgument(nameof(requestOptions));
+            request.ValidateArgument(nameof(request));
+
+            var requestDelegate = _cache.GetOrCreate<Func<object, IRequest<TResponse>, Action<INotifierRequestOptions>, CancellationToken, Task<RequestResponse<TResponse>>>>($"{_options.CurrentValue.CachePrefix}.{request.GetType().AssemblyQualifiedName}", x =>
+            {
+                x.SlidingExpiration = _options.CurrentValue.DelegateExpiryTime;
+
+                _logger.Debug($"First time raising request <{request.GetType()}>. Generating delegate");
+
+                var requestType = request.GetType();
+
+                // Input
+                var senderParameter = LinqExpression.Parameter(typeof(object), nameof(sender));
+                var requestParameter = LinqExpression.Parameter(typeof(IRequest<TResponse>), nameof(request));
+                var requestOptionsParameter = LinqExpression.Parameter(typeof(Action<INotifierRequestOptions>), nameof(requestOptions));
+                var tokenParameter = LinqExpression.Parameter(typeof(CancellationToken), nameof(token));
+
+                // Cast request to correct type
+                var requestVariable = LinqExpression.Variable(requestType, "typedRequest");
+                var castExpression = LinqExpression.Assign(requestVariable, LinqExpression.Convert(requestParameter, requestType));
+
+                // Invoke method
+                var methodCall = LinqExpression.Call(LinqExpression.Constant(this), GenericRequestMethod.MakeGenericMethod(requestType, typeof(TResponse)), senderParameter, requestVariable, requestOptionsParameter, tokenParameter);
+                var methodBlock = LinqExpression.Block(new[] { requestVariable }, castExpression, methodCall);
+
+                var requestDelegate = LinqExpression.Lambda<Func<object, IRequest<TResponse>, Action<INotifierRequestOptions>, CancellationToken, Task<RequestResponse<TResponse>>>>(methodBlock, senderParameter, requestParameter, requestOptionsParameter, tokenParameter).Compile();
+                _logger.Debug($"Generated delegate <{requestDelegate}> for request <{requestType}>");
+                return requestDelegate;
+            });
+
+            return requestDelegate(sender, request, requestOptions, token);
+        }
+
+        private async Task<RequestResponse<TResponse>> RequestAsync<TRequest, TResponse>(object sender, TRequest request, Action<INotifierRequestOptions> requestOptions, CancellationToken token = default) where TRequest : IRequest<TResponse>
         {
             using var methodLogger = _logger.TraceMethod(this);
             sender.ValidateArgument(nameof(sender));
@@ -185,7 +235,7 @@ namespace Sels.Core.Mediator
             request.ValidateArgument(nameof(request));
 
             _logger.Log($"Raising request <{request}> created by <{sender}>");
-            var options = new NotifierRequestOptions<TRequest>();
+            var options = new NotifierRequestOptions();
             requestOptions(options);
             var executionChain = new RequestExecutionChain<TRequest, TResponse>(_loggerFactory?.CreateLogger<RequestExecutionChain<TRequest, TResponse>>());
 
@@ -216,8 +266,9 @@ namespace Sels.Core.Mediator
             }
             return response;
         }
+
         /// <inheritdoc/>
-        public async Task<RequestAcknowledgement> RequestAcknowledgementAsync<TRequest>(object sender, TRequest request, Action<INotifierRequestOptions<TRequest>> requestOptions, CancellationToken token = default)
+        public async Task<RequestAcknowledgement> RequestAcknowledgementAsync<TRequest>(object sender, TRequest request, Action<INotifierRequestOptions> requestOptions, CancellationToken token = default) where TRequest : IRequest
         {
             using var methodLogger = _logger.TraceMethod(this);
             sender.ValidateArgument(nameof(sender));
@@ -225,7 +276,7 @@ namespace Sels.Core.Mediator
             request.ValidateArgument(nameof(request));
 
             _logger.Log($"Raising request <{request}> created by <{sender}>");
-            var options = new NotifierRequestOptions<TRequest>();
+            var options = new NotifierRequestOptions();
             requestOptions(options);
             var executionChain = new RequestExecutionChain<TRequest>(_loggerFactory?.CreateLogger<RequestExecutionChain<TRequest>>());
 
@@ -309,17 +360,17 @@ namespace Sels.Core.Mediator
             }
         }
 
-        /// <inheritdoc cref="INotifierRequestOptions{TRequest}"/>
-        private class NotifierRequestOptions<TRequest> : INotifierRequestOptions<TRequest>
+        /// <inheritdoc cref="INotifierRequestOptions"/>
+        private class NotifierRequestOptions : INotifierRequestOptions
         {
             // Properties
             /// <summary>
             /// Custom exception factory to throw an exception when a raised requests is not replied to. When set to null no exception will be thrown.
             /// </summary>
-            public Func<TRequest, Exception> ExceptionFactory { get; private set; }
+            public Func<object, Exception> ExceptionFactory { get; private set; }
 
             /// <inheritdoc/>
-            public INotifierRequestOptions<TRequest> ThrowOnUnhandled(Func<TRequest, Exception> exceptionFactory)
+            public INotifierRequestOptions ThrowOnUnhandled(Func<object, Exception> exceptionFactory)
             {
                 ExceptionFactory = exceptionFactory.ValidateArgument(nameof(exceptionFactory));
                 return this;

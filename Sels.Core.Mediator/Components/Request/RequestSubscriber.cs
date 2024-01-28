@@ -11,7 +11,7 @@ using System.Threading;
 namespace Sels.Core.Mediator.Request
 {
     /// <inheritdoc cref="IRequestSubscriber{TRequest, TResponse}"/>
-    public class RequestSubscriber<TRequest, TResponse> : IRequestSubscriber<TRequest, TResponse>
+    public class RequestSubscriber<TRequest, TResponse> : IRequestSubscriber<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         // Fields
         private readonly ILogger _logger;
@@ -48,7 +48,7 @@ namespace Sels.Core.Mediator.Request
             }
         }
         /// <inheritdoc />
-        public RequestSubscription Subscribe(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> subscriberAction, ushort? priority = null)
+        public RequestSubscription Subscribe(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> subscriberAction, byte? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
             subscriberAction.ValidateArgument(nameof(subscriberAction));
@@ -69,7 +69,7 @@ namespace Sels.Core.Mediator.Request
     }
 
     /// <inheritdoc cref="IRequestSubscriber{TRequest}"/>
-    public class RequestSubscriber<TRequest> : IRequestSubscriber<TRequest>
+    public class RequestSubscriber<TRequest> : IRequestSubscriber<TRequest> where TRequest : IRequest
     {
         // Fields
         private readonly ILogger _logger;
@@ -106,7 +106,7 @@ namespace Sels.Core.Mediator.Request
             }
         }
         /// <inheritdoc />
-        public RequestAcknowledgementSubscription Subscribe(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> subscriberAction, ushort? priority = null)
+        public RequestAcknowledgementSubscription Subscribe(Delegates.Async.AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> subscriberAction, byte? priority = null)
         {
             using var methodLogger = _logger.TraceMethod(this);
             subscriberAction.ValidateArgument(nameof(subscriberAction));

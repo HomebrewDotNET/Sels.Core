@@ -12,7 +12,9 @@ namespace Sels.Core.Mediator.Test
         public static IServiceProvider GetTestContainer(Action<IServiceCollection>? configurator = null)
         {
             var collection = new ServiceCollection()
-                                 .AddNotifier();
+                                 .AddNotifier()
+                                 .AddMemoryCache();
+
             configurator?.Invoke(collection);
             return collection.BuildServiceProvider();
         }

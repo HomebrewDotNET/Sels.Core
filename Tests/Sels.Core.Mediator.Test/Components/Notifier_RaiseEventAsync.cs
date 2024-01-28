@@ -288,7 +288,7 @@ namespace Sels.Core.Mediator.Test.Components
         public async Task EventListenersAreCalledInTheCorrectOrder()
         {
             // Arrange
-            var priorities = new ushort?[] { null, 10, 3, 4, 0, 1, null };
+            var priorities = new byte?[] { null, 10, 3, 4, 0, 1, null };
             var expected = new uint?[] { 0, 1, 3, 4, 10, null, null };
             var @event = "Hi I'm an event";
             var results = new List<uint?>();

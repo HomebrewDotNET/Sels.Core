@@ -11,7 +11,7 @@ namespace Sels.Core.Mediator.Request
     /// </summary>
     /// <typeparam name="TRequest">The request type to subscribe to</typeparam>
     /// <typeparam name="TResponse">The type of response for the request</typeparam>
-    public interface IRequestSubscriber<TRequest, TResponse>
+    public interface IRequestSubscriber<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         /// <summary>
         /// Gets all current handlers listening to requests of type <typeparamref name="TRequest"/> to which they can respond with <typeparamref name="TResponse"/>.
@@ -31,14 +31,14 @@ namespace Sels.Core.Mediator.Request
         /// <param name="subscriberAction">Delegate that will be called to respond to requests</param>
         /// <param name="priority"><inheritdoc cref="IMessageHandler.Priority"/></param>
         /// <returns>The active subscription to the request. Disposing the subscription will stop <paramref name="subscriberAction"/> from receiving requests</returns>
-        RequestSubscription Subscribe(AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> subscriberAction, ushort? priority = null);
+        RequestSubscription Subscribe(AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> subscriberAction, byte? priority = null);
     }
 
     /// <summary>
     /// Allows object to acknowledge requests at runtime by subscribing to the requests.
     /// </summary>
     /// <typeparam name="TRequest">The request type to subscribe to</typeparam>
-    public interface IRequestSubscriber<TRequest>
+    public interface IRequestSubscriber<TRequest> where TRequest : IRequest
     {
         /// <summary>
         /// Gets all current handlers listening to requests of type <typeparamref name="TRequest"/> that they can acknowledge.
@@ -58,6 +58,6 @@ namespace Sels.Core.Mediator.Request
         /// <param name="subscriberAction">Delegate that will be called to respond to requests</param>
         /// <param name="priority"><inheritdoc cref="IMessageHandler.Priority"/></param>
         /// <returns>The active subscription to the request. Disposing the subscription will stop <paramref name="subscriberAction"/> from receiving requests</returns>
-        RequestAcknowledgementSubscription Subscribe(AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> subscriberAction, ushort? priority = null);
+        RequestAcknowledgementSubscription Subscribe(AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> subscriberAction, byte? priority = null);
     }
 }

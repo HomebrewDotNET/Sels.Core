@@ -20,7 +20,7 @@ namespace Sels.Core.Mediator.Event
 
         // Properties
         /// <inheritdoc/>
-        public ushort? Priority { get; set; }
+        public byte? Priority { get; set; }
 
         /// <inheritdoc cref="DelegateEventListener{TEvent}"/>
         /// <param name="asyncAction">The delegate that will be called to react to raised events</param>
@@ -43,7 +43,7 @@ namespace Sels.Core.Mediator.Event
 
         // Properties
         /// <inheritdoc/>
-        public ushort? Priority { get; set; }
+        public byte? Priority { get; set; }
 
         /// <inheritdoc cref="DelegateEventListener"/>
         /// <param name="asyncAction">The delegate that will be called to react to raised events</param>
