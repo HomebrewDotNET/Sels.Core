@@ -12,14 +12,14 @@ namespace Sels.Core.Mediator.Request
     /// <summary>
     /// Request handler that delegates calls to <see cref="IRequestHandler{TRequest, TResponse}.TryRespondAsync(IRequestHandlerContext, TRequest, CancellationToken)"/> to a delegate,.
     /// </summary>
-    public class DelegateRequestHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
+    public class DelegateRequestHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         // Fields
         private readonly AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> _func;
 
         // Properties
         /// <inheritdoc/>
-        public ushort? Priority { get; set; }
+        public byte? Priority { get; set; }
 
         /// <inheritdoc cref="DelegateRequestHandler{TRequest, TResponse}"/>
         /// <param name="func">Delegate used to repond to calls to <see cref="IRequestHandler{TRequest, TResponse}.TryRespondAsync(IRequestHandlerContext, TRequest, CancellationToken)"/></param>
@@ -35,14 +35,14 @@ namespace Sels.Core.Mediator.Request
     /// <summary>
     /// Request handler that delegates calls to <see cref="IRequestHandler{TRequest}.TryAcknowledgeAsync(IRequestHandlerContext, TRequest, CancellationToken)"/> to a delegate,.
     /// </summary>
-    public class DelegateRequestHandler<TRequest> : IRequestHandler<TRequest>
+    public class DelegateRequestHandler<TRequest> : IRequestHandler<TRequest> where TRequest : IRequest
     {
         // Fields
         private readonly AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> _func;
 
         // Properties
         /// <inheritdoc/>
-        public ushort? Priority { get; set; }
+        public byte? Priority { get; set; }
 
         /// <inheritdoc cref="DelegateRequestHandler{TRequest, TResponse}"/>
         /// <param name="func">Delegate used to repond to calls to <see cref="IRequestHandler{TRequest}.TryAcknowledgeAsync(IRequestHandlerContext, TRequest, CancellationToken)"/></param>

@@ -11,7 +11,7 @@ namespace Sels.Core.Mediator.Request
     /// </summary>
     /// <typeparam name="TRequest">The type of the request to execute the handlers with</typeparam>
     /// <typeparam name="TResponse">The type of expected reply</typeparam>
-    public interface IRequestExecutionChain<TRequest, TResponse>
+    public interface IRequestExecutionChain<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         /// <summary>
         /// Enlists <paramref name="handler"/> to the current chain so it can reply to the request.
@@ -33,7 +33,7 @@ namespace Sels.Core.Mediator.Request
     /// Execution chain for request handlers enlisted to acknowledge a request of type <typeparamref name="TRequest"/>.
     /// </summary>
     /// <typeparam name="TRequest">The type of the request to execute the handlers with</typeparam>
-    public interface IRequestExecutionChain<TRequest>
+    public interface IRequestExecutionChain<TRequest> where TRequest : IRequest
     {
         /// <summary>
         /// Enlists <paramref name="handler"/> to the current chain so it can reply to the request.

@@ -269,7 +269,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddEventListener<TEvent>(this IServiceCollection services, AsyncAction<IEventListenerContext, TEvent, CancellationToken> handler, ushort? priority = null)
+        public static IServiceCollection AddEventListener<TEvent>(this IServiceCollection services, AsyncAction<IEventListenerContext, TEvent, CancellationToken> handler, byte? priority = null)
         {
             services.ValidateArgument(nameof(services));
             handler.ValidateArgument(nameof(handler));
@@ -289,7 +289,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddEventListener<TEvent>(this IServiceCollection services, AsyncAction<IServiceProvider, IEventListenerContext, TEvent, CancellationToken> handler, ushort? priority = null)
+        public static IServiceCollection AddEventListener<TEvent>(this IServiceCollection services, AsyncAction<IServiceProvider, IEventListenerContext, TEvent, CancellationToken> handler, byte? priority = null)
         {
             services.ValidateArgument(nameof(services));
             handler.ValidateArgument(nameof(handler));
@@ -326,7 +326,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddEventListener(this IServiceCollection services, AsyncAction<IEventListenerContext, object, CancellationToken> handler, ushort? priority = null)
+        public static IServiceCollection AddEventListener(this IServiceCollection services, AsyncAction<IEventListenerContext, object, CancellationToken> handler, byte? priority = null)
         {
             services.ValidateArgument(nameof(services));
             handler.ValidateArgument(nameof(handler));
@@ -374,7 +374,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddEventListener(this IServiceCollection services, AsyncAction<IServiceProvider, IEventListenerContext, object, CancellationToken> handler, ushort? priority = null)
+        public static IServiceCollection AddEventListener(this IServiceCollection services, AsyncAction<IServiceProvider, IEventListenerContext, object, CancellationToken> handler, byte? priority = null)
         {
             services.ValidateArgument(nameof(services));
             handler.ValidateArgument(nameof(handler));
@@ -442,7 +442,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <param name="serviceBuilder">Optional delegate for configuring the service registration</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddRequestHandler<TRequest, TResponse, THandler>(this IServiceCollection services, Action<IServiceBuilder<IRequestHandler<TRequest, TResponse>, THandler>> serviceBuilder = null)
+        public static IServiceCollection AddRequestHandler<TRequest, TResponse, THandler>(this IServiceCollection services, Action<IServiceBuilder<IRequestHandler<TRequest, TResponse>, THandler>> serviceBuilder = null) where TRequest : IRequest<TResponse>
             where THandler : class, IRequestHandler<TRequest, TResponse>
         {
             services.ValidateArgument(nameof(services));
@@ -462,7 +462,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddRequestHandler<TRequest, TResponse>(this IServiceCollection services, AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> handler, ushort? priority = null)
+        public static IServiceCollection AddRequestHandler<TRequest, TResponse>(this IServiceCollection services, AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> handler, byte? priority = null) where TRequest : IRequest<TResponse>
         {
             services.ValidateArgument(nameof(services));
             handler.ValidateArgument(nameof(handler));
@@ -483,7 +483,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddRequestHandler<TRequest, TResponse>(this IServiceCollection services, AsyncFunc<IServiceProvider, IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> handler, ushort? priority = null)
+        public static IServiceCollection AddRequestHandler<TRequest, TResponse>(this IServiceCollection services, AsyncFunc<IServiceProvider, IRequestHandlerContext, TRequest, CancellationToken, RequestResponse<TResponse>> handler, byte? priority = null) where TRequest : IRequest<TResponse>
         {
             services.ValidateArgument(nameof(services));
             handler.ValidateArgument(nameof(handler));
@@ -503,7 +503,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="requestHandler">The request handler to add to the container</param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddRequestHandler<TRequest, TResponse>(this IServiceCollection services, IRequestHandler<TRequest, TResponse> requestHandler)
+        public static IServiceCollection AddRequestHandler<TRequest, TResponse>(this IServiceCollection services, IRequestHandler<TRequest, TResponse> requestHandler) where TRequest : IRequest<TResponse>
         {
             services.ValidateArgument(nameof(services));
             requestHandler.ValidateArgument(nameof(requestHandler));
@@ -520,7 +520,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <param name="serviceBuilder">Optional delegate for configuring the service registration</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddRequestHandler<TRequest, THandler>(this IServiceCollection services, Action<IServiceBuilder<IRequestHandler<TRequest>, THandler>> serviceBuilder = null)
+        public static IServiceCollection AddRequestHandler<TRequest, THandler>(this IServiceCollection services, Action<IServiceBuilder<IRequestHandler<TRequest>, THandler>> serviceBuilder = null) where TRequest : IRequest
             where THandler : class, IRequestHandler<TRequest>
         {
             services.ValidateArgument(nameof(services));
@@ -539,7 +539,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddRequestHandler<TRequest>(this IServiceCollection services, AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> handler, ushort? priority = null)
+        public static IServiceCollection AddRequestHandler<TRequest>(this IServiceCollection services, AsyncFunc<IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> handler, byte? priority = null) where TRequest : IRequest
         {
             services.ValidateArgument(nameof(services));
             handler.ValidateArgument(nameof(handler));
@@ -559,7 +559,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="priority"><inheritdoc cref="Sels.Core.Mediator.IMessageHandler.Priority"/></param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddRequestHandler<TRequest>(this IServiceCollection services, AsyncFunc<IServiceProvider, IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> handler, ushort? priority = null)
+        public static IServiceCollection AddRequestHandler<TRequest>(this IServiceCollection services, AsyncFunc<IServiceProvider, IRequestHandlerContext, TRequest, CancellationToken, RequestAcknowledgement> handler, byte? priority = null) where TRequest : IRequest
         {
             services.ValidateArgument(nameof(services));
             handler.ValidateArgument(nameof(handler));
@@ -578,7 +578,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="requestHandler">The request handler to add to the container</param>
         /// <param name="services">The collection the service descriptions will be added to</param>
         /// <returns><paramref name="services"/> for method chaining</returns>
-        public static IServiceCollection AddRequestHandler<TRequest>(this IServiceCollection services, IRequestHandler<TRequest> requestHandler)
+        public static IServiceCollection AddRequestHandler<TRequest>(this IServiceCollection services, IRequestHandler<TRequest> requestHandler) where TRequest : IRequest
         {
             services.ValidateArgument(nameof(services));
             requestHandler.ValidateArgument(nameof(requestHandler));

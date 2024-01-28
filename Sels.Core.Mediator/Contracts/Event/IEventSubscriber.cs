@@ -49,14 +49,14 @@ namespace Sels.Core.Mediator.Event
         /// <param name="subscriberAction">The delegate that will be called to react to events of type <typeparamref name="TEvent"/></param>
         /// <param name="priority"><inheritdoc cref="IMessageHandler.Priority"/></param>
         /// <returns>The active subscription to the event. Disposing the subscription will stop <paramref name="subscriberAction"/> from receiving events</returns>
-        EventSubscription Subscribe<TEvent>(AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction, ushort? priority = null);
+        EventSubscription Subscribe<TEvent>(AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction, byte? priority = null);
         /// <summary>
         /// Subscribes <paramref name="subscriberAction"/> to all events. When an event is raised, <paramref name="subscriberAction"/> will be called.
         /// </summary>
         /// <param name="subscriberAction">The delegate that will be called to react to events</param>
         /// <param name="priority"><inheritdoc cref="IMessageHandler.Priority"/></param>
         /// <returns>The active subscription to the event. Disposing the subscription will stop <paramref name="subscriberAction"/> from receiving events</returns>
-        EventSubscription Subscribe(AsyncAction<IEventListenerContext, object, CancellationToken> subscriberAction, ushort? priority = null);
+        EventSubscription Subscribe(AsyncAction<IEventListenerContext, object, CancellationToken> subscriberAction, byte? priority = null);
         #endregion
     }
 
@@ -87,7 +87,7 @@ namespace Sels.Core.Mediator.Event
         /// <param name="subscriberAction">The delegate that will be called to react to events of type <typeparamref name="TEvent"/></param>
         /// <param name="priority"><inheritdoc cref="IMessageHandler.Priority"/></param>
         /// <returns>The active subscription to the event. Disposing the subscription will stop <paramref name="subscriberAction"/> from receiving events</returns>
-        EventSubscription Subscribe(AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction, ushort? priority = null);
+        EventSubscription Subscribe(AsyncAction<IEventListenerContext, TEvent, CancellationToken> subscriberAction, byte? priority = null);
         #endregion
     }
 }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Sels.Core.Mediator.Request
 {
     /// <inheritdoc cref="IRequestExecutionChain{TRequest, TResponse}"/>
-    internal class RequestExecutionChain<TRequest, TResponse> : IRequestExecutionChain<TRequest, TResponse>
+    internal class RequestExecutionChain<TRequest, TResponse> : IRequestExecutionChain<TRequest, TResponse> where TRequest : IRequest<TResponse>
     {
         // Fields
         private readonly List<IRequestHandler<TRequest, TResponse>> _handlers = new List<IRequestHandler<TRequest, TResponse>>();
@@ -89,7 +89,7 @@ namespace Sels.Core.Mediator.Request
     }
 
     /// <inheritdoc cref="IRequestExecutionChain{TRequest}"/>
-    internal class RequestExecutionChain<TRequest> : IRequestExecutionChain<TRequest>
+    internal class RequestExecutionChain<TRequest> : IRequestExecutionChain<TRequest> where TRequest : IRequest
     {
         // Fields
         private readonly List<IRequestHandler<TRequest>> _handlers = new List<IRequestHandler<TRequest>>();

@@ -11,7 +11,7 @@ namespace Sels.Core.Mediator.Request
     /// </summary>
     /// <typeparam name="TRequest">The type of the request to respond to</typeparam>
     /// <typeparam name="TResponse">The type of the response of an object</typeparam>
-    public interface IRequestHandler<in TRequest, TResponse> : IMessageHandler
+    public interface IRequestHandler<in TRequest, TResponse> : IMessageHandler where TRequest : IRequest<TResponse>
     {
         /// <summary>
         /// Tries to provide a response to <paramref name="request"/>. Handlers can handle the request with <see cref="RequestResponse{T}.Success(T)"/> or reject it using <see cref="RequestResponse{T}.Reject"/>.
@@ -27,7 +27,7 @@ namespace Sels.Core.Mediator.Request
     /// Allows an object to acknowledge a request of type <typeparamref name="TRequest"/>.
     /// </summary>
     /// <typeparam name="TRequest">The type of the request to respond to</typeparam>
-    public interface IRequestHandler<in TRequest> : IMessageHandler
+    public interface IRequestHandler<in TRequest> : IMessageHandler where TRequest : IRequest
     {
         /// <summary>
         /// Tries to acknowledge <paramref name="request"/>. Handlers can acknowledge the request with <see cref="RequestAcknowledgement.Acknowledge"/> or reject it using <see cref="RequestAcknowledgement.Reject"/>.

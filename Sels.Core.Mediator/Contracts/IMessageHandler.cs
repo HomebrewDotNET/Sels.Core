@@ -14,6 +14,6 @@ namespace Sels.Core.Mediator
         /// <summary>
         /// The priority of the handler. Used to determine the order handlers are called. A lower value means higher priority. Null means lowest priority.
         /// </summary>
-        ushort? Priority { get; }
+        byte? Priority { get; }
     }
 }
