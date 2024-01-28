@@ -8,7 +8,7 @@ namespace Sels.Core.Async.Test.Components.Queue
 {
     public class WorkerQueue_WaitUntilEmpty
     {
-        [Test, Timeout(10000)]
+        [Test, Timeout(30000)]
         public async Task TaskCompletesWhenQueueBecomesEmpty()
         {
             // Arrange

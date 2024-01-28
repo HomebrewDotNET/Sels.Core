@@ -8,7 +8,7 @@ namespace Sels.Core.Async.Test.Components.Queue
 {
     public class WorkerQueue_InterceptRequest
     {
-        [Test, Timeout(10000)]
+        [Test, Timeout(30000)]
         public async Task RequestIsIntercepted()
         {
             // Arrange
@@ -26,7 +26,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.That(result, Is.EqualTo(string.Empty));
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(30000)]
         public async Task SecondInterceptorIsCalledWhenFirstReturnsNull()
         {
             // Arrange

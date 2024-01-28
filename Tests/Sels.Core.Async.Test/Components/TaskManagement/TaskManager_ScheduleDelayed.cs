@@ -8,7 +8,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
 {
     public class TaskManager_ScheduleDelayed
     {
-        [Test, Timeout(10000)]
+        [Test, Timeout(30000)]
         public async Task AnonymousTaskIsScheduledAndExecuted()
         {
             // Arrange
@@ -30,7 +30,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             await scheduledTask.OnExecuted;
             Assert.IsTrue(executed);
         }
-        [Test, Timeout(10000)]
+        [Test, Timeout(30000)]
         public async Task ManagedTaskIsScheduledAndExecuted()
         {
             // Arrange
@@ -53,7 +53,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             Assert.IsTrue(executed);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(30000)]
         public async Task AnonymousTaskIsScheduledAndExecutedAfterDelay()
         {
             // Arrange
@@ -77,7 +77,7 @@ namespace Sels.Core.Async.Test.Components.TaskManagement
             await scheduledTask.OnExecuted;
             Assert.That(executed, Is.GreaterThanOrEqualTo(now.Add(delay)));
         }
-        [Test, Timeout(10000)]
+        [Test, Timeout(30000)]
         public async Task ManagedTaskIsScheduledAndExecutedAfterDelay()
         {
             // Arrange

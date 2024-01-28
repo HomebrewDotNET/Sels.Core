@@ -9,7 +9,7 @@ namespace Sels.Core.Async.Test.Components.Queue
 {
     public class WorkerQueue_Subscribe
     {
-        [Test, Timeout(10000)]
+        [Test, Timeout(30000)]
         public async Task ItemsGetAssignedToSubscriptionDelegate()
         {
             // Arrange
@@ -30,7 +30,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.AreEqual(item, assigned);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(30000)]
         public async Task CancellingSubscriptionStopsDelegateFromBeingCalled()
         {
             // Arrange

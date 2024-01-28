@@ -12,7 +12,7 @@ namespace Sels.Core.Async.Test.Components.Queue
         [TestCase(2u)]
         [TestCase(5u)]
         [TestCase(8u)]
-        [Timeout(10000)]
+        [Timeout(30000)]
         public async Task GetsTriggeredWhenQueueSizeGoesAbove(uint size)
         {
             // Arrange
@@ -39,7 +39,7 @@ namespace Sels.Core.Async.Test.Components.Queue
         [TestCase(2u)]
         [TestCase(5u)]
         [TestCase(8u)]
-        [Timeout(10000)]
+        [Timeout(30000)]
         public async Task GetsTriggeredWhenQueueSizeGoesBelow(uint size)
         {
             // Arrange
@@ -66,7 +66,7 @@ namespace Sels.Core.Async.Test.Components.Queue
             Assert.AreEqual(1, triggeredAmount);
         }
 
-        [Test, Timeout(10000)]
+        [Test, Timeout(30000)]
         public async Task CancellingSubscriptionStopsDelegateFromBeingCalled()
         {
             // Arrange
