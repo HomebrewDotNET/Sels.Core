@@ -362,9 +362,9 @@ namespace Sels.Core.Extensions.Linq
                     try
                     {
                         action(counter, item);
+                        counter++;
                     }
                     catch { }
-                    counter++;
                 }
             }
 

@@ -19,6 +19,6 @@ namespace Sels.Core.Cli.ArgumentParsing
         /// <summary>
         /// Static instance to use.
         /// </summary>
-        public static NullArguments Instance = new NullArguments();
+        public static readonly NullArguments Instance = new NullArguments();
     }
 }

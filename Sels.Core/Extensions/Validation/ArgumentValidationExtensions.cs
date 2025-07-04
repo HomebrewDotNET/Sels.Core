@@ -205,7 +205,7 @@ namespace Sels.Core.Extensions
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
 
-            return argument.ValidateArgument(x => argument.CompareTo(comparator) < 0, $"{parameterName} must be larger or equal to <{comparator}>. Was <{argument}>");
+            return argument.ValidateArgument(x => argument.CompareTo(comparator) < 0, $"{parameterName} must be smaller than <{comparator}>. Was <{argument}>");
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace Sels.Core.Extensions
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace");
 
-            return argument.ValidateArgument(x => argument.CompareTo(comparator) <= 0, $"{parameterName} must be larger or equal to <{comparator}>. Was <{argument}>");
+            return argument.ValidateArgument(x => argument.CompareTo(comparator) <= 0, $"{parameterName} must be smaller or equal to <{comparator}>. Was <{argument}>");
         }
 
         /// <summary>

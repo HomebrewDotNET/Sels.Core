@@ -13,6 +13,6 @@ namespace Sels.ObjectValidationFramework.Components.Rules
         /// <summary>
         /// Singleton instance to avoid creating useless Null objects.
         /// </summary>
-        internal static NullValidationInfo Instance { get; } = new NullValidationInfo();
+        internal static readonly NullValidationInfo Instance = new NullValidationInfo();
     }
 }

@@ -421,7 +421,7 @@
             Empty info object for <see cref="T:Sels.ObjectValidationFramework.Contracts.Rules.IValidationRuleContext`4"/> that don't supply any additional information.
             </summary>
         </member>
-        <member name="P:Sels.ObjectValidationFramework.Components.Rules.NullValidationInfo.Instance">
+        <member name="F:Sels.ObjectValidationFramework.Components.Rules.NullValidationInfo.Instance">
             <summary>
             Singleton instance to avoid creating useless Null objects.
             </summary>

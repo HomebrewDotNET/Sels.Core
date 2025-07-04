@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sels.Core\Sels.Core.csproj" />
+    <ProjectReference Include="..\..\Sels.Core.Cli\Sels.Core.Cli.csproj" />
+    <ProjectReference Include="..\..\Frameworks\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj" />
   </ItemGroup>
 
 </Project>
