@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Sels.Core.Components;
 using Sels.Core.Components.Logging;
 using Sels.Core.Extensions;
 using Sels.Core.Extensions.Conversion;
@@ -175,7 +176,11 @@ namespace Sels.Core.Extensions.Logging.Advanced
         /// <returns>Timing scope</returns>
         public static IDisposable TraceMethod(this IEnumerable<ILogger> loggers, LogLevel level, Type caller, [CallerMemberName] string method = null)
         {
-            var fullMethodName = $"{(caller.HasValue() ? caller.FullName : "Null")}.{method}";
+            // Avoid string concatenation if loggers is null or empty
+            if (!loggers.HasValue()) return EmptyDisposable.Instance;
+            
+            var callerName = caller?.FullName ?? "Null";
+            var fullMethodName = string.Concat(callerName, ".", method ?? "Unknown");
 
             return loggers.CreateTimedLogger(level, () => $"Calling method <{fullMethodName}>", x => $"Called method <{fullMethodName}> in {x.PrintTotalMs()}");
         }
@@ -359,7 +364,11 @@ namespace Sels.Core.Extensions.Logging.Advanced
         /// <returns>Timing scope</returns>
         public static IDisposable TraceMethod(this ILogger logger, LogLevel level, Type caller, [CallerMemberName] string method = null)
         {
-            var fullMethodName = $"{(caller.HasValue() ? caller.FullName : "Null")}.{method}";
+            // Avoid string concatenation if logger is null
+            if (logger == null) return EmptyDisposable.Instance;
+            
+            var callerName = caller?.FullName ?? "Null";
+            var fullMethodName = string.Concat(callerName, ".", method ?? "Unknown");
 
             return logger.CreateTimedLogger(level, () => $"Calling method <{fullMethodName}>", x => $"Called method <{fullMethodName}> in {x.PrintTotalMs()}");
         }

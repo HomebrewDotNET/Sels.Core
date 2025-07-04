@@ -153,6 +153,27 @@
         <member name="M:Sels.Core.Components.Configuration.ConfigurationService.GetSection``1(System.String,System.Action{Sels.Core.Contracts.Configuration.IConfigurationOptions{``0}},Sels.Core.Contracts.Configuration.ConfigurationSettings)">
             <inheritdoc/>
         </member>
+        <member name="T:Sels.Core.Components.EmptyDisposable">
+            <summary>
+            A disposable object that does nothing when disposed. Useful for performance optimization 
+            when a method needs to return an IDisposable but no actual cleanup is needed.
+            </summary>
+        </member>
+        <member name="F:Sels.Core.Components.EmptyDisposable.Instance">
+            <summary>
+            Singleton instance to avoid creating unnecessary objects.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.EmptyDisposable.#ctor">
+            <summary>
+            Private constructor to enforce singleton pattern.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Components.EmptyDisposable.Dispose">
+            <summary>
+            Does nothing when disposed.
+            </summary>
+        </member>
         <member name="T:Sels.Core.Components.Factory.GenericFactory`1">
             <summary>
             Factory that creates new instances by calling the right constructor based on supplied arguments.

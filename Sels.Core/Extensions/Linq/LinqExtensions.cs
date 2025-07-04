@@ -53,7 +53,7 @@ namespace Sels.Core.Extensions.Linq
         {
             selector.ValidateArgument(nameof(selector));
 
-            if (source.HasValue())
+            if (source != null)
             {
                 foreach (var item in source)
                 {
@@ -74,7 +74,7 @@ namespace Sels.Core.Extensions.Linq
         {
             selector.ValidateArgument(nameof(selector));
 
-            if (source.HasValue())
+            if (source != null)
             {
                 var counter = 0;
                 foreach (var item in source)
@@ -120,7 +120,7 @@ namespace Sels.Core.Extensions.Linq
         /// <returns>An System.Collections.Generic.IEnumerable`1 whose elements are the result of invoking the transform function on each element of source.</returns>
         public static IEnumerable<TSelect> ForceSelect<TSource, TSelect>(this IEnumerable<TSource> source, Func<TSource, TSelect> selector, Action<TSource, Exception> exceptionHandler = null)
         {
-            if (source.HasValue())
+            if (source != null)
             {
                 foreach(var item in source)
                 {
@@ -134,10 +134,7 @@ namespace Sels.Core.Extensions.Linq
                     {
                         try
                         {
-                            if (exceptionHandler.HasValue())
-                            {
-                                exceptionHandler(item, ex);
-                            }
+                            exceptionHandler?.Invoke(item, ex);
                         }
                         catch { }
 
