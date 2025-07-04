@@ -69,32 +69,6 @@
             Config key pointing to the secret used to create the jwt token.
             </summary>
         </member>
-        <member name="T:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService">
-            <summary>
-            Authentication state provider that manages state by saving auth tokens to the browser storage.
-            </summary>
-        </member>
-        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.#ctor">
-            <summary>
-            Constructor for proxy generation.
-            </summary>
-        </member>
-        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.#ctor(Sels.Core.Web.Blazor.Authentication.Token.ITokenService,Blazored.LocalStorage.ILocalStorageService,System.String,Microsoft.Extensions.Logging.ILogger{Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService})">
-            <inheritdoc cref="T:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService"/>
-            <param name="tokenService">Service used to validate the tokens</param>
-            <param name="localStorageService">Service used to access the tokens saved in the browser storage</param>
-            <param name="storageKey">The key used to retrieve the tokens from storage</param>
-            <param name="logger">Optional logger for tracing</param>
-        </member>
-        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.GetAuthenticationStateAsync">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.SignIn(System.Security.Claims.ClaimsPrincipal,System.Nullable{System.DateTime})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.SignOut">
-            <inheritdoc/>
-        </member>
         <member name="T:Sels.Core.Web.Blazor.Authentication.Token.JwtTokenService">
             <summary>
             Token service that generates jwt tokens.
@@ -145,6 +119,32 @@
             </summary>
             <param name="token">Token to get the principal from</param>
             <returns>The principal embedded in <paramref name="token"/> or null if the token isn't valid anymore</returns>
+        </member>
+        <member name="T:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService">
+            <summary>
+            Authentication state provider that manages state by saving auth tokens to the browser storage.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.#ctor">
+            <summary>
+            Constructor for proxy generation.
+            </summary>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.#ctor(Sels.Core.Web.Blazor.Authentication.Token.ITokenService,Blazored.LocalStorage.ILocalStorageService,System.String,Microsoft.Extensions.Logging.ILogger{Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService})">
+            <inheritdoc cref="T:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService"/>
+            <param name="tokenService">Service used to validate the tokens</param>
+            <param name="localStorageService">Service used to access the tokens saved in the browser storage</param>
+            <param name="storageKey">The key used to retrieve the tokens from storage</param>
+            <param name="logger">Optional logger for tracing</param>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.GetAuthenticationStateAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.SignIn(System.Security.Claims.ClaimsPrincipal,System.Nullable{System.DateTime})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Sels.Core.Web.Blazor.Authentication.TokenStorageAuthenticationService.SignOut">
+            <inheritdoc/>
         </member>
         <member name="T:Sels.Core.Web.Blazor.Authentication.IAuthenticationService">
             <summary>
