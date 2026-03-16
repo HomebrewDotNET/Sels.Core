@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
+    <ProjectReference Include="..\..\src\Sels.Core.Legacy\Sels.Core.Legacy.csproj" />
   </ItemGroup>
 
 </Project>

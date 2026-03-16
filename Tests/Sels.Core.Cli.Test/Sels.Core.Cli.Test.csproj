@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Sels.Core.Cli\Sels.Core.Cli.csproj" />
+    <ProjectReference Include="..\..\src\Sels.Core.Cli\Sels.Core.Cli.csproj" />
   </ItemGroup>
 
 </Project>

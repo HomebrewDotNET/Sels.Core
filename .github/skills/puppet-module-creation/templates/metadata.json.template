@@ -1,0 +1,31 @@
+{
+  "name": "sels_<module_name>",
+  "version": "1.0.0",
+  "author": "SELS",
+  "summary": "Custom Puppet module for <%= description %>",
+  "description": "Manages <%= description %>",
+  "license": "Proprietary",
+  "source": "https://internal-repo/puppet-modules",
+  "project_page": "https://internal-docs/modules/sels_<module_name>",
+  "issues_url": "https://internal-repo/puppet-modules/issues",
+  "tags": ["sels", "custom"],
+  "dependencies": [],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": ["22.04", "24.04"]
+    },
+    {
+      "operatingsystem": "Windows",
+      "operatingsystemrelease": ["Server 2019", "Server 2022"]
+    }
+  ],
+  "pdk-version": "3.0.0",
+  "template-url": "https://github.com/puppetlabs/pdk-templates#main",
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 7.0.0"
+    }
+  ]
+}

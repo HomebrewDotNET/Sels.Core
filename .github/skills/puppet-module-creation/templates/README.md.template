@@ -1,0 +1,57 @@
+# sels_<module_name>
+
+<%= description %>
+
+## Description
+
+This custom Puppet module manages <%= description %>. It follows SELS infrastructure patterns and best practices for consistent module development.
+
+## Parameters
+
+### `required_param` (String)
+Description of the required parameter.
+
+Default: *required*
+
+### `optional_param` (String)
+Description of the optional parameter.
+
+Default: `'default_value'`
+
+### `enable_feature` (Boolean)
+Enable or disable the feature.
+
+Default: `false`
+
+## Examples
+
+### Basic usage
+```puppet
+class { 'sels_<module_name>':
+  required_param => 'value',
+}
+```
+
+### With optional parameters
+```puppet
+class { 'sels_<module_name>':
+  required_param => 'value',
+  optional_param => 'custom_value',
+  enable_feature => true,
+}
+```
+
+## Compatibility
+
+- **Linux**: Ubuntu 22.04+, Debian 11+
+- **Windows**: Server 2019+, Server 2022+
+
+## Dependencies
+
+- Puppet 7.0.0+
+
+## See Also
+
+- [sels_utils](../sels_utils) - Common utilities
+- [sels_configs](../sels_configs) - Configuration management
+- [sels_services](../sels_services) - Service management

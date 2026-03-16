@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Frameworks\Locking\Sels.DistributedLocking.SQL\Sels.DistributedLocking.SQL.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Frameworks\Locking\Sels.DistributedLocking.SQL\Sels.DistributedLocking.SQL.csproj" />
   </ItemGroup>
 
 </Project>

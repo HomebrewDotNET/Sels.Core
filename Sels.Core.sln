@@ -1,9 +1,8 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.TestTool", "Sels.Core.TestTool\Sels.Core.TestTool.csproj", "{80291F78-EE16-4DF7-B387-87F31927D94B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.TestTool", "src\Sels.Core.TestTool\Sels.Core.TestTool.csproj", "{80291F78-EE16-4DF7-B387-87F31927D94B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{488304DF-398B-41FC-B85F-99910195277E}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,117 +12,116 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Packages.props = Directory.Packages.props
 		LICENSE.md = LICENSE.md
 		NOTICE = NOTICE
-		NuGet.Config = NuGet.Config
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9ADF9A39-B6EC-440C-AA22-6478FF9F7EA6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9ADF9A39-B6EC-440C-AA22-6478FF9F7EA6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Test", "Tests\Sels.Core.Test\Sels.Core.Test.csproj", "{073701B9-104D-4557-9914-DB6A0C1F8277}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Test", "tests\Sels.Core.Test\Sels.Core.Test.csproj", "{073701B9-104D-4557-9914-DB6A0C1F8277}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{7C3BE389-DC4E-43F0-A1B3-097020BE9691}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7C3BE389-DC4E-43F0-A1B3-097020BE9691}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frameworks", "Frameworks", "{3387EDE6-E321-4FF6-BF3B-E9C54BF7F6D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Validation", "Validation", "{E3EC93FC-7BFE-4AEA-9977-8FB473DE2989}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.ObjectValidationFramework", "Frameworks\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj", "{6A16525A-39BD-4090-903B-60AEFE5D9FF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.ObjectValidationFramework", "src\Frameworks\Validation\Sels.ObjectValidationFramework\Sels.ObjectValidationFramework.csproj", "{6A16525A-39BD-4090-903B-60AEFE5D9FF3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.ObjectValidationFramework.TestTool", "Frameworks\Validation\Sels.ObjectValidationFramework.TestTool\Sels.ObjectValidationFramework.TestTool.csproj", "{D3410322-2D2E-4EDC-9EC7-9A4211C392A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.ObjectValidationFramework.TestTool", "src\Frameworks\Validation\Sels.ObjectValidationFramework.TestTool\Sels.ObjectValidationFramework.TestTool.csproj", "{D3410322-2D2E-4EDC-9EC7-9A4211C392A3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Command", "Sels.Core.Command\Sels.Core.Command.csproj", "{2111E1DA-E739-4563-BB14-DE028CD0DB33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Command", "src\Sels.Core.Command\Sels.Core.Command.csproj", "{2111E1DA-E739-4563-BB14-DE028CD0DB33}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Command.Linux", "Sels.Core.Command.Linux\Sels.Core.Command.Linux.csproj", "{15748F59-AECE-445E-8CCA-53972C8F8A03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Command.Linux", "src\Sels.Core.Command.Linux\Sels.Core.Command.Linux.csproj", "{15748F59-AECE-445E-8CCA-53972C8F8A03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Conversion", "Sels.Core.Conversion\Sels.Core.Conversion.csproj", "{31BD1BC4-7B36-4AC9-9176-6D2F1CEDF9B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Conversion", "src\Sels.Core.Conversion\Sels.Core.Conversion.csproj", "{31BD1BC4-7B36-4AC9-9176-6D2F1CEDF9B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.FileSystem", "Sels.Core.FileSystem\Sels.Core.FileSystem.csproj", "{D271E459-0CCA-4831-A4D4-E96819F8A992}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.FileSystem", "src\Sels.Core.FileSystem\Sels.Core.FileSystem.csproj", "{D271E459-0CCA-4831-A4D4-E96819F8A992}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.FileSystem.Linux", "Sels.Core.FileSystem.Linux\Sels.Core.FileSystem.Linux.csproj", "{054FF620-453E-42EA-A1BC-FD0150BC2A86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.FileSystem.Linux", "src\Sels.Core.FileSystem.Linux\Sels.Core.FileSystem.Linux.csproj", "{054FF620-453E-42EA-A1BC-FD0150BC2A86}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Testing", "Sels.Core.Testing\Sels.Core.Testing.csproj", "{9FC5B775-260F-4BCB-8565-B87844DABA3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Testing", "src\Sels.Core.Testing\Sels.Core.Testing.csproj", "{9FC5B775-260F-4BCB-8565-B87844DABA3B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Localization", "Sels.Core.Localization\Sels.Core.Localization.csproj", "{17415000-4BEA-48E8-A045-3D46A3139250}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Localization", "src\Sels.Core.Localization\Sels.Core.Localization.csproj", "{17415000-4BEA-48E8-A045-3D46A3139250}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data", "Sels.Core.Data\Sels.Core.Data.csproj", "{BF8D3C94-3960-4DC6-9BFB-9D0C5505ADBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data", "src\Sels.Core.Data\Sels.Core.Data.csproj", "{BF8D3C94-3960-4DC6-9BFB-9D0C5505ADBE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.FileSystem.Test", "Tests\Sels.Core.FileSystem.Test\Sels.Core.FileSystem.Test.csproj", "{9751CC25-A3E5-464A-929F-02F9032D047F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.FileSystem.Test", "tests\Sels.Core.FileSystem.Test\Sels.Core.FileSystem.Test.csproj", "{9751CC25-A3E5-464A-929F-02F9032D047F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.SQL", "Sels.Core.Data.SQL\Sels.Core.Data.SQL.csproj", "{1553D8DC-3FE7-47FD-AA7C-95903ADDE8C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.SQL", "src\Sels.Core.Data.SQL\Sels.Core.Data.SQL.csproj", "{1553D8DC-3FE7-47FD-AA7C-95903ADDE8C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Processing", "Sels.Core.Processing\Sels.Core.Processing.csproj", "{3C245DE4-0519-4451-8F2D-929A9E62E0CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Processing", "src\Sels.Core.Processing\Sels.Core.Processing.csproj", "{3C245DE4-0519-4451-8F2D-929A9E62E0CD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Processing.Cron", "Sels.Core.Processing.Cron\Sels.Core.Processing.Cron.csproj", "{C25E7178-AB6B-4C86-8460-ADD61D147D9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Processing.Cron", "src\Sels.Core.Processing.Cron\Sels.Core.Processing.Cron.csproj", "{C25E7178-AB6B-4C86-8460-ADD61D147D9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Conversion.Test", "Tests\Sels.Core.Conversion.Test\Sels.Core.Conversion.Test.csproj", "{40C65F99-E56D-455D-BED8-28975DBA1A33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Conversion.Test", "tests\Sels.Core.Conversion.Test\Sels.Core.Conversion.Test.csproj", "{40C65F99-E56D-455D-BED8-28975DBA1A33}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Cli", "Sels.Core.Cli\Sels.Core.Cli.csproj", "{BC4743C5-483B-4DDC-ABA1-B05DA146C996}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Cli", "src\Sels.Core.Cli\Sels.Core.Cli.csproj", "{BC4743C5-483B-4DDC-ABA1-B05DA146C996}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Cli.Test", "Tests\Sels.Core.Cli.Test\Sels.Core.Cli.Test.csproj", "{A683419E-FDD6-4177-B9E9-5725B6A01F07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Cli.Test", "tests\Sels.Core.Cli.Test\Sels.Core.Cli.Test.csproj", "{A683419E-FDD6-4177-B9E9-5725B6A01F07}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.MySQL", "Sels.Core.Data.MySQL\Sels.Core.Data.MySQL.csproj", "{6811F8A9-1242-4437-9D01-D1D67037FEF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.MySQL", "src\Sels.Core.Data.MySQL\Sels.Core.Data.MySQL.csproj", "{6811F8A9-1242-4437-9D01-D1D67037FEF4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.MySQL.Migrator", "Sels.Core.Data.MySQL.Migrator\Sels.Core.Data.MySQL.Migrator.csproj", "{4F617683-A8D6-4AD4-946E-4A7EF42C219D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.MySQL.Migrator", "src\Sels.Core.Data.MySQL.Migrator\Sels.Core.Data.MySQL.Migrator.csproj", "{4F617683-A8D6-4AD4-946E-4A7EF42C219D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.ServiceBuilder", "Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj", "{5EA2B53D-56E2-443B-AB63-06E35E28A5E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.ServiceBuilder", "src\Sels.Core.ServiceBuilder\Sels.Core.ServiceBuilder.csproj", "{5EA2B53D-56E2-443B-AB63-06E35E28A5E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Mediator", "Sels.Core.Mediator\Sels.Core.Mediator.csproj", "{764E278D-D3B6-4D73-ABDB-F37F28F27CFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Mediator", "src\Sels.Core.Mediator\Sels.Core.Mediator.csproj", "{764E278D-D3B6-4D73-ABDB-F37F28F27CFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Web.Blazor", "Sels.Core.Web.Blazor\Sels.Core.Web.Blazor.csproj", "{4477E7B7-2EF9-4692-9F24-4BE7B0EBC695}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Web.Blazor", "src\Sels.Core.Web.Blazor\Sels.Core.Web.Blazor.csproj", "{4477E7B7-2EF9-4692-9F24-4BE7B0EBC695}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Web.Bootstrap.V5", "Sels.Core.Web.Bootstrap.V5\Sels.Core.Web.Bootstrap.V5.csproj", "{D0E84F27-E603-4583-BB1F-38756EB8B3B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Web.Bootstrap.V5", "src\Sels.Core.Web.Bootstrap.V5\Sels.Core.Web.Bootstrap.V5.csproj", "{D0E84F27-E603-4583-BB1F-38756EB8B3B3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Deployment", "Sels.Core.Deployment\Sels.Core.Deployment.csproj", "{6DBC5215-55EA-457B-89DE-64E4DB5B4FD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Deployment", "src\Sels.Core.Deployment\Sels.Core.Deployment.csproj", "{6DBC5215-55EA-457B-89DE-64E4DB5B4FD4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Legacy", "Sels.Core.Legacy\Sels.Core.Legacy.csproj", "{47C238C9-1E44-41A3-9386-446697FAA204}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Legacy", "src\Sels.Core.Legacy\Sels.Core.Legacy.csproj", "{47C238C9-1E44-41A3-9386-446697FAA204}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core", "Sels.Core\Sels.Core.csproj", "{CD155998-2837-47CA-86E3-9059938C927A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core", "src\Sels.Core\Sels.Core.csproj", "{CD155998-2837-47CA-86E3-9059938C927A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Factory.Autofac", "Sels.Core.Factory.Autofac\Sels.Core.Factory.Autofac.csproj", "{8169B0E3-D3BA-4D1F-A76F-1468AD13D17B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Factory.Autofac", "src\Sels.Core.Factory.Autofac\Sels.Core.Factory.Autofac.csproj", "{8169B0E3-D3BA-4D1F-A76F-1468AD13D17B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Locking", "Locking", "{389A7C36-3F9E-4731-8342-8F9DDBCA2236}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.Abstractions", "Frameworks\Locking\Sels.DistributedLocking.Abstractions\Sels.DistributedLocking.Abstractions.csproj", "{0303741D-B012-4D33-89A5-511966452FFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.Abstractions", "src\Frameworks\Locking\Sels.DistributedLocking.Abstractions\Sels.DistributedLocking.Abstractions.csproj", "{0303741D-B012-4D33-89A5-511966452FFA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.Memory", "Frameworks\Locking\Sels.DistributedLocking.Memory\Sels.DistributedLocking.Memory.csproj", "{73F01BC6-9063-4E99-87D1-3A5AC2243810}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.Memory", "src\Frameworks\Locking\Sels.DistributedLocking.Memory\Sels.DistributedLocking.Memory.csproj", "{73F01BC6-9063-4E99-87D1-3A5AC2243810}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frameworks", "Frameworks", "{7B4599E5-2236-40D4-B5FE-1DE0CDA36CEC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Locking", "Locking", "{76D54168-28BB-439A-8DB0-182FBE3120F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.Memory.Test", "Tests\Frameworks\Locking\Sels.DistributedLocking.Memory.Test\Sels.DistributedLocking.Memory.Test.csproj", "{54FB3B88-D6C7-4C6D-907A-E1FE5B5C50C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.Memory.Test", "tests\Frameworks\Locking\Sels.DistributedLocking.Memory.Test\Sels.DistributedLocking.Memory.Test.csproj", "{54FB3B88-D6C7-4C6D-907A-E1FE5B5C50C2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sql", "Sql", "{2AD7C956-715E-492F-B7DF-64084F64C9AF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Query", "Query", "{F180E56D-824C-4CF3-8413-8ECF158CC9E7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.SQL.QueryBuilder", "Frameworks\Sql\Query\Sels.SQL.QueryBuilder\Sels.SQL.QueryBuilder.csproj", "{8ED088C0-9EDE-4954-A39A-130EA853BC5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.SQL.QueryBuilder", "src\Frameworks\Sql\Query\Sels.SQL.QueryBuilder\Sels.SQL.QueryBuilder.csproj", "{8ED088C0-9EDE-4954-A39A-130EA853BC5A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.SQL.QueryBuilder.MySQL", "Frameworks\Sql\Query\Sels.SQL.QueryBuilder.MySQL\Sels.SQL.QueryBuilder.MySQL.csproj", "{AA4A4AB9-4482-4492-A0E0-BED39BF7F7C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.SQL.QueryBuilder.MySQL", "src\Frameworks\Sql\Query\Sels.SQL.QueryBuilder.MySQL\Sels.SQL.QueryBuilder.MySQL.csproj", "{AA4A4AB9-4482-4492-A0E0-BED39BF7F7C7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sql", "Sql", "{C2133395-04C5-42CE-A934-E2C35BD4E115}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Query", "Query", "{475E6719-F6F3-447C-8659-F8959B691E50}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.SQL.QueryBuilder.MySQL.Test", "Tests\Frameworks\Sql\Query\Sels.SQL.QueryBuilder.MySQL.Test\Sels.SQL.QueryBuilder.MySQL.Test.csproj", "{7BA0AAAF-A925-43D5-AD62-B7A0104AD898}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.SQL.QueryBuilder.MySQL.Test", "tests\Frameworks\Sql\Query\Sels.SQL.QueryBuilder.MySQL.Test\Sels.SQL.QueryBuilder.MySQL.Test.csproj", "{7BA0AAAF-A925-43D5-AD62-B7A0104AD898}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.SQL", "Frameworks\Locking\Sels.DistributedLocking.SQL\Sels.DistributedLocking.SQL.csproj", "{09F5194D-AB67-442F-84FD-EAA3AD9BB1B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.SQL", "src\Frameworks\Locking\Sels.DistributedLocking.SQL\Sels.DistributedLocking.SQL.csproj", "{09F5194D-AB67-442F-84FD-EAA3AD9BB1B9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.SQL.Tests", "Tests\Frameworks\Locking\Sels.DistributedLocking.SQL.Tests\Sels.DistributedLocking.SQL.Tests.csproj", "{B20F84FC-BB7A-499F-A4B1-C6AA3F1F8DB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.SQL.Tests", "tests\Frameworks\Locking\Sels.DistributedLocking.SQL.Tests\Sels.DistributedLocking.SQL.Tests.csproj", "{B20F84FC-BB7A-499F-A4B1-C6AA3F1F8DB8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.FluentMigrationTool", "Sels.Core.Data.FluentMigrationTool\Sels.Core.Data.FluentMigrationTool.csproj", "{3E672A33-9CCE-4354-A1E2-5E6C20C39BCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Data.FluentMigrationTool", "src\Sels.Core.Data.FluentMigrationTool\Sels.Core.Data.FluentMigrationTool.csproj", "{3E672A33-9CCE-4354-A1E2-5E6C20C39BCE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.MySQL", "Frameworks\Locking\Sels.DistributedLocking.MySQL\Sels.DistributedLocking.MySQL.csproj", "{9D9F5453-F6C1-427B-86AC-A0FFE597CBD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.MySQL", "src\Frameworks\Locking\Sels.DistributedLocking.MySQL\Sels.DistributedLocking.MySQL.csproj", "{9D9F5453-F6C1-427B-86AC-A0FFE597CBD3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.IntegrationTester", "Frameworks\Locking\Sels.DistributedLocking.IntegrationTester\Sels.DistributedLocking.IntegrationTester.csproj", "{9CC04183-427C-441B-8605-99BCBAAB8D3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.DistributedLocking.IntegrationTester", "src\Frameworks\Locking\Sels.DistributedLocking.IntegrationTester\Sels.DistributedLocking.IntegrationTester.csproj", "{9CC04183-427C-441B-8605-99BCBAAB8D3D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.ServiceBuilder.Polly", "Sels.Core.ServiceBuilder.Polly\Sels.Core.ServiceBuilder.Polly.csproj", "{E3059CBE-F226-4996-BEDA-9EE08CCF8A7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.ServiceBuilder.Polly", "src\Sels.Core.ServiceBuilder.Polly\Sels.Core.ServiceBuilder.Polly.csproj", "{E3059CBE-F226-4996-BEDA-9EE08CCF8A7D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Mediator.Test", "Tests\Sels.Core.Mediator.Test\Sels.Core.Mediator.Test.csproj", "{8560D834-4234-4299-9F25-3F3B9EC56600}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Mediator.Test", "tests\Sels.Core.Mediator.Test\Sels.Core.Mediator.Test.csproj", "{8560D834-4234-4299-9F25-3F3B9EC56600}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Async", "Sels.Core.Async\Sels.Core.Async.csproj", "{895EF19C-A5DE-4E1B-8754-68D6D27CD0C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Async", "src\Sels.Core.Async\Sels.Core.Async.csproj", "{895EF19C-A5DE-4E1B-8754-68D6D27CD0C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Async.Test", "Tests\Sels.Core.Async.Test\Sels.Core.Async.Test.csproj", "{0F85A9B3-4560-47E7-8CD6-09C10AC7A09F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sels.Core.Async.Test", "tests\Sels.Core.Async.Test\Sels.Core.Async.Test.csproj", "{0F85A9B3-4560-47E7-8CD6-09C10AC7A09F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -312,6 +310,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{3387EDE6-E321-4FF6-BF3B-E9C54BF7F6D5} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
+		{80291F78-EE16-4DF7-B387-87F31927D94B} = {7C3BE389-DC4E-43F0-A1B3-097020BE9691}
 		{073701B9-104D-4557-9914-DB6A0C1F8277} = {9ADF9A39-B6EC-440C-AA22-6478FF9F7EA6}
 		{E3EC93FC-7BFE-4AEA-9977-8FB473DE2989} = {3387EDE6-E321-4FF6-BF3B-E9C54BF7F6D5}
 		{6A16525A-39BD-4090-903B-60AEFE5D9FF3} = {E3EC93FC-7BFE-4AEA-9977-8FB473DE2989}

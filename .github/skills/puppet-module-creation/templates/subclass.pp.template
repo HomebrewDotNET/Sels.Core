@@ -1,0 +1,11 @@
+# Subclass: <%= subclass_name %>
+#
+# Description of what this subclass handles
+#
+
+class <%= parent_module %>::<%= subclass_name %> (
+  String $param1 = 'value1',
+  String $param2 = 'value2',
+) {
+  # Implementation here
+}

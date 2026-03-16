@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
-    <ProjectReference Include="..\..\Sels.Core.Testing\Sels.Core.Testing.csproj" />
+    <ProjectReference Include="..\..\src\Sels.Core.Conversion\Sels.Core.Conversion.csproj" />
+    <ProjectReference Include="..\..\src\Sels.Core.Testing\Sels.Core.Testing.csproj" />
   </ItemGroup>
 
 </Project>

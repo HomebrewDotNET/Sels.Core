@@ -22,6 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Sels.Core.Async\Sels.Core.Async.csproj" />
+	  <ProjectReference Include="..\..\src\Sels.Core.Async\Sels.Core.Async.csproj" />
 	</ItemGroup>
 </Project>

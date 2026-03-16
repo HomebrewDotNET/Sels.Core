@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Frameworks\Sql\Query\Sels.SQL.QueryBuilder.MySQL\Sels.SQL.QueryBuilder.MySQL.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Sels.Core.Testing\Sels.Core.Testing.csproj" />
+    <ProjectReference Include="..\..\..\..\..\src\Frameworks\Sql\Query\Sels.SQL.QueryBuilder.MySQL\Sels.SQL.QueryBuilder.MySQL.csproj" />
+    <ProjectReference Include="..\..\..\..\..\src\Sels.Core.Testing\Sels.Core.Testing.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,30 @@
+# Module: <%= module_name %>
+#
+# <%= description %>
+#
+# Parameters:
+#   - param1: Description of first parameter
+#   - param2: Description of second parameter
+#
+
+class <%= module_name %> (
+  String $required_param,
+  String $optional_param = 'default_value',
+  Boolean $enable_feature = false,
+) {
+  # Include any subclasses or dependencies
+  # include <%= module_name %>::subclass
+
+  # Platform-specific implementation
+  case $facts['os']['family'] {
+    /^(Debian|Ubuntu)$/: {
+      # Linux implementation
+    }
+    'Windows': {
+      # Windows implementation
+    }
+    default: {
+      fail("Unsupported OS family: ${facts['os']['family']}")
+    }
+  }
+}

@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Frameworks\Locking\Sels.DistributedLocking.Memory\Sels.DistributedLocking.Memory.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Frameworks\Locking\Sels.DistributedLocking.Memory\Sels.DistributedLocking.Memory.csproj" />
   </ItemGroup>
 
 </Project>
