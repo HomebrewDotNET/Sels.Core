@@ -33,6 +33,8 @@ using Sels.Core.Text.Token;
 using System.Text;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Tracing;
+using Sels.Core.Attributes;
+using Sels.Core.Entity;
 
 namespace Sels.Core
 {
@@ -1031,6 +1033,9 @@ namespace Sels.Core
         }
         #endregion
 
+        #region Reflection
+        #endregion
+
         #region Expression
         /// <summary>
         /// Contains static helper methods for working with expressions.
@@ -1166,7 +1171,7 @@ namespace Sels.Core
 
                     // Check method for attributes
                     var methodAttributes = method.GetCustomAttributes<TraceableAttribute>().ToArray();
-                    foreach ( var attribute in methodAttributes)
+                    foreach (var attribute in methodAttributes)
                     {
                         var logParameter = attribute.GetLogParameterName(method);
                         var getValueExpression = Property.GenerateGetValueExpression(castedRoot, method.ReflectedType, attribute.Path, elvisOperator);
@@ -1206,12 +1211,12 @@ namespace Sels.Core
                             var addToDictionary = addToDictionaryMethod.IsStatic ? LinqExpression.Call(addToDictionaryMethod, dictionary, LinqExpression.Constant(logParameter), getValueExpression) : LinqExpression.Call(dictionary, addToDictionaryMethod, LinqExpression.Constant(logParameter), getValueExpression);
                             expressions.Add(addToDictionary);
                         }
-                        foreach(var attribute in parameter.GetCustomAttributes<LogParameterAttribute>())
+                        foreach (var attribute in parameter.GetCustomAttributes<LogParameterAttribute>())
                         {
                             AddStaticExpressionToDictionary(attribute);
                         }
 
-                        
+
                         if (!topLevelOnly) GenerateEnrichmentExpressions(new List<Type>(), expressions, castedParameter, parameterType, dictionary, addToDictionaryMethod, elvisOperator, topLevelOnly);
 
                         if (expressions.Count > currentCount)
@@ -1297,7 +1302,7 @@ namespace Sels.Core
                         // Traverse hierarchy if top level only is disabled
                         if (!topLevelOnly)
                         {
-                             
+
                             GenerateEnrichmentExpressions(traversedTypes, expressions, propertyExpression, property.PropertyType, dictionary, addToDictionaryMethod, elvisOperator, topLevelOnly);
                         }
                     }
@@ -1499,6 +1504,109 @@ namespace Sels.Core
                     }
 
                     return currentExpression;
+                }
+            }
+
+            /// <summary>
+            /// Static helper methods for working with expression resolving around comparing values.
+            /// </summary>
+            public static class Comparing
+            {
+                /// <summary>
+                /// Generates a delegate that compares objects of type <typeparamref name="T"/> by comparing all public readable properties. Properties can be skipped by name. When <paramref name="strict"/> is true, the delegate also checks runtime types.
+                /// </summary>
+                /// <typeparam name="T">The type of the objects to compare.</typeparam>
+                /// <param name="strict">If set to true, the delegate will also check if the two objects are of the same type.</param>
+                /// <param name="includeEquivalent">If set to true, the delegate will also check if properties that implement <see cref="IDeduplicatable"/> are equivalent by calling <see cref="IDeduplicatable.IsEquivalentTo(IDeduplicatable)"/>.</param>
+                /// <param name="skipPropertyNames">An array of property names to skip during comparison.</param>
+                /// <returns>A delegate that compares two objects of type <typeparamref name="T"/>.</returns>
+                public static Func<T, T, bool> GeneratePropertyComparer<T>(bool strict, bool includeEquivalent = false, params string[] skipPropertyNames) where T : class
+                {
+                    skipPropertyNames = skipPropertyNames.ValidateArgument(nameof(skipPropertyNames));
+                    var func = GeneratePropertyComparer(typeof(T), strict, includeEquivalent, skipPropertyNames);
+                    return (left, right) => func(left, right);
+                }
+                /// <summary>
+                /// Generates a delegate that compares objects of type <paramref name="type"/> by comparing all public readable properties. Properties can be skipped by name. When <paramref name="strict"/> is true, the delegate also checks runtime types.
+                /// </summary>
+                /// <param name="type">The type of the objects to compare.</param>
+                /// <param name="strict">If set to true, the delegate will also check if the two objects are of the same type.</param>
+                /// <param name="includeEquivalent">If set to true, the delegate will also check if properties that implement <see cref="IDeduplicatable"/> are equivalent by calling <see cref="IDeduplicatable.IsEquivalentTo(IDeduplicatable)"/>.</param>
+                /// <param name="skipPropertyNames">An array of property names to skip during comparison.</param>
+                /// <returns>A delegate that compares two objects of type <paramref name="type"/>.</returns>
+                public static Func<object, object, bool> GeneratePropertyComparer(Type type, bool strict, bool includeEquivalent = false, params string[] skipPropertyNames)
+                {
+                    type = type.ValidateArgument(nameof(type));
+                    skipPropertyNames = skipPropertyNames.ValidateArgument(nameof(skipPropertyNames));
+                    var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                            .Where(x => x.CanRead && !skipPropertyNames.Contains(x.Name) && x.GetAttributeOrDefault<IgnoredAttribute>() == null)
+                            .ToArray();
+
+                    var inputLeft = LinqExpression.Parameter(typeof(object), Constants.Expressions.LeftParameterName);
+                    var inputRight = LinqExpression.Parameter(typeof(object), Constants.Expressions.RightParameterName);
+                    var variableLeft = LinqExpression.Variable(type, Constants.Expressions.LeftParameterName);
+                    var variableRight = LinqExpression.Variable(type, Constants.Expressions.RightParameterName);
+                    var assignAndCastLeft = LinqExpression.Assign(variableLeft, LinqExpression.Convert(inputLeft, type));
+                    var assignAndCastRight = LinqExpression.Assign(variableRight, LinqExpression.Convert(inputRight, type));
+
+                    var comparisonExpressions = new List<LinqExpression>();
+                    var leftIsNull = LinqExpression.Equal(variableLeft, LinqExpression.Default(type));
+                    var rightIsNull = LinqExpression.Equal(variableRight, LinqExpression.Default(type));
+                    var bothAreNotNull = LinqExpression.AndAlso(LinqExpression.Not(leftIsNull), LinqExpression.Not(rightIsNull));
+                    comparisonExpressions.Add(bothAreNotNull);
+                    if (strict)
+                    {
+                        var getLeftType = LinqExpression.Call(variableLeft, Constants.Reflections.ObjectGetTypeMethod);
+                        var getRightType = LinqExpression.Call(variableRight, Constants.Reflections.ObjectGetTypeMethod);
+
+                        var leftTypeIsEqual = LinqExpression.Equal(getLeftType, getRightType);
+                        comparisonExpressions.Add(leftTypeIsEqual);
+                    }
+
+                    foreach (var property in properties)
+                    {
+                        var isNullable = property.PropertyType.IsNullable();
+                        var leftProperty = LinqExpression.Property(variableLeft, property);
+                        var rightProperty = LinqExpression.Property(variableRight, property);
+                        LinqExpression propertiesAreEqual;
+                        if (includeEquivalent && property.PropertyType.IsAssignableTo(typeof(IDeduplicatable)))
+                        {
+                            var isEquivalentMethod = Method.GetMethod<IDeduplicatable>(x => x.IsEquivalentTo(default));
+                            var isEquivalentCall = LinqExpression.Call(leftProperty, isEquivalentMethod, rightProperty);
+                            propertiesAreEqual = isEquivalentCall;
+                        }
+                        else
+                        {
+                            propertiesAreEqual = LinqExpression.Equal(leftProperty, rightProperty);
+                        }
+                        LinqExpression propertyComparison = propertiesAreEqual;
+                        if (isNullable)
+                        {
+                            var leftPropertyIsDefault = LinqExpression.Equal(leftProperty, LinqExpression.Default(property.PropertyType));
+                            var rightPropertyIsDefault = LinqExpression.Equal(rightProperty, LinqExpression.Default(property.PropertyType));
+                            var anyPropertyDefault = LinqExpression.OrElse(leftPropertyIsDefault, rightPropertyIsDefault);
+                            var bothNull = LinqExpression.AndAlso(leftPropertyIsDefault, rightPropertyIsDefault);
+                            var result = LinqExpression.Variable(typeof(bool), $"result_{property.Name}");
+                            var assignTrue = LinqExpression.Assign(result, LinqExpression.Constant(true));
+                            var assignFalse = LinqExpression.Assign(result, LinqExpression.Constant(false));
+                            var assignCompare = LinqExpression.Assign(result, propertiesAreEqual);
+
+                            propertyComparison = LinqExpression.Block(new[] { result }, LinqExpression.IfThenElse(bothNull, assignTrue, LinqExpression.IfThenElse(anyPropertyDefault, assignFalse, assignCompare)), result);
+                        }
+                        comparisonExpressions.Add(propertyComparison);
+                    }
+
+                    if (comparisonExpressions.Count <= 0)
+                    {
+                        var returnFalse = LinqExpression.Constant(false, typeof(bool));
+                        var lambda = LinqExpression.Lambda<Func<object, object, bool>>(returnFalse, inputLeft, inputRight);
+                        return lambda.Compile();
+                    }
+
+                    var finalExpression = comparisonExpressions.Aggregate((x, y) => LinqExpression.AndAlso(x, y));
+                    var body = LinqExpression.Block(new[] { variableLeft, variableRight }, assignAndCastLeft, assignAndCastRight, finalExpression);
+                    var finalLambda = LinqExpression.Lambda<Func<object, object, bool>>(body, inputLeft, inputRight);
+                    return finalLambda.Compile();
                 }
             }
         }
@@ -2063,7 +2171,7 @@ namespace Sels.Core
         /// <summary>
         /// Contains helper methods for assigning paritions to objects.
         /// </summary>
-        public static class Paritioning
+        public static class Partitioning
         {
             /// <summary>
             /// Generates a partition number for <paramref name="number"/>.
@@ -2083,3 +2191,4 @@ namespace Sels.Core
         #endregion
     }
 }
+

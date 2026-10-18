@@ -15,56 +15,77 @@ namespace Sels.Core.Extensions.Linq
         /// <summary>
         /// Checks how many items are in <paramref name="source"/>. Checks common collection types first to avoid having to enumerate <paramref name="source"/>.
         /// </summary>
-        /// <typeparam name="T">Type of items in <paramref name="source"/></typeparam>
+        /// <typeparam name="T">The item type in <paramref name="source"/>.</typeparam>
         /// <param name="source">Enumerator to check</param>
         /// <returns>Item count of <paramref name="source"/></returns>
         public static int GetCount<T>(this IEnumerable<T> source)
         {
             source.ValidateArgument(nameof(source));
 
-            if (source is T[] array)
-            {
-                return array.Length;
-            }
+            var count = source.TryGetCount();
 
-            if (source is IList<T> list)
-            {
-                return list.Count;
-            }
-
-            if (source is IReadOnlyCollection<T> collection)
-            {
-                return collection.Count;
-            }
-
-            return source.Count();
+            return count ?? source.Count();
         }
         /// <summary>
         /// Checks how many items are in <paramref name="source"/>. Checks common collection types first to avoid having to enumerate <paramref name="source"/>.
         /// </summary>
-        /// <typeparam name="T">Type of items in <paramref name="source"/></typeparam>
         /// <param name="source">Enumerator to check</param>
         /// <returns>Item count of <paramref name="source"/></returns>
         public static int GetCount(this IEnumerable source)
         {
             source.ValidateArgument(nameof(source));
 
+            var count = source.TryGetCount();
+
+            return count ?? source.Enumerate().Count();
+        }
+
+        /// <summary>
+        /// Checks how many items are in <paramref name="source"/>. Checks common collection types first to avoid having to enumerate <paramref name="source"/>. Returns null if the count could not be determined.
+        /// </summary>
+        /// <typeparam name="T">Type of items in <paramref name="source"/></typeparam>
+        /// <param name="source">Enumerator to check</param>
+        /// <returns>Item count of <paramref name="source"/> or null if the count could not be determined</returns>
+        public static int? TryGetCount<T>(this IEnumerable<T> source)
+        {
+            source = source.ValidateArgument(nameof(source));
+
+            if (source is T[] array)
+            {
+                return array.Length;
+            }
+            if (source is IList<T> list)
+            {
+                return list.Count;
+            }
+            if (source is IReadOnlyCollection<T> collection)
+            {
+                return collection.Count;
+            }
+            return null;
+        }
+        /// <summary>
+        /// Checks how many items are in <paramref name="source"/>. Checks common collection types first to avoid having to enumerate <paramref name="source"/>. Returns null if the count could not be determined.
+        /// </summary>
+        /// <param name="source">Enumerator to check</param>
+        /// <returns>Item count of <paramref name="source"/> or null if the count could not be determined</returns>
+        public static int? TryGetCount(this IEnumerable source)
+        {
+            source = source.ValidateArgument(nameof(source));
+
             if (source is Array array)
             {
                 return array.Length;
             }
-
             if (source is IList list)
             {
                 return list.Count;
             }
-
             if (source is ICollection collection)
             {
                 return collection.Count;
             }
-
-            return source.Enumerate().Count();
+            return null;
         }
         #endregion
 

@@ -34,6 +34,46 @@ namespace Sels.Core.Extensions.Reflection
         }
 
         /// <summary>
+        /// Returns the inheritance distance between <paramref name="source"/> and <paramref name="target"/>. If the types are not related -1 is returned.
+        /// </summary>
+        /// <param name="source">The source type</param>
+        /// <param name="target">The target type</param>
+        /// <returns>The inheritance distance between <paramref name="source"/> and <paramref name="target"/>, or -1 if the types are not related</returns>
+        public static int GetInheritanceDistance(this Type source, Type target)
+        {
+            source.ValidateArgument(nameof(source));
+            target.ValidateArgument(nameof(target));
+
+            Type baseType;
+            Type concreteType;
+
+            if(source == target) return 0;
+            if (source.IsAssignableTo(target))
+            {
+                baseType = target;
+                concreteType = source;
+            }
+            else if (target.IsAssignableTo(source))
+            {
+                baseType = source;
+                concreteType = target;
+            }
+            else
+            {
+                return -1;
+            }
+
+            int distance = 0;
+            var currentType = concreteType;
+            while (currentType != null && currentType != baseType)
+            {
+                distance++;
+                currentType = currentType.BaseType;
+            }
+            return distance;
+        }
+
+        /// <summary>
         /// Checks if type is a collection of some sorts.
         /// </summary>
         /// <param name="type">Type to check</param>

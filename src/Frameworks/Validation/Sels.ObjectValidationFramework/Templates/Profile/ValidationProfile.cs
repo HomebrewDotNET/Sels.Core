@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Sels.Core.Extensions.Collections;
 using Sels.Core.Extensions.DateTimes;
 using Sels.Core.Extensions.Fluent;
+using Sels.Core.Equality;
 
 namespace Sels.ObjectValidationFramework.Profile
 {
@@ -388,7 +389,7 @@ namespace Sels.ObjectValidationFramework.Profile
                 objectToValidate.ValidateArgument(nameof(objectToValidate));
 
                 // Check if we arleady validated in an attemt to avoid duplicate validation and circular fallthrough
-                if (executionContext.History.Contains(objectToValidate))
+                if (executionContext.HasSeen(objectToValidate))
                 {
                     _logger.Debug($"Already validated <{objectToValidate}>. Skipping");
                     return;
@@ -396,7 +397,6 @@ namespace Sels.ObjectValidationFramework.Profile
                 else
                 {
                     _logger.Debug($"Starting validation for <{objectToValidate}>");
-                    executionContext.History.Add(objectToValidate);
                 }
 
                 var currentParents = executionContext.CurrentParents.ToArray();
@@ -483,6 +483,8 @@ namespace Sels.ObjectValidationFramework.Profile
             private readonly Dictionary<Type, (PropertyInfo Property, IgnoreType IgnoreType)[]> _propertyCache = new Dictionary<Type, (PropertyInfo Property, IgnoreType IgnoreType)[]>();
             private readonly BindingFlags _bindingFlags;
             private readonly ProfileExecutionOptions _options;
+            private readonly HashSet<object> _seen = new HashSet<object>(ReferenceComparer<object>.Default);
+            private readonly List<object> _history = new List<object>();
 
             /// <inheritdoc cref="ExecutionContext"/>
             /// <param name="context"><inheritdoc cref="Context"/></param>
@@ -502,7 +504,7 @@ namespace Sels.ObjectValidationFramework.Profile
             /// <summary>
             /// The object references that the profile already validated. Used to avoid stack overflows when dealing with circular dependencies.
             /// </summary>
-            public List<object> History { get; } = new List<object>();
+            public IReadOnlyList<object> History => _history.AsReadOnly();
             /// <summary>
             /// The current validation errors.
             /// </summary>
@@ -540,6 +542,22 @@ namespace Sels.ObjectValidationFramework.Profile
                         return (Property: x, IgnoreType: IgnoreType.None);
                     }).Where(x => !x.IgnoreType.HasFlag(IgnoreType.All)).ToArray();
                 });
+            }
+
+            /// <summary>
+            /// Returns true if <paramref name="obj"/> has already been validated by the profile.
+            /// </summary>
+            /// <param name="obj">The object to check</param>
+            /// <returns>True if the object has already been validated, otherwise false</returns>
+            public bool HasSeen(object obj)
+            {
+                obj.ValidateArgument(nameof(obj));
+                if(_seen.Add(obj))
+                {
+                    _history.Add(obj);
+                    return false;
+                }
+                return true;
             }
         }
     }

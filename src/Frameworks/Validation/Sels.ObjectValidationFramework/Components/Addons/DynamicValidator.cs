@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Sels.Core.Extensions.Fluent;
 
 namespace Sels.ObjectValidationFramework.Addons
 {
@@ -21,6 +22,7 @@ namespace Sels.ObjectValidationFramework.Addons
     {
         // Fields
         private readonly ILogger _logger;
+        private readonly ValidationProfile<TError> _merged;
         private readonly ValidationProfile<TError>[] _profiles;
         private readonly bool _contextIsRequired;
 
@@ -46,6 +48,15 @@ namespace Sels.ObjectValidationFramework.Addons
             _profiles = profiles.ValidateArgumentNotNullOrEmpty(nameof(profiles));
             _logger = logger;
             _contextIsRequired = contextIsRequired;
+            if (_profiles.Length > 1)
+            {
+                _merged = new ValidationProfile<TError>();
+                _profiles.Execute(x => _merged.ImportFrom(x, ImportOptions.All));
+            }
+            else
+            {
+                _merged = _profiles[0];
+            }
         }
 
         /// <inheritdoc/>
@@ -58,7 +69,7 @@ namespace Sels.ObjectValidationFramework.Addons
 
                 _logger.Log($"Validating <{entity}> using {_profiles.Length} validation profiles");
 
-                return _profiles.SelectMany(x => x.Validate(entity, context).Errors.Select(e => e.Message)).ToArray();
+                return _merged.Validate(entity, context).Errors.Select(e => e.Message).ToArray();
             }
         }
         /// <inheritdoc/>
@@ -71,7 +82,7 @@ namespace Sels.ObjectValidationFramework.Addons
 
                 _logger.Log($"Validating {entities.GetCount()} entities using {_profiles.Length} validation profiles");
 
-                return _profiles.SelectMany(x => x.Validate(entities, context).Errors.Select(e => e.Message)).ToArray();
+                return _merged.Validate(entities, context).Errors.Select(e => e.Message).ToArray();
             }
         }
         /// <inheritdoc/>
@@ -83,15 +94,8 @@ namespace Sels.ObjectValidationFramework.Addons
                 if (_contextIsRequired) context.ValidateArgument(nameof(context));
 
                 _logger.Log($"Validating <{entity}> using {_profiles.Length} validation profiles");
-                var errors = new List<TError>();
-
-                foreach (var profile in _profiles)
-                {
-                    var result = await profile.ValidateAsync(entity, context).ConfigureAwait(false);
-                    errors.AddRange(result.Errors.Select(x => x.Message));
-                }
-
-                return errors.ToArray();
+                
+                return (await _merged.ValidateAsync(entity, context).ConfigureAwait(false)).Errors.Select(e => e.Message).ToArray();
             }
         }
         /// <inheritdoc/>
@@ -104,15 +108,7 @@ namespace Sels.ObjectValidationFramework.Addons
 
                 _logger.Log($"Validating {entities.GetCount()} entities using {_profiles.Length} validation profiles");
 
-                var errors = new List<TError>();
-
-                foreach (var profile in _profiles)
-                {
-                    var result = await profile.ValidateAsync(entities, context).ConfigureAwait(false);
-                    errors.AddRange(result.Errors.Select(x => x.Message));
-                }
-
-                return errors.ToArray();
+                return (await _merged.ValidateAsync(entities, context).ConfigureAwait(false)).Errors.Select(e => e.Message).ToArray();
             }
         }
     }
@@ -128,6 +124,7 @@ namespace Sels.ObjectValidationFramework.Addons
     {
         // Fields
         private readonly ILogger _logger;
+        private readonly ValidationProfile<TError> _merged;
         private readonly ValidationProfile<TError>[] _profiles;
         private readonly bool _contextIsRequired;
         private readonly Func<ValidationError<TError>, TNewError> _projector;
@@ -157,6 +154,16 @@ namespace Sels.ObjectValidationFramework.Addons
             _profiles = profiles.ValidateArgumentNotNullOrEmpty(nameof(profiles));
             _logger = logger;
             _contextIsRequired = contextIsRequired;
+
+            if (_profiles.Length > 1)
+            {
+                _merged = new ValidationProfile<TError>();
+                _profiles.Execute(x => _merged.ImportFrom(x, ImportOptions.All));
+            }
+            else
+            {
+                _merged = _profiles[0];
+            }
         }
 
         /// <inheritdoc/>
@@ -194,15 +201,8 @@ namespace Sels.ObjectValidationFramework.Addons
                 if (_contextIsRequired) context.ValidateArgument(nameof(context));
 
                 _logger.Log($"Validating <{entity}> using {_profiles.Length} validation profiles");
-                var errors = new List<TNewError>();
-
-                foreach (var profile in _profiles)
-                {
-                    var result = await profile.ValidateAsync(entity, context).ConfigureAwait(false);
-                    errors.AddRange(result.ChangeMessageTo(_projector).Errors.Select(x => x.Message));
-                }
-
-                return errors.ToArray();
+                
+                return (await Task.WhenAll(_profiles.Select(x => x.ValidateAsync(entity, context).ContinueWith(t => t.Result.ChangeMessageTo(_projector).Errors.Select(e => e.Message))))).SelectMany(x => x).ToArray();
             }
         }
         /// <inheritdoc/>
@@ -215,15 +215,7 @@ namespace Sels.ObjectValidationFramework.Addons
 
                 _logger.Log($"Validating {entities.GetCount()} entities using {_profiles.Length} validation profiles");
 
-                var errors = new List<TNewError>();
-
-                foreach (var profile in _profiles)
-                {
-                    var result = await profile.ValidateAsync(entities, context).ConfigureAwait(false);
-                    errors.AddRange(result.ChangeMessageTo(_projector).Errors.Select(x => x.Message));
-                }
-
-                return errors.ToArray();
+                return (await Task.WhenAll(_profiles.Select(x => x.ValidateAsync(entities, context).ContinueWith(t => t.Result.ChangeMessageTo(_projector).Errors.Select(e => e.Message))))).SelectMany(x => x).ToArray();
             }
         }
     }

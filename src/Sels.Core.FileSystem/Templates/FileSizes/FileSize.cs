@@ -252,7 +252,7 @@ namespace Sels.Core.FileSystem.Templates.FileSizes
         /// <summary>
         /// Returns an instance with a size of 0.
         /// </summary>
-        public static FileSize Empty = new SingleByte(0);
+        public readonly static FileSize Empty = new SingleByte(0);
         #region CreateFrom
         /// <summary>
         /// Creates a new instance of <typeparamref name="T"/> with <paramref name="bytes"/> as the <see cref="FileSize.ByteSize"/>.

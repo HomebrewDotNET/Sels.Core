@@ -3,10 +3,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Sels.Core;
 using Sels.Core.Configuration;
-using Sels.Core.Configuration;
 using Sels.Core.Factory;
 using Sels.Core.Extensions;
-using Sels.Core.Factory;
 using Sels.Core.Options;
 using System;
 using System.IO;
@@ -84,7 +82,6 @@ namespace Microsoft.Extensions.DependencyInjection
             serviceCollection.AddOptions();
             serviceCollection.AddSingleton<IConfigureOptions<TOptions>>(x => new OptionConfigurationProvider<TOptions>(x.GetRequiredService<IConfiguration>(), nameBehaviour, fallbackOnDefault, sectionName));
             serviceCollection.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
-            serviceCollection.AddConfigurationFromDirectory(x => x.Name.ToLower().Contains("settings"), true);
 
             return serviceCollection;
         }

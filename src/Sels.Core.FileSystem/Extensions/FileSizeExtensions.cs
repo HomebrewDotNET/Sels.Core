@@ -6,6 +6,8 @@ using System.Security;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.Extensions.Reflection;
 using Sels.Core.Extensions.IO;
+using Sels.Core.FileSizes.Byte.Binary;
+using Sels.Core.FileSystem;
 
 namespace Sels.Core.FileSystem.Extensions.FileSizes
 {
@@ -19,6 +21,23 @@ namespace Sels.Core.FileSystem.Extensions.FileSizes
         [return: MarshalAs(UnmanagedType.Bool)]
 
         private static extern bool GetDiskFreeSpaceEx(string lpszPath, ref long lpFreeBytesAvailable, ref long lpTotalNumberOfBytes, ref long lpTotalNumberOfFreeBytes);
+
+        /// <summary>
+        /// Contains the suffixes for the different file sizes and their corresponding <see cref="FileSize"/> type.
+        /// </summary>
+        public readonly static IReadOnlyDictionary<string, Func<decimal, FileSize>> SizeSuffixes = FileSystemConstants.Sizes.DecimalFactories;
+        /// <summary>
+        /// Contains the suffixes for the different file sizes in order from smallest to largest.
+        /// </summary>
+        public readonly static IReadOnlyList<string> OrderedSizeSuffixes = FileSystemConstants.Sizes.DecimalOrder;
+        /// <summary>
+        /// Contains the suffixes for the different binary file sizes and their corresponding <see cref="FileSize"/> type.
+        /// </summary>
+        public readonly static IReadOnlyDictionary<string, Func<decimal, FileSize>> BinarySizeSuffixes = FileSystemConstants.Sizes.BinaryFactories;
+        /// <summary>
+        /// Contains the suffixes for the different binary file sizes in order from smallest to largest.
+        /// </summary>
+        public readonly static IReadOnlyList<string> OrderedBinarySizeSuffixes = FileSystemConstants.Sizes.BinaryOrder;
 
         /// <summary>
         /// Returns the amount of free space on the drive that <paramref name="info"/> is located on. 
@@ -102,6 +121,30 @@ namespace Sels.Core.FileSystem.Extensions.FileSizes
             var sizeType = typeof(TSize).Is<FileSize>() ? typeof(SingleByte) : typeof(TSize);
 
             return FileSize.CreateFromBytes(file.Length, sizeType).CastTo<TSize>();
+        }
+
+        /// <summary>
+        /// Returns the closest file size for <paramref name="bytes"/>. If <paramref name="useBinary"/> is true it will use binary sizes (KiB, MiB, GiB, etc.) otherwise it will use decimal sizes (KB, MB, GB, etc.).
+        /// </summary>
+        /// <param name="bytes">The file size in bytes</param>
+        /// <param name="useBinary">Whether to use binary sizes (true) or decimal sizes (false)</param>
+        /// <returns>The closest file size</returns>
+        public static FileSize ToClosestSize(this long bytes, bool useBinary = true)
+        {
+            var suffixes = useBinary ? BinarySizeSuffixes : SizeSuffixes;
+            var orderedSuffixes = useBinary ? OrderedBinarySizeSuffixes : OrderedSizeSuffixes;
+            var boundary = useBinary ? FileSystemConstants.Sizes.BinaryBoundary : FileSystemConstants.Sizes.DecimalBoundary;
+            var currentIndex = 0;
+            decimal currentSize = bytes;
+
+            while (currentSize >= boundary && currentIndex < orderedSuffixes.Count - 1)
+            {
+                currentSize /= boundary;
+                currentIndex++;
+            }
+
+            var suffix = orderedSuffixes[currentIndex];
+            return suffixes[suffix](currentSize);
         }
     }
 }

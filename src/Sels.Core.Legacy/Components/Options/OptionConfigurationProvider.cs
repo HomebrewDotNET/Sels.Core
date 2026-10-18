@@ -35,13 +35,15 @@ namespace Sels.Core.Options
         /// <inheritdoc/>
         public void Configure(TOptions options)
         {
+            options = options.ValidateArgument(nameof(options));
             var section = _configuration.GetSection(_sectionName);
             if (!section.Exists()) return;
-            section.Bind(options, x => x.ErrorOnUnknownConfiguration = true);
+            section.Bind(options, x => x.ErrorOnUnknownConfiguration = false);
         }
         /// <inheritdoc/>
         public void Configure(string name, TOptions options)
         {
+            options = options.ValidateArgument(nameof(options));
             string sectionName = null;
             bool ignoreErrors = true;
             switch(_nameBehaviour)
@@ -51,11 +53,11 @@ namespace Sels.Core.Options
                     return;
                 case ConfigurationProviderNamedOptionBehaviour.Prefix:
                     sectionName = $"{name}.{_sectionName}";
-                    ignoreErrors = false;
+                    ignoreErrors = true;
                     break;
                 case ConfigurationProviderNamedOptionBehaviour.Suffix:
                     sectionName = $"{_sectionName}.{name}";
-                    ignoreErrors = false;
+                    ignoreErrors = true;
                     break;
                 case ConfigurationProviderNamedOptionBehaviour.SubSection:
                     sectionName = $"{_sectionName}:{name}";
@@ -65,10 +67,11 @@ namespace Sels.Core.Options
             }
 
             var section = _configuration.GetSection(sectionName);
-            if (!section.Exists()) { 
-                if(_fallbackOnDefault) Configure(options);
+            if (!section.Exists() && !_fallbackOnDefault) { 
                 return;
             }
+
+            Configure(options);
             section.Bind(options, x => x.ErrorOnUnknownConfiguration = !ignoreErrors);
         }
     }

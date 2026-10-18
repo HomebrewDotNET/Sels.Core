@@ -30,6 +30,12 @@ namespace Sels.Core.ServiceBuilder
         where TImpl : class, T
         where T : class
     {
+        /// <summary>
+        /// Sets a key for the service registration. This allows multiple registrations of the same service type with different keys.
+        /// </summary>
+        /// <param name="key">The key to associate with the service registration</param>
+        /// <returns>Current builder for method chaining</returns>
+        IServiceBuilder<T, TImpl> AsKeyed(object key);
         #region Creation
         /// <summary>
         /// Defines a delegate for creating the instances of <paramref name="factory"/>.
@@ -44,6 +50,11 @@ namespace Sels.Core.ServiceBuilder
         /// <param name="instance">The instance to inject as dependency</param>
         /// <returns>Current builder for method chaining</returns>
         IServiceBuilder<T, TImpl> WithInstance(TImpl instance);
+
+        /// <summary>Registers a caller-owned instance without transferring disposal ownership to the container.</summary>
+        /// <param name="instance">The existing singleton instance to register.</param>
+        /// <returns>Current builder for method chaining.</returns>
+        IServiceBuilder<T, TImpl> WithExternalInstance(TImpl instance);
         #endregion
 
         #region Lifetime

@@ -900,7 +900,7 @@ namespace Sels.Core.Async.TaskManagement
         private HashSet<ManagedAnonymousTask> GetPartition(ManagedAnonymousTask task)
         {
             task.ValidateArgument(nameof(task));
-            var partitionKey = Helper.Paritioning.Partition(task.GetHashCode(), _concurrencyLevel);
+            var partitionKey = Helper.Partitioning.Partition(task.GetHashCode(), _concurrencyLevel);
 
             if (_anonymousTasks.ContainsKey(partitionKey))
             {
@@ -912,7 +912,7 @@ namespace Sels.Core.Async.TaskManagement
         private Dictionary<string, ManagedTask> GetGlobalTaskPartition(string name)
         {
             name.ValidateArgument(nameof(name));
-            var partitionKey = Helper.Paritioning.Partition(name.GetHashCode(), _concurrencyLevel);
+            var partitionKey = Helper.Partitioning.Partition(name.GetHashCode(), _concurrencyLevel);
 
             if (_globalManagedTasks.ContainsKey(partitionKey))
             {
@@ -924,7 +924,7 @@ namespace Sels.Core.Async.TaskManagement
         private Dictionary<object, OwnedTasks> GetPartition(object owner)
         {
             owner.ValidateArgument(nameof(owner));
-            var partitionKey = Helper.Paritioning.Partition(owner.GetHashCode(), _concurrencyLevel);
+            var partitionKey = Helper.Partitioning.Partition(owner.GetHashCode(), _concurrencyLevel);
 
             if (_ownedTasks.ContainsKey(partitionKey))
             {
@@ -936,7 +936,7 @@ namespace Sels.Core.Async.TaskManagement
         private Dictionary<string, GlobalManagedTaskQueue> GetGlobalQueuePartition(string name)
         {
             name.ValidateArgument(nameof(name));
-            var partitionKey = Helper.Paritioning.Partition(name.GetHashCode(), _concurrencyLevel);
+            var partitionKey = Helper.Partitioning.Partition(name.GetHashCode(), _concurrencyLevel);
 
             if (_globalQueues.ContainsKey(partitionKey))
             {

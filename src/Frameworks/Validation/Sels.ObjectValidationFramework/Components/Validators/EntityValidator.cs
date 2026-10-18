@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Sels.Core.Scope;
 using System.Linq.Expressions;
-using Sels.Core.Extensions.Logging;
 using System.Threading.Tasks;
 using static Sels.Core.Delegates.Async;
 using Sels.ObjectValidationFramework.Configurators;

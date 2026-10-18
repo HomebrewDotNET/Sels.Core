@@ -10,7 +10,6 @@
 		<PackageVersion Include="Castle.Core" Version="5.1.1" />
 		<PackageVersion Include="Castle.Core.AsyncInterceptor" Version="2.1.0" />
 		<PackageVersion Include="CommandLineParser" Version="2.9.1" />
-		<PackageVersion Include="coverlet.collector" Version="6.0.2" />
 		<PackageVersion Include="Dapper" Version="2.1.35" />
 		<PackageVersion Include="FluentMigrator.Runner" Version="6.2.0" />
 		<PackageVersion Include="FluentMigrator.Runner.MySql" Version="6.2.0" />
@@ -21,6 +20,7 @@
 		<PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
 		<PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
 		<PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+		<PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.0" />
 		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
 		<PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
 		<PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.0" />
@@ -28,15 +28,12 @@
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />
 		<PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="8.2.1" />
 		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-		<PackageVersion Include="Moq" Version="4.20.72" />
 		<PackageVersion Include="MySql.Data" Version="9.1.0" />
 		<PackageVersion Include="MySqlConnector" Version="2.4.0" />
 		<PackageVersion Include="NCrontab.Signed" Version="3.3.3" />
 		<PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageVersion Include="Newtonsoft.Json.Bson" Version="1.0.3" />
-		<PackageVersion Include="NUnit" Version="3.14.0" />
-		<PackageVersion Include="NUnit.Analyzers" Version="3.10.0" />
-		<PackageVersion Include="NUnit3TestAdapter" Version="4.6.0" />
+		<PackageVersion Include="NSubstitute" Version="5.3.0" />
 		<PackageVersion Include="Polly" Version="8.5.0" />
 		<PackageVersion Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
 		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
@@ -44,5 +41,8 @@
 		<PackageVersion Include="System.Resources.ResourceManager" Version="4.3.0" />
 		<PackageVersion Include="System.Runtime" Version="4.3.1" />
 		<PackageVersion Include="System.Threading.Tasks" Version="4.3.0" />
+		<PackageVersion Include="xunit" Version="2.4.2" />
+		<PackageVersion Include="xunit.assert" Version="2.4.2" />
+		<PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
 	</ItemGroup>
 </Project>

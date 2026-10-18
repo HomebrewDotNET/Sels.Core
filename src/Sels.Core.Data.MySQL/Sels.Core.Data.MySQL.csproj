@@ -9,12 +9,12 @@
 		<Product>MySql Data Library</Product>
 		<Description>
 			Contains code for working with MySql based databases.
-			Used by projects maintained here: https://github.com/Jenssels1998
+			Used by projects maintained here: https://github.com/HomebrewDotNET
 		</Description>
-		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/HomebrewDotNET/Sels.Core</PackageProjectUrl>
 		<Copyright>Jens Sels</Copyright>
 		<PackageTags>Sels</PackageTags>
-		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
+		<RepositoryUrl>https://github.com/HomebrewDotNET/Sels.Core</RepositoryUrl>
 		<!--For NuGet package-->
 		<VersionPrefix>2.0.0</VersionPrefix>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>

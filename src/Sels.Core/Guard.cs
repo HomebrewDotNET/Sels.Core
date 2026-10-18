@@ -3,6 +3,7 @@ using Sels.Core.Extensions.Collections;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Sels.Core
@@ -13,10 +14,32 @@ namespace Sels.Core
     public static class Guard
     {
         /// <summary>
+        /// Checks if <paramref name="condition"/> passes. If it doesn't an <see cref="ArgumentException"/> will be thrown with a message containing the expression of <paramref name="condition"/>.
+        /// </summary>
+        /// <param name="condition">The condition must pass</param>
+        /// <exception cref="ArgumentNullException"><paramref name="condition"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="condition"/> evaluates to false.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Is(Expression<Func<bool>> condition)
+        {
+            if (condition == null)
+            {
+                throw new ArgumentNullException(nameof(condition));
+            }
+
+            var compiled = condition.Compile();
+            if (!compiled())
+            {
+                throw new ArgumentException($"Condition <{condition}> did not pass");
+            }
+        }
+
+        /// <summary>
         /// Checks if <paramref name="condition"/> passes. If it doesn't an <see cref="ArgumentException"/> will be thrown with the message created from <paramref name="errorMessageConstructor"/>.
         /// </summary>
         /// <param name="condition">The condition that must pass</param>
         /// <param name="errorMessageConstructor">Delegate that creates the error message</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Is(Func<bool> condition, Func<string> errorMessageConstructor)
         {
             if (condition == null) throw new ArgumentNullException(nameof(condition));
@@ -30,6 +53,7 @@ namespace Sels.Core
         /// </summary>
         /// <param name="condition">The condition that must pass</param>
         /// <param name="errorMessageConstructor">Delegate that creates the exception to throw</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Is(Func<bool> condition, Func<Exception> errorMessageConstructor)
         {
             if (condition == null) throw new ArgumentNullException(nameof(condition));
@@ -46,6 +70,7 @@ namespace Sels.Core
         /// <param name="condition">The predicate that checks if <paramref name="argument"/> is valid</param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/> if it's valid</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Is<T>(T argument, Expression<Predicate<T>> condition, [CallerArgumentExpression("argument")] string expression = "")
         {
             condition.ValidateArgument(nameof(condition));
@@ -62,6 +87,7 @@ namespace Sels.Core
         /// <param name="argument">The argument instance to check</param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return : NotNull]
         public static T IsNotNull<T>(T argument, [CallerArgumentExpression("argument")] string expression = "")
         {
@@ -79,6 +105,7 @@ namespace Sels.Core
         /// <param name="condition">The predicate that checks if <paramref name="argument"/> is valid</param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static T IsNotNullAnd<T>(T argument, Expression<Predicate<T>> condition, [CallerArgumentExpression("argument")] string expression = "")
         {
@@ -98,6 +125,7 @@ namespace Sels.Core
         /// <param name="argument">The argument instance to check</param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static string IsNotNullOrEmpty(string argument, [CallerArgumentExpression("argument")] string expression = "")
         {
@@ -113,6 +141,7 @@ namespace Sels.Core
         /// <param name="argument">The argument instance to check</param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static string IsNotNullOrWhitespace(string argument, [CallerArgumentExpression("argument")] string expression = "")
         {
@@ -132,6 +161,7 @@ namespace Sels.Core
         /// <param name="comparator">The value to compare to <paramref name="argument"/></param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static T IsLarger<T>(T argument, T comparator, [CallerArgumentExpression("argument")] string expression = "") where T : IComparable
         {
@@ -150,6 +180,7 @@ namespace Sels.Core
         /// <param name="comparator">The value to compare to <paramref name="argument"/></param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static T IsLargerOrEqual<T>(T argument, T comparator, [CallerArgumentExpression("argument")] string expression = "") where T : IComparable
         {
@@ -168,6 +199,7 @@ namespace Sels.Core
         /// <param name="comparator">The value to compare to <paramref name="argument"/></param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static T IsSmaller<T>(T argument, T comparator, [CallerArgumentExpression("argument")] string expression = "") where T : IComparable
         {
@@ -186,6 +218,7 @@ namespace Sels.Core
         /// <param name="comparator">The value to compare to <paramref name="argument"/></param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static T IsSmallerOrEqual<T>(T argument, T comparator, [CallerArgumentExpression("argument")] string expression = "") where T : IComparable
         {
@@ -206,6 +239,7 @@ namespace Sels.Core
         /// <param name="inclusive">If the value can be equal to <paramref name="low"/> or <paramref name="high"/>. If set to false it can't be</param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static T IsInRange<T>(T argument, T low, T high, bool inclusive = true, [CallerArgumentExpression("argument")] string expression = "") where T : IComparable
         {
@@ -226,12 +260,35 @@ namespace Sels.Core
         /// <param name="argument">The argument instance to check</param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static T IsNotNullOrEmpty<T>(T argument, [CallerArgumentExpression("argument")] string expression = "") where T : IEnumerable
         {
             if (string.IsNullOrWhiteSpace(expression)) throw new ArgumentException($"{nameof(expression)} cannot be null, empty or whitespace");
 
             Is(() => argument != null && argument.Enumerate().HasValue(), () => $"{expression} cannot be null and must contain at least 1 element");
+            return argument;
+        }
+        #endregion
+
+        #region Enum
+        /// <summary>
+        /// Validates that <paramref name="argument"/> is a defined value of <typeparamref name="T"/>, if it is not an <see cref="ArgumentException"/> will be thrown.
+        /// </summary>
+        /// <typeparam name="T">The enum type to check</typeparam>
+        /// <param name="argument">The enum value to check</param>
+        /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
+        /// <returns><paramref name="argument"/></returns>
+        /// <exception cref="ArgumentException"></exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNull]
+        public static T IsDefined<T>(T argument, [CallerArgumentExpression("argument")] string expression = "") where T : Enum
+        {
+            if (string.IsNullOrWhiteSpace(expression))
+            {
+                throw new ArgumentException($"{nameof(expression)} cannot be null, empty or whitespace");
+            }
+            Is(() => Enum.IsDefined(typeof(T), argument), () => $"{expression} must be a defined value of {typeof(T).Name}");
             return argument;
         }
         #endregion
@@ -243,6 +300,7 @@ namespace Sels.Core
         /// <param name="argument">The argument instance to check</param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static FileInfo MustExist(FileInfo argument, [CallerArgumentExpression("argument")] string expression = "")
         {
@@ -258,6 +316,7 @@ namespace Sels.Core
         /// <param name="argument">The argument instance to check</param>
         /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static DirectoryInfo MustExist(DirectoryInfo argument, [CallerArgumentExpression("argument")] string expression = "")
         {

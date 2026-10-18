@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Sels.Core.Extensions.DependencyInjection;
+using Sels.ObjectValidationFramework.Components.Addons;
+using Sels.ObjectValidationFramework;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -31,9 +33,27 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.ValidateArgument(nameof(services));
 
-            services.Register<ValidationProfile<TError>, TProfile>(scope);
             services.Register<TProfile>(scope);
+            services.Register<ValidationProfile<TError>, TProfile>(x => x.GetRequiredService<TProfile>(), scope);
 
+            return services;
+        }
+
+        /// <summary>
+        /// Registers validation profile <typeparamref name="TProfile"/> into the service collection as a keyed service.
+        /// </summary>
+        /// <typeparam name="TProfile">Type of profile to register</typeparam>
+        /// <typeparam name="TError">Type of validation error that the profile returns</typeparam>
+        /// <param name="services">Service collection to add service to</param>
+        /// <param name="serviceKey">Key to associate with the service</param>
+        /// <returns><paramref name="services"/> for method chaining</returns>
+        public static IServiceCollection AddKeyedValidationProfile<TProfile, TError>(this IServiceCollection services, string serviceKey) where TProfile : ValidationProfile<TError>
+        {
+            services.ValidateArgument(nameof(services));
+            serviceKey.ValidateArgumentNotNullOrWhitespace(nameof(serviceKey));
+
+            services.AddKeyedSingleton<TProfile>(serviceKey);
+            services.AddKeyedSingleton<ValidationProfile<TError>>(serviceKey, (x, n) => x.GetRequiredKeyedService<TProfile>(n));
             return services;
         }
 
@@ -50,8 +70,67 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.ValidateArgument(nameof(services));
 
-            services.Register<ValidationProfile<TError>, TProfile>(profileFactory, scope);
-            services.Register(profileFactory, scope);
+            services.Register<TProfile>(profileFactory, scope);
+            services.Register<ValidationProfile<TError>, TProfile>(x => x.GetRequiredService<TProfile>(), scope);
+
+            return services;
+        }
+
+        /// <summary>
+        /// Registers validation profile <typeparamref name="TProfile"/> into the service collection as a keyed service.
+        /// </summary>
+        /// <typeparam name="TProfile">Type of profile to register</typeparam>
+        /// <typeparam name="TError">Type of validation error that the profile returns</typeparam>
+        /// <param name="services">Service collection to add service to</param>
+        /// <param name="serviceKey">Key to associate with the service</param>
+        /// <param name="profileFactory">Factory that creates instances of <typeparamref name="TProfile"/></param>
+        /// <returns><paramref name="services"/> for method chaining</returns>
+        public static IServiceCollection AddKeyedValidationProfile<TProfile, TError>(this IServiceCollection services, string serviceKey, Func<IServiceProvider, TProfile> profileFactory) where TProfile : ValidationProfile<TError>
+        {
+            services.ValidateArgument(nameof(services));
+            serviceKey.ValidateArgumentNotNullOrWhitespace(nameof(serviceKey));
+
+            services.AddKeyedSingleton<TProfile>(serviceKey, (x, n) => profileFactory(x));
+            services.AddKeyedSingleton<ValidationProfile<TError>>(serviceKey, (x, n) => x.GetRequiredKeyedService<TProfile>(serviceKey));
+
+            return services;
+        }
+
+        /// <summary>
+        /// Registers a new <see cref="MergedValidationProfile{TEntity, TError, TContext}"/> that merges all registered <see cref="ValidationProfile{TError}"/> into a single profile.
+        /// Can also be resolved as an <see cref="IValidationProfile{TEntity, TError, TContext}"/> to be used by a validator.
+        /// </summary>
+        /// <typeparam name="TEntity">Type of entity to validate</typeparam>
+        /// <typeparam name="TError">Type of validation error to return</typeparam>
+        /// <typeparam name="TContext">Type of context that can be used to modify the behaviour of the validator</typeparam>
+        /// <param name="services">Service collection to add service to</param>
+        /// <param name="contextIsRequired">If a context is required by this validator. If set to true and context is null the service will throw an <see cref="ArgumentNullException"/></param>
+        /// <param name="serviceKey">Optional key to use when registering the service. If set the service will be registered as a named service and can be resolved using <see cref="IServiceProvider.GetService(Type)"/></param>
+        /// <returns><paramref name="services"/> for method chaining</returns>
+        public static IServiceCollection AddMergedValidationProfile<TEntity, TError, TContext>(this IServiceCollection services, bool contextIsRequired = false, string serviceKey = null)
+        {
+            services.ValidateArgument(nameof(services));
+
+            if (!serviceKey.HasValue())
+            {
+                services.Register<MergedValidationProfile<TEntity, TError, TContext>>(x =>
+                {
+                    var profiles = x.GetServices<ValidationProfile<TError>>().ToArray();
+                    return new MergedValidationProfile<TEntity, TError, TContext>(contextIsRequired, x.GetService<ILogger<MergedValidationProfile<TEntity, TError, TContext>>>(), profiles);
+                }, ServiceLifetime.Singleton);
+
+                services.Register<IValidationProfile<TEntity, TError, TContext>, MergedValidationProfile<TEntity, TError, TContext>>(x => x.GetRequiredService<MergedValidationProfile<TEntity, TError, TContext>>(), ServiceLifetime.Singleton);
+            }
+            else
+            {
+                services.AddKeyedSingleton<MergedValidationProfile<TEntity, TError, TContext>>(serviceKey, (x, n) =>
+                {
+                    var profiles = x.GetServices<ValidationProfile<TError>>().ToArray();
+                    var keyedProfiles = x.GetKeyedServices<ValidationProfile<TError>>(serviceKey).ToArray();
+                    return new MergedValidationProfile<TEntity, TError, TContext>(contextIsRequired, x.GetService<ILogger<MergedValidationProfile<TEntity, TError, TContext>>>(), profiles.Concat(keyedProfiles).ToArray());
+                });
+                services.AddKeyedSingleton<IValidationProfile<TEntity, TError, TContext>>(serviceKey, (x, n) => x.GetRequiredKeyedService<MergedValidationProfile<TEntity, TError, TContext>>(serviceKey));
+            }
 
             return services;
         }

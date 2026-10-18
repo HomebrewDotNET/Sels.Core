@@ -132,6 +132,19 @@ namespace Sels.Core.Async.TaskManagement
                 {
                     var taskResult = await completedTask.ConfigureAwait(false);
                     if (taskResult != null && taskResult != Null.Value) result = taskResult;
+                    if(taskResult is Task task && task.IsFaulted)
+                    {
+                        var exception = task.Exception;
+                        if(exception.InnerExceptions.Count > 0)
+                        {
+                            result = exception.InnerExceptions.Count == 1 ? exception.InnerExceptions[0] : exception;
+
+                        }
+                        else
+                        {
+                            result = exception;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {

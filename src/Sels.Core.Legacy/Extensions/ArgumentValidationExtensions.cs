@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Sels.Core.Extensions
 {
@@ -20,6 +21,7 @@ namespace Sels.Core.Extensions
         /// <param name="condition">Condition that argument needs to pass</param>
         /// <param name="validationFailedExceptionFunc">Func that creates exception when validation fails. First arg is supplied argument</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgument<T>(this T argument, Predicate<T> condition, Func<T, Exception> validationFailedExceptionFunc)
         {
             if (condition == null) throw new ArgumentNullException(nameof(condition));
@@ -41,6 +43,7 @@ namespace Sels.Core.Extensions
         /// <param name="condition">Condition that argument needs to pass</param>
         /// <param name="validationFailedMessage">Message for ArgumentException when validation fails</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgument<T>(this T argument, Predicate<T> condition, string validationFailedMessage)
         {
             if (condition == null) throw new ArgumentNullException(nameof(condition));
@@ -56,6 +59,7 @@ namespace Sels.Core.Extensions
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgument<T>(this T argument, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -70,6 +74,7 @@ namespace Sels.Core.Extensions
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ValidateArgumentNotNullOrEmpty(this string argument, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -83,6 +88,7 @@ namespace Sels.Core.Extensions
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ValidateArgumentNotNullOrWhitespace(this string argument, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -99,6 +105,7 @@ namespace Sels.Core.Extensions
         /// <param name="option">How the strings should be compared</param>
         /// <returns><paramref name="argument"/></returns>
         /// <exception cref="ArgumentException"></exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ValidateArgumentEndsWith(this string argument, string parameterName, string comparator, StringComparison option = StringComparison.OrdinalIgnoreCase)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -116,6 +123,7 @@ namespace Sels.Core.Extensions
         /// <param name="option">How the strings should be compared</param>
         /// <returns><paramref name="argument"/></returns>
         /// <exception cref="ArgumentException"></exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ValidateArgumentDoesNotEndWith(this string argument, string parameterName, string comparator, StringComparison option = StringComparison.OrdinalIgnoreCase)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -133,6 +141,7 @@ namespace Sels.Core.Extensions
         /// <param name="option">How the strings should be compared</param>
         /// <returns><paramref name="argument"/></returns>
         /// <exception cref="ArgumentException"></exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ValidateArgumentStartsWith(this string argument, string parameterName, string comparator, StringComparison option = StringComparison.OrdinalIgnoreCase)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -150,6 +159,7 @@ namespace Sels.Core.Extensions
         /// <param name="option">How the strings should be compared</param>
         /// <returns><paramref name="argument"/></returns>
         /// <exception cref="ArgumentException"></exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ValidateArgumentDoesNotStartWith(this string argument, string parameterName, string comparator, StringComparison option = StringComparison.OrdinalIgnoreCase)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -168,6 +178,7 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgumentLarger<T>(this T argument, string parameterName, T comparator)
             where T : IComparable
         {
@@ -184,6 +195,7 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgumentLargerOrEqual<T>(this T argument, string parameterName, T comparator)
             where T : IComparable
         {
@@ -200,6 +212,7 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgumentSmaller<T>(this T argument, string parameterName, T comparator)
             where T : IComparable
         {
@@ -216,6 +229,7 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="comparator">Value to compare argument to</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgumentSmallerOrEqual<T>(this T argument, string parameterName, T comparator)
             where T : IComparable
         {
@@ -233,6 +247,7 @@ namespace Sels.Core.Extensions
         /// <param name="startRange">Start value of range</param>
         /// <param name="endRange">End value of range</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgumentInRange<T>(this T argument, string parameterName, T startRange, T endRange)
             where T : IComparable
         {
@@ -251,6 +266,7 @@ namespace Sels.Core.Extensions
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgumentNotNullOrEmpty<T, TItem>(this T argument, string parameterName) where T : IEnumerable<TItem>
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -265,6 +281,7 @@ namespace Sels.Core.Extensions
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IEnumerable<T> ValidateArgumentNotNullOrEmpty<T>(this IEnumerable<T> argument, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -279,6 +296,7 @@ namespace Sels.Core.Extensions
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T[] ValidateArgumentNotNullOrEmpty<T>(this T[] argument, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -296,6 +314,7 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="assignableType">Type to check against</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgumentAssignableFrom<T>(this T argument, string parameterName, Type assignableType)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -312,6 +331,7 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="assignableType">Type to check against</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgumentAssignableTo<T>(this T argument, string parameterName, Type assignableType)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -327,6 +347,7 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="assignableType">Type to check against</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type ValidateArgumentAssignableFrom(this Type argument, string parameterName, Type assignableType)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -342,6 +363,7 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="assignableType">Type to check against</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type ValidateArgumentAssignableTo(this Type argument, string parameterName, Type assignableType)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -355,6 +377,7 @@ namespace Sels.Core.Extensions
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type ValidateArgumentNotInterface(this Type argument, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -368,6 +391,7 @@ namespace Sels.Core.Extensions
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type ValidateArgumentInstanceable(this Type argument, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -382,6 +406,7 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="parameterTypes">Contructor argument types in order</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type ValidateArgumentCanBeContructedWith(this Type argument, string parameterName, params Type[] parameterTypes)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -396,6 +421,7 @@ namespace Sels.Core.Extensions
         /// <param name="parameterName">Method/Constructor parameter name</param>
         /// <param name="arguments">Contructor arguments in order</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Type ValidateArgumentCanBeContructedWithArguments(this Type argument, string parameterName, params object[] arguments)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) throw new ArgumentException($"{nameof(parameterName)} cannot be null, empty or whitespace", nameof(parameterName));
@@ -411,6 +437,7 @@ namespace Sels.Core.Extensions
         /// <param name="argument">Method/Constructor argument</param>
         /// <param name="validationFailedMessage">Message for ArgumentException when validation fails</param>
         /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T ValidateArgumentExists<T>(this T argument, string validationFailedMessage) where T : FileSystemInfo
         {
             if (string.IsNullOrWhiteSpace(validationFailedMessage)) throw new ArgumentException($"{nameof(validationFailedMessage)} cannot be null, empty or whitespace");

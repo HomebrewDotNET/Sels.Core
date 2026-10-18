@@ -88,7 +88,7 @@ namespace Sels.ObjectValidationFramework.Profile
         {
             configurator.ValidateArgument(nameof(configurator));
 
-            return configurator.InvalidIf(info => string.IsNullOrEmpty(info.Value), info => $"Cannot be null, empty or whitespace");
+            return configurator.InvalidIf(info => string.IsNullOrWhiteSpace(info.Value), info => $"Cannot be null, empty or whitespace");
         }
 
         #region Regex

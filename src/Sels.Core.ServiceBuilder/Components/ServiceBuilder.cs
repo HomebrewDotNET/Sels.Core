@@ -11,6 +11,7 @@ using Sels.Core.Extensions.Reflection;
 using Sels.Core.Extensions.DependencyInjection;
 using Sels.Core.Extensions.Conversion;
 using Sels.Core.ServiceBuilder.Template;
+using System.Runtime.CompilerServices;
 
 namespace Sels.Core.ServiceBuilder
 {
@@ -19,6 +20,9 @@ namespace Sels.Core.ServiceBuilder
         where TImpl : class, T
         where T : class
     {
+        // Statics
+        private static readonly ConditionalWeakTable<ServiceDescriptor, Type> _implementationTypes = new ConditionalWeakTable<ServiceDescriptor, Type>();
+
         // Fields
         /// <summary>
         /// The collection to add the built service to
@@ -35,6 +39,8 @@ namespace Sels.Core.ServiceBuilder
 
         // State
         private Func<IServiceProvider, TImpl> _factory;
+        private TImpl _externalInstance;
+        private bool _usesExternalInstance;
         private ServiceLifetime _scope = ServiceLifetime.Scoped;
         private RegisterBehaviour _behaviour = RegisterBehaviour.Default;
 
@@ -51,6 +57,10 @@ namespace Sels.Core.ServiceBuilder
         public IServiceCollection Collection => _collection;
         /// <inheritdoc/>
         protected override IServiceBuilder<T, TImpl> Self => this;
+        /// <summary>
+        /// The service key that can be used to register the service with a specific key. This is useful for scenarios where multiple implementations of the same service type need to be registered and resolved based on a key.
+        /// </summary>
+        public object Key { get; private set; }
 
         /// <inheritdoc cref="ServiceBuilder{T, TImpl}"/>
         /// <param name="collection"><inheritdoc cref="_collection"/></param>
@@ -71,6 +81,12 @@ namespace Sels.Core.ServiceBuilder
 
         #region Building
         /// <inheritdoc/>
+        public IServiceBuilder<T, TImpl> AsKeyed(object key)
+        {
+            Key = key.ValidateArgument(nameof(key));
+            return this;
+        }
+        /// <inheritdoc/>
         public IServiceBuilder<T, TImpl> WithInstance(TImpl instance)
         {
             instance.ValidateArgument(nameof(instance));
@@ -82,12 +98,26 @@ namespace Sels.Core.ServiceBuilder
 
             return this;
         }
+
+        /// <inheritdoc/>
+        public IServiceBuilder<T, TImpl> WithExternalInstance(TImpl instance)
+        {
+            instance = instance.ValidateArgument(nameof(instance));
+            ConstructWith(_ => instance);
+            _externalInstance = instance;
+            _usesExternalInstance = true;
+            _scope = ServiceLifetime.Singleton;
+            return this;
+        }
+
         /// <inheritdoc/>
         public IServiceBuilder<T, TImpl> ConstructWith(Func<IServiceProvider, TImpl> factory)
         {
             factory.ValidateArgument(nameof(factory));
 
             _factory = factory;
+            _externalInstance = default;
+            _usesExternalInstance = false;
 
             // Remove singleton handler if set
             OnRegisteringEvent -= SetToSingleton;
@@ -116,6 +146,11 @@ namespace Sels.Core.ServiceBuilder
         {
             // Trigger events
             OnRegisteringEvent?.Invoke(this);
+
+            if (_usesExternalInstance)
+            {
+                return RegisterExternalInstance();
+            }
 
             // Create proxy if we have interceptors set
             if (_interceptorFactories.HasValue())
@@ -187,13 +222,56 @@ namespace Sels.Core.ServiceBuilder
                     RegisterServiceWithFactory(p => p.CreateInstance<TImpl>());
                 }
             }
+            OnAdd(_collection.Last());
 
+            return _collection;
+        }
+
+        private IServiceCollection RegisterExternalInstance()
+        {
+            if (_scope != ServiceLifetime.Singleton || Key != null || _interceptorFactories.HasValue())
+            {
+                throw new InvalidOperationException(ServiceBuilderConstants.Registration.ExternalInstanceConfigurationMessage);
+            }
+
+            switch (_behaviour)
+            {
+                case RegisterBehaviour.Default:
+                    _collection.Add(ServiceDescriptor.Singleton(typeof(T), _externalInstance));
+                    break;
+                case RegisterBehaviour.TryAdd:
+                    if (!_collection.Any(descriptor => descriptor.ServiceType == typeof(T)))
+                    {
+                        _collection.Add(ServiceDescriptor.Singleton(typeof(T), _externalInstance));
+                    }
+                    break;
+                case RegisterBehaviour.Replace:
+                    var existing = _collection.Where(descriptor => descriptor.ServiceType == typeof(T)).ToArray();
+                    existing.Execute(descriptor => _collection.Remove(descriptor));
+                    _collection.Add(ServiceDescriptor.Singleton(typeof(T), _externalInstance));
+                    break;
+                case RegisterBehaviour.TryAddImplementation:
+                    var implementation = GetByImplementationType(typeof(T), typeof(TImpl)).FirstOrDefault();
+                    if (implementation == null)
+                    {
+                        _collection.Add(ServiceDescriptor.Singleton(typeof(T), _externalInstance));
+                    }
+                    break;
+                default:
+                    throw new NotSupportedException($"Register behaviour <{_behaviour}> is not supported for external instances");
+            }
+            OnAdd(_collection.Last());
             return _collection;
         }
 
         private void RegisterServiceWithFactory<TInstance>(Func<IServiceProvider, TInstance> factory) where TInstance : class, T
         { 
-            if(_behaviour == RegisterBehaviour.Replace)
+            if(Key != null)
+            {
+                RegisterServiceWithFactoryAndKey(factory, Key);
+                return;
+            }
+            if (_behaviour == RegisterBehaviour.Replace)
             {
                 // Remove existing implementations
                 var existing = _collection.Where(x => x.ServiceType == typeof(T)).ToArray();
@@ -238,15 +316,15 @@ namespace Sels.Core.ServiceBuilder
                     if (existing == null) _collection.AddSingleton<T, TInstance>(actualFactory);
                     break;
                 case (ServiceLifetime.Transient, RegisterBehaviour.TryAddImplementation):
-                    existing = _collection.FirstOrDefault(x => typeof(T).Equals(x.ServiceType) && typeof(TImpl).Equals(x.ImplementationType));
+                    existing = GetByImplementationType(typeof(T), typeof(TImpl)).FirstOrDefault();
                     if (existing == null) _collection.AddTransient<T, TInstance>(actualFactory);
                     break;
                 case (ServiceLifetime.Scoped, RegisterBehaviour.TryAddImplementation):
-                    existing = _collection.FirstOrDefault(x => typeof(T).Equals(x.ServiceType) && typeof(TImpl).Equals(x.ImplementationType));
+                    existing = GetByImplementationType(typeof(T), typeof(TImpl)).FirstOrDefault();
                     if (existing == null) _collection.AddScoped<T, TInstance>(actualFactory);
                     break;
                 case (ServiceLifetime.Singleton, RegisterBehaviour.TryAddImplementation):
-                    existing = _collection.FirstOrDefault(x => typeof(T).Equals(x.ServiceType) && typeof(TImpl).Equals(x.ImplementationType));
+                    existing = GetByImplementationType(typeof(T), typeof(TImpl)).FirstOrDefault();
                     if (existing == null) _collection.AddSingleton<T, TInstance>(actualFactory);
                     break;
                 default:
@@ -254,6 +332,106 @@ namespace Sels.Core.ServiceBuilder
             }
         }
 
+        private void RegisterServiceWithFactoryAndKey<TInstance>(Func<IServiceProvider, TInstance> factory, object key)
+            where TInstance : class, T
+        {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+            if (_behaviour == RegisterBehaviour.Replace)
+            {
+                // Remove existing implementations
+                var existing = _collection.Where(x => x.ServiceType == typeof(T))
+                                          .Where(x => x.IsKeyedService && x.ServiceKey.Equals(key)).ToArray();
+                existing.Execute(x => _collection.Remove(x));
+            }
+            var actualFactory = new Func<IServiceProvider, object?, TInstance>((p, k) =>
+            {
+                // Call registered factory
+                var instance = factory(p);
+                // Trigger on created event
+                if (instance is TImpl implementation)
+                {
+                    OnCreatedEvent.Invoke(p, implementation);
+                }
+                return instance;
+            });
+            switch ((_scope, _behaviour))
+            {
+                case (ServiceLifetime.Transient, RegisterBehaviour.Replace):
+                case (ServiceLifetime.Transient, RegisterBehaviour.Default):
+                    _collection.AddKeyedTransient<T, TInstance>(key, actualFactory);
+                    break;
+                case (ServiceLifetime.Transient, RegisterBehaviour.TryAdd):
+                    var existing = _collection.FirstOrDefault(x => typeof(T).Equals(x.ServiceType) && x.IsKeyedService && x.ServiceKey.Equals(key));
+                    if (existing == null)
+                    {
+                        _collection.AddKeyedTransient<T, TInstance>(key, actualFactory);
+                    }
+                    break;
+                case (ServiceLifetime.Scoped, RegisterBehaviour.Replace):
+                case (ServiceLifetime.Scoped, RegisterBehaviour.Default):
+                    _collection.AddKeyedScoped<T, TInstance>(key, actualFactory);
+                    break;
+                case (ServiceLifetime.Scoped, RegisterBehaviour.TryAdd):
+                    existing = _collection.FirstOrDefault(x => typeof(T).Equals(x.ServiceType) && x.IsKeyedService && x.ServiceKey.Equals(key));
+                    if (existing == null)
+                    {
+                        _collection.AddKeyedScoped<T, TInstance>(key, actualFactory);
+                    }
+                    break;
+                case (ServiceLifetime.Singleton, RegisterBehaviour.Replace):
+                case (ServiceLifetime.Singleton, RegisterBehaviour.Default):
+                    _collection.AddKeyedSingleton<T, TInstance>(key, actualFactory);
+                    break;
+                case (ServiceLifetime.Singleton, RegisterBehaviour.TryAdd):
+                    existing = _collection.FirstOrDefault(x => typeof(T).Equals(x.ServiceType) && x.IsKeyedService && x.ServiceKey.Equals(key));
+                    if (existing == null)
+                    {
+                        _collection.AddKeyedSingleton<T, TInstance>(key, actualFactory);
+                    }
+                    break;
+                case (ServiceLifetime.Transient, RegisterBehaviour.TryAddImplementation):
+                    existing = GetByImplementationType(typeof(T), typeof(TImpl)).FirstOrDefault();
+                    if (existing == null)
+                    {
+                        _collection.AddKeyedTransient<T, TInstance>(key, actualFactory);
+                    }
+                    break;
+                case (ServiceLifetime.Scoped, RegisterBehaviour.TryAddImplementation):
+                    existing = GetByImplementationType(typeof(T), typeof(TImpl)).FirstOrDefault();
+                    if (existing == null)
+                    {
+                        _collection.AddKeyedScoped<T, TInstance>(key, actualFactory);
+                    }
+                    break;
+                case (ServiceLifetime.Singleton, RegisterBehaviour.TryAddImplementation):
+                    existing = GetByImplementationType(typeof(T), typeof(TImpl)).FirstOrDefault();
+                    if (existing == null)
+                    {
+                        _collection.AddKeyedSingleton<T, TInstance>(key, actualFactory);
+                    }
+                    break;
+                default:
+                    throw new NotSupportedException($"Scope <{_scope}> and behaviour {_behaviour} are not supported");
+            }
+        }
+
+        private void OnAdd(ServiceDescriptor descriptor)
+        {
+            if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
+            if(!_implementationTypes.TryGetValue(descriptor, out _))
+            {
+                _implementationTypes.Add(descriptor, typeof(TImpl));
+            }
+        }
+        private IEnumerable<ServiceDescriptor> GetByImplementationType(Type serviceType, Type implementationType)
+        {
+            serviceType.ValidateArgument(nameof(serviceType));
+            implementationType.ValidateArgument(nameof(implementationType));
+            return _collection.Where(x => x.ServiceType == serviceType && _implementationTypes.TryGetValue(x, out var type) && type == implementationType);
+        }
         #endregion
 
         #region Events

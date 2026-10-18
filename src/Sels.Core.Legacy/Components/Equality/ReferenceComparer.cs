@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Sels.Core.Equality
 {
     /// <summary>
     /// A <see cref="IEqualityComparer{T}"/> that returns equal when 2 objects are the same reference.
     /// </summary>
-    public class ReferenceComparer : IEqualityComparer<object>
+    /// <typeparam name="T">The type of object to compare</typeparam>
+    public class ReferenceComparer<T> : IEqualityComparer<T>
     {
         // Statics
         /// <summary>
         /// The default instance.
         /// </summary>
-        public static ReferenceComparer Default { get; } = new ReferenceComparer();
+        public static ReferenceComparer<T> Default { get; } = new ReferenceComparer<T>();
         private ReferenceComparer()
         {
 
@@ -19,14 +21,14 @@ namespace Sels.Core.Equality
 
         #region IEqualityComparer
         /// <inheritdoc/>
-        bool IEqualityComparer<object>.Equals(object x, object y)
+        bool IEqualityComparer<T>.Equals(T x, T y)
         {
             return ReferenceEquals(x, y);
         }
         /// <inheritdoc/>
-        int IEqualityComparer<object>.GetHashCode(object obj)
+        int IEqualityComparer<T>.GetHashCode(T obj)
         {
-            return obj.GetHashCode();
+            return RuntimeHelpers.GetHashCode(obj);
         }
         #endregion
     }

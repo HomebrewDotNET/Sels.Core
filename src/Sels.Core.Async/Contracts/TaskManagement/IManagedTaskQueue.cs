@@ -57,5 +57,12 @@ namespace Sels.Core.Async.TaskManagement
         /// <param name="token">Optional token to cancel the request</param>
         /// <returns>Object with callback that will complete when the task gets scheduled on the Thread Pool</returns>
         Task<IPendingTask<IManagedAnonymousTask>> EnqueueAsync(Func<ITaskManager, CancellationToken, IManagedAnonymousTask> schedulerAction, CancellationToken token = default);
+
+        /// <summary>
+        /// Returns when the currently queued tasks have finished processing.
+        /// </summary>
+        /// <param name="token">Token used to cancel the wait</param>
+        /// <returns>Task that will complete when either the queue is empty, or the wait is cancelled</returns>
+        Task WaitOnQueuedAsync(CancellationToken token = default);
     }
 }

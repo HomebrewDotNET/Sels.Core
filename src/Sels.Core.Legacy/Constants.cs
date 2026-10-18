@@ -1,4 +1,6 @@
-﻿namespace Sels.Core
+﻿using System.Reflection;
+
+namespace Sels.Core
 {
     /// <summary>
     /// Contains constant/static values used by other components.
@@ -25,6 +27,16 @@
             public const string Comma = ",";
         }
         #endregion
+
+        /// <summary>Contains names used by generated expressions.</summary>
+        public static class Expressions
+        {
+            /// <summary>The left input parameter name.</summary>
+            public const string LeftParameterName = "left";
+
+            /// <summary>The right input parameter name.</summary>
+            public const string RightParameterName = "right";
+        }
 
         /// <summary>
         /// Contains constant values for application configuration.
@@ -97,5 +109,24 @@
             }
         }
 
+        /// <summary>
+        /// Contains <see cref="MethodInfo"/> for commonly used methods.
+        /// </summary>
+        public static class  Reflections
+        {
+            /// <summary>
+            /// Contains <see cref="MethodInfo"/> for <see cref="object.GetType()"/>
+            /// </summary>
+            public static MethodInfo ObjectGetTypeMethod { get; } = Helper.Expressions.Method.GetMethod<object>(x => x.GetType());
+
+            /// <summary>
+            /// Contains <see cref="MethodInfo"/> for <see cref="object.ToString()"/>
+            /// </summary>
+            public static MethodInfo ObjectToStringMethod { get; } = Helper.Expressions.Method.GetMethod<object>(x => x.ToString());
+            /// <summary>
+            /// Contains <see cref="MethodInfo"/> for <see cref="object.Equals(object)"/>.
+            /// </summary>
+            public static MethodInfo ObjectEqualsMethod { get; } = Helper.Expressions.Method.GetMethod<object>(x => x.Equals(null));
+        }
     }
 }

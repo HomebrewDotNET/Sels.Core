@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -9,12 +9,12 @@
 		<Description>
 			Library containing generic code components for creating other libraries/applications.
 			Now legacy so it can stay on .net standard 2.0. The new Sels.Core will target the latest .net version so new language features can be used.
-			Used by projects maintained here: https://github.com/Jenssels1998
+			Used by projects maintained here: https://github.com/HomebrewDotNET
 		</Description>
-		<PackageProjectUrl>https://github.com/Jenssels1998/Sels.Core</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/HomebrewDotNET/Sels.Core</PackageProjectUrl>
 		<Copyright>Jens Sels</Copyright>
 		<PackageTags>Sels</PackageTags>
-		<RepositoryUrl>https://github.com/Jenssels1998/Sels.Core</RepositoryUrl>
+		<RepositoryUrl>https://github.com/HomebrewDotNET/Sels.Core</RepositoryUrl>
 		<!--For NuGet package-->
 		<VersionPrefix>1.0.0</VersionPrefix>
 		<BuildNumber Condition="'$(BUILD_NUMBER)' == ''">dev</BuildNumber>

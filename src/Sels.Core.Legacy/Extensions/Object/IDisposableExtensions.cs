@@ -38,5 +38,33 @@ namespace Sels.Core.Extensions.Disposable
 
             return false;
         }
+
+        /// <inheritdoc cref="TryDispose(IDisposable, Action{Exception})"/>
+        public static bool TryDispose<T>(this T disposable, Action<Exception> exceptionHandler = null) where T : class
+        {
+            if (disposable != null)
+            {
+                try
+                {
+                    if (disposable is IDisposable disp)
+                    {
+                        disp.Dispose();
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        if (exceptionHandler.HasValue())
+                        {
+                            exceptionHandler(ex);
+                        }
+                    }
+                    catch { }
+                }
+            }
+            return false;
+        }
     }
 }

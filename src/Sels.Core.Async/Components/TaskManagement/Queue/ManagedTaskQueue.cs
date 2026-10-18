@@ -36,6 +36,10 @@ namespace Sels.Core.Async.TaskManagement.Queue
         /// How many references there are to the queue.
         /// </summary>
         public int CurrentReferences { get; private set; }
+        private readonly object _waitLock = new object();
+        private TaskCompletionSource<bool> _waitSource = new TaskCompletionSource<bool>();
+        // Tasks enqueued but not yet accepted by the task manager. Wait handle only completes when this is 0
+        private int _scheduling;
 
         // Properties
         /// <inheritdoc/>
@@ -72,6 +76,7 @@ namespace Sels.Core.Async.TaskManagement.Queue
                 OnDisposeHandler = x =>
                 {
                     x.Cancel();
+                    EndScheduling(x);
                     return Task.CompletedTask;
                 }
             };
@@ -85,11 +90,36 @@ namespace Sels.Core.Async.TaskManagement.Queue
             _queue.InterceptRequest(t =>
             {
                 _logger.Debug($"Idle worker for queue. Trying to release");
-                TryRelease();
+                if (!TryRelease())
+                {
+                    lock (_waitLock)
+                    {
+                        if (_scheduling == 0) _waitSource.TrySetResult(true);
+                    }
+                }
                 return Task.FromResult<PendingTask?>(null);
             });
 
             _ = _queue.Subscribe(Concurrency, EnqueuePending);
+        }
+
+        private void BeginScheduling()
+        {
+            lock (_waitLock)
+            {
+                _scheduling++;
+                if (_waitSource.Task.IsCompleted) _waitSource = new TaskCompletionSource<bool>();
+            }
+        }
+
+        private void EndScheduling(PendingTask pending)
+        {
+            if (!pending.TryEndScheduling()) return;
+
+            lock (_waitLock)
+            {
+                if (--_scheduling == 0) _waitSource.TrySetResult(true);
+            }
         }
 
         /// <inheritdoc/>
@@ -100,7 +130,16 @@ namespace Sels.Core.Async.TaskManagement.Queue
             schedulerAction.ValidateArgument(nameof(schedulerAction));
 
             var pendingTask = new PendingManagedTask(schedulerAction, token);
-            await _queue.EnqueueAsync(pendingTask, token);
+            BeginScheduling();
+            try
+            {
+                await _queue.EnqueueAsync(pendingTask, token);
+            }
+            catch
+            {
+                EndScheduling(pendingTask);
+                throw;
+            }
             return pendingTask;
         }
         /// <inheritdoc/>
@@ -120,7 +159,16 @@ namespace Sels.Core.Async.TaskManagement.Queue
             schedulerAction.ValidateArgument(nameof(schedulerAction));
 
             var pendingTask = new PendingAnonymousTask(schedulerAction, token);
-            await _queue.EnqueueAsync(pendingTask, token);
+            BeginScheduling();
+            try
+            {
+                await _queue.EnqueueAsync(pendingTask, token);
+            }
+            catch
+            {
+                EndScheduling(pendingTask);
+                throw;
+            }
             return pendingTask;
         }
 
@@ -140,7 +188,15 @@ namespace Sels.Core.Async.TaskManagement.Queue
                 using var pendingRegistration = pending.CancellationToken.Register(cancellationSource.Cancel);
 
                 _logger.Debug($"Enqueueing next pending task");
-                var task = await pending.ScheduleTask(_taskManager, cancellationSource.Token).ConfigureAwait(false);
+                IManagedAnonymousTask task;
+                try
+                {
+                    task = await pending.ScheduleTask(_taskManager, cancellationSource.Token).ConfigureAwait(false);
+                }
+                finally
+                {
+                    EndScheduling(pending);
+                }
                 _logger.Log($"Scheduled <{task}>. Waiting for completion");
                 await Helper.Async.WaitOn(task.OnFinalized, cancellationSource.Token).ConfigureAwait(false);
                 _logger.Log($"Task <{task}> finished executing. Checking queue");
@@ -156,6 +212,7 @@ namespace Sels.Core.Async.TaskManagement.Queue
             }
             finally
             {
+                EndScheduling(pending);
                 lock (_lock)
                 {
                     Processing--;
@@ -177,29 +234,31 @@ namespace Sels.Core.Async.TaskManagement.Queue
             }
         }
 
-        private void TryRelease()
+        private bool TryRelease()
         {
             lock (_lock)
             {
                 if (CurrentReferences > 0)
                 {
                     _logger.Debug($"Queue is still referenced. Can't release");
-                    return;
+                    return false;
                 }
                 else if (Pending > 0)
                 {
                     _logger.Debug($"Queue still has pending work. Can't release");
-                    return;
+                    return false;
                 }
                 else if (Processing > 0)
                 {
                     _logger.Debug($"Queue is still processing. Can't release");
-                    return;
+                    return false;
                 }
             }
 
             _logger.Log($"Releasing queue");
+            _waitSource.TrySetResult(true);
             _releaseAction();
+            return true;
         }
 
         /// <inheritdoc/>
@@ -242,6 +301,12 @@ namespace Sels.Core.Async.TaskManagement.Queue
             {
                 TryRelease();
             }           
+        }
+
+        /// <inheritdoc/>
+        public async Task WaitOnQueuedAsync(CancellationToken token = default)
+        {
+            await Helper.Async.WaitOn(_waitSource.Task, token).ConfigureAwait(false);
         }
 
         private class PendingManagedTask : PendingTask, IPendingTask<IManagedTask>
@@ -371,6 +436,14 @@ namespace Sels.Core.Async.TaskManagement.Queue
 
         private abstract class PendingTask : IDisposable
         {
+            private int _schedulingEnded;
+
+            /// <summary>
+            /// Marks the task as no longer waiting to be scheduled.
+            /// </summary>
+            /// <returns>True for the first call, otherwise false</returns>
+            public bool TryEndScheduling() => Interlocked.Exchange(ref _schedulingEnded, 1) == 0;
+
             public abstract Task<IManagedAnonymousTask> ScheduleTask(ITaskManager taskManager, CancellationToken cancellationToken);
             public abstract void Cancel();
             public abstract void Error(Exception exception);
