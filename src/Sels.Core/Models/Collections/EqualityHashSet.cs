@@ -11,6 +11,7 @@ namespace Sels.Core.Collections
     /// Wrapper of a <see cref="HashSet{T}"/> that offers different methods of equality.
     /// </summary>
     /// <typeparam name="T">Type of the objects in the hash set</typeparam>
+    [Obsolete]
     public class EqualityHashSet<T> : HashSet<T>
     {
         // Fields

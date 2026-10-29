@@ -11,6 +11,7 @@ namespace Sels.Core.Collections
     /// Wrapper of a <see cref="List{T}"/> that offers different methods of equality.
     /// </summary>
     /// <typeparam name="T">Type of the objects in the list</typeparam>
+    [Obsolete]
     public class EqualityList<T> : List<T>
     {
         // Fields

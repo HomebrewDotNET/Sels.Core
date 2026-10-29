@@ -7,6 +7,7 @@ namespace Sels.Core.Records
     /// A struct who's equality check is delegated to a delegate or always returns true when no delegate is provided. Useful in records for defining extra properties not to include in the equality check of the record or when custom equality checks are needed.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [Obsolete]
     public struct RecordProperty<T>
     {
         // Fields
