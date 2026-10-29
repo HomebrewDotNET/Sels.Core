@@ -430,7 +430,7 @@ namespace Sels.Core.ServiceBuilder
         {
             serviceType.ValidateArgument(nameof(serviceType));
             implementationType.ValidateArgument(nameof(implementationType));
-            return _collection.Where(x => x.ServiceType == serviceType && _implementationTypes.TryGetValue(x, out var type) && type == implementationType);
+            return _collection.Where(x => x.ServiceType == serviceType && _implementationTypes.TryGetValue(x, out var type) && type == implementationType && (Key is null || Key == x.ServiceKey));
         }
         #endregion
 
