@@ -72,8 +72,77 @@ namespace Sels.Core.Legacy.Tests.Entity.Templates
             Assert.False(sut.IsNameSet);
         }
 
+        /// <summary>Reset removes all stored property values.</summary>
+        [Fact]
+        public void Reset_WithStoredValues_UnsetsProperties()
+        {
+            // Arrange
+            var sut = new ObservableProbe { Name = "value", Child = new ObservableChild() };
+
+            // Act
+            sut.ResetState();
+
+            // Assert
+            Assert.Null(sut.Name);
+            Assert.False(sut.IsNameSet);
+            Assert.Null(sut.Child);
+        }
+
+        /// <summary>Reset removes the handlers that were subscribed before the reset.</summary>
+        [Fact]
+        public void Reset_WithSubscribedHandlers_RemovesHandlers()
+        {
+            // Arrange
+            var sut = new ObservableProbe();
+            var names = new List<string?>();
+            sut.PropertyChanged += (_, args) => names.Add(args.PropertyName);
+
+            // Act
+            sut.ResetState();
+            sut.Name = "value";
+
+            // Assert
+            Assert.Empty(names);
+        }
+
+        /// <summary>Reset detaches from observable children so their events are no longer forwarded.</summary>
+        [Fact]
+        public void Reset_WithObservableChild_StopsForwardingChildEvents()
+        {
+            // Arrange
+            var sut = new ObservableProbe();
+            var child = new ObservableChild();
+            sut.Child = child;
+            sut.ResetState();
+            var names = new List<string?>();
+            sut.PropertyChanged += (_, args) => names.Add(args.PropertyName);
+
+            // Act
+            child.Raise();
+
+            // Assert
+            Assert.Empty(names);
+        }
+
+        /// <summary>Reset on a fresh instance leaves it usable.</summary>
+        [Fact]
+        public void Reset_FreshInstance_RemainsUsable()
+        {
+            // Arrange
+            var sut = new ObservableProbe();
+
+            // Act
+            sut.ResetState();
+            sut.Name = "value";
+
+            // Assert
+            Assert.Equal("value", sut.Name);
+        }
+
         private sealed class ObservableProbe : BaseObservable
         {
+            public void ResetState() => Reset();
+
             public string? Name
             {
                 get => Get<string?>(nameof(Name));

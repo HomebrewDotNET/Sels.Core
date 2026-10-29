@@ -157,5 +157,31 @@ namespace Sels.Core.Entity.Templates
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        /// <summary>
+        /// Removes all state for the object.
+        /// </summary>
+        protected void Reset()
+        {
+            lock (_lock)
+            {
+                PropertyChanged = null;
+                CollectionChanged = null;
+                _metadata = new Metadata();
+                foreach(var subscriptionGroup in _subscriptions)
+                {
+                    var subscription = subscriptionGroup.Value;
+                    if (subscription.Subscription != null && subscription.Obserable is INotifyPropertyChanged notifyPropertyChanged)
+                    {
+                        notifyPropertyChanged.PropertyChanged -= subscription.Subscription;
+                    }
+                    if (subscription.CollectionSubscription != null && subscription.Obserable is INotifyCollectionChanged notifyCollectionChanged)
+                    {
+                        notifyCollectionChanged.CollectionChanged -= subscription.CollectionSubscription;
+                    }
+                }
+                _subscriptions.Clear();
+            }
+        }
     }
 }
