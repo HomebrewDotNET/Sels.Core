@@ -1609,6 +1609,35 @@ namespace Sels.Core
                     return finalLambda.Compile();
                 }
             }
+
+            /// <summary>
+            /// Static helpers methods for working with expressions that help with copying objects.
+            /// </summary>
+            public static class Copying
+            {
+                /// <summary>
+                /// Generates an expression that copies all property values from on instance to the other.
+                /// </summary>
+                /// <typeparam name="T">Type to generate the expression for</typeparam>
+                /// <returns>Delegate that copies property values from the left side to the right</returns>
+                public static Action<T, T> GenerateTransferTo<T>()
+                {
+                    var sourceParameter = LinqExpression.Parameter(typeof(T), "source");
+                    var targetParameter = LinqExpression.Parameter(typeof(T), "target");
+
+                    var assignments = new List<LinqExpression>();
+
+                    foreach(var property in typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.CanRead && x.CanWrite && x.GetIndexParameters().Length == 0))
+                    {
+                        var getProperty = LinqExpression.Property(sourceParameter, property);
+                        var getTargetProperty = LinqExpression.Property(targetParameter, property);
+                        var setProperty = LinqExpression.Assign(getTargetProperty, getProperty);
+                        assignments.Add(setProperty);
+                    }
+
+                    return LinqExpression.Lambda<Action<T, T>>(LinqExpression.Block(assignments), sourceParameter, targetParameter).Compile();
+                }
+            }
         }
         #endregion
 

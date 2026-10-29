@@ -339,6 +339,152 @@ namespace Sels.Core.Legacy.Tests
             Assert.Equal(expected, actual);
         }
 
+        /// <summary>The generated delegate copies every readable and writable property from source to target.</summary>
+        [Fact]
+        public void GenerateTransferTo_ReadWriteProperties_CopiesValuesToTarget()
+        {
+            // Arrange
+            var transfer = Helper.Expressions.Copying.GenerateTransferTo<TransferModel>();
+            var source = new TransferModel { Number = 7, Text = "copied", Child = new TransferChild() };
+            var target = new TransferModel();
+
+            // Act
+            transfer(source, target);
+
+            // Assert
+            Assert.Equal(7, target.Number);
+            Assert.Equal("copied", target.Text);
+            Assert.Same(source.Child, target.Child);
+        }
+
+        /// <summary>The generated delegate leaves the source unchanged and does not touch read-only properties.</summary>
+        [Fact]
+        public void GenerateTransferTo_ReadOnlyProperty_IsNotCopied()
+        {
+            // Arrange
+            var transfer = Helper.Expressions.Copying.GenerateTransferTo<TransferModel>();
+            var source = new TransferModel(1) { Number = 3 };
+            var target = new TransferModel(2);
+
+            // Act
+            transfer(source, target);
+
+            // Assert
+            Assert.Equal(2, target.ReadOnly);
+            Assert.Equal(3, source.Number);
+        }
+
+        /// <summary>Inherited properties are copied as well.</summary>
+        [Fact]
+        public void GenerateTransferTo_DerivedType_CopiesInheritedProperties()
+        {
+            // Arrange
+            var transfer = Helper.Expressions.Copying.GenerateTransferTo<DerivedTransferModel>();
+            var source = new DerivedTransferModel { Number = 4, Extra = "extra" };
+            var target = new DerivedTransferModel();
+
+            // Act
+            transfer(source, target);
+
+            // Assert
+            Assert.Equal(4, target.Number);
+            Assert.Equal("extra", target.Extra);
+        }
+
+        /// <summary>Null property values are copied over existing target values.</summary>
+        [Fact]
+        public void GenerateTransferTo_NullSourceValue_OverwritesTarget()
+        {
+            // Arrange
+            var transfer = Helper.Expressions.Copying.GenerateTransferTo<TransferModel>();
+            var source = new TransferModel { Text = null };
+            var target = new TransferModel { Text = "existing" };
+
+            // Act
+            transfer(source, target);
+
+            // Assert
+            Assert.Null(target.Text);
+        }
+
+        /// <summary>A type without copyable properties produces a delegate that does nothing.</summary>
+        [Fact]
+        public void GenerateTransferTo_TypeWithoutProperties_ReturnsNoOpDelegate()
+        {
+            // Arrange
+            var source = new EmptyTransferModel();
+            var target = new EmptyTransferModel();
+
+            // Act
+            var transfer = Helper.Expressions.Copying.GenerateTransferTo<EmptyTransferModel>();
+            transfer(source, target);
+
+            // Assert
+            Assert.NotNull(transfer);
+        }
+
+        /// <summary>Static properties are not instance values and are skipped when copying between instances.</summary>
+        [Fact]
+        public void GenerateTransferTo_TypeWithStaticProperty_CopiesInstanceProperties()
+        {
+            // Arrange
+            var source = new StaticPropertyTransferModel { Number = 9 };
+            var target = new StaticPropertyTransferModel();
+
+            // Act
+            var transfer = Helper.Expressions.Copying.GenerateTransferTo<StaticPropertyTransferModel>();
+            transfer(source, target);
+
+            // Assert
+            Assert.Equal(9, target.Number);
+        }
+
+        private class TransferModel
+        {
+            public TransferModel()
+            {
+            }
+
+            public TransferModel(int readOnly)
+            {
+                ReadOnly = readOnly;
+            }
+
+            public int Number { get; set; }
+
+            public string? Text { get; set; }
+
+            public TransferChild? Child { get; set; }
+
+            public int ReadOnly { get; }
+
+            public int this[int index]
+            {
+                get => index;
+                set { }
+            }
+        }
+
+        private sealed class DerivedTransferModel : TransferModel
+        {
+            public string? Extra { get; set; }
+        }
+
+        private sealed class TransferChild
+        {
+        }
+
+        private sealed class EmptyTransferModel
+        {
+        }
+
+        private sealed class StaticPropertyTransferModel
+        {
+            public static int Shared { get; set; }
+
+            public int Number { get; set; }
+        }
+
         private class ComparableModel
         {
             public int Value { get; set; }
