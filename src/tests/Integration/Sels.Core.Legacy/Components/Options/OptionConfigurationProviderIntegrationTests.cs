@@ -59,6 +59,66 @@ namespace Sels.Core.Legacy.IntegrationTests.Components.Options
             Assert.Equal("options", namedException.ParamName);
         }
 
+        /// <summary>With a parent section the unnamed options bind from the section below the parent.</summary>
+        [Fact]
+        public void Configure_WithParentSection_BindsFromParentSubSection()
+        {
+            // Arrange
+            var options = new OptionProbe();
+            var provider = new OptionConfigurationProvider<OptionProbe>(Configuration, ConfigurationProviderNamedOptionBehaviour.SubSection, true, "SubSectionProbe", "SubSectionRoot");
+
+            // Act
+            provider.Configure(options);
+
+            // Assert
+            Assert.Equal(50, options.Value);
+        }
+
+        /// <summary>With a parent section the name resolves the parent first and the section is bound below it.</summary>
+        [Fact]
+        public void ConfigureNamed_WithParentSection_BindsFromNamedParentSubSection()
+        {
+            // Arrange
+            var options = new OptionProbe();
+            var provider = new OptionConfigurationProvider<OptionProbe>(Configuration, ConfigurationProviderNamedOptionBehaviour.SubSection, true, "SubSectionProbe", "SubSectionRoot");
+
+            // Act
+            provider.Configure(NamedOption, options);
+
+            // Assert
+            Assert.Equal(60, options.Value);
+        }
+
+        /// <summary>With a parent section and prefix naming the prefixed parent is resolved first.</summary>
+        [Fact]
+        public void ConfigureNamed_WithParentSectionAndPrefix_BindsFromPrefixedParentSubSection()
+        {
+            // Arrange
+            var options = new OptionProbe();
+            var provider = new OptionConfigurationProvider<OptionProbe>(Configuration, ConfigurationProviderNamedOptionBehaviour.Prefix, true, "SubSectionProbe", "SubSectionRoot");
+
+            // Act
+            provider.Configure(NamedOption, options);
+
+            // Assert
+            Assert.Equal(70, options.Value);
+        }
+
+        /// <summary>A missing parent section leaves the options untouched.</summary>
+        [Fact]
+        public void Configure_MissingParentSection_LeavesOptionsUntouched()
+        {
+            // Arrange
+            var options = new OptionProbe { Value = 5 };
+            var provider = new OptionConfigurationProvider<OptionProbe>(Configuration, sectionName: "SubSectionProbe", parentSectionName: "MissingParent");
+
+            // Act
+            provider.Configure(options);
+
+            // Assert
+            Assert.Equal(5, options.Value);
+        }
+
         private OptionProbe Configure(ConfigurationProviderNamedOptionBehaviour behaviour, bool fallback, string name = NamedOption, int initialValue = 0)
         {
             var options = new OptionProbe { Value = initialValue };

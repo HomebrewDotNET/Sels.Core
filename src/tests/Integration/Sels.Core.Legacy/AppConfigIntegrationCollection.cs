@@ -18,7 +18,11 @@ namespace Sels.Core.Legacy.IntegrationTests
             ["scenario.PendingOptionBase:Value"] = "20",
             ["PendingOptionBase.scenario:Value"] = "30",
             ["PendingOptionBase:scenario:Value"] = "40",
-            ["PendingRegistrationOptions:Value"] = "42"
+            ["PendingRegistrationOptions:Value"] = "42",
+            ["SubSectionRoot:SubSectionProbe:Value"] = "50",
+            ["SubSectionRoot:SubSectionTypeOptions:Value"] = "55",
+            ["SubSectionRoot:scenario:SubSectionProbe:Value"] = "60",
+            ["scenario.SubSectionRoot:SubSectionProbe:Value"] = "70"
         };
     }
 }

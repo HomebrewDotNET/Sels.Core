@@ -85,6 +85,29 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return serviceCollection;
         }
+
+        /// <summary>
+        /// Adds an options configurator that attempts to bind <typeparamref name="TOptions"/> from configuration.
+        /// Named options apply on the <paramref name="sectionName"/> to resolve the root, then option will be bound from that root using <paramref name="subSectionName"/>
+        /// </summary>
+        /// <typeparam name="TOptions">The type of the option to bond from config</typeparam>
+        /// <param name="serviceCollection">Collection to add the services to</param>
+        /// <param name="nameBehaviour"><inheritdoc cref="ConfigurationProviderNamedOptionBehaviour"/></param>
+        /// <param name="fallbackOnDefault">Set to true to fallback to <paramref name="sectionName"/> if no configuration section exists for the name</param>
+        /// <param name="sectionName">The name of the parent/root section to bind from</param>
+        /// <param name="subSectionName">Optional section name to bind from. When not set the type name will be used as the section name</param>
+        /// <returns><paramref name="serviceCollection"/> for method chaining</returns>
+        public static IServiceCollection BindOptionsAsSubSectionFromConfig<TOptions>(this IServiceCollection serviceCollection, string sectionName, string subSectionName = null, ConfigurationProviderNamedOptionBehaviour nameBehaviour = ConfigurationProviderNamedOptionBehaviour.SubSection, bool fallbackOnDefault = true) where TOptions : class
+        {
+            serviceCollection.ValidateArgument(nameof(serviceCollection));
+            sectionName.ValidateArgument(nameof(sectionName));
+
+            serviceCollection.AddOptions();
+            serviceCollection.AddSingleton<IConfigureOptions<TOptions>>(x => new OptionConfigurationProvider<TOptions>(x.GetRequiredService<IConfiguration>(), nameBehaviour, fallbackOnDefault, subSectionName ?? typeof(TOptions).Name, sectionName));
+            serviceCollection.TryAddSingleton<IOptionsChangeTokenSource<TOptions>, ConfigurationChangeTokenSource<TOptions>>();
+
+            return serviceCollection;
+        }
         #endregion
 
         #region Factory
