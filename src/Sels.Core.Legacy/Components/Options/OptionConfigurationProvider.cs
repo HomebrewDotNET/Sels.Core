@@ -53,6 +53,11 @@ namespace Sels.Core.Options
         public void Configure(string name, TOptions options)
         {
             options = options.ValidateArgument(nameof(options));
+            if (!name.HasValue())
+            {
+                Configure(options);
+                return;
+            }
             string sectionName = null;
             bool ignoreErrors = true;
             var root = _parentSectionName.HasValue() ? _parentSectionName : _sectionName;

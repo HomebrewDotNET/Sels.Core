@@ -59,6 +59,42 @@ namespace Sels.Core.Legacy.IntegrationTests.Components.Options
             Assert.Equal("options", namedException.ParamName);
         }
 
+        /// <summary>
+        /// An empty or null name addresses the default options instance and must bind the unnamed section, bypassing the named mapping.
+        /// </summary>
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Configure_EmptyName_BindsUnnamedSection(string? name)
+        {
+            // Arrange
+            var options = new OptionProbe();
+            var provider = new OptionConfigurationProvider<OptionProbe>(Configuration, ConfigurationProviderNamedOptionBehaviour.Prefix, true, BaseSection);
+
+            // Act
+            provider.Configure(name!, options);
+
+            // Assert
+            Assert.Equal(10, options.Value);
+        }
+
+        /// <summary>An empty name ignores the sub section mapping as well.</summary>
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Configure_EmptyNameWithSubSectionBehaviour_BindsUnnamedSection(string? name)
+        {
+            // Arrange
+            var options = new OptionProbe();
+            var provider = new OptionConfigurationProvider<OptionProbe>(Configuration, ConfigurationProviderNamedOptionBehaviour.SubSection, true, BaseSection);
+
+            // Act
+            provider.Configure(name!, options);
+
+            // Assert
+            Assert.Equal(10, options.Value);
+        }
+
         /// <summary>With a parent section the unnamed options bind from the section below the parent.</summary>
         [Fact]
         public void Configure_WithParentSection_BindsFromParentSubSection()
