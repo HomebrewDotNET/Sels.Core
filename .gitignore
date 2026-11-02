@@ -5,6 +5,10 @@
 
 # Custom
 context-mode/
+.gitnexus/
+.claude/
+AGENTS.MD
+CLAUDE.MD
 
 # User-specific files
 *.rsuser
