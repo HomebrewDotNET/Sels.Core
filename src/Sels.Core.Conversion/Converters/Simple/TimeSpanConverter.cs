@@ -35,11 +35,11 @@ namespace Sels.Core.Conversion.Converters.Simple
                     return timeSpan.TotalMilliseconds;
                 }
             }
-            else if (value is string timeSpanString && convertType.Is<TimeSpan>())
+            else if (value is string timeSpanString && convertType.GetActualType().Is<TimeSpan>())
             {
                 return TimeSpan.Parse(timeSpanString);
             }
-            else if (value is double totalMilliseconds && convertType.Is<TimeSpan>())
+            else if (value is double totalMilliseconds && convertType.GetActualType().Is<TimeSpan>())
             {
                 return TimeSpan.FromMilliseconds(totalMilliseconds);
             }

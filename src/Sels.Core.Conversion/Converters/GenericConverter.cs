@@ -208,6 +208,9 @@ namespace Sels.Core.Conversion.Converters
                                                                         .AddConverter<DateTimeConverter>()
                                                                         .AddConverter<EnumConverter>()
                                                                         .AddConverter<GuidConverter>()
+#if NETSTANDARD2_1_OR_GREATER
+                                                                        .AddConverter<IndexConverter>()
+#endif
                                                                         .AddConverter<TimeSpanConverter>()
                                                                         .AddConverter<TypeConverter>()
                                                                         .AddConverter<GeneralConverter>()
