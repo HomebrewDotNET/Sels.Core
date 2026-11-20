@@ -13,6 +13,7 @@
 		<PackageVersion Include="Dapper" Version="2.1.35" />
 		<PackageVersion Include="FluentMigrator.Runner" Version="6.2.0" />
 		<PackageVersion Include="FluentMigrator.Runner.MySql" Version="6.2.0" />
+		<PackageVersion Include="System.IO.Abstractions" Version="23.0.1" />
 		<PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.0" />
 		<PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageVersion Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.0" />

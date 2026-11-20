@@ -2,6 +2,7 @@
 using Sels.Core.Extensions.Collections;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Abstractions;
 using System.Linq.Expressions;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -311,6 +312,22 @@ namespace Sels.Core
             return argument;
         }
         /// <summary>
+        /// Validates that <paramref name="argument"/> is not null and exists on the filesystem, if it doesn't exists a <see cref="FileNotFoundException"/> will be thrown.
+        /// </summary>
+        /// <param name="argument">The argument instance to check</param>
+        /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
+        /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNull]
+        public static IFileInfo MustExist(IFileInfo argument, [CallerArgumentExpression("argument")] string expression = "")
+        {
+            if (string.IsNullOrWhiteSpace(expression)) throw new ArgumentException($"{nameof(expression)} cannot be null, empty or whitespace");
+
+            IsNotNull(argument, expression);
+            Is(() => argument.Exists, () => new FileNotFoundException($"{nameof(expression)} could not be found", argument.FullName));
+            return argument;
+        }
+        /// <summary>
         /// Validates that <paramref name="argument"/> is not null and exists on the filesystem, if it doesn't exists a <see cref="DirectoryNotFoundException"/> will be thrown.
         /// </summary>
         /// <param name="argument">The argument instance to check</param>
@@ -319,6 +336,22 @@ namespace Sels.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         public static DirectoryInfo MustExist(DirectoryInfo argument, [CallerArgumentExpression("argument")] string expression = "")
+        {
+            if (string.IsNullOrWhiteSpace(expression)) throw new ArgumentException($"{nameof(expression)} cannot be null, empty or whitespace");
+
+            IsNotNull(argument, expression);
+            Is(() => argument.Exists, () => new DirectoryNotFoundException($"{nameof(expression)} could not be found. Path was <{argument.FullName}>"));
+            return argument;
+        }
+        /// <summary>
+        /// Validates that <paramref name="argument"/> is not null and exists on the filesystem, if it doesn't exists a <see cref="DirectoryNotFoundException"/> will be thrown.
+        /// </summary>
+        /// <param name="argument">The argument instance to check</param>
+        /// <param name="expression">The expression of the argument being checked. Compiler will fill it out automatically so no need to provide it</param>
+        /// <returns><paramref name="argument"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNull]
+        public static IDirectoryInfo MustExist(IDirectoryInfo argument, [CallerArgumentExpression("argument")] string expression = "")
         {
             if (string.IsNullOrWhiteSpace(expression)) throw new ArgumentException($"{nameof(expression)} cannot be null, empty or whitespace");
 

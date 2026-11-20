@@ -66,6 +66,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CSharp" />
+		<PackageReference Include="System.IO.Abstractions" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" />

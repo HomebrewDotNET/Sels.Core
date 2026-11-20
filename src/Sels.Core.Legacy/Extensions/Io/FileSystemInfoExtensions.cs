@@ -1,5 +1,6 @@
 ﻿using Sels.Core.Extensions;
 using System.IO;
+using System.IO.Abstractions;
 
 namespace Sels.Core.Extensions.IO
 {
@@ -18,6 +19,13 @@ namespace Sels.Core.Extensions.IO
             info.ValidateArgument(nameof(info));
 
             return new DriveInfo(info.FullName);
+        }
+        /// <inheritdoc/>
+        public static IDriveInfo GetDriveInfo(this IFileSystemInfo info)
+        {
+            info.ValidateArgument(nameof(info));
+
+            return info.FileSystem.DriveInfo.New(info.FullName);
         }
     }
 }

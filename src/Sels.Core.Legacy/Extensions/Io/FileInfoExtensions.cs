@@ -4,6 +4,7 @@ using System.IO;
 using System;
 using System.Threading.Tasks;
 using SystemProcess = System.Diagnostics.Process;
+using System.IO.Abstractions;
 
 namespace Sels.Core.Extensions.IO
 {
@@ -34,6 +35,24 @@ namespace Sels.Core.Extensions.IO
 
             return false;
         }
+        /// <inheritdoc/>
+        public static bool IsLocked(this IFileInfo file)
+        {
+            file.ValidateArgumentExists(nameof(file));
+            try
+            {
+                using (var stream = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    stream.Close();
+                }
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Gets the extension from <paramref name="file"/> without the dot.
@@ -41,6 +60,12 @@ namespace Sels.Core.Extensions.IO
         /// <param name="file">The file to get the extension from</param>
         /// <returns>The extension of <paramref name="file"/></returns>
         public static string GetExtensionName(this FileInfo file)
+        {
+            file.ValidateArgumentExists(nameof(file));
+            return file.Extension.TrimStart('.');
+        }
+        /// <inheritdoc/>
+        public static string GetExtensionName(this IFileInfo file)
         {
             file.ValidateArgumentExists(nameof(file));
             return file.Extension.TrimStart('.');
@@ -57,11 +82,27 @@ namespace Sels.Core.Extensions.IO
 
             return Path.GetFileNameWithoutExtension(file.Name);
         }
+        /// <inheritdoc/>
+        public static string GetNameWithoutExtension(this IFileInfo file)
+        {
+            file.ValidateArgumentExists(nameof(file));
+
+            return Path.GetFileNameWithoutExtension(file.Name);
+        }
         /// <summary>
         /// Opens <paramref name="file"/> using the windows file explorer.
         /// </summary>
         /// <param name="file">The file to open</param>
         public static void OpenWithWindowsExplorer(this FileInfo file)
+        {
+            if (file != null && file.Exists)
+            {
+                SystemProcess.Start("explorer.exe", file.FullName);
+            }
+
+        }
+        /// <inheritdoc/>
+        public static void OpenWithWindowsExplorer(this IFileInfo file)
         {
             if (file != null && file.Exists)
             {
@@ -82,6 +123,13 @@ namespace Sels.Core.Extensions.IO
 
             return File.ReadAllText(file.FullName);
         }
+        /// <inheritdoc/>
+        public static string Read(this IFileInfo file)
+        {
+            file.ValidateArgumentExists(nameof(file));
+
+            return file.FileSystem.File.ReadAllText(file.FullName);
+        }
         /// <summary>
         /// Reads the file content from <paramref name="file"/>.
         /// </summary>
@@ -94,6 +142,19 @@ namespace Sels.Core.Extensions.IO
             using(var stream = file.OpenRead())
             {
                 using(var reader = new StreamReader(stream, true))
+                {
+                    return await reader.ReadToEndAsync();
+                }
+            }
+        }
+        /// <inheritdoc/>
+        public static async Task<string> ReadAsync(this IFileInfo file)
+        {
+            file.ValidateArgumentExists(nameof(file));
+
+            using (var stream = file.OpenRead())
+            {
+                using (var reader = new StreamReader(stream, true))
                 {
                     return await reader.ReadToEndAsync();
                 }
@@ -126,6 +187,26 @@ namespace Sels.Core.Extensions.IO
 
             return false;
         }
+        /// <inheritdoc/>
+        public static bool Create(this IFileInfo file, string content, bool overwrite = false)
+        {
+            file.ValidateArgument(nameof(file));
+            content.ValidateArgument(nameof(content));
+
+            if (file.Exists && overwrite)
+            {
+                file.Delete();
+            }
+
+            if (!file.Exists)
+            {
+                file.FileSystem.File.WriteAllText(file.FullName, content);
+                file.Refresh();
+                return file.Exists;
+            }
+
+            return false;
+        }
         /// <summary>
         /// Writes <paramref name="content"/> to <paramref name="file"/>.
         /// </summary>
@@ -137,6 +218,14 @@ namespace Sels.Core.Extensions.IO
             content.ValidateArgument(nameof(content));
 
             File.WriteAllText(file.FullName, content);
+        }
+        /// <inheritdoc/>
+        public static void Write(this IFileInfo file, string content)
+        {
+            file.ValidateArgument(nameof(file));
+            content.ValidateArgument(nameof(content));
+
+            file.FileSystem.File.WriteAllText(file.FullName, content);
         }
         /// <summary>
         /// Writes <paramref name="content"/> to <paramref name="file"/>.
@@ -157,6 +246,20 @@ namespace Sels.Core.Extensions.IO
                 }
             }
         }
+        /// <inheritdoc/>
+        public static async Task WriteAsync(this IFileInfo file, string content, FileShare fileShare = FileShare.None)
+        {
+            file.ValidateArgument(nameof(file));
+            content.ValidateArgument(nameof(content));
+
+            using (var fileStream = file.Open(file.Exists ? FileMode.Truncate : FileMode.CreateNew, FileAccess.Write, fileShare))
+            {
+                using (var writer = new StreamWriter(fileStream))
+                {
+                    await writer.WriteAsync(content);
+                }
+            }
+        }
         /// <summary>
         /// Replaces the file content of <paramref name="file"/> with an empty string.
         /// </summary>
@@ -166,6 +269,13 @@ namespace Sels.Core.Extensions.IO
             file.ValidateArgument(nameof(file));
 
             File.WriteAllText(file.FullName, string.Empty);
+        }
+        /// <inheritdoc/>
+        public static void Clear(this IFileInfo file)
+        {
+            file.ValidateArgument(nameof(file));
+
+            file.FileSystem.File.WriteAllText(file.FullName, string.Empty);
         }
         #endregion
 
@@ -186,6 +296,16 @@ namespace Sels.Core.Extensions.IO
 
             return file.CopyTo(newFileName, overwrite);
         }
+        /// <inheritdoc/>
+        public static IFileInfo CopyTo(this IFileInfo file, IDirectoryInfo destinationDirectory, bool overwrite = false)
+        {
+            file.ValidateArgumentExists(nameof(file));
+            destinationDirectory.ValidateArgument(nameof(destinationDirectory));
+
+            var newFileName = Path.Combine(destinationDirectory.FullName, file.Name);
+
+            return file.CopyTo(newFileName, overwrite);
+        }
         /// <summary>
         /// Copies <paramref name="file"/> to directory <paramref name="destinationDirectory"/> with <paramref name="fileName"/> as the new file name.
         /// </summary>
@@ -195,6 +315,17 @@ namespace Sels.Core.Extensions.IO
         /// <param name="overwrite">If the target file can be overwritten if it already exists</param>
         /// <returns>The copied file</returns>
         public static FileInfo CopyTo(this FileInfo file, DirectoryInfo destinationDirectory, string fileName, bool overwrite = false)
+        {
+            file.ValidateArgumentExists(nameof(file));
+            destinationDirectory.ValidateArgument(nameof(destinationDirectory));
+            fileName.ValidateArgumentNotNullOrWhitespace(nameof(fileName));
+
+            var newFileName = Path.Combine(destinationDirectory.FullName, fileName);
+
+            return file.CopyTo(newFileName, overwrite);
+        }
+        /// <inheritdoc/>
+        public static IFileInfo CopyTo(this IFileInfo file, IDirectoryInfo destinationDirectory, string fileName, bool overwrite = false)
         {
             file.ValidateArgumentExists(nameof(file));
             destinationDirectory.ValidateArgument(nameof(destinationDirectory));
@@ -224,6 +355,18 @@ namespace Sels.Core.Extensions.IO
 
             return new FileInfo(newFileName);
         }
+        /// <inheritdoc/>
+        public static IFileInfo MoveTo(this IFileInfo file, IDirectoryInfo destinationDirectory)
+        {
+            file.ValidateArgumentExists(nameof(file));
+            destinationDirectory.ValidateArgument(nameof(destinationDirectory));
+
+            var newFileName = Path.Combine(destinationDirectory.FullName, file.Name);
+
+            file.MoveTo(newFileName);
+
+            return file.FileSystem.FileInfo.New(newFileName);
+        }
 
         /// <summary>
         /// Moves <paramref name="file"/> to directory <paramref name="destinationDirectory"/> with <paramref name="fileName"/> as the new file name.
@@ -243,6 +386,19 @@ namespace Sels.Core.Extensions.IO
             file.MoveTo(newFileName);
 
             return new FileInfo(newFileName);
+        }
+        /// <inheritdoc/>
+        public static IFileInfo MoveTo(this IFileInfo file, IDirectoryInfo destinationDirectory, string fileName)
+        {
+            file.ValidateArgumentExists(nameof(file));
+            destinationDirectory.ValidateArgument(nameof(destinationDirectory));
+            fileName.ValidateArgumentNotNullOrWhitespace(nameof(fileName));
+
+            var newFileName = Path.Combine(destinationDirectory.FullName, fileName);
+
+            file.MoveTo(newFileName);
+
+            return file.FileSystem.FileInfo.New(newFileName);
         }
         #endregion
     }

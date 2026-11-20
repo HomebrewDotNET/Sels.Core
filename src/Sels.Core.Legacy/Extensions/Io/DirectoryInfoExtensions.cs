@@ -1,6 +1,7 @@
 ﻿using Sels.Core.Extensions;
 using Sels.Core.Extensions.Linq;
 using System.IO;
+using System.IO.Abstractions;
 
 namespace Sels.Core.Extensions.IO
 {
@@ -22,6 +23,44 @@ namespace Sels.Core.Extensions.IO
                 directory.Create();
             }
         }
+        /// <inheritdoc/>
+        public static void CreateIfNotExist(this IDirectoryInfo directory)
+        {
+            directory.ValidateArgument(nameof(directory));
+
+            if (!directory.Exists)
+            {
+                directory.Create();
+            }
+        }
+
+        /// <summary>
+        /// Creates <paramref name="directory"/> and any missing parents if it does not exist.
+        /// </summary>
+        /// <param name="directory">The directory to create</param>
+        public static void EnsurePath(this DirectoryInfo directory)
+        {
+            directory.ValidateArgument(nameof(directory));
+
+            if (directory.Parent != null && !directory.Parent.Exists)
+            {
+                directory.Parent.EnsurePath();
+            }
+
+            directory.CreateIfNotExist();
+        }
+        /// <inheritdoc/>
+        public static void EnsurePath(this IDirectoryInfo directory)
+        {
+            directory.ValidateArgument(nameof(directory));
+
+            if (directory.Parent != null && !directory.Parent.Exists)
+            {
+                directory.Parent.EnsurePath();
+            }
+
+            directory.CreateIfNotExist();
+        }
 
         /// <summary>
         /// Checks if <paramref name="directory"/> does not contain any sub directories and files.
@@ -29,6 +68,13 @@ namespace Sels.Core.Extensions.IO
         /// <param name="directory">The directory to check</param>
         /// <returns>True if <paramref name="directory"/> is empty, otherwise false</returns>
         public static bool IsEmpty(this DirectoryInfo directory)
+        {
+            directory.ValidateArgument(nameof(directory));
+
+            return directory.GetDirectories().Length == 0 && directory.GetFiles().Length == 0;
+        }
+        /// <inheritdoc/>
+        public static bool IsEmpty(this IDirectoryInfo directory)
         {
             directory.ValidateArgument(nameof(directory));
 
@@ -46,6 +92,15 @@ namespace Sels.Core.Extensions.IO
             directory.GetFiles().Execute(x => x.Delete());
             directory.GetDirectories().Execute(x => x.Clear());
         }
+        /// <inheritdoc/>
+        public static void Clear(this IDirectoryInfo directory)
+        {
+            directory.ValidateArgument(nameof(directory));
+
+            directory.GetFiles().Execute(x => x.Delete());
+            directory.GetDirectories().Execute(x => x.Clear());
+        }
+
         /// <summary>
         /// Returns the relative sub directory using <paramref name="relativePath"/> starting fron <paramref name="directory"/>.
         /// </summary>
@@ -58,6 +113,14 @@ namespace Sels.Core.Extensions.IO
             relativePath.ValidateArgumentNotNullOrWhitespace(nameof(relativePath));
 
             return new DirectoryInfo(Path.Combine(directory.FullName, relativePath));
+        }
+        /// <inheritdoc/>
+        public static IDirectoryInfo GetRelative(this IDirectoryInfo directory, string relativePath)
+        {
+            directory.ValidateArgument(nameof(directory));
+            relativePath.ValidateArgumentNotNullOrWhitespace(nameof(relativePath));
+
+            return directory.FileSystem.DirectoryInfo.New(Path.Combine(directory.FullName, relativePath));
         }
 
         #region Copying 
@@ -76,6 +139,14 @@ namespace Sels.Core.Extensions.IO
             var destination = new DirectoryInfo(destinationDirectory);
             return directory.CopyTo(destination, overwrite);
         }
+        /// <inheritdoc/>
+        public static IDirectoryInfo CopyTo(this IDirectoryInfo directory, string destinationDirectory, bool overwrite = false)
+        {
+            directory.ValidateArgumentExists(nameof(directory));
+            destinationDirectory.ValidateArgumentNotNullOrWhitespace(nameof(destinationDirectory));
+
+            return directory.CopyTo(directory.FileSystem.DirectoryInfo.New(destinationDirectory), overwrite);
+        }
         /// <summary>
         /// Copies <paramref name="directory"/> to <paramref name="destinationDirectory"/>.
         /// </summary>
@@ -87,7 +158,21 @@ namespace Sels.Core.Extensions.IO
         {
             directory.ValidateArgumentExists(nameof(directory));
             destinationDirectory.ValidateArgument(nameof(destinationDirectory));
-            destinationDirectory.CreateIfNotExist();
+            destinationDirectory.EnsurePath();
+
+            var newDirectory = destinationDirectory.CreateSubdirectory(directory.Name);
+
+            directory.GetDirectories().Execute(x => x.CopyTo(newDirectory, overwrite));
+            directory.GetFiles().Execute(x => x.CopyTo(newDirectory, overwrite));
+
+            return newDirectory;
+        }
+        /// <inheritdoc/>
+        public static IDirectoryInfo CopyTo(this IDirectoryInfo directory, IDirectoryInfo destinationDirectory, bool overwrite = false)
+        {
+            directory.ValidateArgumentExists(nameof(directory));
+            destinationDirectory.ValidateArgument(nameof(destinationDirectory));
+            destinationDirectory.EnsurePath();
 
             var newDirectory = destinationDirectory.CreateSubdirectory(directory.Name);
 
@@ -110,6 +195,14 @@ namespace Sels.Core.Extensions.IO
             
             return directory.CopyContentTo(new DirectoryInfo(destinationDirectory), overwrite);
         }
+        /// <inheritdoc/>
+        public static IDirectoryInfo CopyContentTo(this IDirectoryInfo directory, string destinationDirectory, bool overwrite = false)
+        {
+            directory.ValidateArgumentExists(nameof(directory));
+            destinationDirectory.ValidateArgumentNotNullOrWhitespace(nameof(destinationDirectory));
+
+            return directory.CopyContentTo(directory.FileSystem.DirectoryInfo.New(destinationDirectory), overwrite);
+        }
         /// <summary>
         /// Copies all sub directories and files from <paramref name="directory"/> to <paramref name="destinationDirectory"/>.
         /// </summary>
@@ -121,7 +214,19 @@ namespace Sels.Core.Extensions.IO
         {
             directory.ValidateArgumentExists(nameof(directory));
             destinationDirectory.ValidateArgument(nameof(destinationDirectory));
-            destinationDirectory.CreateIfNotExist();
+            destinationDirectory.EnsurePath();
+
+            directory.GetDirectories().Execute(x => x.CopyTo(destinationDirectory, overwrite));
+            directory.GetFiles().Execute(x => x.CopyTo(destinationDirectory, overwrite));
+
+            return destinationDirectory;
+        }
+        /// <inheritdoc/>
+        public static IDirectoryInfo CopyContentTo(this IDirectoryInfo directory, IDirectoryInfo destinationDirectory, bool overwrite = false)
+        {
+            directory.ValidateArgumentExists(nameof(directory));
+            destinationDirectory.ValidateArgument(nameof(destinationDirectory));
+            destinationDirectory.EnsurePath();
 
             directory.GetDirectories().Execute(x => x.CopyTo(destinationDirectory, overwrite));
             directory.GetFiles().Execute(x => x.CopyTo(destinationDirectory, overwrite));
