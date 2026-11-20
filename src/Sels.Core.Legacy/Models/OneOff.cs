@@ -64,7 +64,7 @@ namespace Sels.Core.Models
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>True if the operands are equal; otherwise, false.</returns>
-        public static bool operator ==(OneOff<T0, T1> left, OneOff<T0, T1> right) => left?.Equals(right) ?? false;
+        public static bool operator ==(OneOff<T0, T1> left, OneOff<T0, T1> right) => left?.Equals(right) ?? Equals(left, right);
         /// <summary>
         /// Defines an inequality operator for <see cref="OneOff{T0, T1}"/>.
         /// </summary>
@@ -87,7 +87,7 @@ namespace Sels.Core.Models
                     return EqualityComparer<T1>.Default.Equals(ValueTwo, other.ValueTwo);
                 }
             }
-            return false;
+            return base.Equals(obj);
         }
         /// <inheritdoc/>
         public override int GetHashCode()
@@ -100,7 +100,7 @@ namespace Sels.Core.Models
             {
                 return EqualityComparer<T1>.Default.GetHashCode(ValueTwo);
             }
-            return 0;
+            return base.GetHashCode();
         }
         /// <inheritdoc/>
         public override string ToString()
