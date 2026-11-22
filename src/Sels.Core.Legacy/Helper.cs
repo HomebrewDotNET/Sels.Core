@@ -96,6 +96,25 @@ namespace Sels.Core
 
                 return false;
             }
+
+            /// <summary>
+            /// Checks if <paramref name="pathOne"/> and <paramref name="pathTwo"/> are the same by normalizing both without doing IO.
+            /// </summary>
+            /// <param name="pathOne">The path to compare to <paramref name="pathOne"/></param>
+            /// <param name="pathTwo">The path to compare to <paramref name="pathTwo"/></param>
+            /// <param name="caseSensitive">If case should be taken into account when comparing, null means based on current OS</param>
+            /// <returns></returns>
+            public static bool AreSamePath(string pathOne, string pathTwo, bool? caseSensitive = null)
+            {
+                if (pathOne is null || pathTwo is null) return false;
+
+                var normalizedPathOne = Path.GetFullPath(pathOne.TrimEnd(Path.DirectorySeparatorChar));
+                var normalizedPathTwo = Path.GetFullPath(pathTwo.TrimEnd(Path.DirectorySeparatorChar));
+
+                var isCaseSensitive = caseSensitive.HasValue ? caseSensitive.Value : RuntimeInformation.IsOSPlatform(OSPlatform.Windows) | RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? false : true;
+
+                return normalizedPathOne.Equals(normalizedPathTwo, isCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+            }
         }
         #endregion
 
